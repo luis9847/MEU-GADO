@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Gado — Administrador</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --green:#119447;--green2:#0a7839;--dark:#052f31;--nav:#031d20;
+  --bg:#f5f8f7;--card:#fff;--line:#e1e8e5;--text:#14251f;
+  --muted:#718079;--red:#c73d36;--orange:#d88c1f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.login-page{
+  min-height:100vh;display:grid;place-items:center;padding:24px;
+  background:
+    linear-gradient(90deg,rgba(3,32,31,.84),rgba(3,32,31,.62)),
+    url('/login-rebanho.jpg') center/cover no-repeat fixed;
+}
+.login-card{
+  width:min(460px,96vw);background:rgba(255,255,255,.98);
+  border-radius:22px;padding:32px;box-shadow:0 28px 80px rgba(0,24,20,.30)
+}
+.login-logo{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.login-logo img{width:62px;height:62px;border-radius:50%;object-fit:cover}
+.login-logo b{font-size:24px;color:#0a362d;display:block}
+.login-logo small{color:var(--muted)}
+.field{margin:14px 0}
+.field label{font-size:12px;font-weight:800;display:block;margin-bottom:7px}
+.field input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;outline:none}
+.field input:focus{border-color:#76c494;box-shadow:0 0 0 3px #e9f7ee}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:800}
+.btn.primary{background:var(--green);color:#fff}
+.btn.secondary{background:#fff;border:1px solid var(--line)}
+.btn.danger{background:#fff0ef;color:var(--red);border:1px solid #f1c8c4}
+.btn.full{width:100%;padding:13px}
+.msg{font-size:12px;margin-top:12px;min-height:18px;color:var(--red)}
+
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,var(--nav),#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column}
+.brand{display:flex;gap:11px;align-items:center;padding:0 4px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand img{width:48px;height:48px;border-radius:50%;object-fit:cover}
+.brand b{font-size:17px;display:block}.brand small{font-size:9px;color:#bdd0d1}
+.admin-badge{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:99px;background:#113f31;color:#7de2a2;font-size:8px;font-weight:900;text-transform:uppercase}
+.nav{margin-top:18px}
+.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:8px;text-align:left;font-weight:750;margin:2px 0}
+.nav button.active,.nav button:hover{background:var(--green)}
+.side-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
+.side-bottom button{width:100%;border:0;background:transparent;color:#eef6f7;text-align:left;padding:9px 8px}
+
+.main{min-width:0}
+.topbar{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:10}
+.topbar h1{font-size:18px;margin:0}
+.top-user{text-align:right;font-size:11px}.top-user b{display:block}.top-user span{color:var(--muted)}
+.content{padding:18px 22px 42px;max-width:1500px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}
+.kpi small{color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}
+.kpi strong{display:block;font-size:27px;margin-top:6px}
+.kpi span{font-size:10px;color:var(--muted)}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.search{width:min(430px,55vw)}
+.search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:11px 9px;border-bottom:1px solid #edf1ef;text-align:left;font-size:11px;vertical-align:middle}
+th{font-size:9px;color:#657386;text-transform:uppercase}
+.status{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:99px;font-size:9px;font-weight:850}
+.status.active{background:#e8f7ed;color:#158c45}
+.status.blocked{background:#fff0ef;color:var(--red)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.actions .btn{padding:7px 9px;font-size:10px}
+.empty{text-align:center;padding:36px;color:var(--muted);font-size:12px}
+.note{font-size:10px;color:var(--muted);margin-top:10px}
+.modal{position:fixed;inset:0;background:rgba(5,30,29,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}
+.modal.show{display:flex}
+.modalbox{width:min(720px,96vw);background:#fff;border-radius:16px;padding:18px;max-height:90vh;overflow:auto}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.modalhead h3{margin:0}
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.detail{border:1px solid var(--line);border-radius:10px;padding:11px}
+.detail small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase}.detail b{display:block;margin-top:4px;font-size:12px}
+@media(max-width:900px){.layout{grid-template-columns:78px 1fr}.brand div,.nav span,.admin-badge{display:none}.nav button{text-align:center}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.content{padding:12px}.kpis{grid-template-columns:1fr}.toolbar{align-items:stretch;flex-direction:column}.search{width:100%}.detail-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<section id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="/meu-gado-logo.png" alt="Meu Gado">
+      <div><b>Meu Gado</b><small>Painel Administrativo</small></div>
+    </div>
+    <div class="field"><label>E-mail do administrador</label><input id="email" type="email" autocomplete="username" placeholder="seu@email.com"></div>
+    <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha"></div>
+    <button class="btn primary full" id="loginBtn">Entrar como administrador</button>
+    <div class="msg" id="loginMsg"></div>
+  </div>
+</section>
+
+<div id="app" class="layout hidden">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="/meu-gado-logo.png" alt="Meu Gado">
+      <div><b>Meu Gado</b><small>Controle profissional</small><span class="admin-badge">Administrador</span></div>
+    </div>
+    <div class="nav">
+      <button class="active">▦ <span>Clientes</span></button>
+    </div>
+    <div class="side-bottom">
+      <button id="logoutBtn">↪ <span>Sair</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1>Painel Administrativo</h1>
+      <div class="top-user"><b id="adminEmail">Administrador</b><span>Meu Gado</span></div>
+    </header>
+
+    <section class="content">
+      <div class="kpis">
+        <div class="card kpi"><small>Clientes / Fazendas</small><strong id="kpiFarms">0</strong><span>Contas cadastradas</span></div>
+        <div class="card kpi"><small>Animais cadastrados</small><strong id="kpiAnimals">0</strong><span>Em todas as fazendas</span></div>
+        <div class="card kpi"><small>Lotes cadastrados</small><strong id="kpiLots">0</strong><span>Em todas as fazendas</span></div>
+        <div class="card kpi"><small>Contas bloqueadas</small><strong id="kpiBlocked">0</strong><span>Acesso suspenso</span></div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <div>
+            <b>Clientes cadastrados</b>
+            <div class="note">Cada cliente continua com seus dados separados. Este painel apenas permite acompanhamento administrativo.</div>
+          </div>
+          <div class="search"><input id="search" placeholder="Buscar por fazenda, e-mail, cidade ou CPF/CNPJ"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Fazenda</th><th>Cliente / contato</th><th>Local</th><th>Animais</th><th>Lotes</th><th>Gastos</th><th>Status</th><th>Ações</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <div id="empty" class="empty hidden">Nenhum cliente encontrado.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="detailModal" class="modal">
+  <div class="modalbox">
+    <div class="modalhead"><h3 id="detailTitle">Cliente</h3><button class="btn secondary" onclick="closeDetail()">Fechar</button></div>
+    <div class="detail-grid" id="detailGrid"></div>
+  </div>
+</div>
+
+<script>
+const SB_URL="https://eghqluvfvawiynzobaza.supabase.co";
+const SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+let farms=[], animals=[], lots=[], expenses=[];
+
+const brl=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+async function isAdmin(){
+  const {data:{user}}=await sb.auth.getUser();
+  if(!user) return false;
+  const {data,error}=await sb.from('admin_users').select('email').eq('email',user.email).maybeSingle();
+  return !error && !!data;
+}
+
+async function enterApp(){
+  const {data:{user}}=await sb.auth.getUser();
+  if(!user){showLogin();return;}
+  if(!(await isAdmin())){
+    await sb.auth.signOut();
+    showLogin("Este e-mail não possui permissão de administrador.");
+    return;
+  }
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('adminEmail').textContent=user.email;
+  await loadData();
+}
+
+function showLogin(msg=''){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('loginMsg').textContent=msg;
+}
+
+async function login(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const msg=document.getElementById('loginMsg');
+  msg.textContent='';
+  if(!email||!password){msg.textContent='Informe e-mail e senha.';return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Entrando...';
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  btn.disabled=false;btn.textContent='Entrar como administrador';
+  if(error){msg.textContent=error.message==='Invalid login credentials'?'E-mail ou senha inválidos.':error.message;return;}
+  await enterApp();
+}
+
+async function loadData(){
+  const [f,a,l,e]=await Promise.all([
+    sb.from('farms').select('*').order('created_at',{ascending:false}),
+    sb.from('animals').select('id,farm_id,status'),
+    sb.from('lots').select('id,farm_id'),
+    sb.from('expenses').select('farm_id,amount')
+  ]);
+  if(f.error) return alert('Erro ao carregar clientes: '+f.error.message);
+  farms=f.data||[]; animals=a.data||[]; lots=l.data||[]; expenses=e.data||[];
+  render();
+}
+
+function statsFor(farmId){
+  const fa=animals.filter(x=>Number(x.farm_id)===Number(farmId));
+  const fl=lots.filter(x=>Number(x.farm_id)===Number(farmId));
+  const fe=expenses.filter(x=>Number(x.farm_id)===Number(farmId));
+  return {
+    animals:fa.length,
+    active:fa.filter(x=>!x.status||x.status==='Ativo'||x.status==='ativo').length,
+    lots:fl.length,
+    expenses:fe.reduce((s,x)=>s+Number(x.amount||0),0)
+  };
+}
+
+function render(){
+  document.getElementById('kpiFarms').textContent=farms.length;
+  document.getElementById('kpiAnimals').textContent=animals.length;
+  document.getElementById('kpiLots').textContent=lots.length;
+  document.getElementById('kpiBlocked').textContent=farms.filter(f=>f.blocked).length;
+
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const filtered=farms.filter(f=>[f.name,f.email,f.city,f.state,f.doc,f.phone].join(' ').toLowerCase().includes(q));
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML='';
+  document.getElementById('empty').classList.toggle('hidden',filtered.length>0);
+
+  filtered.forEach(f=>{
+    const s=statsFor(f.id);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><b>${esc(f.name||'Sem nome')}</b><br><small>${esc(f.operation||'')}</small></td>
+      <td>${esc(f.email||'—')}<br><small>${esc(f.phone||'—')}</small></td>
+      <td>${esc([f.city,f.state].filter(Boolean).join(' / ')||'—')}</td>
+      <td><b>${s.animals}</b></td>
+      <td><b>${s.lots}</b></td>
+      <td><b>${brl(s.expenses)}</b></td>
+      <td><span class="status ${f.blocked?'blocked':'active'}">${f.blocked?'Bloqueado':'Ativo'}</span></td>
+      <td><div class="actions">
+        <button class="btn secondary" onclick="showDetail(${f.id})">Ver</button>
+        <button class="btn ${f.blocked?'primary':'danger'}" onclick="toggleBlock(${f.id},${f.blocked})">${f.blocked?'Desbloquear':'Bloquear'}</button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function toggleBlock(id,current){
+  const farm=farms.find(f=>Number(f.id)===Number(id));
+  if(!farm) return;
+  const action=current?'desbloquear':'bloquear';
+  if(!confirm(`Deseja realmente ${action} o acesso de ${farm.name}?`)) return;
+  const {error}=await sb.from('farms').update({blocked:!current}).eq('id',id);
+  if(error){alert('Não foi possível atualizar: '+error.message);return;}
+  farm.blocked=!current;
+  render();
+}
+
+function showDetail(id){
+  const f=farms.find(x=>Number(x.id)===Number(id)); if(!f)return;
+  const s=statsFor(f.id);
+  document.getElementById('detailTitle').textContent=f.name||'Cliente';
+  const items=[
+    ['E-mail',f.email],['Telefone',f.phone],['CPF/CNPJ',f.doc],
+    ['Cidade/UF',[f.city,f.state].filter(Boolean).join(' / ')],['Endereço',f.address],
+    ['Operação',f.operation],['Animais cadastrados',s.animals],['Animais ativos',s.active],
+    ['Lotes',s.lots],['Gastos acumulados',brl(s.expenses)],
+    ['Status',f.blocked?'Bloqueado':'Ativo'],['Cadastro',f.created_at?new Date(f.created_at).toLocaleDateString('pt-BR'):'—'],
+    ['Observações',f.notes]
+  ];
+  document.getElementById('detailGrid').innerHTML=items.map(([k,v])=>`<div class="detail"><small>${esc(k)}</small><b>${esc(v||'—')}</b></div>`).join('');
+  document.getElementById('detailModal').classList.add('show');
+}
+function closeDetail(){document.getElementById('detailModal').classList.remove('show')}
+
+document.getElementById('loginBtn').addEventListener('click',login);
+document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+document.getElementById('email').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();showLogin()});
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('detailModal').addEventListener('click',e=>{if(e.target.id==='detailModal')closeDetail()});
+
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session) await enterApp();
+  else showLogin();
+})();
+</script>
+</body>
+</html>
