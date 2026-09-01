@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Gado — Gestão Profissional do Rebanho</title>
+<style>
+:root{
+  --green:#148b45;
+  --green-2:#0f6e37;
+  --green-3:#30ad61;
+  --dark:#05292a;
+  --dark-2:#07383a;
+  --ink:#102635;
+  --muted:#6b7b88;
+  --line:#dfe7e4;
+  --soft:#f4f8f5;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#eef4f0}
+button,input{font:inherit}
+button{cursor:pointer}
+.page{min-height:100vh;position:relative;background:
+  linear-gradient(90deg,rgba(3,32,31,.82) 0%,rgba(3,32,31,.68) 46%,rgba(3,32,31,.26) 68%,rgba(3,32,31,.12) 100%),
+  url('/static/login-rebanho.jpg') center/cover no-repeat fixed;
+}
+.shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.22fr) minmax(420px,.78fr);gap:34px;padding:34px 48px}
+.hero{color:#fff;display:flex;flex-direction:column;min-width:0}
+.brand{display:flex;gap:16px;align-items:center}
+.brand-logo{width:76px;height:76px;border-radius:20px;overflow:hidden;border:2px solid rgba(255,255,255,.28);background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.24)}
+.brand-logo img{width:100%;height:100%;object-fit:cover}
+.brand b{font-size:27px;letter-spacing:-.02em;display:block}
+.brand b span{color:#45c473}
+.brand small{display:block;margin-top:5px;font-size:11px;letter-spacing:.11em;color:#e1ece8}
+.hero-copy{margin-top:auto;margin-bottom:34px;max-width:780px}
+.hero-copy h1{font-size:62px;line-height:1.01;letter-spacing:-.045em;margin:0 0 22px;max-width:730px}
+.hero-copy h1 span{color:#45c473}
+.hero-copy .question{font-size:20px;line-height:1.45;font-weight:850;max-width:650px;margin:0 0 11px}
+.hero-copy .lead{font-size:17px;line-height:1.58;color:#eaf4ef;max-width:650px;margin:0}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:26px;max-width:790px}
+.feature{min-height:150px;padding:18px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(12,55,42,.68),rgba(7,42,34,.82));border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(7px);box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.feature-icon{font-size:29px;margin-bottom:13px}
+.feature b{font-size:13px;display:block;margin-bottom:7px}
+.feature p{font-size:11px;line-height:1.45;color:#dbe9e3;margin:0}
+.result-banner{margin-top:20px;max-width:790px;padding:18px 20px;border-radius:16px;background:rgba(8,54,38,.78);border:1px solid rgba(255,255,255,.12);display:flex;gap:14px;align-items:center}
+.trophy{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#178e48;font-size:22px;flex:0 0 auto}
+.result-banner b{font-size:14px}.result-banner b span{color:#4bcd77}.result-banner p{margin:4px 0 0;font-size:12px;color:#dceae4}
+.trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:790px;margin-top:20px}
+.trust{border:1px solid rgba(255,255,255,.10);background:rgba(6,39,34,.68);padding:13px 15px;border-radius:12px;font-size:11px;font-weight:800;display:flex;gap:9px;align-items:center}
+.trust i{font-style:normal;font-size:19px;color:#4bcd77}
+
+.login-wrap{display:grid;place-items:center}
+.login-card{width:min(510px,100%);background:rgba(255,255,255,.97);border-radius:24px;padding:36px 34px 26px;box-shadow:0 28px 80px rgba(0,24,20,.24);border:1px solid rgba(255,255,255,.55)}
+.card-head{text-align:center}
+.card-head h2{font-size:32px;letter-spacing:-.03em;margin:0;color:#0a362d}
+.card-head p{font-size:14px;line-height:1.5;color:var(--muted);margin:10px auto 0;max-width:330px}
+.divider{display:flex;align-items:center;gap:13px;margin:26px 0 20px;color:#78938a}
+.divider:before,.divider:after{content:"";height:1px;background:#9cc8ab;flex:1}
+.divider .mini-cow{font-size:20px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#eef5f0;border-radius:12px;margin-bottom:18px}
+.tab{border:0;padding:10px;border-radius:9px;background:transparent;color:#667970;font-weight:800}
+.tab.active{background:#fff;color:var(--green);box-shadow:0 4px 12px rgba(17,71,45,.08)}
+.form{display:none}.form.active{display:block}
+.field{margin:13px 0}
+.field-top{display:flex;justify-content:space-between;align-items:center}
+.field label{font-size:12px;font-weight:850;display:block;margin-bottom:7px}
+.field input{width:100%;padding:13px 14px;border:1px solid #dbe5df;border-radius:10px;outline:none;background:#fff}
+.field input:focus{border-color:#7dc594;box-shadow:0 0 0 3px #eaf7ee}
+.row{display:grid;grid-template-columns:1fr 92px;gap:9px}
+.forgot{border:0;background:transparent;color:var(--green);padding:0;font-size:11px;font-weight:800}
+.remember{display:flex;align-items:center;gap:8px;font-size:11px;color:#687b71;margin:10px 0 3px}
+.remember input{width:auto;accent-color:var(--green)}
+.btn{width:100%;border:0;border-radius:11px;padding:13px 16px;background:linear-gradient(135deg,#0e503f,#063d34);color:#fff;font-weight:900;font-size:14px;margin-top:10px;box-shadow:0 9px 22px rgba(7,62,48,.18)}
+.btn.green{background:linear-gradient(135deg,#1e9b50,#147d40)}
+.or{display:flex;align-items:center;gap:12px;color:#87978f;font-size:11px;margin:19px 0}
+.or:before,.or:after{content:"";height:1px;background:#d7e2dc;flex:1}
+.signup-card{padding:18px;border-radius:16px;background:linear-gradient(180deg,#f2f8f4,#edf6f0);border:1px solid #deebe2;text-align:center}
+.signup-icon{width:48px;height:48px;border-radius:50%;margin:0 auto 9px;display:grid;place-items:center;border:2px solid var(--green);color:var(--green);font-size:22px}
+.signup-card h3{font-size:18px;margin:0 0 5px;color:#103a30}.signup-card p{font-size:11px;line-height:1.45;color:#687b72;margin:0 0 12px}
+.outline{width:100%;border:1.5px solid var(--green);background:#fff;color:var(--green);border-radius:10px;padding:11px;font-weight:900}
+.help{text-align:center;margin-top:15px;font-size:11px;color:#75867e}.help span{color:var(--green);font-weight:800}
+.error{font-size:12px;color:#b44038;margin-top:10px;line-height:1.4;min-height:17px}.success{color:#167d42}
+.footer{text-align:center;color:#a0aaa5;font-size:10px;margin-top:12px}
+
+@media(max-width:1150px){
+  .shell{grid-template-columns:1fr;padding:26px}.hero{min-height:690px}.hero-copy{margin-top:90px}.login-wrap{padding-bottom:30px}.login-card{max-width:600px}
+}
+@media(max-width:720px){
+  .page{background-attachment:scroll}.shell{padding:18px;gap:20px}.hero{min-height:560px}.brand-logo{width:58px;height:58px;border-radius:16px}.brand b{font-size:22px}.hero-copy{margin-top:70px}.hero-copy h1{font-size:43px}.hero-copy .question{font-size:17px}.hero-copy .lead{font-size:14px}.feature-grid{grid-template-columns:repeat(2,1fr)}.trust-row{grid-template-columns:1fr}.login-card{padding:28px 20px}.row{grid-template-columns:1fr}
+}
+
+.password-wrap{position:relative}
+.password-wrap input{padding-right:78px!important}
+.show-pass{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#148b45;font-size:11px;font-weight:800;padding:5px 7px}
+
+/* V3.2 — logo oficial no acesso */
+.logo img,.login-logo img,.brand-logo img{
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:50%!important;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
+</head>
+<body>
+<div class="page">
+  <div class="shell">
+    <section class="hero">
+      <div class="brand">
+        <div class="brand-logo"><img src="/static/meu-gado-logo.png" alt="Boi Nelore"></div>
+        <div><b>Meu <span>Gado</span></b><small>CONTROLE PROFISSIONAL DO REBANHO</small></div>
+      </div>
+
+      <div class="hero-copy">
+        <h1>Transforme<br>seu rebanho em<br><span>resultado.</span></h1>
+        <p class="question">Você sabe quanto cada animal realmente está dando de retorno?</p>
+        <p class="lead">Peso, ganho diário, custos, saúde e desempenho reunidos para mostrar onde sua fazenda está evoluindo e onde pode melhorar.</p>
+
+        <div class="feature-grid">
+          <div class="feature"><div class="feature-icon">🐂</div><b>Controle total</b><p>Acompanhe cada animal do nascimento à venda, com histórico completo.</p></div>
+          <div class="feature"><div class="feature-icon">📈</div><b>Desempenho real</b><p>Peso, GMD, evolução e indicadores para decidir com mais segurança.</p></div>
+          <div class="feature"><div class="feature-icon">💰</div><b>Custos e resultado</b><p>Saiba onde está gastando e quanto cada animal pode retornar.</p></div>
+          <div class="feature"><div class="feature-icon">🛡️</div><b>Decisões melhores</b><p>Informação organizada para decisões rápidas e mais lucrativas.</p></div>
+        </div>
+
+        <div class="result-banner">
+          <div class="trophy">🏆</div>
+          <div><b>Mais controle no campo. <span>Mais resultado no negócio.</span></b><p>O sucesso da sua fazenda começa com boa gestão.</p></div>
+        </div>
+
+        <div class="trust-row">
+          <div class="trust"><i>👥</i><span>Gestão feita para produtores rurais</span></div>
+          <div class="trust"><i>🛡️</i><span>Dados separados por cliente</span></div>
+          <div class="trust"><i>☁️</i><span>Acesso no computador, tablet e celular</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="login-wrap">
+      <div class="login-card">
+        <div class="card-head">
+          <h2 id="title">Bem-vindo de volta!</h2>
+          <p id="subtitle">Acesse sua conta e continue cuidando do que mais importa: seu rebanho.</p>
+        </div>
+        <div class="divider"><span></span><div class="mini-cow">🐂</div><span></span></div>
+
+        <div class="tabs" id="tabs">
+          <button class="tab active" id="loginTab" onclick="switchTab('login')">Entrar</button>
+          <button class="tab" id="registerTab" onclick="switchTab('register')">Criar minha conta</button>
+        </div>
+
+        <div class="form active" id="loginForm">
+          <div class="field"><label>E-mail</label><input id="loginEmail" type="email" autocomplete="username" placeholder="seu@email.com"></div>
+          <div class="field"><div class="field-top"><label>Senha</label><button class="forgot" onclick="forgotPassword()">Esqueci minha senha</button></div><div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha"><button type="button" class="show-pass" onclick="togglePassword('loginPassword',this)">Mostrar</button></div></div>
+          <label class="remember"><input id="rememberMe" type="checkbox" checked> Lembrar de mim</label>
+          <button class="btn" onclick="doLogin()">🔒 &nbsp; Entrar</button>
+
+          <div class="or">ou</div>
+
+          <div class="signup-card">
+            <div class="signup-icon">👤</div>
+            <h3>Ainda não usa o Meu Gado?</h3>
+            <p>Comece agora a transformar os dados da sua fazenda em resultado.</p>
+            <button class="outline" onclick="switchTab('register')">👤+ &nbsp; Criar minha conta</button>
+          </div>
+        </div>
+
+        <div class="form" id="registerForm">
+          <div class="field"><label>Seu nome</label><input id="regName" autocomplete="name" placeholder="Nome completo"></div>
+          <div class="field"><label>Nome da propriedade</label><input id="regFarm" placeholder="Ex.: Fazenda Boa Vista"></div>
+          <div class="field"><label>CPF/CNPJ</label><input id="regDoc" inputmode="numeric" placeholder="CPF ou CNPJ"></div>
+          <div class="field"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email" placeholder="seu@email.com"></div>
+          <div class="field"><label>Telefone / WhatsApp</label><input id="regPhone" placeholder="(00) 00000-0000"></div>
+          <div class="row"><div class="field"><label>Cidade</label><input id="regCity" placeholder="Cidade"></div><div class="field"><label>UF</label><input id="regState" maxlength="2" placeholder="MG"></div></div>
+          <div class="field"><label>Crie uma senha</label><div class="password-wrap"><input id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('regPassword',this)">Mostrar</button></div></div>
+          <div class="field"><label>Confirme sua senha</label><div class="password-wrap"><input id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('regPasswordConfirm',this)">Mostrar</button></div></div>
+          <button class="btn green" onclick="doRegister()">Criar minha conta</button>
+        </div>
+
+        <div class="form" id="setupForm">
+          <div class="field"><label>Nome do proprietário do sistema</label><input id="setupName"></div>
+          <div class="field"><label>E-mail do administrador</label><input id="setupEmail" type="email"></div>
+          <div class="field"><label>Crie sua senha de administrador</label><input id="setupPassword" type="password" placeholder="Mínimo de 10 caracteres"></div>
+          <button class="btn green" onclick="setupAdmin()">Criar administrador</button>
+        </div>
+
+        <div class="error" id="message"></div>
+        <div class="help">💬 Precisa de ajuda? <span>Fale conosco</span></div>
+        <div class="footer">© 2026 Meu Gado. Todos os direitos reservados.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+function formatError(detail){
+  if(typeof detail==='string') return detail;
+  if(Array.isArray(detail)) return detail.map(x=>x.msg||JSON.stringify(x)).join(' | ');
+  if(detail&&typeof detail==='object') return detail.msg||JSON.stringify(detail);
+  return 'Erro inesperado.';
+}
+const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
+async function mgEnsureFarm(user){
+  let q=await mgSb.from('farms').select('*').maybeSingle();
+  if(q.error) throw new Error(q.error.message);
+  if(q.data) return q.data;
+  const raw=localStorage.getItem('mg_pending_profile_'+user.email.toLowerCase());
+  if(!raw) return null;
+  const p=JSON.parse(raw);
+  const ins=await mgSb.from('farms').insert({owner_id:user.id,name:p.farm_name,doc:p.doc,phone:p.phone||'',email:p.email,city:p.city||'',state:(p.state||'').toUpperCase()}).select().single();
+  if(ins.error) throw new Error(ins.error.message);
+  localStorage.removeItem('mg_pending_profile_'+user.email.toLowerCase());
+  return ins.data;
+}
+async function api(path,opt={}){
+  const method=(opt.method||'GET').toUpperCase();
+  let data={}; try{data=opt.body?JSON.parse(opt.body):{}}catch{}
+  if(path==='/api/status') return {setup_required:false};
+  if(path==='/api/login'){
+    const r=await mgSb.auth.signInWithPassword({email:data.email,password:data.password});
+    if(r.error) throw new Error(r.error.message==='Invalid login credentials'?'E-mail ou senha inválidos. Se esta é sua primeira vez no site online, clique em Criar minha conta.':r.error.message);
+    await mgEnsureFarm(r.data.user);
+    return {ok:true,role:'client'};
+  }
+  if(path==='/api/register'){
+    localStorage.setItem('mg_pending_profile_'+data.email.toLowerCase(),JSON.stringify(data));
+    const r=await mgSb.auth.signUp({email:data.email,password:data.password,options:{data:{full_name:data.full_name}}});
+    if(r.error) throw new Error(r.error.message);
+    if(r.data.session){await mgEnsureFarm(r.data.user);return {ok:true,role:'client',needs_confirmation:false}}
+    return {ok:true,role:'client',needs_confirmation:true};
+  }
+  if(path==='/api/logout'){await mgSb.auth.signOut();return {ok:true}}
+  throw new Error('Operação indisponível nesta tela.');
+}
+function setMessage(text,ok=false){
+  const m=document.getElementById('message');
+  m.textContent=text||'';
+  m.className=ok?'error success':'error';
+}
+function switchTab(which){
+  document.getElementById('loginForm').classList.toggle('active',which==='login');
+  document.getElementById('registerForm').classList.toggle('active',which==='register');
+  document.getElementById('setupForm').classList.remove('active');
+  document.getElementById('loginTab').classList.toggle('active',which==='login');
+  document.getElementById('registerTab').classList.toggle('active',which==='register');
+  document.getElementById('title').textContent=which==='login'?'Bem-vindo de volta!':'Crie sua conta';
+  document.getElementById('subtitle').textContent=which==='login'
+    ?'Acesse sua conta e continue cuidando do que mais importa: seu rebanho.'
+    :'Comece agora a organizar sua fazenda e acompanhar seu rebanho.';
+  setMessage('');
+}
+async function init(){
+  try{
+    const s=await api('/api/status');
+    if(s.setup_required){
+      document.getElementById('tabs').style.display='none';
+      document.getElementById('loginForm').classList.remove('active');
+      document.getElementById('registerForm').classList.remove('active');
+      document.getElementById('setupForm').classList.add('active');
+      document.getElementById('title').textContent='Configuração do proprietário';
+      document.getElementById('subtitle').textContent='Crie a conta administrativa exclusiva do Meu Gado.';
+    }
+  }catch(e){setMessage(e.message)}
+}
+async function doLogin(){
+  try{
+    setMessage('');
+    const email=document.getElementById('loginEmail').value.trim();
+    const password=document.getElementById('loginPassword').value;
+    if(!email||!password) throw new Error('Informe e-mail e senha.');
+    const j=await api('/api/login',{method:'POST',body:JSON.stringify({email,password})});
+    location.href=j.role==='admin'?'/admin':'/app';
+  }catch(e){setMessage(e.message)}
+}
+async function doRegister(){
+  try{
+    setMessage('');
+    const password=document.getElementById('regPassword').value;
+    const confirmPassword=document.getElementById('regPasswordConfirm').value;
+    const data={
+      full_name:document.getElementById('regName').value.trim(),
+      farm_name:document.getElementById('regFarm').value.trim(),
+      doc:document.getElementById('regDoc').value.trim(),
+      email:document.getElementById('regEmail').value.trim(),
+      phone:document.getElementById('regPhone').value.trim(),
+      city:document.getElementById('regCity').value.trim(),
+      state:document.getElementById('regState').value.trim(),
+      password
+    };
+    if(!data.full_name||!data.farm_name||!data.doc||!data.email) throw new Error('Preencha nome, propriedade, CPF/CNPJ e e-mail.');
+    const docDigits=data.doc.replace(/\D/g,'');
+    if(docDigits.length!==11&&docDigits.length!==14) throw new Error('Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos.');
+    if(password.length<10) throw new Error('A senha deve ter pelo menos 10 caracteres.');
+    if(password!==confirmPassword) throw new Error('As senhas não conferem.');
+    const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
+    if(r.needs_confirmation){setMessage('Conta criada. Confirme o e-mail recebido e depois entre.',true);switchTab('login');return;}
+    location.href='/app';
+  }catch(e){setMessage(e.message)}
+}
+async function setupAdmin(){
+  try{
+    setMessage('');
+    const fullName=document.getElementById('setupName').value.trim();
+    const email=document.getElementById('setupEmail').value.trim();
+    const password=document.getElementById('setupPassword').value;
+    if(!fullName||!email) throw new Error('Preencha nome e e-mail.');
+    if(password.length<10) throw new Error('A senha deve ter pelo menos 10 caracteres.');
+    await api('/api/setup',{method:'POST',body:JSON.stringify({full_name:fullName,email,password})});
+    location.href='/admin';
+  }catch(e){setMessage(e.message)}
+}
+
+function togglePassword(id,button){
+  const input=document.getElementById(id);
+  if(!input)return;
+  const show=input.type==='password';
+  input.type=show?'text':'password';
+  button.textContent=show?'Ocultar':'Mostrar';
+}
+function enableEnterSubmit(){
+  ['loginEmail','loginPassword'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();doLogin();}
+    });
+  });
+  ['regName','regFarm','regDoc','regEmail','regPhone','regCity','regState','regPassword','regPasswordConfirm'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();doRegister();}
+    });
+  });
+  ['setupName','setupEmail','setupPassword'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();setupAdmin();}
+    });
+  });
+}
+
+function forgotPassword(){
+  setMessage('A recuperação automática de senha será ativada em uma próxima atualização.');
+}
+init();
+enableEnterSubmit();
+</script>
+</body>
+</html>
