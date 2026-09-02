@@ -228,7 +228,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
       <div class="action-grid">
         <button onclick="openNewAnimal()"><i>＋</i><span>Novo<br>animal</span></button>
         <button onclick="openSingleWeight()"><i>⚖</i><span>Registrar<br>pesagem</span></button>
-        <button onclick="openModal('healthModal')"><i>✚</i><span>Registrar<br>saúde</span></button>
+        <button onclick="openNewHealth()"><i>✚</i><span>Registrar<br>saúde</span></button>
         <button onclick="openNewRepro()"><i>♡</i><span>Registrar<br>reprodução</span></button>
         <button onclick="openLot()"><i>▱</i><span>Novo<br>lote</span></button>
         <button onclick="openNewExpense()"><i>$</i><span>Novo<br>gasto</span></button>
@@ -335,7 +335,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     </div>
   </div>
 </section>
-<section id="saude" class="view"><div class="head"><div><h2>Saúde</h2><div class="sub">Vacinas, medicamentos e tratamentos</div></div><button class="btn primary" onclick="openModal('healthModal')">+ Registrar</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal/Lote</th><th>Evento</th><th>Produto</th><th>Próxima</th></tr></thead><tbody id="healthRows"></tbody></table></div></section>
+<section id="saude" class="view"><div class="head"><div><h2>Saúde</h2><div class="sub">Vacinas, medicamentos e tratamentos</div></div><button class="btn primary" onclick="openNewHealth()">+ Registrar</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal/Lote</th><th>Evento</th><th>Produto</th><th>Próxima</th><th>Ações</th></tr></thead><tbody id="healthRows"></tbody></table></div></section>
 <section id="repro" class="view"><div class="head"><div><h2>Reprodução</h2><div class="sub">Matrizes, prenhez, partos e crias</div></div><button class="btn primary" onclick="openNewRepro()">+ Registrar evento</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal</th><th>Evento</th><th>Previsão</th><th>Ações</th></tr></thead><tbody id="reproRows"></tbody></table></div></section>
 
 <section id="nutricao" class="view">
@@ -462,7 +462,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   </div>
 </div></div>
 
-<div class="modal" id="healthModal"><div class="modalbox"><div class="head"><h3>Registrar saúde</h3><button class="btn secondary" onclick="closeModal('healthModal')">Fechar</button></div><div class="form"><label>Tipo<select id="htype"><option>Vacina</option><option>Medicamento</option><option>Vermífugo</option><option>Tratamento</option></select></label><label>Produto<input id="hproduct"></label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
+<div class="modal" id="healthModal"><div class="modalbox"><div class="head"><h3 id="healthModalTitle">Registrar saúde</h3><button class="btn secondary" onclick="closeModal('healthModal')">Fechar</button></div><div class="form"><label>Tipo<select id="htype"><option>Vacina</option><option>Medicamento</option><option>Vermífugo</option><option>Tratamento</option></select></label><label>Produto<input id="hproduct"></label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button id="healthSaveBtn" class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
 
 <div class="modal" id="reproModal"><div class="modalbox"><div class="head"><h3 id="reproModalTitle">Evento reprodutivo</h3><button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button></div><div class="form"><label>Animal<select id="ranimal"></select></label><label>Evento<select id="rtype" onchange="updateReproPrediction()"><option>Inseminação artificial</option><option>Monta natural / pasto</option><option>Prenhez confirmada</option><option>Parto</option><option>Aborto</option><option>Desmame</option></select></label><label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label><label>Data prevista do parto<input id="rexpected" type="date"><small class="sub">Calculada automaticamente em aproximadamente 283 dias para cobertura/inseminação. Pode ser ajustada.</small></label><label class="full">Observações<textarea id="rnotes" placeholder="Ex.: lote do touro, sêmen utilizado, diagnóstico..."></textarea></label><button id="reproSaveBtn" class="btn primary full" onclick="saveRepro()">Salvar evento</button></div></div></div>
 
@@ -621,9 +621,10 @@ async function api(path,opt={}){
  m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/health'&&method==='GET'){let h=await mgRows('health_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return h.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/health'&&method==='POST'){let r=await mgSb.from('health_events').insert({farm_id:f.id,animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ {let m=path.match(/^\/api\/health\/(\d+)$/);if(m&&['PUT','PATCH'].includes(method)){let r=await mgSb.from('health_events').update({animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''}).eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('health_events').delete().eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}}
  if(path==='/api/reproduction'&&method==='GET'){let rr=await mgRows('reproductive_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return rr.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/reproduction'&&method==='POST'){let r=await mgSb.from('reproductive_events').insert({farm_id:f.id,animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
  if(path==='/api/nutrition'&&method==='POST'){let r=await mgSb.from('nutrition_entries').insert({farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:data.total_cost,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/market/arroba')return mgMarket;
@@ -1115,8 +1116,42 @@ async function saveExpense(){
     await Promise.all([loadExpenses(),dashboard()]);
   }catch(e){alert(e.message)}
 }
-async function loadHealth(){const x=await api('/api/health');healthRows.innerHTML=x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?'#'+e.animal_number:(e.lot||'Geral')}</td><td>${e.event_type}</td><td>${e.product||'-'}</td><td>${e.next_due_date||'-'}</td></tr>`).join('')}
-async function saveHealth(){await api('/api/health',{method:'POST',body:JSON.stringify({event_type:htype.value,product:hproduct.value,event_date:hdate.value,next_due_date:hnext.value,animal_id:hanimal.value?Number(hanimal.value):null,lot:hlot.value,notes:hnotes.value})});closeModal('healthModal');await Promise.all([loadHealth(),dashboard()])}
+let healthData=[],healthEditId=null;
+async function loadHealth(){
+  healthData=await api('/api/health');
+  healthRows.innerHTML=healthData.length?healthData.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_id?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number||'-'}</button>`:(e.lot||'Geral')}</td><td>${e.event_type}</td><td>${e.product||'-'}</td><td>${e.next_due_date||'-'}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editHealth(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteHealth(${e.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Nenhum registro de saúde.</td></tr>';
+}
+function openNewHealth(){
+  healthEditId=null;
+  if(document.getElementById('healthModalTitle'))healthModalTitle.textContent='Registrar saúde';
+  if(document.getElementById('healthSaveBtn'))healthSaveBtn.textContent='Salvar evento';
+  htype.value='Vacina';hproduct.value='';hdate.value=new Date().toISOString().slice(0,10);hnext.value='';hanimal.value='';hlot.value='';hnotes.value='';
+  openModal('healthModal');
+}
+function editHealth(id){
+  const e=healthData.find(x=>Number(x.id)===Number(id));if(!e){alert('Registro de saúde não encontrado.');return}
+  healthEditId=Number(id);
+  if(document.getElementById('healthModalTitle'))healthModalTitle.textContent='Editar registro de saúde';
+  if(document.getElementById('healthSaveBtn'))healthSaveBtn.textContent='Salvar alterações';
+  htype.value=e.event_type||'Vacina';hproduct.value=e.product||'';hdate.value=e.event_date||'';hnext.value=e.next_due_date||'';hanimal.value=e.animal_id?String(e.animal_id):'';hlot.value=e.lot||'';hnotes.value=e.notes||'';
+  openModal('healthModal');
+}
+async function saveHealth(){
+  if(!hdate.value){alert('Informe a data do evento.');return}
+  const payload={event_type:htype.value,product:hproduct.value,event_date:hdate.value,next_due_date:hnext.value||null,animal_id:hanimal.value?Number(hanimal.value):null,lot:hlot.value,notes:hnotes.value};
+  try{
+    if(healthEditId)await api(`/api/health/${healthEditId}`,{method:'PUT',body:JSON.stringify(payload)});else await api('/api/health',{method:'POST',body:JSON.stringify(payload)});
+    healthEditId=null;closeModal('healthModal');await Promise.all([loadHealth(),dashboard()]);
+  }catch(e){alert('Não foi possível salvar o registro de saúde. '+(e?.message||''))}
+}
+async function deleteHealth(id){
+  if(!confirm('Deseja realmente excluir este registro de saúde? Esta ação não poderá ser desfeita.'))return;
+  try{
+    await api(`/api/health/${id}`,{method:'DELETE'});
+    if(Number(healthEditId)===Number(id)){healthEditId=null;closeModal('healthModal')}
+    await Promise.all([loadHealth(),dashboard()]);
+  }catch(e){alert('Não foi possível excluir o registro de saúde. '+(e?.message||''))}
+}
 function addDaysISO(dateStr,days){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
 let editingReproId=null;
 function updateReproPrediction(){
@@ -1153,7 +1188,7 @@ async function editRepro(id){
 }
 async function loadRepro(){
   const x=await api('/api/reproduction');
-  reproRows.innerHTML=x.length?x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number}</button>`:'-'}</td><td>${e.event_type}</td><td>${e.expected_date||'-'}</td><td><button class="btn secondary" onclick="editRepro(${e.id})">Editar</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum evento reprodutivo registrado.</td></tr>'
+  reproRows.innerHTML=x.length?x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number}</button>`:'-'}</td><td>${e.event_type}</td><td>${e.expected_date||'-'}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editRepro(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteRepro(${e.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum evento reprodutivo registrado.</td></tr>'
 }
 async function saveRepro(){
   if(!ranimal.value){alert('Selecione a vaca/matriz.');return}
@@ -1166,6 +1201,14 @@ async function saveRepro(){
     editingReproId=null;rnotes.value='';
     await Promise.all([loadRepro(),dashboard()]);
   }catch(e){alert('Não foi possível salvar o evento reprodutivo. '+e.message)}
+}
+async function deleteRepro(id){
+  if(!confirm('Deseja realmente excluir este registro de reprodução? Esta ação não poderá ser desfeita.'))return;
+  try{
+    await api(`/api/reproduction/${id}`,{method:'DELETE'});
+    if(Number(editingReproId)===Number(id)){editingReproId=null;closeModal('reproModal')}
+    await Promise.all([loadRepro(),dashboard()]);
+  }catch(e){alert('Não foi possível excluir o registro de reprodução. '+(e?.message||''))}
 }
 async function openNotifications(){
   let d=window.mgDashboardData||await api('/api/dashboard');window.mgDashboardData=d;
