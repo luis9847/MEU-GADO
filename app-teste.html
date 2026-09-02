@@ -162,10 +162,14 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 
 /* Painel de desempenho */
 .performance-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}.performance-kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}.performance-kpi small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.performance-kpi b{display:block;font-size:24px;margin-top:7px}.performance-kpi span{display:block;color:var(--muted);font-size:10px;margin-top:5px}.performance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.performance-grid .panel{min-width:0}.rank-row{display:grid;grid-template-columns:38px 1.3fr .8fr .8fr;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.rank-row:last-child{border-bottom:0}.rank-pos{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eef8f1;color:var(--green);font-weight:900}.rank-main b{display:block}.rank-main small{color:var(--muted)}.rank-good{color:var(--green);font-weight:900}.rank-bad{color:var(--red);font-weight:900}.performance-empty{padding:22px 8px;text-align:center;color:var(--muted);font-size:11px}.perf-progress{height:7px;background:#edf1f4;border-radius:99px;overflow:hidden;margin-top:6px}.perf-progress i{display:block;height:100%;background:var(--green);border-radius:99px}.lot-rank-table tr{cursor:pointer}.lot-rank-table tr:hover td{background:#f7faf8}@media(max-width:900px){.performance-kpis{grid-template-columns:1fr 1fr}.performance-grid{grid-template-columns:1fr}}@media(max-width:560px){.performance-kpis{grid-template-columns:1fr}.rank-row{grid-template-columns:34px 1fr .8fr}.rank-row>div:last-child{display:none}}
+
+/* V8 - garante acesso visível ao painel de desempenho */
+#navDesempenho{display:block!important}
+@media(max-width:1200px){#navDesempenho span{display:none}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 </head>
-<body><div class="layout">
+<body data-build="desempenho-v8"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -176,8 +180,8 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <button data-v="pesagem" onclick="show('pesagem',this)">⚖ <span>Pesagem</span></button>
     <button data-v="saude" onclick="show('saude',this)">⌁ <span>Saúde</span></button>
     <button data-v="repro" onclick="show('repro',this)">♡ <span>Reprodução</span></button>
-    <div class="nav-title">Gestão</div>
-    <button data-v="desempenho" onclick="show('desempenho',this);loadPerformance()">↗ <span>Desempenho</span></button>
+    <div class="nav-title" data-feature="performance-menu">Gestão</div>
+    <button id="navDesempenho" data-v="desempenho" onclick="show('desempenho',this);loadPerformance()">↗ <span>Desempenho</span></button>
     <div class="nav-title">Financeiro</div>
     <button data-v="gastos" onclick="show('gastos',this)">$ <span>Gastos</span></button>
     <button data-v="relatorios" onclick="show('relatorios',this)">▥ <span>Relatórios</span></button>
