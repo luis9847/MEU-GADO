@@ -159,6 +159,9 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   border:1px solid rgba(255,255,255,.22);
 }
 
+
+/* Painel de desempenho */
+.performance-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}.performance-kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}.performance-kpi small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.performance-kpi b{display:block;font-size:24px;margin-top:7px}.performance-kpi span{display:block;color:var(--muted);font-size:10px;margin-top:5px}.performance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.performance-grid .panel{min-width:0}.rank-row{display:grid;grid-template-columns:38px 1.3fr .8fr .8fr;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.rank-row:last-child{border-bottom:0}.rank-pos{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eef8f1;color:var(--green);font-weight:900}.rank-main b{display:block}.rank-main small{color:var(--muted)}.rank-good{color:var(--green);font-weight:900}.rank-bad{color:var(--red);font-weight:900}.performance-empty{padding:22px 8px;text-align:center;color:var(--muted);font-size:11px}.perf-progress{height:7px;background:#edf1f4;border-radius:99px;overflow:hidden;margin-top:6px}.perf-progress i{display:block;height:100%;background:var(--green);border-radius:99px}.lot-rank-table tr{cursor:pointer}.lot-rank-table tr:hover td{background:#f7faf8}@media(max-width:900px){.performance-kpis{grid-template-columns:1fr 1fr}.performance-grid{grid-template-columns:1fr}}@media(max-width:560px){.performance-kpis{grid-template-columns:1fr}.rank-row{grid-template-columns:34px 1fr .8fr}.rank-row>div:last-child{display:none}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 </head>
@@ -171,6 +174,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <button data-v="animais" onclick="show('animais',this)">♙ <span>Animais</span></button>
     <button data-v="lotes" onclick="show('lotes',this)">▱ <span>Lotes</span></button>
     <button data-v="pesagem" onclick="show('pesagem',this)">⚖ <span>Pesagem</span></button>
+    <button data-v="desempenho" onclick="show('desempenho',this);loadPerformance()">↗ <span>Desempenho</span></button>
     <button data-v="saude" onclick="show('saude',this)">⌁ <span>Saúde</span></button>
     <button data-v="repro" onclick="show('repro',this)">♡ <span>Reprodução</span></button>
     <div class="nav-title">Financeiro</div>
@@ -350,6 +354,33 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   <div class="card">
     <table><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead>
     <tbody id="expenseRows"></tbody></table>
+  </div>
+</section>
+<section id="desempenho" class="view">
+  <div class="page-title"><div><h2>Indicadores de desempenho</h2><p>Compare ganho de peso, metas e desempenho dos lotes usando os dados já registrados.</p></div><button class="btn secondary" onclick="loadPerformance()">Atualizar indicadores</button></div>
+  <div class="performance-kpis">
+    <div class="performance-kpi"><small>Melhor GMD individual</small><b id="perfBestGmd">—</b><span id="perfBestGmdAnimal">Sem dados suficientes</span></div>
+    <div class="performance-kpi"><small>Animais na meta</small><b id="perfReadyPct">0%</b><span id="perfReadyCount">0 de 0 animais</span></div>
+    <div class="performance-kpi"><small>Custo mensal por cabeça</small><b id="perfCostHead">R$ 0,00</b><span>Gastos do mês ÷ animais ativos</span></div>
+    <div class="performance-kpi"><small>Lote destaque</small><b id="perfBestLot">—</b><span id="perfBestLotGmd">Sem GMD calculado</span></div>
+  </div>
+  <div class="performance-grid">
+    <div class="panel">
+      <div class="panel-title"><div><b>Ranking dos animais</b><small>GMD calculado entre a primeira e a última pesagem disponível</small></div></div>
+      <div id="perfAnimalRanking"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><div><b>Desempenho por lote</b><small>Comparativo dos lotes ativos</small></div></div>
+      <div class="table-scroll"><table class="lot-rank-table"><thead><tr><th>Lote</th><th>Animais</th><th>Peso médio</th><th>GMD médio</th><th>Meta</th></tr></thead><tbody id="perfLotRanking"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><div><b>Animais que exigem atenção</b><small>Última pesagem abaixo da anterior</small></div></div>
+      <div id="perfAttention"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><div><b>Progresso para a meta</b><small>Animais mais próximos do peso-alvo</small></div></div>
+      <div id="perfTargets"></div>
+    </div>
   </div>
 </section>
 <section id="relatorios" class="view">
@@ -947,6 +978,53 @@ async function openLotProfile(id){
   </div>`;
   openModal('lotProfileModal');
  }catch(e){alert('Não foi possível abrir o desenvolvimento do lote: '+e.message)}
+}
+
+async function loadPerformance(){
+  const root=document.getElementById('desempenho');if(!root)return;
+  try{
+    const [animals,weighings,lots,dash]=await Promise.all([api('/api/animals'),mgRows('weighings'),api('/api/lots'),api('/api/dashboard')]);
+    const by={};for(const w of weighings){(by[w.animal_id]??=[]).push(w)}
+    const metrics=[];
+    for(const a of animals){
+      const ws=(by[a.id]||[]).slice().sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));
+      let gmd=null,delta=null,last=null,prev=null;
+      if(ws.length){last=Number(ws.at(-1).weight)}else if(a.current_weight!=null){last=Number(a.current_weight)}else if(a.entry_weight!=null){last=Number(a.entry_weight)}
+      if(ws.length>=2){prev=Number(ws.at(-2).weight);delta=last-prev;const days=mgDays(ws[0].weighing_date,ws.at(-1).weighing_date);if(days>0)gmd=(last-Number(ws[0].weight))/days}
+      else if(ws.length===1&&a.entry_weight&&a.entry_date){const days=mgDays(a.entry_date,ws[0].weighing_date);if(days>0)gmd=(last-Number(a.entry_weight))/days}
+      const target=Number(a.target_weight||0);const progress=target>0&&last!=null?Math.max(0,Math.min(100,last/target*100)):null;
+      metrics.push({a,ws,gmd,delta,last,prev,target,progress});
+    }
+    const withGmd=metrics.filter(x=>Number.isFinite(x.gmd)).sort((a,b)=>b.gmd-a.gmd);
+    const best=withGmd[0];
+    perfBestGmd.textContent=best?`${best.gmd.toFixed(3)} kg/dia`:'—';
+    perfBestGmdAnimal.textContent=best?`Animal #${best.a.number}${best.a.lot?' · '+best.a.lot:''}`:'Registre ao menos duas referências de peso';
+    const ready=metrics.filter(x=>x.target>0&&x.last!=null&&x.last>=x.target).length;
+    const targetTotal=metrics.filter(x=>x.target>0).length;
+    perfReadyPct.textContent=targetTotal?`${Math.round(ready/targetTotal*100)}%`:'0%';
+    perfReadyCount.textContent=targetTotal?`${ready} de ${targetTotal} animais com meta`:'Nenhum animal com meta definida';
+    perfCostHead.textContent=money(dash.cost_per_head||0);
+    const lotRank=lots.slice().sort((a,b)=>Number(b.avg_gmd||-999)-Number(a.avg_gmd||-999));
+    const bestLot=lotRank.find(x=>Number.isFinite(Number(x.avg_gmd))&&Number(x.avg_gmd)!==0);
+    perfBestLot.textContent=bestLot?bestLot.name:'—';
+    perfBestLotGmd.textContent=bestLot?`${Number(bestLot.avg_gmd).toFixed(3)} kg/dia · ${bestLot.animals||0} animais`:'Sem GMD calculado nos lotes';
+
+    perfAnimalRanking.innerHTML=withGmd.length?withGmd.slice(0,10).map((x,i)=>`<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">${i+1}</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · ${x.a.category||''}</small></div><div class="${x.gmd>=0?'rank-good':'rank-bad'}">${x.gmd>=0?'+':''}${x.gmd.toFixed(3)} kg/dia</div><div>${x.last!=null?x.last.toFixed(1)+' kg':'—'}</div></div>`).join(''):'<div class="performance-empty">Ainda não há histórico suficiente para montar o ranking. Registre pesagens em datas diferentes.</div>';
+
+    perfLotRanking.innerHTML=lotRank.length?lotRank.map(l=>{
+      const members=metrics.filter(x=>x.a.lot===l.name),withTarget=members.filter(x=>x.target>0),readyLot=withTarget.filter(x=>x.last!=null&&x.last>=x.target).length;
+      const meta=withTarget.length?`${Math.round(readyLot/withTarget.length*100)}%`:'—';
+      return `<tr onclick="openLotProfile(${l.id})"><td><b>${l.name}</b></td><td>${l.animals||0}</td><td>${Number(l.avg_weight||0)>0?Number(l.avg_weight).toFixed(1)+' kg':'—'}</td><td class="${Number(l.avg_gmd||0)<0?'bad':Number(l.avg_gmd||0)>0?'good':''}">${Number(l.avg_gmd||0)!==0?Number(l.avg_gmd).toFixed(3)+' kg/dia':'—'}</td><td>${meta}</td></tr>`
+    }).join(''):'<tr><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr>';
+
+    const attention=metrics.filter(x=>Number.isFinite(x.delta)&&x.delta<0).sort((a,b)=>a.delta-b.delta);
+    perfAttention.innerHTML=attention.length?attention.map(x=>`<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">!</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · última pesagem</small></div><div class="rank-bad">${x.delta.toFixed(1)} kg</div><div>${x.prev?.toFixed(1)||'—'} → ${x.last?.toFixed(1)||'—'} kg</div></div>`).join(''):'<div class="performance-empty">Nenhum animal com perda na última pesagem.</div>';
+
+    const targets=metrics.filter(x=>x.progress!=null).sort((a,b)=>b.progress-a.progress).slice(0,8);
+    perfTargets.innerHTML=targets.length?targets.map(x=>`<div style="padding:10px 0;border-bottom:1px solid #edf1f4;cursor:pointer" onclick="openAnimalProfile(${x.a.id})"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px"><b>Animal #${x.a.number}</b><span>${x.last?.toFixed(1)||'0'} / ${x.target.toFixed(1)} kg · <b>${Math.round(x.progress)}%</b></span></div><div class="perf-progress"><i style="width:${x.progress}%"></i></div></div>`).join(''):'<div class="performance-empty">Defina uma meta de peso nos animais para acompanhar o progresso.</div>';
+  }catch(e){
+    console.error(e);alert('Não foi possível carregar os indicadores de desempenho: '+e.message);
+  }
 }
 
 async function loadWeightHistory(){
