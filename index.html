@@ -207,14 +207,48 @@ async function mgEnsureFarm(user){
   let q=await mgSb.from('farms').select('*').maybeSingle();
   if(q.error) throw new Error(q.error.message);
   if(q.data) return q.data;
+
+  let p=null;
+
   const raw=localStorage.getItem('mg_pending_profile_'+user.email.toLowerCase());
-  if(!raw) return null;
-  const p=JSON.parse(raw);
-  const ins=await mgSb.from('farms').insert({owner_id:user.id,name:p.farm_name,doc:p.doc,phone:p.phone||'',email:p.email,city:p.city||'',state:(p.state||'').toUpperCase()}).select().single();
+
+  if(raw){
+    p=JSON.parse(raw);
+  }else{
+    const meta=user.user_metadata||{};
+
+    if(meta.farm_name){
+      p={
+        full_name:meta.full_name||'',
+        farm_name:meta.farm_name||'',
+        doc:meta.doc||'',
+        phone:meta.phone||'',
+        email:user.email||'',
+        city:meta.city||'',
+        state:meta.state||''
+      };
+    }
+  }
+
+  if(!p || !p.farm_name) return null;
+
+  const ins=await mgSb.from('farms').insert({
+    owner_id:user.id,
+    name:p.farm_name,
+    doc:p.doc||'',
+    phone:p.phone||'',
+    email:p.email||user.email||'',
+    city:p.city||'',
+    state:(p.state||'').toUpperCase()
+  }).select().single();
+
   if(ins.error) throw new Error(ins.error.message);
+
   localStorage.removeItem('mg_pending_profile_'+user.email.toLowerCase());
+
   return ins.data;
 }
+ 
 async function api(path,opt={}){
   const method=(opt.method||'GET').toUpperCase();
   let data={}; try{data=opt.body?JSON.parse(opt.body):{}}catch{}
@@ -227,7 +261,20 @@ async function api(path,opt={}){
   }
   if(path==='/api/register'){
     localStorage.setItem('mg_pending_profile_'+data.email.toLowerCase(),JSON.stringify(data));
-    const r=await mgSb.auth.signUp({email:data.email,password:data.password,options:{data:{full_name:data.full_name}}});
+   const r=await mgSb.auth.signUp({
+  email:data.email,
+  password:data.password,
+  options:{
+    data:{
+      full_name:data.full_name,
+      farm_name:data.farm_name,
+      doc:data.doc,
+      phone:data.phone,
+      city:data.city,
+      state:data.state
+    }
+  }
+});
     if(r.error) throw new Error(r.error.message);
     if(r.data.session){await mgEnsureFarm(r.data.user);return {ok:true,role:'client',needs_confirmation:false}}
     return {ok:true,role:'client',needs_confirmation:true};
