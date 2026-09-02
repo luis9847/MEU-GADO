@@ -840,6 +840,25 @@ async function saveBatchWeight(){
 function ageFromBirth(v){
  if(!v)return '-'; const b=new Date(v+'T00:00:00'),n=new Date(); let m=(n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth(); if(n.getDate()<b.getDate())m--; if(m<0)return '-'; const y=Math.floor(m/12),r=m%12; return y?`${y} ano${y>1?'s':''}${r?` e ${r} mes${r>1?'es':''}`:''}`:`${r} mes${r>1?'es':''}`;
 }
+function weightEvolutionHtml(a){
+  const rows=(a.weighings||[]).map(w=>({date:w.weighing_date,weight:Number(w.weight)})).filter(w=>w.date&&Number.isFinite(w.weight)).sort((x,y)=>x.date.localeCompare(y.date));
+  if(a.entry_date&&a.entry_weight!=null&&Number.isFinite(Number(a.entry_weight))&&!rows.some(w=>w.date===a.entry_date&&w.weight===Number(a.entry_weight))){rows.unshift({date:a.entry_date,weight:Number(a.entry_weight),entry:true})}
+  if(!rows.length)return `<div class="card" style="grid-column:1/-1"><h4>Evolução de peso</h4><p class="sub">Registre uma pesagem para começar a acompanhar a evolução deste animal.</p></div>`;
+  const last=rows[rows.length-1],prev=rows.length>1?rows[rows.length-2]:null;
+  const delta=prev?last.weight-prev.weight:null;
+  const deltaText=delta==null?'—':`${delta>0?'+':''}${delta.toFixed(1)} kg`;
+  const deltaStyle=delta==null?'':delta<0?'color:var(--red)':delta>0?'color:var(--green)':'';
+  const W=760,H=230,padL=48,padR=18,padT=22,padB=42;
+  let min=Math.min(...rows.map(x=>x.weight)),max=Math.max(...rows.map(x=>x.weight));
+  if(min===max){min-=5;max+=5}else{const m=Math.max(3,(max-min)*.15);min-=m;max+=m}
+  const x=i=>rows.length===1?(padL+(W-padL-padR)/2):padL+i*(W-padL-padR)/(rows.length-1);
+  const y=v=>padT+(max-v)*(H-padT-padB)/(max-min);
+  const points=rows.map((r,i)=>`${x(i).toFixed(1)},${y(r.weight).toFixed(1)}`).join(' ');
+  const dots=rows.map((r,i)=>`<circle cx="${x(i)}" cy="${y(r.weight)}" r="5" fill="var(--green)"><title>${r.date}: ${r.weight.toFixed(1)} kg</title></circle>`).join('');
+  const labels=rows.map((r,i)=>{if(rows.length>7&&i!==0&&i!==rows.length-1&&i%Math.ceil(rows.length/6)!==0)return'';const d=r.date.split('-');return `<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="10" fill="#718079">${d[2]}/${d[1]}</text>`}).join('');
+  const grid=[0,.25,.5,.75,1].map(t=>{const yy=padT+t*(H-padT-padB),val=max-t*(max-min);return `<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#e7ece9"/><text x="${padL-7}" y="${yy+3}" text-anchor="end" font-size="9" fill="#718079">${val.toFixed(0)}</text>`}).join('');
+  return `<div class="card" style="grid-column:1/-1"><div class="head" style="margin-bottom:8px"><div><h4 style="margin:0">Evolução de peso</h4><div class="sub">Acompanhe ganho, estabilidade ou perda de peso ao longo do tempo</div></div></div><div class="profile-kpis" style="grid-template-columns:repeat(3,1fr)"><div><small>Peso atual</small><b>${last.weight.toFixed(1)} kg</b></div><div><small>Variação desde a última</small><b style="${deltaStyle}">${deltaText}</b></div><div><small>GMD</small><b>${Number(a.gmd||0).toFixed(3)} kg/dia</b></div></div><div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:560px;height:240px" role="img" aria-label="Gráfico de evolução do peso">${grid}<polyline points="${points}" fill="none" stroke="var(--green)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}</svg></div>${delta!=null&&delta<0?`<div class="sub" style="color:var(--red);font-weight:800">Atenção: perda de ${Math.abs(delta).toFixed(1)} kg desde a última pesagem.</div>`:''}</div>`;
+}
 async function openAnimalProfile(id){
  try{
   selectedAnimalId=id;
@@ -861,6 +880,7 @@ async function openAnimalProfile(id){
     <button class="btn secondary delete-outline" onclick="deleteAnimal(${a.id},'${a.number}')">Excluir animal</button>
   </div>
   <div class="profile-grid">
+   ${weightEvolutionHtml(a)}
    <div class="card"><h4>Identificação</h4><p>Número: <b>#${a.number}</b></p><p>Categoria: <b>${a.category||'-'}</b></p><p>Raça: <b>${a.breed||'-'}</b></p><p>Origem: <b>${a.origin||'-'}</b></p><p>Lote atual: <b>${a.lot||'-'}</b></p><p>Nascimento: <b>${a.birth_date||'-'}</b></p><p>Idade: <b>${ageFromBirth(a.birth_date)}</b></p></div>
    <div class="card"><h4>Histórico de pesagens</h4>${a.weighings.length?a.weighings.slice(0,10).map(w=>`<p>${w.weighing_date}: <b>${w.weight} kg</b>${w.notes?`<small> · ${w.notes}</small>`:''}</p>`).join(''):'<p class="sub">Sem pesagens.</p>'}</div>
    <div class="card"><h4>Saúde</h4>${a.health.length?a.health.slice(0,8).map(x=>`<p>${x.event_date}: <b>${x.event_type||'Registro'}</b>${x.product?` · ${x.product}`:''}</p>`).join(''):'<p class="sub">Sem registros sanitários.</p>'}</div>
