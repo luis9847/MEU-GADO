@@ -228,8 +228,8 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
       <div class="action-grid">
         <button onclick="openNewAnimal()"><i>＋</i><span>Novo<br>animal</span></button>
         <button onclick="openSingleWeight()"><i>⚖</i><span>Registrar<br>pesagem</span></button>
-        <button onclick="openModal('healthModal')"><i>✚</i><span>Registrar<br>saúde</span></button>
-        <button onclick="openModal('reproModal')"><i>♡</i><span>Registrar<br>reprodução</span></button>
+        <button onclick="openNewHealth()"><i>✚</i><span>Registrar<br>saúde</span></button>
+        <button onclick="openNewRepro()"><i>♡</i><span>Registrar<br>reprodução</span></button>
         <button onclick="openLot()"><i>▱</i><span>Novo<br>lote</span></button>
         <button onclick="openNewExpense()"><i>$</i><span>Novo<br>gasto</span></button>
       </div>
@@ -335,8 +335,8 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     </div>
   </div>
 </section>
-<section id="saude" class="view"><div class="head"><div><h2>Saúde</h2><div class="sub">Vacinas, medicamentos e tratamentos</div></div><button class="btn primary" onclick="openModal('healthModal')">+ Registrar</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal/Lote</th><th>Evento</th><th>Produto</th><th>Próxima</th></tr></thead><tbody id="healthRows"></tbody></table></div></section>
-<section id="repro" class="view"><div class="head"><div><h2>Reprodução</h2><div class="sub">Matrizes, prenhez, partos e crias</div></div><button class="btn primary" onclick="openModal('reproModal')">+ Registrar evento</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal</th><th>Evento</th><th>Previsão</th></tr></thead><tbody id="reproRows"></tbody></table></div></section>
+<section id="saude" class="view"><div class="head"><div><h2>Saúde</h2><div class="sub">Vacinas, medicamentos e tratamentos</div></div><button class="btn primary" onclick="openNewHealth()">+ Registrar</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal/Lote</th><th>Evento</th><th>Produto</th><th>Próxima</th><th>Ações</th></tr></thead><tbody id="healthRows"></tbody></table></div></section>
+<section id="repro" class="view"><div class="head"><div><h2>Reprodução</h2><div class="sub">Matrizes, prenhez, partos e crias</div></div><button class="btn primary" onclick="openNewRepro()">+ Registrar evento</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal</th><th>Evento</th><th>Previsão</th><th>Ações</th></tr></thead><tbody id="reproRows"></tbody></table></div></section>
 
 <section id="nutricao" class="view">
  <div class="head"><div><h2>Nutrição</h2><div class="sub">Consumo e custo da alimentação por lote</div></div><button class="btn primary" onclick="openNutrition()">+ Novo lançamento</button></div>
@@ -462,9 +462,9 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   </div>
 </div></div>
 
-<div class="modal" id="healthModal"><div class="modalbox"><div class="head"><h3>Registrar saúde</h3><button class="btn secondary" onclick="closeModal('healthModal')">Fechar</button></div><div class="form"><label>Tipo<select id="htype"><option>Vacina</option><option>Medicamento</option><option>Vermífugo</option><option>Tratamento</option></select></label><label>Produto<input id="hproduct"></label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
+<div class="modal" id="healthModal"><div class="modalbox"><div class="head"><h3 id="healthModalTitle">Registrar saúde</h3><button class="btn secondary" onclick="closeModal('healthModal')">Fechar</button></div><div class="form"><label>Tipo<select id="htype"><option>Vacina</option><option>Medicamento</option><option>Vermífugo</option><option>Tratamento</option></select></label><label>Produto<input id="hproduct"></label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button id="healthSaveBtn" class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
 
-<div class="modal" id="reproModal"><div class="modalbox"><div class="head"><h3>Evento reprodutivo</h3><button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button></div><div class="form"><label>Animal<select id="ranimal"></select></label><label>Evento<select id="rtype" onchange="updateReproPrediction()"><option>Inseminação artificial</option><option>Monta natural / pasto</option><option>Prenhez confirmada</option><option>Parto</option><option>Aborto</option><option>Desmame</option></select></label><label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label><label>Data prevista do parto<input id="rexpected" type="date"><small class="sub">Calculada automaticamente em aproximadamente 283 dias para cobertura/inseminação. Pode ser ajustada.</small></label><label class="full">Observações<textarea id="rnotes" placeholder="Ex.: lote do touro, sêmen utilizado, diagnóstico..."></textarea></label><button class="btn primary full" onclick="saveRepro()">Salvar evento</button></div></div></div>
+<div class="modal" id="reproModal"><div class="modalbox"><div class="head"><h3 id="reproModalTitle">Evento reprodutivo</h3><button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button></div><div class="form"><label>Animal<select id="ranimal"></select></label><label>Evento<select id="rtype" onchange="updateReproPrediction()"><option>Inseminação artificial</option><option>Monta natural / pasto</option><option>Prenhez confirmada</option><option>Parto</option><option>Aborto</option><option>Desmame</option></select></label><label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label><label>Data prevista do parto<input id="rexpected" type="date"><small class="sub">Calculada automaticamente em aproximadamente 283 dias para cobertura/inseminação. Pode ser ajustada.</small></label><label class="full">Observações<textarea id="rnotes" placeholder="Ex.: lote do touro, sêmen utilizado, diagnóstico..."></textarea></label><button id="reproSaveBtn" class="btn primary full" onclick="saveRepro()">Salvar evento</button></div></div></div>
 
 <div class="modal" id="notificationsModal"><div class="modalbox"><div class="head"><div><h3>Central de alertas</h3><div class="sub">Pendências e eventos que merecem atenção</div></div><button class="btn secondary" onclick="closeModal('notificationsModal')">Fechar</button></div><div id="notificationsBody"></div></div></div>
 
@@ -575,13 +575,20 @@ async function mgDashboard(){
  let exp=e.reduce((s,x)=>s+Number(x.amount||0),0),month=e.filter(x=>String(x.expense_date).slice(0,7)===ym).reduce((s,x)=>s+Number(x.amount||0),0),prevMonth=e.filter(x=>String(x.expense_date).slice(0,7)===prevYm).reduce((s,x)=>s+Number(x.amount||0),0);
  const dayDiff=d=>Math.ceil((new Date(d+'T00:00:00')-today)/86400000);
  let alerts=[];
- for(const x of h){if(!x.next_due_date)continue;const d=dayDiff(x.next_due_date);if(d<0)alerts.push({type:'health',level:'danger',title:`Evento sanitário atrasado${x.product?' · '+x.product:''}`,detail:`Vencido há ${Math.abs(d)} dia(s).`,date:x.next_due_date});else if(d<=7)alerts.push({type:'health',level:'warning',title:`Saúde${x.product?' · '+x.product:''}`,detail:d===0?'Vence hoje.':`Vence em ${d} dia(s).`,date:x.next_due_date})}
- let overdueWeights=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(!last)continue;const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
+ for(const x of h){
+  if(!x.next_due_date)continue;
+  const d=dayDiff(x.next_due_date),animal=animals.find(a=>a.id===x.animal_id),who=animal?`Animal #${animal.number}`:'Rebanho';
+  if(d<0)alerts.push({type:'health',level:'danger',title:`${who} · evento sanitário atrasado${x.product?' · '+x.product:''}`,detail:`Vencido há ${Math.abs(d)} dia(s) · ${x.next_due_date}.`,date:x.next_due_date,animal_id:x.animal_id||null});
+  else if(d<=7)alerts.push({type:'health',level:'warning',title:`${who} · saúde${x.product?' · '+x.product:''}`,detail:d===0?`Vence hoje · ${x.next_due_date}.`:`Vence em ${d} dia(s) · ${x.next_due_date}.`,date:x.next_due_date,animal_id:x.animal_id||null});
+ }
+ let overdueWeights=0,weightLoss=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(last){const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
+  let ws=(by[a.id]||[]).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));
+  if(ws.length>=2){const prevW=Number(ws.at(-2).weight),lastW=Number(ws.at(-1).weight),delta=lastW-prevW;if(Number.isFinite(delta)&&delta<0){weightLoss++;alerts.push({type:'loss',level:'danger',title:`Animal #${a.number} perdeu peso`,detail:`Perda de ${Math.abs(delta).toFixed(1)} kg na última pesagem · ${prevW.toFixed(1)} → ${lastW.toFixed(1)} kg.`,animal_id:a.id,date:ws.at(-1).weighing_date})}}}
  const terminalByAnimal={};for(const x of [...r].sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)))){if(!terminalByAnimal[x.animal_id]&&['Parto','Aborto'].includes(x.event_type))terminalByAnimal[x.animal_id]=x.event_date}
- let reproDue=0;for(const x of r){if(!x.expected_date||!['Inseminação artificial','Monta natural / pasto','Prenhez confirmada','Enxertada'].includes(x.event_type))continue;const terminal=terminalByAnimal[x.animal_id];if(terminal&&terminal>=x.event_date)continue;const d=dayDiff(x.expected_date);if(d>=0&&d<=30){reproDue++;const a=animals.find(z=>z.id===x.animal_id);alerts.push({type:'repro',level:d<=7?'danger':'warning',title:`${a?'Vaca #'+a.number:'Matriz'} próxima do parto`,detail:d===0?'Parto previsto para hoje.':`Parto previsto em ${d} dia(s) · ${x.expected_date}.`,date:x.expected_date,animal_id:x.animal_id})}}
+ let reproDue=0;for(const x of r){if(!x.expected_date||!['Inseminação artificial','Monta natural / pasto','Prenhez confirmada','Enxertada'].includes(x.event_type))continue;const terminal=terminalByAnimal[x.animal_id];if(terminal&&terminal>=x.event_date)continue;const d=dayDiff(x.expected_date);const a=animals.find(z=>z.id===x.animal_id);if(d<0){reproDue++;alerts.push({type:'repro',level:'danger',title:`${a?'Vaca #'+a.number:'Matriz'} com parto previsto vencido`,detail:`Previsão vencida há ${Math.abs(d)} dia(s) · ${x.expected_date}. Registre o parto ou atualize a previsão.`,date:x.expected_date,animal_id:x.animal_id})}else if(d<=30){reproDue++;alerts.push({type:'repro',level:d<=7?'danger':'warning',title:`${a?'Vaca #'+a.number:'Matriz'} próxima do parto`,detail:d===0?'Parto previsto para hoje.':`Parto previsto em ${d} dia(s) · ${x.expected_date}.`,date:x.expected_date,animal_id:x.animal_id})}}
  for(const a of readyAnimals)alerts.push({type:'ready',level:'success',title:`Animal #${a.number} atingiu a meta`,detail:`Peso atual ${Number(a.current_weight||0).toFixed(1)} kg · meta ${Number(a.target_weight||0).toFixed(1)} kg.`,animal_id:a.id});
  alerts.sort((a,b)=>({danger:0,warning:1,info:2,success:3}[a.level]??9)-({danger:0,warning:1,info:2,success:3}[b.level]??9));
- return {total,categories:{...cats,'Bezerro(a)':(cats.Bezerro||0)+(cats.Bezerra||0)},avg_weight:avg,avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready,expenses_total:exp,expenses_month:month,expenses_prev_month:prevMonth,cost_per_head:total?month/total:0,upcoming_health:alerts.filter(a=>a.type==='health').length,weighing_overdue:overdueWeights,repro_due:reproDue,alerts};
+ return {total,categories:{...cats,'Bezerro(a)':(cats.Bezerro||0)+(cats.Bezerra||0)},avg_weight:avg,avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready,expenses_total:exp,expenses_month:month,expenses_prev_month:prevMonth,cost_per_head:total?month/total:0,upcoming_health:alerts.filter(a=>a.type==='health').length,weighing_overdue:overdueWeights,weight_loss:weightLoss,repro_due:reproDue,alerts};
 }
 async function mgLotList(){let lots=await mgRows('lots'),animals=await mgAnimals(true),w=await mgRows('weighings');let latest={};[...w].sort((a,b)=>String(b.weighing_date).localeCompare(String(a.weighing_date))).forEach(x=>{if(!latest[x.animal_id])latest[x.animal_id]=x});return lots.map(l=>{let aa=animals.filter(a=>a.lot===l.name),vals=aa.map(a=>Number(latest[a.id]?.weight??a.entry_weight)).filter(Number.isFinite);return {...l,animals:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,avg_gmd:0}}).sort((a,b)=>(Number(b.active)-Number(a.active))||a.name.localeCompare(b.name))}
 async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from('animals').select('*').eq('farm_id',f.id).eq('id',id).maybeSingle();if(a.error)mgErr(a.error);if(!a.data)throw new Error('Animal não encontrado');let [w,h,r,e]=await Promise.all([mgSb.from('weighings').select('*').eq('farm_id',f.id).eq('animal_id',id).order('weighing_date',{ascending:false}),mgSb.from('health_events').select('*').eq('farm_id',f.id).eq('animal_id',id).order('event_date',{ascending:false}),mgSb.from('reproductive_events').select('*').eq('farm_id',f.id).eq('animal_id',id).order('event_date',{ascending:false}),mgSb.from('expenses').select('*').eq('farm_id',f.id).eq('animal_id',id).order('expense_date',{ascending:false})]);for(const q of [w,h,r,e])if(q.error)mgErr(q.error);let ws=w.data||[],gmd=0;if(ws.length>=2){let d=mgDays(ws.at(-1).weighing_date,ws[0].weighing_date);if(d>0)gmd=(Number(ws[0].weight)-Number(ws.at(-1).weight))/d}return {...a.data,photo_path:a.data.photo_path||a.data.photo_url||'',weighings:ws,health:h.data||[],reproduction:r.data||[],expenses:e.data||[],movements:[],current_weight:ws[0]?.weight??a.data.entry_weight??0,expenses_total:(e.data||[]).reduce((s,x)=>s+Number(x.amount||0),0),gmd}}
@@ -614,8 +621,10 @@ async function api(path,opt={}){
  m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/health'&&method==='GET'){let h=await mgRows('health_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return h.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/health'&&method==='POST'){let r=await mgSb.from('health_events').insert({farm_id:f.id,animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ {let m=path.match(/^\/api\/health\/(\d+)$/);if(m&&['PUT','PATCH'].includes(method)){let r=await mgSb.from('health_events').update({animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''}).eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('health_events').delete().eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}}
  if(path==='/api/reproduction'&&method==='GET'){let rr=await mgRows('reproductive_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return rr.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/reproduction'&&method==='POST'){let r=await mgSb.from('reproductive_events').insert({farm_id:f.id,animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
  if(path==='/api/nutrition'&&method==='POST'){let r=await mgSb.from('nutrition_entries').insert({farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:data.total_cost,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/market/arroba')return mgMarket;
@@ -651,7 +660,7 @@ async function dashboard(){
   healthAlert.textContent=d.upcoming_health?`${d.upcoming_health} alerta(s) sanitário(s)`:'Nenhuma vacina próxima';
   readyAlert.textContent=`${d.ready} animais atingiram a meta`;
   if(document.getElementById('weighAlert'))weighAlert.textContent=d.weighing_overdue?`${d.weighing_overdue} animal(is) sem pesagem há 30+ dias`:'Pesagens em dia';
-  if(document.getElementById('reproAlert'))reproAlert.textContent=d.repro_due?`${d.repro_due} parto(s) previsto(s) nos próximos 30 dias`:'Nenhum parto próximo';
+  if(document.getElementById('reproAlert'))reproAlert.textContent=d.repro_due?`${d.repro_due} alerta(s) reprodutivo(s)`:'Nenhum parto próximo';
   if(document.getElementById('healthBadge')) healthBadge.textContent=d.upcoming_health||0;
   if(document.getElementById('readyBadge')) readyBadge.textContent=d.ready||0;
   if(document.getElementById('weighBadge')) weighBadge.textContent=d.weighing_overdue||0;
@@ -1107,25 +1116,104 @@ async function saveExpense(){
     await Promise.all([loadExpenses(),dashboard()]);
   }catch(e){alert(e.message)}
 }
-async function loadHealth(){const x=await api('/api/health');healthRows.innerHTML=x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?'#'+e.animal_number:(e.lot||'Geral')}</td><td>${e.event_type}</td><td>${e.product||'-'}</td><td>${e.next_due_date||'-'}</td></tr>`).join('')}
-async function saveHealth(){await api('/api/health',{method:'POST',body:JSON.stringify({event_type:htype.value,product:hproduct.value,event_date:hdate.value,next_due_date:hnext.value,animal_id:hanimal.value?Number(hanimal.value):null,lot:hlot.value,notes:hnotes.value})});closeModal('healthModal');await Promise.all([loadHealth(),dashboard()])}
+let healthData=[],healthEditId=null;
+async function loadHealth(){
+  healthData=await api('/api/health');
+  healthRows.innerHTML=healthData.length?healthData.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_id?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number||'-'}</button>`:(e.lot||'Geral')}</td><td>${e.event_type}</td><td>${e.product||'-'}</td><td>${e.next_due_date||'-'}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editHealth(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteHealth(${e.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Nenhum registro de saúde.</td></tr>';
+}
+function openNewHealth(){
+  healthEditId=null;
+  if(document.getElementById('healthModalTitle'))healthModalTitle.textContent='Registrar saúde';
+  if(document.getElementById('healthSaveBtn'))healthSaveBtn.textContent='Salvar evento';
+  htype.value='Vacina';hproduct.value='';hdate.value=new Date().toISOString().slice(0,10);hnext.value='';hanimal.value='';hlot.value='';hnotes.value='';
+  openModal('healthModal');
+}
+function editHealth(id){
+  const e=healthData.find(x=>Number(x.id)===Number(id));if(!e){alert('Registro de saúde não encontrado.');return}
+  healthEditId=Number(id);
+  if(document.getElementById('healthModalTitle'))healthModalTitle.textContent='Editar registro de saúde';
+  if(document.getElementById('healthSaveBtn'))healthSaveBtn.textContent='Salvar alterações';
+  htype.value=e.event_type||'Vacina';hproduct.value=e.product||'';hdate.value=e.event_date||'';hnext.value=e.next_due_date||'';hanimal.value=e.animal_id?String(e.animal_id):'';hlot.value=e.lot||'';hnotes.value=e.notes||'';
+  openModal('healthModal');
+}
+async function saveHealth(){
+  if(!hdate.value){alert('Informe a data do evento.');return}
+  const payload={event_type:htype.value,product:hproduct.value,event_date:hdate.value,next_due_date:hnext.value||null,animal_id:hanimal.value?Number(hanimal.value):null,lot:hlot.value,notes:hnotes.value};
+  try{
+    if(healthEditId)await api(`/api/health/${healthEditId}`,{method:'PUT',body:JSON.stringify(payload)});else await api('/api/health',{method:'POST',body:JSON.stringify(payload)});
+    healthEditId=null;closeModal('healthModal');await Promise.all([loadHealth(),dashboard()]);
+  }catch(e){alert('Não foi possível salvar o registro de saúde. '+(e?.message||''))}
+}
+async function deleteHealth(id){
+  if(!confirm('Deseja realmente excluir este registro de saúde? Esta ação não poderá ser desfeita.'))return;
+  try{
+    await api(`/api/health/${id}`,{method:'DELETE'});
+    if(Number(healthEditId)===Number(id)){healthEditId=null;closeModal('healthModal')}
+    await Promise.all([loadHealth(),dashboard()]);
+  }catch(e){alert('Não foi possível excluir o registro de saúde. '+(e?.message||''))}
+}
 function addDaysISO(dateStr,days){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+let editingReproId=null;
 function updateReproPrediction(){
   const automatic=['Inseminação artificial','Monta natural / pasto'].includes(rtype.value);
   if(automatic&&rdate.value)rexpected.value=addDaysISO(rdate.value,283);
   if(['Parto','Aborto','Desmame'].includes(rtype.value))rexpected.value='';
 }
-async function loadRepro(){const x=await api('/api/reproduction');reproRows.innerHTML=x.length?x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?'#'+e.animal_number:'-'}</td><td>${e.event_type}</td><td>${e.expected_date||'-'}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhum evento reprodutivo registrado.</td></tr>'}
+function openNewRepro(){
+  editingReproId=null;
+  if(document.getElementById('reproModalTitle'))reproModalTitle.textContent='Evento reprodutivo';
+  if(document.getElementById('reproSaveBtn'))reproSaveBtn.textContent='Salvar evento';
+  if(ranimal.options.length)ranimal.selectedIndex=0;
+  rtype.value='Inseminação artificial';
+  rdate.value=new Date().toISOString().slice(0,10);
+  rnotes.value='';
+  updateReproPrediction();
+  openModal('reproModal');
+}
+async function editRepro(id){
+  try{
+    const rows=await api('/api/reproduction');
+    const e=rows.find(x=>Number(x.id)===Number(id));
+    if(!e)throw new Error('Evento não encontrado.');
+    editingReproId=Number(id);
+    reproModalTitle.textContent='Editar evento reprodutivo';
+    reproSaveBtn.textContent='Salvar alterações';
+    ranimal.value=String(e.animal_id||'');
+    rtype.value=e.event_type||'Inseminação artificial';
+    rdate.value=e.event_date||'';
+    rexpected.value=e.expected_date||'';
+    rnotes.value=e.notes||'';
+    openModal('reproModal');
+  }catch(e){alert('Não foi possível editar o evento. '+e.message)}
+}
+async function loadRepro(){
+  const x=await api('/api/reproduction');
+  reproRows.innerHTML=x.length?x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number}</button>`:'-'}</td><td>${e.event_type}</td><td>${e.expected_date||'-'}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editRepro(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteRepro(${e.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum evento reprodutivo registrado.</td></tr>'
+}
 async function saveRepro(){
   if(!ranimal.value){alert('Selecione a vaca/matriz.');return}
   if(!rdate.value){alert('Informe a data do evento.');return}
-  updateReproPrediction();
-  try{await api('/api/reproduction',{method:'POST',body:JSON.stringify({animal_id:Number(ranimal.value),event_type:rtype.value,event_date:rdate.value,expected_date:rexpected.value||null,notes:rnotes.value})});closeModal('reproModal');rnotes.value='';await Promise.all([loadRepro(),dashboard()])}catch(e){alert('Não foi possível salvar o evento reprodutivo. '+e.message)}
+  const payload={animal_id:Number(ranimal.value),event_type:rtype.value,event_date:rdate.value,expected_date:rexpected.value||null,notes:rnotes.value};
+  try{
+    if(editingReproId)await api(`/api/reproduction/${editingReproId}`,{method:'PUT',body:JSON.stringify(payload)});
+    else await api('/api/reproduction',{method:'POST',body:JSON.stringify(payload)});
+    closeModal('reproModal');
+    editingReproId=null;rnotes.value='';
+    await Promise.all([loadRepro(),dashboard()]);
+  }catch(e){alert('Não foi possível salvar o evento reprodutivo. '+e.message)}
+}
+async function deleteRepro(id){
+  if(!confirm('Deseja realmente excluir este registro de reprodução? Esta ação não poderá ser desfeita.'))return;
+  try{
+    await api(`/api/reproduction/${id}`,{method:'DELETE'});
+    if(Number(editingReproId)===Number(id)){editingReproId=null;closeModal('reproModal')}
+    await Promise.all([loadRepro(),dashboard()]);
+  }catch(e){alert('Não foi possível excluir o registro de reprodução. '+(e?.message||''))}
 }
 async function openNotifications(){
   let d=window.mgDashboardData||await api('/api/dashboard');window.mgDashboardData=d;
   const list=d.alerts||[];
-  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert"><span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='ready'?'↗':'!'}</span><div><b>${a.title}</b><small>${a.detail||''}</small></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
+  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}><span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':a.type==='health'?'✚':'!'}</span><div><b>${a.title}</b><small>${a.detail||''}</small>${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}</div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
   openModal('notificationsModal');
 }
 async function profile(){
