@@ -575,7 +575,12 @@ async function mgDashboard(){
  let exp=e.reduce((s,x)=>s+Number(x.amount||0),0),month=e.filter(x=>String(x.expense_date).slice(0,7)===ym).reduce((s,x)=>s+Number(x.amount||0),0),prevMonth=e.filter(x=>String(x.expense_date).slice(0,7)===prevYm).reduce((s,x)=>s+Number(x.amount||0),0);
  const dayDiff=d=>Math.ceil((new Date(d+'T00:00:00')-today)/86400000);
  let alerts=[];
- for(const x of h){if(!x.next_due_date)continue;const d=dayDiff(x.next_due_date);if(d<0)alerts.push({type:'health',level:'danger',title:`Evento sanitário atrasado${x.product?' · '+x.product:''}`,detail:`Vencido há ${Math.abs(d)} dia(s).`,date:x.next_due_date});else if(d<=7)alerts.push({type:'health',level:'warning',title:`Saúde${x.product?' · '+x.product:''}`,detail:d===0?'Vence hoje.':`Vence em ${d} dia(s).`,date:x.next_due_date})}
+ for(const x of h){
+  if(!x.next_due_date)continue;
+  const d=dayDiff(x.next_due_date),animal=animals.find(a=>a.id===x.animal_id),who=animal?`Animal #${animal.number}`:'Rebanho';
+  if(d<0)alerts.push({type:'health',level:'danger',title:`${who} · evento sanitário atrasado${x.product?' · '+x.product:''}`,detail:`Vencido há ${Math.abs(d)} dia(s) · ${x.next_due_date}.`,date:x.next_due_date,animal_id:x.animal_id||null});
+  else if(d<=7)alerts.push({type:'health',level:'warning',title:`${who} · saúde${x.product?' · '+x.product:''}`,detail:d===0?`Vence hoje · ${x.next_due_date}.`:`Vence em ${d} dia(s) · ${x.next_due_date}.`,date:x.next_due_date,animal_id:x.animal_id||null});
+ }
  let overdueWeights=0,weightLoss=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(last){const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
   let ws=(by[a.id]||[]).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));
   if(ws.length>=2){const prevW=Number(ws.at(-2).weight),lastW=Number(ws.at(-1).weight),delta=lastW-prevW;if(Number.isFinite(delta)&&delta<0){weightLoss++;alerts.push({type:'loss',level:'danger',title:`Animal #${a.number} perdeu peso`,detail:`Perda de ${Math.abs(delta).toFixed(1)} kg na última pesagem · ${prevW.toFixed(1)} → ${lastW.toFixed(1)} kg.`,animal_id:a.id,date:ws.at(-1).weighing_date})}}}
@@ -1165,7 +1170,7 @@ async function saveRepro(){
 async function openNotifications(){
   let d=window.mgDashboardData||await api('/api/dashboard');window.mgDashboardData=d;
   const list=d.alerts||[];
-  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}><span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':'!'}</span><div><b>${a.title}</b><small>${a.detail||''}</small>${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}</div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
+  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}><span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':a.type==='health'?'✚':'!'}</span><div><b>${a.title}</b><small>${a.detail||''}</small>${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}</div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
   openModal('notificationsModal');
 }
 async function profile(){
