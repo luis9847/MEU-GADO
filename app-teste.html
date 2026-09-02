@@ -737,26 +737,52 @@ function previewAnimalPhoto(input){
   reader.readAsDataURL(file);
 }
 async function openNewAnimal(){
-  await loadLots();
-  pendingAnimalPhoto='';
-  if(document.getElementById('aphoto')) aphoto.value='';
-  if(document.getElementById('aphotoPreview')) aphotoPreview.innerHTML='▣<small>Foto</small>';
-  anum.value='';abirth.value='';abreed.value='Nelore';adate.value=new Date().toISOString().slice(0,10);aweight.value='';atarget.value='';anotes.value='';alot.value='';
-  const r=document.querySelector('input[name="aoriginRadio"][value="Nascido na propriedade"]'); if(r)r.checked=true;
-  openModal('animalModal');
+  try{
+    await loadLots();
+    pendingAnimalPhoto='';
+    const photo=document.getElementById('aphoto');
+    const preview=document.getElementById('aphotoPreview');
+    const number=document.getElementById('anum');
+    const birth=document.getElementById('abirth');
+    const breed=document.getElementById('abreed');
+    const entryDate=document.getElementById('adate');
+    const entryWeight=document.getElementById('aweight');
+    const targetWeight=document.getElementById('atarget');
+    const notes=document.getElementById('anotes');
+    const lot=document.getElementById('alot');
+    if(photo) photo.value='';
+    if(preview) preview.innerHTML='▣<small>Foto</small>';
+    if(number) number.value='';
+    if(birth) birth.value='';
+    if(breed) breed.value='Nelore';
+    if(entryDate) entryDate.value=new Date().toISOString().slice(0,10);
+    if(entryWeight) entryWeight.value='';
+    if(targetWeight) targetWeight.value='';
+    if(notes) notes.value='';
+    if(lot) lot.value='';
+    const r=document.querySelector('input[name="aoriginRadio"][value="Nascido na propriedade"]');
+    if(r) r.checked=true;
+    openModal('animalModal');
+  }catch(e){
+    console.error('Erro ao abrir cadastro do animal:',e);
+    alert('Não foi possível abrir o cadastro do animal. '+(e?.message||'Tente novamente.'));
+  }
 }
 async function saveAnimal(){
-  const number=anum.value.trim();
-  if(!number){alert('Informe o número do animal.');return}
+  const el=id=>document.getElementById(id);
+  const number=(el('anum')?.value||'').trim();
+  if(!number){alert('Informe o número do animal.');el('anum')?.focus();return}
   const origin=document.querySelector('input[name="aoriginRadio"]:checked')?.value||'Nascido na propriedade';
-  await api('/api/animals',{method:'POST',body:JSON.stringify({
-    category:acat.value,number,ear_tag:'',breed:abreed.value,birth_date:abirth.value||null,
-    origin,entry_date:adate.value,entry_weight:aweight.value?Number(aweight.value):null,
-    target_weight:atarget.value?Number(atarget.value):null,lot:alot.value,purchase_value:0,notes:anotes.value,
-    photo_data:pendingAnimalPhoto||''
-  })});
-  closeModal('animalModal');
-  await Promise.all([loadAnimals(),dashboard(),loadLots(),loadExpenses(),loadWeightHistory()]);
+  try{
+    await api('/api/animals',{method:'POST',body:JSON.stringify({
+      category:el('acat')?.value||'Boi',number,ear_tag:'',breed:el('abreed')?.value||'',birth_date:el('abirth')?.value||null,
+      origin,entry_date:el('adate')?.value||new Date().toISOString().slice(0,10),entry_weight:el('aweight')?.value?Number(el('aweight').value):null,
+      target_weight:el('atarget')?.value?Number(el('atarget').value):null,lot:el('alot')?.value||'',purchase_value:0,notes:el('anotes')?.value||'',
+      photo_data:pendingAnimalPhoto||''
+    })});
+    closeModal('animalModal');
+    await Promise.all([loadAnimals(),dashboard(),loadLots(),loadExpenses(),loadWeightHistory()]);
+  }catch(e){alert('Não foi possível cadastrar o animal. '+(e?.message||'Tente novamente.'))}
 }
 async function loadRecentWeighings(){
   if(!document.getElementById('weightRows'))return;
