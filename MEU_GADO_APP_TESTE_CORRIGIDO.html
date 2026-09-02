@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Gado — Painel do Cliente</title>
+<style>
+:root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
+*{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
+@media(max-width:1200px){.cards5{grid-template-columns:repeat(2,1fr)}.grid3,.grid2{grid-template-columns:1fr}.layout{grid-template-columns:82px 1fr}.brand div,.nav-title,.nav span,.farmbox small{display:none}.nav button{text-align:center}.farmbox b{display:none}}
+@media(max-width:650px){.content{padding:12px}.cards5{grid-template-columns:1fr}.form{grid-template-columns:1fr}.full{grid-column:auto}.quick{grid-template-columns:repeat(2,1fr)}}
+.lot-actions{display:flex;gap:7px;margin-top:12px}.lot-actions button{flex:1}.batch-list{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px}.batch-row{display:grid;grid-template-columns:1.2fr .8fr;gap:10px;align-items:center;padding:10px;border-bottom:1px solid #edf1f4}.batch-row:last-child{border-bottom:0}.batch-row input{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px}.empty{padding:30px;text-align:center;color:var(--muted);font-size:12px}
+.empty-state{min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;color:var(--muted)}
+.empty-state .empty-icon{width:48px;height:48px;border-radius:50%;background:#eaf6ef;color:var(--green);display:grid;place-items:center;font-size:22px;margin-bottom:10px}
+.empty-state b{color:var(--text);font-size:13px;margin-bottom:5px}
+.empty-state span{font-size:11px;max-width:390px;line-height:1.5;margin-bottom:12px}
+.first-steps{border-color:#d9ebe0;background:linear-gradient(180deg,#fff,#f8fcf9)}
+.step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.step-grid button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:14px;text-align:left;min-height:115px}
+.step-grid button:hover{border-color:#a9d3b8;box-shadow:0 5px 16px rgba(19,100,57,.07)}
+.step-grid span{width:28px;height:28px;border-radius:50%;background:#e9f7ee;color:var(--green);display:grid;place-items:center;font-weight:900;margin-bottom:9px}
+.step-grid b{display:block;font-size:12px;margin-bottom:5px}
+.step-grid small{display:block;color:var(--muted);font-size:10px;line-height:1.45}
+@media(max-width:800px){.step-grid{grid-template-columns:1fr}}
+
+
+.animal-link{border:0;background:none;color:var(--green);font-weight:900;cursor:pointer;padding:0}
+.animal-link:hover{text-decoration:underline}
+.profile-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}
+.profile-kpis>div{border:1px solid var(--line);border-radius:11px;padding:12px}.profile-kpis small{display:block;color:var(--muted);font-size:10px}.profile-kpis b{display:block;font-size:18px;margin-top:4px}
+.progress{height:8px;background:#edf1f2;border-radius:10px;overflow:hidden}.progress i{display:block;height:100%;background:var(--green)}
+.profile-actions{display:flex;gap:8px;margin:12px 0}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.profile-grid .card{padding:13px}.profile-grid h4{margin:0 0 9px}.profile-grid p{font-size:11px;margin:7px 0;padding-bottom:6px;border-bottom:1px solid #eef1f2}
+@media(max-width:800px){.profile-kpis{grid-template-columns:1fr 1fr}.profile-grid{grid-template-columns:1fr}}
+
+
+.select-action{display:grid;grid-template-columns:1fr auto;gap:7px}
+.select-action select{min-width:0}
+.mini-add{border:1px solid #b9d7c4;background:#edf8f1;color:var(--green);border-radius:9px;padding:0 12px;font-weight:800;cursor:pointer}
+.lot-card{padding:0!important;overflow:hidden}.lot-open{display:block;width:100%;border:0;background:transparent;text-align:left;padding:16px;cursor:pointer}.lot-open:hover{background:#fbfdfb}.lot-view-hint{font-size:10px;color:var(--green);font-weight:800;margin-top:10px}
+.lot-card .lot-actions{padding:0 16px 16px;margin-top:0}
+.lot-chart{height:235px;display:flex;align-items:flex-end;gap:12px;padding:22px 12px 8px;border-top:1px solid var(--line);margin-top:10px}
+.lot-bar-wrap{height:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:36px}
+.lot-bar{width:min(46px,70%);background:var(--green);border-radius:7px 7px 2px 2px;min-height:8px}
+.lot-bar-wrap small{font-size:9px;color:var(--muted)}.lot-bar-wrap b{font-size:9px}
+
+
+/* V2.4 — layout executivo inspirado na referência enviada */
+:root{--green:#129847;--green-dark:#006e37;--nav:#031d20;--nav2:#061f22;--bg:#f6f8f9;--card:#fff;--line:#e2e8e6;--text:#14251f;--muted:#718079;--soft:#eef8f1}
+html,body{background:var(--bg);color:var(--text);font-size:13px}
+.layout{grid-template-columns:205px minmax(0,1fr)}
+.side{background:linear-gradient(180deg,var(--nav),var(--nav2));padding:18px 14px 14px;box-shadow:4px 0 16px rgba(0,0,0,.05)}
+.brand{gap:10px;padding:0 7px 17px;border-bottom:1px solid rgba(255,255,255,.06)}
+.brand img{width:42px;height:42px;border-radius:50%;border:2px solid rgba(255,255,255,.18)}
+.brand b{font-size:16px;letter-spacing:-.02em}.brand small{font-size:8px;color:#b9c9c4;text-transform:none}
+.nav-title{font-size:8px;margin:14px 9px 5px;color:#58b57a;letter-spacing:.13em}
+.nav button{font-size:11px;padding:9px 10px;border-radius:5px;font-weight:650;margin:1px 0;color:#f1f6f4}
+.nav button.active,.nav button:hover{background:#0f9347}.nav button span{margin-left:6px}
+.side-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
+.farm-profile{display:grid;grid-template-columns:30px 1fr 22px;gap:8px;align-items:center;background:#063c2d;border:1px solid rgba(71,180,111,.28);padding:9px;border-radius:7px}
+.farm-profile>span{width:30px;height:30px;border-radius:50%;background:#18a757;display:grid;place-items:center;font-weight:800}
+.farm-profile b{font-size:9px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.farm-profile small{font-size:8px;color:#b8cdc4}
+.farm-profile button{background:none;border:0;color:#dfece7}.mydata-btn{width:100%;margin-top:7px;border:1px solid rgba(255,255,255,.16);background:transparent;color:#e8f1ed;border-radius:5px;padding:7px;font-size:9px}
+.side-link{width:100%;border:0;background:none;color:#e7efec;text-align:left;padding:8px 7px;font-size:10px}.side-link span{margin-left:7px}
+.top{height:62px;padding:0 22px;background:#fff}.search{width:min(390px,45vw);position:relative}.search span{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#87948e}.search input{padding:9px 12px 9px 34px;border-radius:6px;font-size:10px;background:#fbfcfc}
+.top-actions{display:flex;align-items:center;gap:18px}.notification-btn{border:0;background:none;font-size:9px;color:#263a32;display:flex;align-items:center;gap:6px}.notification-btn b{background:#139a48;color:#fff;border-radius:20px;min-width:17px;height:17px;display:grid;place-items:center;font-size:8px}
+.top-user{display:flex;align-items:center;gap:8px}.top-user>span{width:30px;height:30px;border-radius:50%;background:#dff4e6;color:#158e45;display:grid;place-items:center;font-weight:850}.top-user b{font-size:9px;display:block}.top-user small{font-size:8px;color:var(--muted)}
+.content{padding:16px 18px 40px;max-width:1500px;margin:0 auto;width:100%}
+.dashboard-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.metric-card{background:#fff;border:1px solid var(--line);border-radius:7px;padding:12px 13px;min-height:93px;box-shadow:0 2px 7px rgba(29,56,42,.035)}
+.metric-top{display:flex;justify-content:space-between;align-items:center}.metric-top span{font-size:9px;font-weight:700}.metric-top i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#e8f7ed;color:#118f44;display:grid;place-items:center;font-size:11px}
+.metric-card strong{display:block;font-size:21px;margin-top:8px;letter-spacing:-.035em}.metric-card small{display:block;font-size:8px;color:var(--muted);margin-top:5px}
+.onboarding-card{margin-top:10px;background:#fff;border:1px solid #d8ebdf;border-radius:7px;padding:11px;display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:8px;align-items:stretch}.onboarding-card>div{padding:7px}.onboarding-card>div b{display:block;font-size:12px}.onboarding-card>div small{display:block;font-size:8px;color:var(--muted);margin-top:5px}.onboarding-card button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px;display:flex;gap:8px;text-align:left}.onboarding-card button i{font-style:normal;width:22px;height:22px;border-radius:50%;background:#e5f7eb;color:#0d9445;display:grid;place-items:center;font-size:9px;font-weight:850}.onboarding-card button b{font-size:9px}.onboarding-card button small{display:block;font-size:7px;color:var(--muted);margin-top:2px}
+.dash-row{display:grid;gap:10px;margin-top:10px}.dash-main-row{grid-template-columns:1.25fr .8fr 1.25fr}.dash-data-row{grid-template-columns:1.25fr .8fr 1fr}.dash-bottom-row{grid-template-columns:1.7fr .8fr}
+.panel{background:#fff;border:1px solid var(--line);border-radius:7px;padding:12px 13px;min-width:0}.panel-title{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}.panel-title b{font-size:11px}.panel-title small{display:block;font-size:8px;color:var(--muted);margin-top:2px}.text-link{border:0;background:none;color:#138d45;font-size:8px;cursor:pointer}
+.dashboard-alert{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid #edf1ef}.dashboard-alert:last-child{border-bottom:0}.dashboard-alert .alert-icon{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;font-size:10px}.alert-icon.orange{background:#fff2df;color:#e68e14}.alert-icon.blue{background:#e8f1ff;color:#3c78d9}.alert-icon.green{background:#e7f7ec;color:#139847}.alert-icon.purple{background:#f0eaff;color:#7e58cf}.dashboard-alert b{display:block;font-size:8.5px}.dashboard-alert small{display:block;font-size:7.5px;color:var(--muted);margin-top:2px}.dashboard-alert em{font-style:normal;border-radius:4px;background:#eef8f1;color:#118e44;font-size:8px;padding:3px 6px}
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.action-grid button{height:75px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:8px;font-weight:700}.action-grid i{font-style:normal;display:block;color:#129847;font-size:17px;margin-bottom:5px}.action-grid button:hover{background:#f7fbf8;border-color:#b9dbc5}
+.sector-news{display:grid;grid-template-columns:48px 1fr 16px;gap:8px;align-items:center;text-decoration:none;color:var(--text);padding:7px 0;border-bottom:1px solid #edf1ef}.sector-news:last-child{border-bottom:0}.news-thumb{width:48px;height:34px;border-radius:4px;background:linear-gradient(135deg,#315f38,#b69c57);color:#fff;display:grid;place-items:center;font-size:9px;font-weight:850}.sector-news b{display:block;font-size:8.5px;line-height:1.3}.sector-news small{font-size:7.5px;color:var(--muted)}.sector-news i{font-style:normal;color:#62776e}
+.period-chip{font-size:7px;border:1px solid var(--line);border-radius:12px;padding:4px 7px;color:var(--muted)}
+.line-chart{height:165px;position:relative;padding:10px 4px 3px;display:flex;align-items:flex-end;gap:4px}.chart-point{flex:1;height:100%;position:relative;display:flex;align-items:flex-end;justify-content:center}.chart-point:before{content:"";position:absolute;left:0;right:0;bottom:var(--h);height:2px;background:#18944a}.chart-point i{position:absolute;bottom:calc(var(--h) - 4px);width:8px;height:8px;background:#159349;border-radius:50%;z-index:2}.chart-point small{position:absolute;bottom:-2px;transform:translateY(100%);font-size:7px;color:var(--muted)}.chart-point b{position:absolute;bottom:calc(var(--h) + 7px);font-size:7px;color:#496057}
+.compact-empty{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.compact-empty b{font-size:10px}.compact-empty small{font-size:8px;color:var(--muted);margin-top:4px}
+.summary-line{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #edf1ef;font-size:8.5px}.summary-line b{font-size:8.5px}.summary-line.result{margin-top:4px;background:#f7f9f8;border-radius:4px;padding:9px 7px}.panel-action{width:100%;margin-top:8px;border:0;background:none;color:#128d44;text-align:right;font-size:8px}
+.market-source{display:grid;grid-template-columns:1fr 1.2fr 15px;text-decoration:none;color:var(--text);padding:9px 0;border-bottom:1px solid #edf1ef;font-size:8px}.market-source b{text-align:right}.market-source i{font-style:normal;text-align:right}.source-note{font-size:7px;color:var(--muted);line-height:1.4;margin-top:8px}
+.lot-performance table th,.lot-performance table td{padding:8px 7px;font-size:8px}.lot-performance table th{font-size:7px}.lot-status{display:inline-block;padding:3px 7px;border-radius:20px;background:#e8f6ec;color:#118e44;font-size:7px;font-weight:750}.lot-status.empty-status{background:#f2f4f3;color:#7e8a85}
+.mobile-card{background:linear-gradient(135deg,#0b8842,#026b39);border-radius:7px;padding:17px;color:#fff;display:grid;grid-template-columns:1.4fr .7fr;gap:12px;overflow:hidden}.mobile-card small{font-size:7px;opacity:.75}.mobile-card b{display:block;font-size:14px;margin-top:5px}.mobile-card p{font-size:8px;line-height:1.5;opacity:.9}.mobile-card button{border:1px solid rgba(255,255,255,.38);background:transparent;color:#fff;border-radius:4px;padding:6px 8px;font-size:8px}.phone-mock{align-self:end;background:#092c25;border:3px solid #152f2a;border-radius:13px;padding:10px 7px;width:82px;height:132px;display:grid;grid-template-columns:1fr 1fr;gap:5px;transform:rotate(-3deg)}.phone-mock span{grid-column:1/-1;font-size:7px}.phone-mock i{font-style:normal;background:#0c7040;border-radius:4px;display:grid;place-items:center;font-size:10px}
+.card,.modalbox{border-radius:7px}.head h2{font-size:20px}.head h3{font-size:13px}.sub{font-size:9px}.btn{border-radius:6px;font-size:10px;padding:8px 11px}
+@media(max-width:1150px){.dashboard-kpis{grid-template-columns:repeat(3,1fr)}.dash-main-row,.dash-data-row{grid-template-columns:1fr 1fr}.dash-main-row>.panel:last-child,.dash-data-row>.panel:last-child{grid-column:1/-1}.dash-bottom-row{grid-template-columns:1fr}.layout{grid-template-columns:80px 1fr}.brand div,.nav-title,.nav span,.farm-profile div,.mydata-btn,.side-link span{display:none}.brand{justify-content:center}.farm-profile{grid-template-columns:1fr}.farm-profile button{display:none}.farm-profile>span{margin:auto}.nav button{text-align:center}.side-link{text-align:center}}
+@media(max-width:720px){.dashboard-kpis{grid-template-columns:1fr 1fr}.dash-main-row,.dash-data-row{grid-template-columns:1fr}.dash-main-row>.panel:last-child,.dash-data-row>.panel:last-child{grid-column:auto}.onboarding-card{grid-template-columns:1fr}.top-actions .notification-btn span,.top-user div{display:none}.content{padding:12px}.mobile-card{grid-template-columns:1fr}.phone-mock{display:none}}
+
+
+/* V2.5 — telas restauradas conforme referências */
+.page-title{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}.page-title h2{margin:0;font-size:22px}.page-title p{margin:4px 0 0;color:var(--muted);font-size:10px}
+.action-title{align-items:center}
+.animal-toolbar{margin-bottom:10px}.animal-search{position:relative}.animal-search span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#8a9892}.animal-search input{width:100%;height:42px;border:1px solid #dbe3e0;border-radius:10px;background:#fff;padding:0 14px 0 38px;font-size:11px}
+.animal-filters{display:flex;gap:8px;margin:10px 0}.filter-pill{border:1px solid #d6dedb;background:#fff;border-radius:22px;padding:8px 15px;font-size:10px;font-weight:750;color:#263932}.filter-pill.active{background:#102843;color:#fff;border-color:#102843}
+.animal-count-line{display:flex;justify-content:space-between;align-items:center;color:#88958f;font-size:10px}.strong-link{font-weight:800;color:#0d9346}
+.big-empty{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8b98a6}.big-empty>div{font-size:24px}.big-empty span{margin-top:8px;font-size:12px}.big-empty button{border:0;background:none;color:#109447;font-weight:850;margin-top:5px}
+.wide-primary{width:100%;border:0;background:#289b58;color:#fff;border-radius:10px;padding:11px 15px;font-weight:850;cursor:pointer}.wide-primary:hover{background:#198b49}
+.animal-card-list{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}.animal-row-card{width:100%;display:grid;grid-template-columns:48px 1.4fr 1fr 1fr 1fr 20px;gap:10px;align-items:center;border:0;border-bottom:1px solid #edf1ef;background:#fff;text-align:left;padding:10px 12px;color:var(--text);cursor:pointer}.animal-row-card:last-child{border-bottom:0}.animal-row-card:hover{background:#f9fcfa}.animal-row-card>div small{display:block;color:var(--muted);font-size:8px}.animal-row-card>div b{display:block;font-size:10px;margin-top:2px}.animal-avatar{width:38px;height:38px;border-radius:9px;background:#edf2f5;overflow:hidden;display:grid;place-items:center}.animal-avatar img{width:100%;height:100%;object-fit:cover}.animal-avatar span{font-size:17px;color:#7d8c86}.animal-main b{font-size:12px!important;color:#0e8841}.animal-main small{font-size:8px!important}
+.exited-panel{margin-top:18px}
+.lot-layout{display:grid;grid-template-columns:minmax(320px,420px) 1fr;gap:18px;align-items:start}.inline-form-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 5px 16px rgba(34,49,42,.07)}.inline-form-card label{display:block;font-size:10px;font-weight:750;margin-top:13px}.inline-form-card label small{font-weight:400;color:var(--muted)}.inline-form-card input{width:100%;border:1px solid #d7e0dd;border-radius:9px;padding:11px 12px;margin-top:6px}.inline-form-card .wide-primary{margin-top:14px}.form-eyebrow,.section-caption,.form-section-title{font-size:9px;color:#159247;font-weight:900;letter-spacing:.08em}.form-eyebrow{color:#718079}
+.lot-grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:10px}.lot-list-column .section-caption{margin-bottom:9px;color:#718079}
+.weigh-page-grid{display:grid;grid-template-columns:minmax(340px,500px) 1fr;gap:16px}.weigh-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 14px rgba(24,45,35,.05)}.weigh-card label{display:block;font-size:10px;font-weight:750;margin-bottom:13px}.weigh-card label small{font-weight:400;color:var(--muted)}.weigh-card input,.weigh-card select{width:100%;padding:11px 12px;border:1px solid #d4dfdb;border-radius:9px;margin-top:6px;background:#fff}.batch-top-btn{padding:9px 13px}
+.modal-head-clean{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px}.modal-head-clean h3{margin:0;font-size:15px}.modal-head-clean p{margin:4px 0 0;font-size:9px;color:var(--muted)}.modal-head-clean>button{width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:18px;color:#617069}
+.animal-form-modal{width:min(620px,96vw);padding:18px 22px}.animal-form-modern label{display:block;font-size:10px;font-weight:750}.animal-form-modern label small{font-weight:400;color:#7c8984}.animal-form-modern input,.animal-form-modern select,.animal-form-modern textarea{width:100%;padding:11px 12px;border:1px solid #d4dfdb;border-radius:9px;margin-top:6px;background:#fff}.animal-form-modern textarea{min-height:74px}.animal-top-grid{display:grid;grid-template-columns:66px 1fr 1fr;gap:12px;align-items:end}.photo-picker input{display:none}.photo-preview{height:64px;border-radius:13px;background:#e9eef4;border:1px solid #e0e5ea;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8694a6;font-size:18px;cursor:pointer;overflow:hidden}.photo-preview small{font-size:7px!important;margin-top:2px}.photo-preview img{width:100%;height:100%;object-fit:cover}.form-section-title{margin:18px 0 9px}.radio-row{display:flex;gap:20px;margin-bottom:9px}.radio-row label{display:flex;align-items:center;gap:7px;font-size:10px}.radio-row input{width:auto;margin:0;accent-color:#169749}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.animal-form-modern>.wide-primary{margin-top:14px}
+.weigh-modal{width:min(560px,96vw)}.modal-weigh-card{box-shadow:none;border:0;padding:0}.batch-modal{width:min(720px,96vw);padding:0}.batch-head{padding:18px 20px;margin:0}.batch-content{padding:18px 20px}.batch-content>label{display:block;font-size:10px;font-weight:750;margin-bottom:13px}.batch-content select,.batch-content input{width:100%;padding:11px 12px;border:1px solid #d1ddd8;border-radius:9px;margin-top:6px}.batch-footer{display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding:14px 20px}.batch-footer .btn{min-width:110px}.batch-footer .primary:disabled{opacity:.45}.batch-modern-list{margin-top:8px}.batch-row{grid-template-columns:1.4fr 1fr}
+.report-grid{display:grid;grid-template-columns:repeat(4,minmax(210px,1fr));gap:12px}.report-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:19px;min-height:175px;box-shadow:0 4px 12px rgba(31,47,39,.06);display:flex;flex-direction:column}.report-card i{font-style:normal;font-size:20px;color:#189649;margin-bottom:12px}.report-card b{font-size:12px}.report-card p{font-size:10px;line-height:1.45;color:#7d8a85;margin:5px 0 12px;flex:1}.report-card button{width:100%;border:1px solid #d6dfdc;background:#fff;border-radius:9px;padding:10px;font-size:10px;font-weight:800}.report-card button:hover{border-color:#149448;color:#149448}
+.profile-hero{display:flex;gap:12px;align-items:center;margin-top:5px}.profile-photo{width:68px;height:68px;border-radius:12px;object-fit:cover;background:#edf1f3}.profile-photo.placeholder{display:grid;place-items:center;font-size:25px;color:#7f8d88}.profile-hero>div b{display:block;font-size:18px}.profile-hero>div span,.profile-hero>div small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.danger-outline{color:#b84942;border-color:#e4c5c1!important}
+@media(max-width:1050px){.lot-layout,.weigh-page-grid{grid-template-columns:1fr}.report-grid{grid-template-columns:repeat(2,1fr)}.lot-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.animal-row-card{grid-template-columns:42px 1.5fr 1fr}.animal-row-card>div:nth-of-type(3),.animal-row-card>div:nth-of-type(4){display:none}.animal-top-grid{grid-template-columns:62px 1fr}.animal-top-grid label:nth-child(3){grid-column:1/-1}.two-cols{grid-template-columns:1fr}.report-grid,.lot-grid{grid-template-columns:1fr}.radio-row{flex-direction:column;gap:8px}}
+
+
+/* V2.6 — Mercado: somente arroba do boi por estado */
+.market-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}.market-header h2{margin:0;font-size:22px}.market-header p{margin:4px 0 0;color:var(--muted);font-size:10px}.market-date{text-align:right}.market-date span{display:block;font-size:8px;color:var(--muted)}.market-date b{display:block;font-size:11px;margin-top:3px}
+.market-note{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;display:flex;justify-content:space-between;align-items:center}.market-note b{display:block;font-size:10px}.market-note span{display:block;font-size:8px;color:var(--muted);margin-top:3px}.market-note a{font-size:9px;color:#108c43;text-decoration:none;font-weight:800}
+.market-state-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:12px 0}.market-search{position:relative;width:min(390px,55%)}.market-search span{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86948e}.market-search input{width:100%;border:1px solid #d8e1de;background:#fff;border-radius:8px;padding:10px 12px 10px 34px;font-size:10px}.market-summary{display:flex;align-items:baseline;gap:6px}.market-summary b{font-size:16px;color:#118d45}.market-summary span{font-size:8px;color:var(--muted)}
+.state-quote-grid{display:grid;grid-template-columns:repeat(4,minmax(200px,1fr));gap:10px}.state-quote-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:13px;min-height:100px;display:flex;flex-direction:column;justify-content:space-between}.state-identity{display:flex;gap:9px;align-items:center}.state-identity>span{width:32px;height:32px;border-radius:50%;background:#e5f6eb;color:#118d45;display:grid;place-items:center;font-size:9px;font-weight:900}.state-identity b{display:block;font-size:10px}.state-identity small{display:block;font-size:7px;color:var(--muted);margin-top:2px;line-height:1.3}.state-value{font-size:17px;font-weight:900;color:#0e7f3d;margin-top:12px;letter-spacing:-.02em}.no-quote{background:#fbfcfc}.no-quote .state-identity>span{background:#eef1f0;color:#87938e}.muted-value{font-size:10px;color:#87938e;font-weight:750;letter-spacing:0}.market-disclaimer{font-size:8px;color:#77857f;line-height:1.5;margin-top:12px;padding:10px 12px;border-left:3px solid #cfdad5;background:#f1f4f3}
+@media(max-width:1100px){.state-quote-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:780px){.state-quote-grid{grid-template-columns:repeat(2,1fr)}.market-state-toolbar{align-items:stretch;flex-direction:column}.market-search{width:100%}}@media(max-width:500px){.state-quote-grid{grid-template-columns:1fr}.market-header{align-items:flex-start;gap:8px}.market-date{text-align:left}}
+
+
+
+
+
+/* V2.8 — logo com o boi original centralizado e mais corpo visível */
+.brand{align-items:center;overflow:visible}
+.brand img{
+  width:54px!important;
+  height:54px!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  object-position:44% 45%!important;
+  transform:none!important;
+  background:#fff;
+}
+
+
+.delete-outline{color:#b3261e!important;border-color:#e0b8b4!important}
+.delete-outline:hover{background:#fff4f3!important}
+
+.profile-required-note{font-size:10px;color:#a14836;background:#fff7f4;border:1px solid #f1d8d1;border-radius:7px;padding:9px 11px;margin-bottom:12px}
+
+/* V3.1 — formulário de gastos */
+.expense-modern-modal{width:min(540px,96vw);padding:18px 20px}
+.expense-form-modern label{display:block;font-size:10px;font-weight:750;margin-bottom:14px}
+.expense-form-modern label small{font-weight:400;color:var(--muted)}
+.expense-form-modern input,.expense-form-modern select,.expense-form-modern textarea{width:100%;padding:11px 12px;border:1px solid #cfdcd7;border-radius:10px;margin-top:6px;background:#fff}
+.expense-form-modern select:focus,.expense-form-modern input:focus,.expense-form-modern textarea:focus{outline:none;border-color:#1b9b50;box-shadow:0 0 0 2px rgba(27,155,80,.08)}
+.expense-form-modern textarea{min-height:58px;resize:vertical}
+.expense-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.expense-form-modern .wide-primary{margin-top:2px;padding:12px}
+@media(max-width:600px){.expense-two-cols{grid-template-columns:1fr}}
+
+
+/* V3.2 — identidade visual oficial Meu Gado */
+.brand img{
+  width:58px!important;
+  height:58px!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  transform:none!important;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.22);
+}
+
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
+</head>
+<body><div class="layout">
+<aside class="side">
+  <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
+  <div class="nav">
+    <button class="active" data-v="inicio" onclick="show('inicio',this)">⌂ <span>Início</span></button>
+    <div class="nav-title">Rebanho</div>
+    <button data-v="animais" onclick="show('animais',this)">♙ <span>Animais</span></button>
+    <button data-v="lotes" onclick="show('lotes',this)">▱ <span>Lotes</span></button>
+    <button data-v="pesagem" onclick="show('pesagem',this)">⚖ <span>Pesagem</span></button>
+    <button data-v="saude" onclick="show('saude',this)">⌁ <span>Saúde</span></button>
+    <button data-v="repro" onclick="show('repro',this)">♡ <span>Reprodução</span></button>
+    <div class="nav-title">Financeiro</div>
+    <button data-v="gastos" onclick="show('gastos',this)">$ <span>Gastos</span></button>
+    <button data-v="relatorios" onclick="show('relatorios',this)">▥ <span>Relatórios</span></button>
+    <div class="nav-title">Mercado</div>
+    <button data-v="mercado" onclick="show('mercado',this)">⌘ <span>Mercado</span></button>
+  </div>
+  <div class="side-bottom">
+    <div class="farm-profile">
+      <span id="farmInitial">F</span><div><b id="farmSide">Minha Fazenda</b><small>Conta cliente</small></div>
+      <button onclick="show('perfil')">⌄</button>
+    </div>
+    <button class="mydata-btn" onclick="show('perfil')">Meus dados</button>
+    <button class="side-link" onclick="alert('Central de ajuda será adicionada em uma próxima etapa.')">? <span>Ajuda</span></button>
+    <button class="side-link" onclick="logout()">↪ <span>Sair</span></button>
+  </div>
+</aside>
+
+<main class="main"><div class="top">
+  <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Buscar por número do animal, lote ou raça..." oninput="filterAnimals()"></div>
+  <div class="top-actions">
+    <button class="notification-btn" onclick="openNotifications()">♧ <span>Notificações</span><b id="notificationCount">0</b></button>
+    <div class="top-user"><span id="userInitial">F</span><div><b id="userTop">Usuário</b><small id="farmTop">Fazenda</small></div></div>
+  </div>
+</div><div class="content">
+
+<section id="inicio" class="view active">
+  <div class="dashboard-kpis">
+    <div class="metric-card"><div class="metric-top"><span>Total de animais</span><i>◆</i></div><strong id="dTotal">0</strong><small id="dCats">—</small></div>
+    <div class="metric-card"><div class="metric-top"><span>Peso médio</span><i>⚖</i></div><strong id="dAvg">0 kg</strong><small id="weightTrend">Peso atual do rebanho</small></div>
+    <div class="metric-card"><div class="metric-top"><span>GMD médio</span><i>↗</i></div><strong id="dGmd">0 kg/dia</strong><small>Ganho médio diário</small></div>
+    <div class="metric-card"><div class="metric-top"><span>Animais prontos</span><i>✓</i></div><strong id="dReady">0</strong><small>Meta de peso atingida</small></div>
+    <div class="metric-card"><div class="metric-top"><span>Gastos do mês</span><i>$</i></div><strong id="dMonth">R$ 0,00</strong><small>Lançamentos do período</small></div>
+  </div>
+
+  <div id="firstSteps" class="onboarding-card" style="display:none">
+    <div><b>Comece por aqui</b><small>Cadastre seus dados para o painel começar a gerar indicadores reais.</small></div>
+    <button onclick="show('lotes')"><i>1</i><span><b>Crie um lote</b><small>Organize seu rebanho.</small></span></button>
+    <button onclick="openNewAnimal()"><i>2</i><span><b>Cadastre um animal</b><small>Informe peso e dados básicos.</small></span></button>
+    <button onclick="show('pesagem')"><i>3</i><span><b>Registre pesagens</b><small>Acompanhe o desenvolvimento.</small></span></button>
+  </div>
+
+  <div class="dash-row dash-main-row">
+    <div class="panel">
+      <div class="panel-title"><div><b>Alertas importantes</b><small>O que merece sua atenção</small></div><button class="text-link" onclick="openNotifications()">Ver todos →</button></div>
+      <div class="dashboard-alert"><span class="alert-icon orange">!</span><div><b id="healthAlert">Nenhuma vacina próxima</b><small>Agenda sanitária dos próximos 7 dias.</small></div><em id="healthBadge">0</em></div>
+      <div class="dashboard-alert"><span class="alert-icon blue">⚖</span><div><b id="weighAlert">Pesagens em acompanhamento</b><small>Animais há 30 dias ou mais sem nova pesagem.</small></div><em id="weighBadge">0</em></div>
+      <div class="dashboard-alert"><span class="alert-icon green">↗</span><div><b id="readyAlert">0 animais atingiram a meta</b><small>Animais que já alcançaram a meta de peso.</small></div><em id="readyBadge">0</em></div>
+      <div class="dashboard-alert"><span class="alert-icon purple">♡</span><div><b id="reproAlert">Reprodução</b><small>Partos previstos para os próximos 30 dias.</small></div><em id="reproBadge">0</em></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div><b>Ações rápidas</b><small>Registros do dia a dia</small></div></div>
+      <div class="action-grid">
+        <button onclick="openNewAnimal()"><i>＋</i><span>Novo<br>animal</span></button>
+        <button onclick="openSingleWeight()"><i>⚖</i><span>Registrar<br>pesagem</span></button>
+        <button onclick="openModal('healthModal')"><i>✚</i><span>Registrar<br>saúde</span></button>
+        <button onclick="openModal('reproModal')"><i>♡</i><span>Registrar<br>reprodução</span></button>
+        <button onclick="openLot()"><i>▱</i><span>Novo<br>lote</span></button>
+        <button onclick="openNewExpense()"><i>$</i><span>Novo<br>gasto</span></button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div><b>Notícias do setor</b><small>Fontes confiáveis para acompanhar o mercado</small></div><button class="text-link" onclick="show('mercado')">Ver todas →</button></div>
+      <a class="sector-news" target="_blank" href="https://www.noticiasagricolas.com.br/noticias/boi/"><span class="news-thumb">BG</span><div><b>Mercado do boi gordo</b><small>Notícias Agrícolas · notícias e análises</small></div><i>↗</i></a>
+      <a class="sector-news" target="_blank" href="https://www.canalrural.com.br/pecuaria/"><span class="news-thumb">CR</span><div><b>Pecuária, manejo e produção</b><small>Canal Rural · conteúdo do setor</small></div><i>↗</i></a>
+      <a class="sector-news" target="_blank" href="https://cepea.org.br/br/indicador/boi-gordo.aspx"><span class="news-thumb">CE</span><div><b>Indicador do boi gordo</b><small>CEPEA/ESALQ · consulte a cotação oficial</small></div><i>↗</i></a>
+    </div>
+  </div>
+
+  <div class="dash-row dash-data-row">
+    <div class="panel">
+      <div class="panel-title"><div><b>Evolução do peso médio</b><small>Dados reais das pesagens</small></div><span class="period-chip">Últimos registros</span></div>
+      <div id="realChart" class="line-chart"></div>
+      <div id="chartEmpty" class="compact-empty" style="display:none"><b>Sem histórico de pesagens</b><small>Registre pelo menos duas pesagens para acompanhar a evolução.</small></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div><b>Resumo financeiro</b><small id="financePeriod">Mês atual</small></div></div>
+      <div class="summary-line"><span>Gastos do mês</span><b class="bad" id="dMonth2">R$ 0,00</b></div>
+      <div class="summary-line"><span>Gastos acumulados</span><b id="dExpenses">R$ 0,00</b></div>
+      <div class="summary-line"><span>Custo por cabeça</span><b id="costHead">R$ 0,00</b></div>
+      <div class="summary-line result"><span>Controle financeiro</span><b class="good">Acompanhar</b></div>
+      <button class="panel-action" onclick="show('gastos')">Ver lançamentos →</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div><b>Mercado pecuário</b><small>Consulte as fontes oficiais</small></div><button class="text-link" onclick="show('mercado')">Ver mais →</button></div>
+      <a class="market-source" target="_blank" href="https://cepea.org.br/br/indicador/boi-gordo.aspx"><span>Boi gordo</span><b>CEPEA/ESALQ</b><i>↗</i></a>
+      <a class="market-source" target="_blank" href="https://www.noticiasagricolas.com.br/cotacoes/boi-gordo"><span>Cotações</span><b>Notícias Agrícolas</b><i>↗</i></a>
+      <a class="market-source" target="_blank" href="https://www.canalrural.com.br/pecuaria/"><span>Notícias</span><b>Canal Rural</b><i>↗</i></a>
+      <div class="source-note">Os valores de mercado não são inventados pelo sistema. Consulte a fonte para a cotação atualizada.</div>
+    </div>
+  </div>
+
+  <div class="dash-row dash-bottom-row">
+    <div class="panel lot-performance">
+      <div class="panel-title"><div><b>Desempenho por lote</b><small>Peso e ganho médio dos grupos</small></div><button class="text-link" onclick="show('lotes')">Ver todos os lotes →</button></div>
+      <div class="table-scroll"><table><thead><tr><th>Lote</th><th>Animais</th><th>Peso médio</th><th>GMD médio</th><th>Status</th></tr></thead><tbody id="dashboardLots"></tbody></table></div>
+    </div>
+    <div class="mobile-card">
+      <div><small>ACESSO SIMPLES</small><b>Leve o Meu Gado com você</b><p>O painel é responsivo e pode ser usado pelo navegador do celular para consultar e registrar dados da fazenda.</p><button onclick="show('animais')">Abrir rebanho →</button></div>
+      <div class="phone-mock"><span>Meu Gado</span><i>◆</i><i>⚖</i><i>↗</i><i>$</i></div>
+    </div>
+  </div>
+</section>
+
+<section id="animais" class="view">
+  <div class="page-title"><div><h2>Animais</h2><p>Cadastro e acompanhamento individual do rebanho</p></div></div>
+  <div class="animal-toolbar">
+    <div class="animal-search"><span>⌕</span><input id="animalSearch" placeholder="Pesquisar número do animal..." oninput="filterAnimalScreen()"></div>
+    <div class="animal-filters">
+      <button class="filter-pill active" data-cat="Todos" onclick="setAnimalFilter('Todos',this)">Todos</button>
+      <button class="filter-pill" data-cat="Boi" onclick="setAnimalFilter('Boi',this)">Bois</button>
+      <button class="filter-pill" data-cat="Vaca" onclick="setAnimalFilter('Vaca',this)">Vacas</button>
+      <button class="filter-pill" data-cat="Bezerro(a)" onclick="setAnimalFilter('Bezerro(a)',this)">Crias</button>
+    </div>
+    <div class="animal-count-line"><span id="animalCountLabel">0 animal(is)</span><button class="text-link strong-link" onclick="toggleExitedAnimals()">Ver baixados (vendidos/mortos)</button></div>
+  </div>
+  <div id="animalListArea"></div>
+  <div id="animalEmpty" class="big-empty" style="display:none"><div>♙</div><span>Nenhum animal encontrado.</span><button onclick="openNewAnimal()">Cadastrar o primeiro</button></div>
+  <button class="wide-primary" onclick="openNewAnimal()">＋ Novo animal</button>
+
+  <div id="exitedPanel" class="exited-panel" style="display:none">
+    <div class="panel-title"><div><b>Animais baixados</b><small>Vendidos ou mortos</small></div><button class="text-link" onclick="toggleExitedAnimals()">Ocultar</button></div>
+    <div class="card"><table><thead><tr><th>Número</th><th>Categoria</th><th>Tipo</th><th>Data</th><th>Valor venda</th><th>Observação</th><th>Ação</th></tr></thead><tbody id="exitedRows"></tbody></table></div>
+  </div>
+</section>
+<section id="lotes" class="view">
+  <div class="page-title"><div><h2>Lotes</h2><p>Organize os grupos e acompanhe o desenvolvimento do rebanho</p></div></div>
+  <div class="lot-layout">
+    <div class="inline-form-card">
+      <div class="form-eyebrow">NOVO LOTE</div>
+      <label>Nome do lote<input id="inlineLotName" placeholder="Ex: Confinamento 02"></label>
+      <label>Observação <small>opcional</small><input id="inlineLotNotes" placeholder="Ex: Currais 3 e 4"></label>
+      <button class="wide-primary" onclick="createInlineLot()">Cadastrar lote</button>
+    </div>
+    <div class="lot-list-column">
+      <div class="section-caption">LOTES (<span id="lotCount">0</span>)</div>
+      <div id="lotCards" class="lot-grid"></div>
+    </div>
+  </div>
+</section>
+<section id="pesagem" class="view">
+  <div class="page-title action-title">
+    <div><h2>Pesagem</h2><p>Registre novas pesagens individuais ou por lote</p></div>
+    <button class="btn secondary batch-top-btn" onclick="openBatchWeight()">◷ Pesagem em lote</button>
+  </div>
+  <div class="weigh-page-grid">
+    <div class="weigh-card">
+      <label>Animal<select id="pageWeightAnimal"><option value="">Selecione...</option></select></label>
+      <label>Data<input id="pageWeightDate" type="date"></label>
+      <label>Peso atual (kg)<input id="pageWeightValue" type="number" step=".1" placeholder="Ex.: 465"></label>
+      <label>Observação <small>opcional</small><input id="pageWeightNotes"></label>
+      <button class="wide-primary" onclick="savePageWeight()">Salvar pesagem</button>
+    </div>
+    <div class="weigh-history card">
+      <div class="panel-title"><div><b>Últimas pesagens</b><small>Histórico recente do rebanho</small></div></div>
+      <table><thead><tr><th>Animal</th><th>Data</th><th>Peso</th></tr></thead><tbody id="weightRows"></tbody></table>
+    </div>
+  </div>
+</section>
+<section id="saude" class="view"><div class="head"><div><h2>Saúde</h2><div class="sub">Vacinas, medicamentos e tratamentos</div></div><button class="btn primary" onclick="openModal('healthModal')">+ Registrar</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal/Lote</th><th>Evento</th><th>Produto</th><th>Próxima</th></tr></thead><tbody id="healthRows"></tbody></table></div></section>
+<section id="repro" class="view"><div class="head"><div><h2>Reprodução</h2><div class="sub">Matrizes, prenhez, partos e crias</div></div><button class="btn primary" onclick="openModal('reproModal')">+ Registrar evento</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal</th><th>Evento</th><th>Previsão</th></tr></thead><tbody id="reproRows"></tbody></table></div></section>
+
+<section id="nutricao" class="view">
+ <div class="head"><div><h2>Nutrição</h2><div class="sub">Consumo e custo da alimentação por lote</div></div><button class="btn primary" onclick="openNutrition()">+ Novo lançamento</button></div>
+ <div class="card"><table><thead><tr><th>Data</th><th>Lote</th><th>Alimento</th><th>Quantidade</th><th>Custo</th></tr></thead><tbody id="nutritionRows"></tbody></table></div>
+</section>
+<section id="gastos" class="view">
+  <div class="page-title action-title">
+    <div><h2>Gastos</h2><p>Registre e acompanhe os gastos operacionais da propriedade</p></div>
+    <button class="btn primary" onclick="openNewExpense()">+ Novo gasto</button>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead>
+    <tbody id="expenseRows"></tbody></table>
+  </div>
+</section>
+<section id="relatorios" class="view">
+  <div class="page-title"><div><h2>Relatórios</h2><p>Exporte os dados do rebanho em CSV — abre direto no Excel/Planilhas.</p></div></div>
+  <div class="report-grid">
+    <div class="report-card"><i>▤</i><b>Rebanho completo</b><p>Todos os animais ativos com idade, peso, sanidade e reprodução.</p><button onclick="downloadReport('rebanho')">Baixar CSV</button></div>
+    <div class="report-card"><i>◷</i><b>Pesagens</b><p>Todas as pesagens já registradas no sistema.</p><button onclick="downloadReport('pesagens')">Baixar CSV</button></div>
+    <div class="report-card"><i>⌁</i><b>Vacinação</b><p>Todas as vacinas aplicadas no rebanho.</p><button onclick="downloadReport('vacinacao')">Baixar CSV</button></div>
+    <div class="report-card"><i>♡</i><b>Reprodução</b><p>Enxertos, IA/IATF e resultados registrados.</p><button onclick="downloadReport('reproducao')">Baixar CSV</button></div>
+    <div class="report-card"><i>✦</i><b>Crias</b><p>Todos os nascimentos registrados.</p><button onclick="downloadReport('crias')">Baixar CSV</button></div>
+    <div class="report-card"><i>$</i><b>Baixas (vendidos/mortos)</b><p>Data, valor de venda ou causa da morte de cada animal baixado.</p><button onclick="downloadReport('baixas')">Baixar CSV</button></div>
+    <div class="report-card"><i>$</i><b>Gastos</b><p>Todos os lançamentos de despesas do rebanho.</p><button onclick="downloadReport('gastos')">Baixar CSV</button></div>
+  </div>
+</section>
+<section id="mercado" class="view">
+  <div class="market-header">
+    <div><h2>Arroba do boi</h2><p>Preço do boi gordo por estado do Brasil</p></div>
+    <div class="market-date"><span>Atualização da fonte</span><b id="marketUpdated">—</b></div>
+  </div>
+  <div class="market-note">
+    <div><b id="marketBasis">Preço bruto à vista (R$/@)</b><span id="marketSource">Fonte: —</span></div>
+    <a id="marketSourceLink" target="_blank" href="https://www.noticiasagricolas.com.br/cotacoes/boi-gordo">Abrir fonte ↗</a>
+  </div>
+  <div class="market-state-toolbar">
+    <div class="market-search"><span>⌕</span><input id="marketSearch" placeholder="Buscar estado ou UF..." oninput="renderMarketQuotes()"></div>
+    <div class="market-summary"><b id="marketAvailable">0</b><span>estados com cotação publicada</span></div>
+  </div>
+  <div id="marketStates" class="state-quote-grid"></div>
+  <div class="market-disclaimer">Estados sem preço aparecem como “Sem cotação disponível”. O Meu Gado não cria nem estima preços quando a fonte consultada não publica uma referência para o estado.</div>
+</section>
+<section id="perfil" class="view">
+  <div class="head"><div><h2>Meus dados</h2><div class="sub">Preencha todos os dados obrigatórios da propriedade</div></div><button class="btn primary" onclick="saveProfile()">Salvar</button></div>
+  <div class="card">
+    <div class="profile-required-note">Todos os campos abaixo são obrigatórios.</div>
+    <div class="form">
+      <label>Nome da propriedade *<input id="pname" required></label>
+      <label>CPF/CNPJ *<input id="pdoc" required placeholder="CPF ou CNPJ"></label>
+      <label>Telefone *<input id="pphone" required></label>
+      <label>E-mail *<input id="pemail" type="email" required></label>
+      <label>Cidade *<input id="pcity" required></label>
+      <label>UF *<input id="pstate" maxlength="2" required placeholder="MG"></label>
+      <label>Operação *<select id="poperation" required><option>Confinamento</option><option>Cria</option><option>Recria</option><option>Engorda</option><option>Ciclo completo</option></select></label>
+      <label class="full">Endereço *<input id="paddress" required></label>
+      <label class="full">Observações *<textarea id="pnotes" required></textarea></label>
+    </div>
+  </div>
+</section>
+</div></main></div>
+
+<div class="modal" id="animalModal"><div class="modalbox animal-form-modal">
+  <div class="modal-head-clean"><div><h3>Novo animal</h3><p>Cadastre os dados principais do animal</p></div><button onclick="closeModal('animalModal')">×</button></div>
+  <div class="animal-form-modern">
+    <div class="animal-top-grid">
+      <label class="photo-picker">
+        <input id="aphoto" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewAnimalPhoto(this)">
+        <div id="aphotoPreview" class="photo-preview">▣<small>Foto</small></div>
+      </label>
+      <label>Número do animal <b>*</b><input id="anum" placeholder="Ex.: 125"></label>
+      <label>Categoria<select id="acat"><option>Boi</option><option>Vaca</option><option>Bezerro(a)</option></select></label>
+    </div>
+    <label>Raça <small>opcional</small><select id="abreed"><option>Nelore</option><option>Angus</option><option>Senepol</option><option>Brahman</option><option>Girolando</option><option>Outra</option></select></label>
+
+    <div class="form-section-title">NASCIMENTO</div>
+    <label>Data de nascimento <small>opcional</small><input id="abirth" type="date"></label>
+
+    <div class="form-section-title">ORIGEM</div>
+    <div class="radio-row">
+      <label><input type="radio" name="aoriginRadio" value="Nascido na propriedade" checked> Nascido na propriedade</label>
+      <label><input type="radio" name="aoriginRadio" value="Comprado"> Comprado</label>
+    </div>
+    <label>Data de entrada no confinamento <small>opcional</small><input id="adate" type="date"></label>
+
+    <div class="form-section-title">LOCALIZAÇÃO</div>
+    <label>Lote <small>opcional</small>
+      <div class="select-action">
+        <select id="alot"><option value="">Nenhum (sem lote)</option></select>
+        <button type="button" class="mini-add" onclick="openQuickLot()">+ Novo</button>
+      </div>
+    </label>
+
+    <div class="form-section-title">PESO</div>
+    <div class="two-cols">
+      <label>Peso inicial (kg) <small>opcional</small><input id="aweight" type="number" step=".1" placeholder="Ex.: 380"></label>
+      <label>Meta de peso (kg) <small>opcional</small><input id="atarget" type="number" step=".1" placeholder="Ex.: 480"></label>
+    </div>
+
+    <div class="form-section-title">OBSERVAÇÕES</div>
+    <label><textarea id="anotes" placeholder="Marcas, temperamento, particularidades..."></textarea></label>
+    <button class="wide-primary" onclick="saveAnimal()">Cadastrar animal</button>
+  </div>
+</div></div>
+
+<div class="modal" id="expenseModal"><div class="modalbox expense-modern-modal">
+  <div class="modal-head-clean"><div><h3 id="expenseModalTitle">Novo gasto</h3><p>Informe os dados do gasto operacional</p></div><button onclick="closeModal('expenseModal')">×</button></div>
+  <div class="expense-form-modern">
+    <label>Categoria *<select id="ecat">
+      <option>Ração</option>
+      <option>Vacina/Medicamento</option>
+      <option>Trato/Manejo</option>
+      <option>Frete</option>
+      <option>Outros</option>
+    </select></label>
+    <div class="expense-two-cols">
+      <label>Valor (R$) *<input id="eamount" type="number" step=".01" min="0.01" placeholder="Ex: 1250.00"></label>
+      <label>Data<input id="edate" type="date"></label>
+    </div>
+    <label>Descrição *<input id="edescription" placeholder="Ex: 20 sacas de ração"></label>
+    <label>Observação <small>opcional</small><textarea id="enotes"></textarea></label>
+    <button id="expenseSaveBtn" class="wide-primary" onclick="saveExpense()">Salvar gasto</button>
+  </div>
+</div></div>
+
+<div class="modal" id="healthModal"><div class="modalbox"><div class="head"><h3>Registrar saúde</h3><button class="btn secondary" onclick="closeModal('healthModal')">Fechar</button></div><div class="form"><label>Tipo<select id="htype"><option>Vacina</option><option>Medicamento</option><option>Vermífugo</option><option>Tratamento</option></select></label><label>Produto<input id="hproduct"></label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
+
+<div class="modal" id="reproModal"><div class="modalbox"><div class="head"><h3>Evento reprodutivo</h3><button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button></div><div class="form"><label>Animal<select id="ranimal"></select></label><label>Evento<select id="rtype" onchange="updateReproPrediction()"><option>Inseminação artificial</option><option>Monta natural / pasto</option><option>Prenhez confirmada</option><option>Parto</option><option>Aborto</option><option>Desmame</option></select></label><label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label><label>Data prevista do parto<input id="rexpected" type="date"><small class="sub">Calculada automaticamente em aproximadamente 283 dias para cobertura/inseminação. Pode ser ajustada.</small></label><label class="full">Observações<textarea id="rnotes" placeholder="Ex.: lote do touro, sêmen utilizado, diagnóstico..."></textarea></label><button class="btn primary full" onclick="saveRepro()">Salvar evento</button></div></div></div>
+
+<div class="modal" id="notificationsModal"><div class="modalbox"><div class="head"><div><h3>Central de alertas</h3><div class="sub">Pendências e eventos que merecem atenção</div></div><button class="btn secondary" onclick="closeModal('notificationsModal')">Fechar</button></div><div id="notificationsBody"></div></div></div>
+
+
+<div class="modal" id="lotModal"><div class="modalbox">
+  <div class="head"><h3 id="lotModalTitle">Novo lote</h3><button class="btn secondary" onclick="closeModal('lotModal')">Fechar</button></div>
+  <div class="form">
+    <label>Nome do lote<input id="lotName" placeholder="Ex.: Confinamento 01"></label>
+    <label>Status<select id="lotActive"><option value="1">Ativo</option><option value="0">Inativo</option></select></label>
+    <label class="full">Observações<textarea id="lotNotes"></textarea></label>
+    <button id="lotSaveBtn" class="btn primary full" onclick="saveLot()">Salvar lote</button>
+  </div>
+</div></div>
+
+<div class="modal" id="singleWeightModal"><div class="modalbox weigh-modal">
+  <div class="modal-head-clean"><h3>Nova pesagem</h3><button onclick="closeModal('singleWeightModal')">×</button></div>
+  <div class="weigh-card modal-weigh-card">
+    <label>Animal<select id="singleAnimal"><option value="">Selecione...</option></select></label>
+    <label>Data<input id="singleDate" type="date"></label>
+    <label>Peso atual (kg)<input id="singleWeight" type="number" step=".1" placeholder="Ex.: 465"></label>
+    <label>Observação <small>opcional</small><input id="singleNotes"></label>
+    <button class="wide-primary" onclick="saveSingleWeight()">Salvar pesagem</button>
+  </div>
+</div></div>
+
+<div class="modal" id="batchWeightModal"><div class="modalbox batch-modal">
+  <div class="modal-head-clean batch-head"><h3>Pesagem em lote</h3><button onclick="closeModal('batchWeightModal')">×</button></div>
+  <div class="batch-content">
+    <label>Lote<select id="batchLot" onchange="renderBatchAnimals()"><option value="">Selecione um lote...</option></select></label>
+    <label>Data da pesagem<input id="batchDate" type="date"></label>
+    <div id="batchAnimals" class="batch-list batch-modern-list"></div>
+  </div>
+  <div class="batch-footer"><button class="btn secondary" onclick="closeModal('batchWeightModal')">Cancelar</button><button id="saveBatchBtn" class="btn primary" onclick="saveBatchWeight()">Salvar pesagens</button></div>
+</div></div>
+
+<div class="modal" id="animalProfileModal"><div class="modalbox" style="width:min(980px,96vw)">
+ <div class="head"><div><h3 id="profileAnimalTitle">Ficha do animal</h3><div class="sub" id="profileAnimalSub"></div></div><button class="btn secondary" onclick="closeModal('animalProfileModal')">Fechar</button></div>
+ <div id="animalProfileBody"></div>
+</div></div>
+<div class="modal" id="moveAnimalModal"><div class="modalbox">
+ <div class="head"><h3>Mover animal de lote</h3><button class="btn secondary" onclick="closeModal('moveAnimalModal')">Fechar</button></div>
+ <div class="form"><label>Lote de destino<select id="moveLot"></select></label><label>Data<input id="moveDate" type="date"></label><label class="full">Observação<textarea id="moveNotes"></textarea></label><button class="btn primary full" onclick="saveMove()">Confirmar movimentação</button></div>
+</div></div>
+<div class="modal" id="exitAnimalModal"><div class="modalbox">
+  <div class="modal-head-clean"><div><h3>Dar baixa no animal</h3><p>Registre venda ou morte mantendo todo o histórico.</p></div><button onclick="closeModal('exitAnimalModal')">×</button></div>
+  <div class="form">
+    <label>Tipo de baixa<select id="exitType"><option>Vendido</option><option>Morto</option></select></label>
+    <label>Data<input id="exitDate" type="date"></label>
+    <label id="exitValueLabel">Valor de venda (R$) <small>opcional</small><input id="exitValue" type="number" step=".01"></label>
+    <label class="full">Observação / motivo<textarea id="exitNotes"></textarea></label>
+    <button class="btn primary full" onclick="saveAnimalExit()">Confirmar baixa</button>
+  </div>
+</div></div>
+<div class="modal" id="nutritionModal"><div class="modalbox">
+ <div class="head"><h3>Lançamento de nutrição</h3><button class="btn secondary" onclick="closeModal('nutritionModal')">Fechar</button></div>
+ <div class="form"><label>Lote<select id="nutLot"></select></label><label>Data<input id="nutDate" type="date"></label><label>Alimento<input id="nutFeed" placeholder="Ex.: Ração confinamento"></label><label>Quantidade (kg)<input id="nutQty" type="number" step=".01"></label><label>Custo total (R$)<input id="nutCost" type="number" step=".01"></label><label>Observação<input id="nutNotes"></label><button class="btn primary full" onclick="saveNutrition()">Salvar lançamento</button></div>
+</div></div>
+
+<div class="modal" id="lotProfileModal"><div class="modalbox" style="width:min(1000px,96vw)">
+  <div class="head"><div><h3 id="lotProfileTitle">Desenvolvimento do lote</h3><div class="sub" id="lotProfileSub"></div></div><button class="btn secondary" onclick="closeModal('lotProfileModal')">Fechar</button></div>
+  <div id="lotProfileBody"></div>
+</div></div>
+<script>
+let animalsData=[]; let lotsData=[]; let editingLotId=null; let editingExpenseId=null; let selectedAnimalId=null; let quickLotForAnimal=false; let animalCategoryFilter='Todos'; let pendingAnimalPhoto=''; let marketQuotes=[];
+const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
+let mgFarm=null,mgUser=null;
+const mgMarket={updated_at:'28/08/2026',basis:'Preço físico, bruto, à vista por arroba',source:'Notícias Agrícolas / Scot Consultoria',source_url:'https://www.noticiasagricolas.com.br/cotacoes/boi-gordo',quotes:[
+['AC','Acre',306,306],['AL','Alagoas',343,343],['AP','Amapá',null,null],['AM','Amazonas',null,null],['BA','Bahia',323,323],['CE','Ceará',null,null],['DF','Distrito Federal',null,null],['ES','Espírito Santo',333,333],['GO','Goiás',326,326],['MA','Maranhão',338,338],['MT','Mato Grosso',321,323],['MS','Mato Grosso do Sul',336,339],['MG','Minas Gerais',331,336],['PA','Pará',330,341],['PB','Paraíba',null,null],['PR','Paraná',355.5,355.5],['PE','Pernambuco',null,null],['PI','Piauí',null,null],['RJ','Rio de Janeiro',341,341],['RN','Rio Grande do Norte',null,null],['RS','Rio Grande do Sul',188.25,190.5],['RO','Rondônia',324,324],['RR','Roraima',333,333],['SC','Santa Catarina',355.5,355.5],['SP','São Paulo',338,338],['SE','Sergipe',null,null],['TO','Tocantins',331,331]
+].map(x=>({uf:x[0],state:x[1],min:x[2],max:x[3],reference:x[0]==='RS'?'Conversão de R$/kg para arroba':''}))};
+function mgErr(e){throw new Error(e?.message||String(e||'Erro'))}
+async function mgSession(){const s=await mgSb.auth.getSession();if(!s.data.session){location.href='/';throw new Error('Sessão encerrada')}mgUser=s.data.session.user;return mgUser}
+async function mgGetFarm(){
+ await mgSession();
+ if(mgFarm)return mgFarm;
+ let r=await mgSb.from('farms').select('*').maybeSingle();
+ if(r.error)mgErr(r.error);
+ if(!r.data){
+  const meta=mgUser?.user_metadata||{};
+  let p={full_name:meta.full_name||'',farm_name:meta.farm_name||'',doc:meta.doc||'',phone:meta.phone||'',email:mgUser?.email||meta.email||'',city:meta.city||'',state:meta.state||''};
+  const key='mg_pending_profile_'+String(mgUser?.email||'').toLowerCase();
+  const raw=localStorage.getItem(key);
+  if(raw){try{p={...p,...JSON.parse(raw)}}catch{}}
+  if(p.farm_name&&p.doc){
+   let z=await mgSb.from('farms').insert({owner_id:mgUser.id,name:p.farm_name,doc:p.doc,phone:p.phone||'',email:mgUser.email||p.email,city:p.city||'',state:(p.state||'').toUpperCase()}).select().single();
+   if(z.error)mgErr(z.error);
+   r=z;
+   localStorage.removeItem(key);
+  }
+ }
+ if(!r.data){alert('Não foi possível concluir o cadastro da propriedade. Entre em contato com o suporte do Meu Gado.');location.href='/';throw new Error('Fazenda não encontrada')}
+ mgFarm=r.data;
+ return mgFarm
+}
+async function mgRows(table,select='*',order=null){const f=await mgGetFarm();let q=mgSb.from(table).select(select).eq('farm_id',f.id);if(order)q=q.order(order,{ascending:false});const r=await q;if(r.error)mgErr(r.error);return r.data||[]}
+function mgBody(opt){try{return opt.body?JSON.parse(opt.body):{}}catch{return {}}}
+function mgDays(a,b){if(!a||!b)return 0;return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000)}
+async function mgAnimals(activeOnly=true){const f=await mgGetFarm();let q=mgSb.from('animals').select('*').eq('farm_id',f.id).order('id',{ascending:false});if(activeOnly)q=q.eq('status','active');else q=q.neq('status','active');let r=await q;if(r.error)mgErr(r.error);let arr=r.data||[];let w=await mgRows('weighings','*','weighing_date');const by={};for(const x of w){if(!by[x.animal_id])by[x.animal_id]=x}return arr.map(a=>({...a,current_weight:by[a.id]?.weight??a.entry_weight??null,last_weighing_date:by[a.id]?.weighing_date||null,photo_path:a.photo_path||a.photo_url||''}))}
+async function mgDashboard(){
+ let animals=await mgAnimals(true), w=await mgRows('weighings'), e=await mgRows('expenses'), h=await mgRows('health_events'), r=await mgRows('reproductive_events');
+ let total=animals.length,cats={};animals.forEach(a=>cats[a.category]=(cats[a.category]||0)+1);
+ let weights=animals.map(a=>Number(a.current_weight)).filter(x=>Number.isFinite(x)&&x>0),avg=weights.length?weights.reduce((a,b)=>a+b,0)/weights.length:0;
+ let readyAnimals=animals.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)),ready=readyAnimals.length;
+ let by={};for(const x of w){(by[x.animal_id]??=[]).push(x)}let g=[];
+ for(const a of animals){let ws=(by[a.id]||[]).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));if(ws.length>=2){let d=mgDays(ws[0].weighing_date,ws.at(-1).weighing_date);if(d>0)g.push((Number(ws.at(-1).weight)-Number(ws[0].weight))/d)}}
+ const today=new Date();today.setHours(0,0,0,0);const todayIso=today.toISOString().slice(0,10);
+ const ym=todayIso.slice(0,7);const prev=new Date(today.getFullYear(),today.getMonth()-1,1);const prevYm=`${prev.getFullYear()}-${String(prev.getMonth()+1).padStart(2,'0')}`;
+ let exp=e.reduce((s,x)=>s+Number(x.amount||0),0),month=e.filter(x=>String(x.expense_date).slice(0,7)===ym).reduce((s,x)=>s+Number(x.amount||0),0),prevMonth=e.filter(x=>String(x.expense_date).slice(0,7)===prevYm).reduce((s,x)=>s+Number(x.amount||0),0);
+ const dayDiff=d=>Math.ceil((new Date(d+'T00:00:00')-today)/86400000);
+ let alerts=[];
+ for(const x of h){if(!x.next_due_date)continue;const d=dayDiff(x.next_due_date);if(d<0)alerts.push({type:'health',level:'danger',title:`Evento sanitário atrasado${x.product?' · '+x.product:''}`,detail:`Vencido há ${Math.abs(d)} dia(s).`,date:x.next_due_date});else if(d<=7)alerts.push({type:'health',level:'warning',title:`Saúde${x.product?' · '+x.product:''}`,detail:d===0?'Vence hoje.':`Vence em ${d} dia(s).`,date:x.next_due_date})}
+ let overdueWeights=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(!last)continue;const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
+ const terminalByAnimal={};for(const x of [...r].sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)))){if(!terminalByAnimal[x.animal_id]&&['Parto','Aborto'].includes(x.event_type))terminalByAnimal[x.animal_id]=x.event_date}
+ let reproDue=0;for(const x of r){if(!x.expected_date||!['Inseminação artificial','Monta natural / pasto','Prenhez confirmada','Enxertada'].includes(x.event_type))continue;const terminal=terminalByAnimal[x.animal_id];if(terminal&&terminal>=x.event_date)continue;const d=dayDiff(x.expected_date);if(d>=0&&d<=30){reproDue++;const a=animals.find(z=>z.id===x.animal_id);alerts.push({type:'repro',level:d<=7?'danger':'warning',title:`${a?'Vaca #'+a.number:'Matriz'} próxima do parto`,detail:d===0?'Parto previsto para hoje.':`Parto previsto em ${d} dia(s) · ${x.expected_date}.`,date:x.expected_date,animal_id:x.animal_id})}}
+ for(const a of readyAnimals)alerts.push({type:'ready',level:'success',title:`Animal #${a.number} atingiu a meta`,detail:`Peso atual ${Number(a.current_weight||0).toFixed(1)} kg · meta ${Number(a.target_weight||0).toFixed(1)} kg.`,animal_id:a.id});
+ alerts.sort((a,b)=>({danger:0,warning:1,info:2,success:3}[a.level]??9)-({danger:0,warning:1,info:2,success:3}[b.level]??9));
+ return {total,categories:{...cats,'Bezerro(a)':(cats.Bezerro||0)+(cats.Bezerra||0)},avg_weight:avg,avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready,expenses_total:exp,expenses_month:month,expenses_prev_month:prevMonth,cost_per_head:total?month/total:0,upcoming_health:alerts.filter(a=>a.type==='health').length,weighing_overdue:overdueWeights,repro_due:reproDue,alerts};
+}
+async function mgLotList(){let lots=await mgRows('lots'),animals=await mgAnimals(true),w=await mgRows('weighings');let latest={};[...w].sort((a,b)=>String(b.weighing_date).localeCompare(String(a.weighing_date))).forEach(x=>{if(!latest[x.animal_id])latest[x.animal_id]=x});return lots.map(l=>{let aa=animals.filter(a=>a.lot===l.name),vals=aa.map(a=>Number(latest[a.id]?.weight??a.entry_weight)).filter(Number.isFinite);return {...l,animals:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,avg_gmd:0}}).sort((a,b)=>(Number(b.active)-Number(a.active))||a.name.localeCompare(b.name))}
+async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from('animals').select('*').eq('farm_id',f.id).eq('id',id).maybeSingle();if(a.error)mgErr(a.error);if(!a.data)throw new Error('Animal não encontrado');let [w,h,r,e]=await Promise.all([mgSb.from('weighings').select('*').eq('farm_id',f.id).eq('animal_id',id).order('weighing_date',{ascending:false}),mgSb.from('health_events').select('*').eq('farm_id',f.id).eq('animal_id',id).order('event_date',{ascending:false}),mgSb.from('reproductive_events').select('*').eq('farm_id',f.id).eq('animal_id',id).order('event_date',{ascending:false}),mgSb.from('expenses').select('*').eq('farm_id',f.id).eq('animal_id',id).order('expense_date',{ascending:false})]);for(const q of [w,h,r,e])if(q.error)mgErr(q.error);let ws=w.data||[],gmd=0;if(ws.length>=2){let d=mgDays(ws.at(-1).weighing_date,ws[0].weighing_date);if(d>0)gmd=(Number(ws[0].weight)-Number(ws.at(-1).weight))/d}return {...a.data,photo_path:a.data.photo_path||a.data.photo_url||'',weighings:ws,health:h.data||[],reproduction:r.data||[],expenses:e.data||[],movements:[],current_weight:ws[0]?.weight??a.data.entry_weight??0,expenses_total:(e.data||[]).reduce((s,x)=>s+Number(x.amount||0),0),gmd}}
+async function mgLotProfile(id){let f=await mgGetFarm();let lr=await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',id).maybeSingle();if(lr.error)mgErr(lr.error);let l=lr.data;if(!l)throw new Error('Lote não encontrado');let aa=(await mgAnimals(true)).filter(a=>a.lot===l.name),ids=aa.map(a=>a.id),ww=await mgRows('weighings');let w=ww.filter(x=>ids.includes(x.animal_id)),byMonth={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(byMonth[m]??=[]).push(Number(x.weight))}let hist=Object.entries(byMonth).sort().map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}));let vals=aa.map(a=>Number(a.current_weight??a.entry_weight)).filter(Number.isFinite),g=[];for(const a of aa){let ws=w.filter(x=>x.animal_id===a.id).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));if(ws.length>=2){let d=mgDays(ws[0].weighing_date,ws.at(-1).weighing_date);if(d>0)g.push((Number(ws.at(-1).weight)-Number(ws[0].weight))/d)}}return {...l,animals_count:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total_weight:vals.reduce((a,b)=>a+b,0),avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready:aa.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)).length,history:hist,animals:aa}}
+async function api(path,opt={}){
+ const method=(opt.method||'GET').toUpperCase(),data=mgBody(opt),f=await mgGetFarm();
+ if(path==='/api/me')return {user:{id:mgUser.id,email:mgUser.email,role:'client',full_name:mgUser.user_metadata?.full_name||mgUser.email.split('@')[0]},farm:f};
+ if(path==='/api/profile'&&method==='GET')return f;
+ if(path==='/api/profile'&&method==='PUT'){let r=await mgSb.from('farms').update(data).eq('id',f.id).select().single();if(r.error)mgErr(r.error);mgFarm=r.data;return {ok:true}}
+ if(path==='/api/dashboard')return mgDashboard();
+ if(path==='/api/animals'&&method==='GET')return mgAnimals(true);
+ if(path==='/api/animals/exited')return mgAnimals(false);
+ if(path==='/api/animals'&&method==='POST'){let row={farm_id:f.id,number:data.number,category:data.category,breed:data.breed||'',birth_date:data.birth_date||null,origin:data.origin||'',entry_date:data.entry_date||null,entry_weight:data.entry_weight||null,target_weight:data.target_weight||null,lot:data.lot||'',notes:data.notes||'',photo_path:data.photo_data||'',photo_url:data.photo_data||'',status:'active'};let r=await mgSb.from('animals').insert(row).select().single();if(r.error)mgErr(r.error);if(data.entry_weight){let q=await mgSb.from('weighings').insert({farm_id:f.id,animal_id:r.data.id,weighing_date:data.entry_date||new Date().toISOString().slice(0,10),weight:data.entry_weight,notes:'Peso de entrada'});if(q.error)mgErr(q.error)}return {id:r.data.id,ok:true}}
+ let m=path.match(/^\/api\/animals\/(\d+)\/profile$/);if(m)return mgAnimalProfile(Number(m[1]));
+ m=path.match(/^\/api\/animals\/(\d+)\/weighings$/);if(m&&method==='POST'){let r=await mgSb.from('weighings').insert({farm_id:f.id,animal_id:Number(m[1]),weighing_date:data.weighing_date,weight:data.weight,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/animals\/(\d+)\/exit$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'inactive',exit_type:data.exit_type,exit_date:data.exit_date,exit_value:data.exit_value||0,exit_notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/animals\/(\d+)\/reactivate$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'active',exit_type:null,exit_date:null,exit_value:0,exit_notes:null}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/animals\/(\d+)\/move$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({lot:data.to_lot}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/animals\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('animals').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/lots'&&method==='GET')return mgLotList();
+ if(path==='/api/lots'&&method==='POST'){let r=await mgSb.from('lots').insert({farm_id:f.id,name:data.name,notes:data.notes||'',active:true});if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/lots\/(\d+)\/profile$/);if(m)return mgLotProfile(Number(m[1]));
+ m=path.match(/^\/api\/lots\/(\d+)$/);if(m&&method==='PUT'){let old=(await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',Number(m[1])).single());if(old.error)mgErr(old.error);let r=await mgSb.from('lots').update({name:data.name,notes:data.notes||'',active:data.active!==false}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);if(old.data.name!==data.name)await mgSb.from('animals').update({lot:data.name}).eq('farm_id',f.id).eq('lot',old.data.name);return {ok:true}}
+ if(m&&method==='DELETE'){let r=await mgSb.from('lots').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/weighings/recent'){let w=await mgRows('weighings','*','weighing_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x]));return w.filter(x=>map[x.animal_id]).slice(0,20).map(x=>({...x,number:map[x.animal_id].number,lot:map[x.animal_id].lot}))}
+ if(path==='/api/weighings/history'){let w=await mgRows('weighings'),g={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(g[m]??=[]).push(Number(x.weight))}return Object.entries(g).sort().slice(-6).map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}))}
+ if(path==='/api/weighings/batch'&&method==='POST'){let rows=(data.items||data.weighings||[]).map(x=>({farm_id:f.id,animal_id:Number(x.animal_id),weighing_date:data.weighing_date||x.weighing_date,weight:Number(x.weight),notes:x.notes||data.notes||''})).filter(x=>x.weight>0);let r=await mgSb.from('weighings').insert(rows);if(r.error)mgErr(r.error);return {ok:true,count:rows.length}}
+ if(path==='/api/expenses'&&method==='GET'){let e=await mgRows('expenses','*','expense_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return e.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
+ if(path==='/api/expenses'&&method==='POST'){let text=(data.category+' '+data.description+' '+(data.notes||'')).toLowerCase();if(/(compra|aquisi).*(gado|animal|boi|vaca|bezer)/.test(text))throw new Error('Compra de gado não deve ser lançada no módulo Gastos');let r=await mgSb.from('expenses').insert({farm_id:f.id,animal_id:data.animal_id||null,lot:data.lot||'',category:data.category,expense_date:data.expense_date,amount:data.amount,description:data.description,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/health'&&method==='GET'){let h=await mgRows('health_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return h.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
+ if(path==='/api/health'&&method==='POST'){let r=await mgSb.from('health_events').insert({farm_id:f.id,animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/reproduction'&&method==='GET'){let rr=await mgRows('reproductive_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return rr.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
+ if(path==='/api/reproduction'&&method==='POST'){let r=await mgSb.from('reproductive_events').insert({farm_id:f.id,animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
+ if(path==='/api/nutrition'&&method==='POST'){let r=await mgSb.from('nutrition_entries').insert({farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:data.total_cost,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/market/arroba')return mgMarket;
+ if(path==='/api/logout'&&method==='POST'){await mgSb.auth.signOut();return {ok:true}}
+ throw new Error('Função ainda não disponível na versão online: '+path);
+}
+function show(id,btn){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav button[data-v]').forEach(b=>b.classList.toggle('active',b.dataset.v===id));window.scrollTo(0,0)}
+function openModal(id){document.getElementById(id).classList.add('show');const t=new Date().toISOString().slice(0,10);['adate','edate','hdate','rdate'].forEach(x=>{const e=document.getElementById(x);if(e&&!e.value)e.value=t});if(id==='reproModal')updateReproPrediction()}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+async function load(){
+ const me=await api('/api/me');
+ if(me.user.role!=='client'){location.href='/admin';return}
+ farmSide.textContent=me.farm.name||'Minha Fazenda';
+ userTop.textContent=me.user.full_name||'Usuário';
+ if(document.getElementById('farmTop')) farmTop.textContent=me.farm.name||'Fazenda';
+ const fi=(me.farm.name||'F').trim().charAt(0).toUpperCase();
+ const ui=(me.user.full_name||'U').trim().charAt(0).toUpperCase();
+ if(document.getElementById('farmInitial')) farmInitial.textContent=fi;
+ if(document.getElementById('userInitial')) userInitial.textContent=ui;
+ if(document.getElementById('pageWeightDate')&&!pageWeightDate.value) pageWeightDate.value=new Date().toISOString().slice(0,10);
+ await Promise.all([dashboard(),loadAnimals(),profile(),loadLots(),loadExpenses(),loadHealth(),loadRepro(),loadWeightHistory(),loadNutrition(),loadMarket()]);
+}
+async function dashboard(){
+  const d=await api('/api/dashboard'); window.mgDashboardData=d;
+  dTotal.textContent=d.total;
+  dAvg.textContent=Number(d.avg_weight||0).toLocaleString('pt-BR',{maximumFractionDigits:1})+' kg';
+  dGmd.textContent=Number(d.avg_gmd||0).toLocaleString('pt-BR',{maximumFractionDigits:3})+' kg/dia';
+  dReady.textContent=d.ready;
+  dMonth.textContent=dMonth2.textContent=money(d.expenses_month);
+  dExpenses.textContent=money(d.expenses_total);
+  costHead.textContent=money(d.cost_per_head||0);
+  dCats.textContent=`${d.categories.Boi||0} bois · ${d.categories.Vaca||0} vacas · ${d.categories['Bezerro(a)']||0} bezerros`;
+  healthAlert.textContent=d.upcoming_health?`${d.upcoming_health} alerta(s) sanitário(s)`:'Nenhuma vacina próxima';
+  readyAlert.textContent=`${d.ready} animais atingiram a meta`;
+  if(document.getElementById('weighAlert'))weighAlert.textContent=d.weighing_overdue?`${d.weighing_overdue} animal(is) sem pesagem há 30+ dias`:'Pesagens em dia';
+  if(document.getElementById('reproAlert'))reproAlert.textContent=d.repro_due?`${d.repro_due} parto(s) previsto(s) nos próximos 30 dias`:'Nenhum parto próximo';
+  if(document.getElementById('healthBadge')) healthBadge.textContent=d.upcoming_health||0;
+  if(document.getElementById('readyBadge')) readyBadge.textContent=d.ready||0;
+  if(document.getElementById('weighBadge')) weighBadge.textContent=d.weighing_overdue||0;
+  if(document.getElementById('reproBadge')) reproBadge.textContent=d.repro_due||0;
+  if(document.getElementById('notificationCount')) notificationCount.textContent=(d.alerts||[]).length;
+  if(document.getElementById('firstSteps')) firstSteps.style.display=d.total===0?'grid':'none';
+  if(document.getElementById('financePeriod')){
+    const prev=Number(d.expenses_prev_month||0),cur=Number(d.expenses_month||0);
+    financePeriod.textContent=prev>0?`${cur>=prev?'↑':'↓'} ${Math.abs((cur-prev)/prev*100).toFixed(0)}% vs. mês anterior`:'Mês atual';
+  }
+}
+async function loadAnimals(){
+  animalsData=await api('/api/animals');
+  renderAnimalScreen();
+  const opts=animalsData.map(a=>`<option value="${a.id}">#${a.number} · ${a.category}${a.lot?' · '+a.lot:''}</option>`).join('');
+  if(document.getElementById('eanimal')) eanimal.innerHTML='<option value="">Geral</option>'+opts;
+  if(document.getElementById('hanimal')) hanimal.innerHTML='<option value="">Lote/Geral</option>'+opts;
+  if(document.getElementById('ranimal')) ranimal.innerHTML=opts;
+  if(document.getElementById('pageWeightAnimal')) pageWeightAnimal.innerHTML='<option value="">Selecione...</option>'+opts;
+  await loadRecentWeighings();
+}
+function animalPhotoHtml(a){
+  return a.photo_path?`<img src="${a.photo_path}" alt="Animal ${a.number}">`:`<span>♙</span>`;
+}
+function renderAnimalScreen(){
+  if(!document.getElementById('animalListArea')) return;
+  const q=(document.getElementById('animalSearch')?.value||'').trim().toLowerCase();
+  let arr=animalsData.filter(a=>{
+    const catok=animalCategoryFilter==='Todos'||a.category===animalCategoryFilter;
+    const qok=!q||`${a.number} ${a.breed||''} ${a.lot||''}`.toLowerCase().includes(q);
+    return catok&&qok;
+  });
+  animalCountLabel.textContent=`${arr.length} animal(is)`;
+  animalEmpty.style.display=arr.length?'none':'flex';
+  animalListArea.innerHTML=arr.length?`<div class="animal-card-list">${arr.map(a=>`<button class="animal-row-card" onclick="openAnimalProfile(${a.id})">
+    <div class="animal-avatar">${animalPhotoHtml(a)}</div>
+    <div class="animal-main"><b>#${a.number}</b><small>${a.category} · ${a.breed||'Raça não informada'}</small></div>
+    <div><small>Lote</small><b>${a.lot||'Sem lote'}</b></div>
+    <div><small>Peso atual</small><b>${a.current_weight??a.entry_weight??'-'} kg</b></div>
+    <div><small>Meta</small><b>${a.target_weight??'-'} kg</b></div>
+    <span>›</span>
+  </button>`).join('')}</div>`:'';
+}
+function setAnimalFilter(cat,btn){
+  animalCategoryFilter=cat;
+  document.querySelectorAll('.filter-pill').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderAnimalScreen();
+}
+function filterAnimalScreen(){renderAnimalScreen()}
+function filterAnimals(){
+  const q=globalSearch.value||'';
+  if(document.getElementById('animalSearch')) animalSearch.value=q;
+  renderAnimalScreen();
+}
+async function toggleExitedAnimals(){
+  const p=document.getElementById('exitedPanel');
+  if(p.style.display==='block'){p.style.display='none';return}
+  const rows=await api('/api/animals/exited');
+  exitedRows.innerHTML=rows.length?rows.map(a=>`<tr>
+    <td>#${a.number}</td><td>${a.category}</td><td>${a.exit_type||'-'}</td><td>${a.exit_date||'-'}</td>
+    <td>${a.exit_type==='Vendido'?money(a.exit_value||0):'-'}</td><td>${a.exit_notes||'-'}</td>
+    <td>${a.exit_type==='Vendido'?`<button class="btn secondary" onclick="reactivateAnimal(${a.id})">Reativar</button>`:'—'}</td>
+  </tr>`).join(''):'<tr><td colspan="7" class="empty">Nenhum animal baixado.</td></tr>';
+  p.style.display='block';
+}
+async function reactivateAnimal(id){
+  if(!confirm('Reativar este animal e devolvê-lo ao rebanho ativo?')) return;
+  try{
+    await api(`/api/animals/${id}/reactivate`,{method:'POST'});
+    exitedPanel.style.display='none';
+    await Promise.all([loadAnimals(),dashboard(),loadLots()]);
+    await toggleExitedAnimals();
+  }catch(e){alert(e.message)}
+}
+
+function previewAnimalPhoto(input){
+  const file=input.files&&input.files[0];
+  if(!file){pendingAnimalPhoto='';aphotoPreview.innerHTML='▣<small>Foto</small>';return}
+  if(file.size>5*1024*1024){alert('A foto deve ter no máximo 5 MB.');input.value='';return}
+  const reader=new FileReader();
+  reader.onload=e=>{pendingAnimalPhoto=e.target.result;aphotoPreview.innerHTML=`<img src="${pendingAnimalPhoto}" alt="Prévia">`};
+  reader.readAsDataURL(file);
+}
+async function openNewAnimal(){
+  try{
+    await loadLots();
+    pendingAnimalPhoto='';
+    const photo=document.getElementById('aphoto');
+    const preview=document.getElementById('aphotoPreview');
+    const number=document.getElementById('anum');
+    const birth=document.getElementById('abirth');
+    const breed=document.getElementById('abreed');
+    const entryDate=document.getElementById('adate');
+    const entryWeight=document.getElementById('aweight');
+    const targetWeight=document.getElementById('atarget');
+    const notes=document.getElementById('anotes');
+    const lot=document.getElementById('alot');
+    if(photo) photo.value='';
+    if(preview) preview.innerHTML='▣<small>Foto</small>';
+    if(number) number.value='';
+    if(birth) birth.value='';
+    if(breed) breed.value='Nelore';
+    if(entryDate) entryDate.value=new Date().toISOString().slice(0,10);
+    if(entryWeight) entryWeight.value='';
+    if(targetWeight) targetWeight.value='';
+    if(notes) notes.value='';
+    if(lot) lot.value='';
+    const r=document.querySelector('input[name="aoriginRadio"][value="Nascido na propriedade"]');
+    if(r) r.checked=true;
+    openModal('animalModal');
+  }catch(e){
+    console.error('Erro ao abrir cadastro do animal:',e);
+    alert('Não foi possível abrir o cadastro do animal. '+(e?.message||'Tente novamente.'));
+  }
+}
+async function saveAnimal(){
+  const el=id=>document.getElementById(id);
+  const number=(el('anum')?.value||'').trim();
+  if(!number){alert('Informe o número do animal.');el('anum')?.focus();return}
+  const origin=document.querySelector('input[name="aoriginRadio"]:checked')?.value||'Nascido na propriedade';
+  try{
+    await api('/api/animals',{method:'POST',body:JSON.stringify({
+      category:el('acat')?.value||'Boi',number,ear_tag:'',breed:el('abreed')?.value||'',birth_date:el('abirth')?.value||null,
+      origin,entry_date:el('adate')?.value||new Date().toISOString().slice(0,10),entry_weight:el('aweight')?.value?Number(el('aweight').value):null,
+      target_weight:el('atarget')?.value?Number(el('atarget').value):null,lot:el('alot')?.value||'',purchase_value:0,notes:el('anotes')?.value||'',
+      photo_data:pendingAnimalPhoto||''
+    })});
+    closeModal('animalModal');
+    await Promise.all([loadAnimals(),dashboard(),loadLots(),loadExpenses(),loadWeightHistory()]);
+  }catch(e){alert('Não foi possível cadastrar o animal. '+(e?.message||'Tente novamente.'))}
+}
+async function loadRecentWeighings(){
+  if(!document.getElementById('weightRows'))return;
+  const r=await api('/api/weighings/recent');
+  weightRows.innerHTML=r.length?r.slice(0,10).map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma pesagem registrada.</td></tr>';
+}
+async function savePageWeight(){
+  const id=Number(pageWeightAnimal.value),weight=Number(pageWeightValue.value);
+  if(!id){alert('Selecione um animal.');return}
+  if(!weight||weight<=0){alert('Informe um peso válido.');return}
+  await api(`/api/animals/${id}/weighings`,{method:'POST',body:JSON.stringify({weighing_date:pageWeightDate.value,weight,notes:pageWeightNotes.value})});
+  pageWeightValue.value='';pageWeightNotes.value='';
+  await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory()]);
+}
+function openSingleWeight(preselect=null){
+  if(!animalsData.length){alert('Cadastre um animal antes de registrar uma pesagem.');return}
+  singleAnimal.innerHTML='<option value="">Selecione...</option>'+animalsData.map(a=>`<option value="${a.id}">#${a.number} · ${a.category} · ${a.lot||'Sem lote'}</option>`).join('');
+  if(preselect) singleAnimal.value=String(preselect);
+  singleDate.value=new Date().toISOString().slice(0,10);singleWeight.value='';singleNotes.value='';
+  openModal('singleWeightModal');
+}
+async function saveSingleWeight(){
+  const id=Number(singleAnimal.value),w=Number(singleWeight.value);
+  if(!id||!w||w<=0){alert('Informe animal e peso válido.');return}
+  await api(`/api/animals/${id}/weighings`,{method:'POST',body:JSON.stringify({weighing_date:singleDate.value,weight:w,notes:singleNotes.value})});
+  closeModal('singleWeightModal');
+  await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory()]);
+}
+function weight(id){openSingleWeight(id)}
+function weight(id){openSingleWeight(id)}
+function openBatchWeight(){
+  if(!lotsData.filter(x=>x.active).length){alert('Cadastre um lote primeiro.');return}
+  batchLot.innerHTML='<option value="">Selecione um lote...</option>'+lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');
+  batchDate.value=new Date().toISOString().slice(0,10);
+  batchAnimals.innerHTML='';
+  saveBatchBtn.disabled=true;
+  openModal('batchWeightModal');
+}
+function renderBatchAnimals(){
+  const lot=batchLot.value;
+  if(!lot){batchAnimals.innerHTML='';saveBatchBtn.disabled=true;return}
+  const list=animalsData.filter(a=>(a.lot||'')===lot);
+  batchAnimals.innerHTML=list.length?list.map(a=>`<div class="batch-row"><div><b>#${a.number}</b><div class="sub">${a.category} · peso atual ${a.current_weight??a.entry_weight??'-'} kg</div></div><input data-animal="${a.id}" type="number" step=".1" placeholder="Novo peso (kg)"></div>`).join(''):'<div class="empty">Este lote não possui animais ativos.</div>';
+  saveBatchBtn.disabled=!list.length;
+}
+async function saveBatchWeight(){
+  const items=[...batchAnimals.querySelectorAll('input[data-animal]')].filter(i=>i.value).map(i=>({animal_id:Number(i.dataset.animal),weight:Number(i.value)}));
+  if(!batchLot.value){alert('Selecione um lote.');return}
+  if(!items.length){alert('Informe o peso de pelo menos um animal.');return}
+  await api('/api/weighings/batch',{method:'POST',body:JSON.stringify({weighing_date:batchDate.value,lot_name:batchLot.value,items})});
+  closeModal('batchWeightModal');
+  await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory()]);
+}
+
+function ageFromBirth(v){
+ if(!v)return '-'; const b=new Date(v+'T00:00:00'),n=new Date(); let m=(n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth(); if(n.getDate()<b.getDate())m--; if(m<0)return '-'; const y=Math.floor(m/12),r=m%12; return y?`${y} ano${y>1?'s':''}${r?` e ${r} mes${r>1?'es':''}`:''}`:`${r} mes${r>1?'es':''}`;
+}
+async function openAnimalProfile(id){
+ try{
+  selectedAnimalId=id;
+  const a=await api(`/api/animals/${id}/profile`);
+  profileAnimalTitle.textContent=`Animal #${a.number}`;
+  profileAnimalSub.textContent=`${a.category||''} · ${a.breed||''} · ${a.lot||'Sem lote'}`;
+  const target=a.target_weight||0,current=a.current_weight||0,progress=target?Math.min(100,current/target*100):0;
+  const photo=a.photo_path?`<img class="profile-photo" src="${a.photo_path}" alt="Animal ${a.number}">`:`<div class="profile-photo placeholder">♙</div>`;
+  animalProfileBody.innerHTML=`<div class="profile-hero">${photo}<div><b>#${a.number}</b><span>${a.category||''} · ${a.breed||''}</span><small>${a.lot||'Sem lote'}</small></div></div>
+  <div class="profile-kpis">
+   <div><small>Peso atual</small><b>${current||0} kg</b></div><div><small>GMD</small><b>${Number(a.gmd||0).toFixed(3)} kg/dia</b></div>
+   <div><small>Meta</small><b>${target||'-'} kg</b></div><div><small>Gastos vinculados</small><b>${money(a.expenses_total||0)}</b></div>
+  </div>
+  <div class="progress"><i style="width:${progress}%"></i></div>
+  <div class="profile-actions">
+    <button class="btn primary" onclick="closeModal('animalProfileModal');openSingleWeight(${a.id})">Nova pesagem</button>
+    <button class="btn secondary" onclick="openMoveAnimal(${a.id})">Mover de lote</button>
+    <button class="btn secondary danger-outline" onclick="openAnimalExit(${a.id})">Dar baixa</button>
+    <button class="btn secondary delete-outline" onclick="deleteAnimal(${a.id},'${a.number}')">Excluir animal</button>
+  </div>
+  <div class="profile-grid">
+   <div class="card"><h4>Identificação</h4><p>Número: <b>#${a.number}</b></p><p>Categoria: <b>${a.category||'-'}</b></p><p>Raça: <b>${a.breed||'-'}</b></p><p>Origem: <b>${a.origin||'-'}</b></p><p>Lote atual: <b>${a.lot||'-'}</b></p><p>Nascimento: <b>${a.birth_date||'-'}</b></p><p>Idade: <b>${ageFromBirth(a.birth_date)}</b></p></div>
+   <div class="card"><h4>Histórico de pesagens</h4>${a.weighings.length?a.weighings.slice(0,10).map(w=>`<p>${w.weighing_date}: <b>${w.weight} kg</b>${w.notes?`<small> · ${w.notes}</small>`:''}</p>`).join(''):'<p class="sub">Sem pesagens.</p>'}</div>
+   <div class="card"><h4>Saúde</h4>${a.health.length?a.health.slice(0,8).map(x=>`<p>${x.event_date}: <b>${x.event_type||'Registro'}</b>${x.product?` · ${x.product}`:''}</p>`).join(''):'<p class="sub">Sem registros sanitários.</p>'}</div>
+   <div class="card"><h4>Movimentações</h4>${a.movements.length?a.movements.slice(0,8).map(x=>`<p>${x.movement_date}: <b>${x.from_lot||'Sem lote'} → ${x.to_lot}</b></p>`).join(''):'<p class="sub">Sem movimentações.</p>'}</div>
+  </div>`;
+  openModal('animalProfileModal');
+ }catch(e){alert('Não foi possível abrir a ficha do animal: '+e.message)}
+}
+async function deleteAnimal(id,number){
+  if(!confirm(`Excluir definitivamente o animal #${number}? Todo o histórico dele será apagado. Esta ação não pode ser desfeita.`)) return;
+  try{
+    await api(`/api/animals/${id}`,{method:'DELETE'});
+    closeModal('animalProfileModal');
+    await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro()]);
+  }catch(e){alert(e.message)}
+}
+function openAnimalExit(id){
+  selectedAnimalId=id;
+  exitDate.value=new Date().toISOString().slice(0,10);exitType.value='Vendido';exitValue.value='';exitNotes.value='';
+  openModal('exitAnimalModal');
+}
+async function saveAnimalExit(){
+  if(!selectedAnimalId)return;
+  await api(`/api/animals/${selectedAnimalId}/exit`,{method:'POST',body:JSON.stringify({exit_type:exitType.value,exit_date:exitDate.value,exit_value:Number(exitValue.value||0),notes:exitNotes.value})});
+  closeModal('exitAnimalModal');closeModal('animalProfileModal');
+  await Promise.all([loadAnimals(),dashboard(),loadLots()]);
+  if(document.getElementById('exitedPanel')&&exitedPanel.style.display==='block'){exitedPanel.style.display='none';await toggleExitedAnimals()}
+}
+
+function openMoveAnimal(id){selectedAnimalId=id;moveLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');moveDate.value=new Date().toISOString().slice(0,10);moveNotes.value='';openModal('moveAnimalModal')}
+async function saveMove(){await api(`/api/animals/${selectedAnimalId}/move`,{method:'POST',body:JSON.stringify({movement_date:moveDate.value,to_lot:moveLot.value,notes:moveNotes.value})});closeModal('moveAnimalModal');closeModal('animalProfileModal');await Promise.all([loadAnimals(),loadLots(),dashboard()])}
+async function loadNutrition(){const d=await api('/api/nutrition');nutritionRows.innerHTML=d.length?d.map(x=>`<tr><td>${x.entry_date}</td><td>${x.lot_name}</td><td>${x.feed_name}</td><td>${Number(x.quantity_kg).toFixed(2)} kg</td><td>${money(x.total_cost)}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum lançamento de nutrição.</td></tr>'}
+function openNutrition(){nutLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');nutDate.value=new Date().toISOString().slice(0,10);openModal('nutritionModal')}
+async function saveNutrition(){await api('/api/nutrition',{method:'POST',body:JSON.stringify({lot_name:nutLot.value,entry_date:nutDate.value,feed_name:nutFeed.value,quantity_kg:Number(nutQty.value||0),total_cost:Number(nutCost.value||0),notes:nutNotes.value})});closeModal('nutritionModal');await loadNutrition()}
+
+
+async function openLotProfile(id){
+ try{
+  const l=await api(`/api/lots/${id}/profile`);
+  lotProfileTitle.textContent=`Lote ${l.name}`;
+  lotProfileSub.textContent=`${l.animals_count} animais · ${l.active?'Ativo':'Inativo'}`;
+  const hist=l.history||[], vals=hist.map(x=>Number(x.avg_weight||0)), max=Math.max(...vals,1);
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const chart=hist.length?`<div class="lot-chart">${hist.map(x=>{const m=Number(x.month.split('-')[1]);const pct=Math.max(8,Number(x.avg_weight)/max*100);return `<div class="lot-bar-wrap"><div class="lot-bar" style="height:${pct}%"></div><small>${months[m-1]}</small><b>${Number(x.avg_weight).toFixed(0)}kg</b></div>`}).join('')}</div>`:`<div class="empty">Ainda não há histórico suficiente de pesagens para mostrar a evolução do lote.</div>`;
+  lotProfileBody.innerHTML=`<div class="profile-kpis">
+    <div><small>Animais</small><b>${l.animals_count}</b></div>
+    <div><small>Peso médio</small><b>${Number(l.avg_weight||0).toFixed(1)} kg</b></div>
+    <div><small>GMD médio</small><b>${Number(l.avg_gmd||0).toFixed(3)} kg/dia</b></div>
+    <div><small>Peso total</small><b>${Number(l.total_weight||0).toFixed(0)} kg</b></div>
+  </div>
+  <div class="card"><h4>Desenvolvimento do peso médio</h4>${chart}</div>
+  <div class="card" style="margin-top:10px"><h4>Animais do lote</h4>
+   <table><thead><tr><th>Número</th><th>Categoria</th><th>Peso atual</th><th>Meta</th><th></th></tr></thead>
+   <tbody>${l.animals.length?l.animals.map(a=>`<tr><td><button class="animal-link" onclick="closeModal('lotProfileModal');openAnimalProfile(${a.id})">#${a.number}</button></td><td>${a.category}</td><td>${a.current_weight??a.entry_weight??'-'} kg</td><td>${a.target_weight??'-'} kg</td><td><button class="btn secondary" onclick="closeModal('lotProfileModal');openAnimalProfile(${a.id})">Abrir ficha</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum animal neste lote.</td></tr>'}</tbody></table>
+  </div>`;
+  openModal('lotProfileModal');
+ }catch(e){alert('Não foi possível abrir o desenvolvimento do lote: '+e.message)}
+}
+
+async function loadWeightHistory(){
+  const h=await api('/api/weighings/history');
+  if(!h.length){realChart.innerHTML='';chartEmpty.style.display='flex';return}
+  chartEmpty.style.display='none';
+  const vals=h.map(x=>Number(x.avg_weight||0)),min=Math.min(...vals),max=Math.max(...vals),range=Math.max(max-min,1);
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  realChart.innerHTML=h.map(x=>{
+    const m=Number(x.month.split('-')[1]),v=Number(x.avg_weight||0),pct=18+((v-min)/range)*65;
+    return `<div class="chart-point" style="--h:${pct}%"><i></i><b>${v.toFixed(0)} kg</b><small>${months[m-1]}</small></div>`
+  }).join('');
+}
+async function loadLots(){
+  lotsData=await api('/api/lots');
+  lotCards.innerHTML=lotsData.length?lotsData.map(x=>`<div class="card lot-card">
+    <button class="lot-open" onclick="openLotProfile(${x.id})">
+      <div class="label">${x.name}</div>
+      <div class="value">${x.animals||0}</div>
+      <div class="foot">Peso médio ${x.avg_weight?Number(x.avg_weight).toFixed(1):'0'} kg · ${x.active?'Ativo':'Inativo'}</div>
+      <div class="lot-view-hint">Ver desenvolvimento →</div>
+    </button>
+    <div class="lot-actions"><button class="btn secondary" onclick="editLot(${x.id})">Editar</button><button class="btn secondary" onclick="deleteLot(${x.id})">Excluir</button></div>
+  </div>`).join(''):'<div class="card empty">Nenhum lote cadastrado. Clique em “Novo lote” para começar.</div>';
+  const lotOptions=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');
+  if(document.getElementById('batchLot')) batchLot.innerHTML=lotOptions;
+  if(document.getElementById('alot')){
+    const current=alot.value;
+    alot.innerHTML='<option value="">Nenhum (sem lote)</option>'+lotOptions;
+    if([...alot.options].some(o=>o.value===current)) alot.value=current;
+  }
+  if(document.getElementById('lotCount')) lotCount.textContent=lotsData.length;
+  if(document.getElementById('dashboardLots')){
+    dashboardLots.innerHTML=lotsData.length?lotsData.slice(0,5).map(x=>`<tr onclick="openLotProfile(${x.id})" style="cursor:pointer">
+      <td><b>${x.name}</b></td><td>${x.animals||0}</td><td>${x.avg_weight?Number(x.avg_weight).toFixed(1)+' kg':'—'}</td>
+      <td>${x.avg_gmd!=null&&Number(x.avg_gmd)!==0?Number(x.avg_gmd).toFixed(3)+' kg/dia':'—'}</td>
+      <td><span class="lot-status ${x.animals?'':'empty-status'}">${x.animals?'Em acompanhamento':'Sem animais'}</span></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr>';
+  }
+}
+async function createInlineLot(){
+  const name=inlineLotName.value.trim();
+  if(!name){alert('Informe o nome do lote.');return}
+  await api('/api/lots',{method:'POST',body:JSON.stringify({name,notes:inlineLotNotes.value})});
+  inlineLotName.value='';inlineLotNotes.value='';
+  await loadLots();
+}
+function openLot(){
+  quickLotForAnimal=false;editingLotId=null;lotModalTitle.textContent='Novo lote';lotName.value='';lotNotes.value='';lotActive.value='1';openModal('lotModal');
+}
+function openQuickLot(){
+  quickLotForAnimal=true;editingLotId=null;lotModalTitle.textContent='Criar novo lote';lotName.value='';lotNotes.value='';lotActive.value='1';openModal('lotModal');
+}
+function editLot(id){
+  const l=lotsData.find(x=>x.id===id);if(!l)return;editingLotId=id;lotModalTitle.textContent='Editar lote';lotName.value=l.name;lotNotes.value=l.notes||'';lotActive.value=l.active?'1':'0';openModal('lotModal');
+}
+async function saveLot(){
+  const data={name:lotName.value.trim(),notes:lotNotes.value.trim(),active:lotActive.value==='1'};
+  if(!data.name){alert('Informe o nome do lote.');lotName.focus();return}
+  const duplicate=lotsData.find(x=>x.name.trim().toLowerCase()===data.name.toLowerCase()&&Number(x.id)!==Number(editingLotId));
+  if(duplicate){alert('Já existe um lote com esse nome nesta fazenda. Escolha outro nome.');lotName.focus();return}
+  const createdFromAnimal=quickLotForAnimal && !editingLotId;
+  const btn=document.getElementById('lotSaveBtn'),oldText=btn?.textContent;
+  if(btn){btn.disabled=true;btn.textContent='Salvando...'}
+  try{
+    if(editingLotId) await api(`/api/lots/${editingLotId}`,{method:'PUT',body:JSON.stringify(data)});
+    else await api('/api/lots',{method:'POST',body:JSON.stringify(data)});
+    closeModal('lotModal');
+    await Promise.all([loadLots(),loadAnimals()]);
+    if(createdFromAnimal && document.getElementById('alot')){alot.value=data.name;if(alot.value!==data.name){await loadLots();alot.value=data.name}}
+    quickLotForAnimal=false;
+  }catch(e){
+    const msg=String(e?.message||'');
+    if(/duplicate|unique|lots_farm_id_name_key/i.test(msg))alert('Já existe um lote com esse nome nesta fazenda.');
+    else alert('Não foi possível salvar o lote. '+(msg||'Tente novamente.'));
+  }finally{if(btn){btn.disabled=false;btn.textContent=oldText||'Salvar lote'}}
+}
+async function deleteLot(id){
+  if(!confirm('Excluir este lote? Só é possível excluir lotes sem animais.')) return;
+  try{await api(`/api/lots/${id}`,{method:'DELETE'});await loadLots()}catch(e){alert(e.message)}
+}
+async function downloadReport(type){
+ try{
+  let rows=[],headers=[];
+  if(type==='rebanho'){rows=await api('/api/animals');headers=['Número','Categoria','Raça','Nascimento','Origem','Entrada','Peso entrada','Meta','Lote'];rows=rows.map(x=>[x.number,x.category,x.breed||'',x.birth_date||'',x.origin||'',x.entry_date||'',x.entry_weight||'',x.target_weight||'',x.lot||''])}
+  else if(type==='pesagens'){rows=await api('/api/weighings/recent');headers=['Data','Animal','Peso','Lote'];rows=rows.map(x=>[x.weighing_date,x.number,x.weight,x.lot||''])}
+  else if(type==='gastos'){rows=await api('/api/expenses');headers=['Data','Categoria','Descrição','Valor','Observação'];rows=rows.map(x=>[x.expense_date,x.category,x.description||'',x.amount,x.notes||''])}
+  else if(type==='vacinacao'){rows=await api('/api/health');headers=['Data','Animal','Evento','Produto','Próxima data'];rows=rows.map(x=>[x.event_date,x.animal_number||'',x.event_type,x.product||'',x.next_due_date||''])}
+  else if(type==='reproducao'){rows=await api('/api/reproduction');headers=['Data','Animal','Evento','Data prevista'];rows=rows.map(x=>[x.event_date,x.animal_number||'',x.event_type,x.expected_date||''])}
+  else {alert('Este relatório será habilitado na próxima revisão online.');return}
+  const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv='\ufeff'+[headers,...rows].map(r=>r.map(esc).join(';')).join('\n');const b=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`meu-gado-${type}.csv`;a.click();URL.revokeObjectURL(a.href)
+ }catch(e){alert(e.message)}
+}
+async function loadMarket(){
+  const d=await api('/api/market/arroba');
+  marketQuotes=d.quotes||[];
+  if(document.getElementById('marketUpdated')) marketUpdated.textContent=d.updated_at||'—';
+  if(document.getElementById('marketBasis')) marketBasis.textContent=d.basis||'Preço da arroba';
+  if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(d.source||'—');
+  if(document.getElementById('marketSourceLink')&&d.source_url) marketSourceLink.href=d.source_url;
+  if(document.getElementById('marketAvailable')) marketAvailable.textContent=marketQuotes.filter(x=>x.min!=null).length;
+  renderMarketQuotes();
+}
+function marketMoney(v){
+  return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});
+}
+function renderMarketQuotes(){
+  if(!document.getElementById('marketStates')) return;
+  const q=(document.getElementById('marketSearch')?.value||'').trim().toLowerCase();
+  const rows=marketQuotes.filter(x=>!q||x.state.toLowerCase().includes(q)||x.uf.toLowerCase().includes(q));
+  marketStates.innerHTML=rows.map(x=>{
+    const has=x.min!=null;
+    const value=!has?'Sem cotação disponível':(Number(x.min)===Number(x.max)?`${marketMoney(x.min)}/@`:`${marketMoney(x.min)} – ${marketMoney(x.max)}/@`);
+    return `<div class="state-quote-card ${has?'':'no-quote'}">
+      <div class="state-identity"><span>${x.uf}</span><div><b>${x.state}</b><small>${x.reference||''}</small></div></div>
+      <div class="state-value ${has?'':'muted-value'}">${value}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadExpenses(){
+  const x=await api('/api/expenses');
+  expenseRows.innerHTML=x.length?x.map(e=>`<tr>
+    <td>${e.expense_date}</td>
+    <td>${e.category}</td>
+    <td>${e.description||'-'}</td>
+    <td>${money(e.amount)}</td>
+    <td><button class="btn secondary" onclick="editExpense(${e.id})">Editar</button></td>
+  </tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum gasto operacional lançado.</td></tr>';
+}
+function openNewExpense(){
+  editingExpenseId=null;
+  expenseModalTitle.textContent='Novo gasto';expenseSaveBtn.textContent='Salvar gasto';
+  ecat.value='Ração';eamount.value='';edescription.value='';enotes.value='';
+  edate.value=new Date().toISOString().slice(0,10);
+  openModal('expenseModal');
+}
+async function editExpense(id){
+  const rows=await api('/api/expenses');
+  const e=rows.find(x=>x.id===id);
+  if(!e){alert('Gasto não encontrado.');return}
+  editingExpenseId=id;
+  expenseModalTitle.textContent='Editar gasto';expenseSaveBtn.textContent='Salvar alterações';
+  ecat.value=e.category||'Outros';edate.value=e.expense_date||'';eamount.value=e.amount||'';
+  edescription.value=e.description||'';enotes.value=e.notes||'';
+  openModal('expenseModal');
+}
+async function saveExpense(){
+  const data={
+    category:ecat.value,
+    expense_date:edate.value,
+    amount:Number(eamount.value),
+    description:edescription.value.trim(),
+    animal_id:null,
+    lot:'',
+    notes:enotes.value.trim()
+  };
+  if(!data.category||!data.expense_date||!data.amount||data.amount<=0||!data.description){
+    alert('Preencha categoria, valor, data e descrição.');
+    return;
+  }
+  const method=editingExpenseId?'PUT':'POST';
+  const url=editingExpenseId?`/api/expenses/${editingExpenseId}`:'/api/expenses';
+  try{
+    await api(url,{method,body:JSON.stringify(data)});
+    editingExpenseId=null;
+    closeModal('expenseModal');
+    await Promise.all([loadExpenses(),dashboard()]);
+  }catch(e){alert(e.message)}
+}
+async function loadHealth(){const x=await api('/api/health');healthRows.innerHTML=x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?'#'+e.animal_number:(e.lot||'Geral')}</td><td>${e.event_type}</td><td>${e.product||'-'}</td><td>${e.next_due_date||'-'}</td></tr>`).join('')}
+async function saveHealth(){await api('/api/health',{method:'POST',body:JSON.stringify({event_type:htype.value,product:hproduct.value,event_date:hdate.value,next_due_date:hnext.value,animal_id:hanimal.value?Number(hanimal.value):null,lot:hlot.value,notes:hnotes.value})});closeModal('healthModal');await Promise.all([loadHealth(),dashboard()])}
+function addDaysISO(dateStr,days){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+function updateReproPrediction(){
+  const automatic=['Inseminação artificial','Monta natural / pasto'].includes(rtype.value);
+  if(automatic&&rdate.value)rexpected.value=addDaysISO(rdate.value,283);
+  if(['Parto','Aborto','Desmame'].includes(rtype.value))rexpected.value='';
+}
+async function loadRepro(){const x=await api('/api/reproduction');reproRows.innerHTML=x.length?x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?'#'+e.animal_number:'-'}</td><td>${e.event_type}</td><td>${e.expected_date||'-'}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhum evento reprodutivo registrado.</td></tr>'}
+async function saveRepro(){
+  if(!ranimal.value){alert('Selecione a vaca/matriz.');return}
+  if(!rdate.value){alert('Informe a data do evento.');return}
+  updateReproPrediction();
+  try{await api('/api/reproduction',{method:'POST',body:JSON.stringify({animal_id:Number(ranimal.value),event_type:rtype.value,event_date:rdate.value,expected_date:rexpected.value||null,notes:rnotes.value})});closeModal('reproModal');rnotes.value='';await Promise.all([loadRepro(),dashboard()])}catch(e){alert('Não foi possível salvar o evento reprodutivo. '+e.message)}
+}
+async function openNotifications(){
+  let d=window.mgDashboardData||await api('/api/dashboard');window.mgDashboardData=d;
+  const list=d.alerts||[];
+  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert"><span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='ready'?'↗':'!'}</span><div><b>${a.title}</b><small>${a.detail||''}</small></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
+  openModal('notificationsModal');
+}
+async function profile(){
+  const p=await api('/api/profile');
+  pname.value=p.name||'';pdoc.value=p.doc||'';pphone.value=p.phone||'';pemail.value=p.email||'';
+  pcity.value=p.city||'';pstate.value=p.state||'';poperation.value=p.operation||'Confinamento';
+  paddress.value=p.address||'';pnotes.value=p.notes||'';
+}
+async function saveProfile(){
+  const data={
+    name:pname.value.trim(),doc:pdoc.value.trim(),phone:pphone.value.trim(),email:pemail.value.trim(),
+    city:pcity.value.trim(),state:pstate.value.trim().toUpperCase(),address:paddress.value.trim(),
+    operation:poperation.value,notes:pnotes.value.trim()
+  };
+  const labels=[
+    ['Nome da propriedade',data.name],['CPF/CNPJ',data.doc],['Telefone',data.phone],['E-mail',data.email],
+    ['Cidade',data.city],['UF',data.state],['Endereço',data.address],['Operação',data.operation],['Observações',data.notes]
+  ];
+  const missing=labels.filter(x=>!x[1]).map(x=>x[0]);
+  if(missing.length){alert('Preencha todos os campos obrigatórios: '+missing.join(', '));return}
+  await api('/api/profile',{method:'PUT',body:JSON.stringify(data)});
+  farmSide.textContent=data.name;
+  if(document.getElementById('farmTop'))farmTop.textContent=data.name;
+  alert('Dados atualizados com sucesso.');
+}
+async function logout(){await api('/api/logout',{method:'POST'});location.href='/'}
+load();
+</script></body></html>
