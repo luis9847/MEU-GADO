@@ -540,7 +540,7 @@ async function mgSession(){const s=await mgSb.auth.getSession();if(!s.data.sessi
 async function mgGetFarm(){
  await mgSession();
  if(mgFarm)return mgFarm;
- let r=await mgSb.from('farms').select('*').maybeSingle();
+ let r=await mgSb.from('farms').select('*').eq('owner_id',mgUser.id).maybeSingle();
  if(r.error)mgErr(r.error);
  if(!r.data){
   const meta=mgUser?.user_metadata||{};
