@@ -230,8 +230,21 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
+
+<style id="mg-route-boot-style">
+html.mg-route-boot .view.active{display:none!important}
+</style>
+<script>
+(function(){
+  try{
+    var v=localStorage.getItem('mg_last_view');
+    if(v && v!=='inicio') document.documentElement.classList.add('mg-route-boot');
+  }catch(e){}
+})();
+</script>
+
 </head>
-<body data-build="navegacao-v19-4-teste"><div class="layout">
+<body data-build="navegacao-v19-5-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -1031,6 +1044,7 @@ function show(id,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
   document.querySelectorAll('.nav button[data-v],.side-link[data-v]').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
   try{localStorage.setItem('mg_last_view',id)}catch(e){}
+  document.documentElement.classList.remove('mg-route-boot');
   window.scrollTo(0,0);
 }
 function restoreLastView(){
@@ -1818,7 +1832,8 @@ async function saveProfile(){
 }
 async function logout(){try{localStorage.removeItem('mg_last_view')}catch(e){} await api('/api/logout',{method:'POST'});location.href='/'}
 refreshNewsBadge();
-load().then(()=>restoreLastView()).catch(err=>console.error(err));
+restoreLastView();
+load().catch(err=>console.error(err));
 
 // V18.5 — Simulador de Venda
 const simStates={AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'};
