@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="lixeira-v20-teste"><div class="layout">
+<body data-build="lixeira-v20-1-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -1011,7 +1011,7 @@ async function api(path,opt={}){
  m=path.match(/^\/api\/animals\/(\d+)\/exit$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'inactive',exit_type:data.exit_type,exit_date:data.exit_date,exit_value:data.exit_value||0,exit_notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/animals\/(\d+)\/reactivate$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'active',exit_type:null,exit_date:null,exit_value:0,exit_notes:null}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/animals\/(\d+)\/move$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({lot:data.to_lot}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/animals\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('animals').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/animals\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('animals').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('O animal não foi enviado para a Lixeira. Atualize a página e tente novamente.');return {ok:true,id:r.data.id}}
  if(path==='/api/lots'&&method==='GET')return mgLotList();
  if(path==='/api/lots'&&method==='POST'){let r=await mgSb.from('lots').insert({farm_id:f.id,name:data.name,notes:data.notes||'',active:true});if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/lots\/(\d+)\/profile$/);if(m)return mgLotProfile(Number(m[1]));
@@ -1105,8 +1105,8 @@ async function restoreTrashItem(table,id){
   if(!confirm(`Restaurar este registro de ${cfg.label}?`))return;
   try{
     const f=await mgGetFarm();
-    const r=await mgSb.from(table).update({deleted_at:null,deleted_by:null}).eq('farm_id',f.id).eq('id',Number(id)).not('deleted_at','is',null);
-    if(r.error)mgErr(r.error);
+    const r=await mgSb.from(table).update({deleted_at:null,deleted_by:null}).eq('farm_id',f.id).eq('id',Number(id)).not('deleted_at','is',null).select('id').maybeSingle();
+    if(r.error)mgErr(r.error);if(!r.data)throw new Error('O registro não pôde ser restaurado.');
     await loadTrash();
     await Promise.all([loadAnimals(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro(),loadNutrition(),dashboard()]);
   }catch(e){alert('Não foi possível restaurar. '+(e?.message||''))}
@@ -1401,6 +1401,7 @@ async function deleteAnimal(id,number){
   if(!confirm(`Enviar o animal #${number} para a Lixeira? Ele deixará de aparecer no rebanho, mas poderá ser restaurado.`)) return;
   try{
     await api(`/api/animals/${id}`,{method:'DELETE'});
+    alert(`Animal #${number} enviado para a Lixeira com sucesso.`);
     closeModal('animalProfileModal');
     await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro()]);await refreshTrashBadge();
   }catch(e){alert(e.message)}
