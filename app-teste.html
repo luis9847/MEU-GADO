@@ -169,7 +169,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 </head>
-<body data-build="desempenho-v8"><div class="layout">
+<body data-build="desempenho-v9-otimizado"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -181,7 +181,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <button data-v="saude" onclick="show('saude',this)">⌁ <span>Saúde</span></button>
     <button data-v="repro" onclick="show('repro',this)">♡ <span>Reprodução</span></button>
     <div class="nav-title" data-feature="performance-menu">Gestão</div>
-    <button id="navDesempenho" data-v="desempenho" onclick="show('desempenho',this);loadPerformance()">↗ <span>Desempenho</span></button>
+    <button id="navDesempenho" data-v="desempenho" onclick="show('desempenho',this);loadPerformance(false)">↗ <span>Desempenho</span></button>
     <div class="nav-title">Financeiro</div>
     <button data-v="gastos" onclick="show('gastos',this)">$ <span>Gastos</span></button>
     <button data-v="relatorios" onclick="show('relatorios',this)">▥ <span>Relatórios</span></button>
@@ -362,7 +362,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   </div>
 </section>
 <section id="desempenho" class="view">
-  <div class="page-title"><div><h2>Indicadores de desempenho</h2><p>Compare ganho de peso, metas e desempenho dos lotes usando os dados já registrados.</p></div><button class="btn secondary" onclick="loadPerformance()">Atualizar indicadores</button></div>
+  <div class="page-title"><div><h2>Indicadores de desempenho</h2><p>Compare ganho de peso, metas e desempenho dos lotes usando os dados já registrados.</p></div><button id="perfRefreshBtn" class="btn secondary" onclick="loadPerformance(true)">Atualizar indicadores</button></div>
   <div class="performance-kpis">
     <div class="performance-kpi"><small>Melhor GMD individual</small><b id="perfBestGmd">—</b><span id="perfBestGmdAnimal">Sem dados suficientes</span></div>
     <div class="performance-kpi"><small>Animais na meta</small><b id="perfReadyPct">0%</b><span id="perfReadyCount">0 de 0 animais</span></div>
@@ -826,6 +826,7 @@ async function saveAnimal(){
       photo_data:pendingAnimalPhoto||''
     })});
     closeModal('animalModal');
+    invalidatePerformanceCache();
     await Promise.all([loadAnimals(),dashboard(),loadLots(),loadExpenses(),loadWeightHistory()]);
   }catch(e){alert('Não foi possível cadastrar o animal. '+(e?.message||'Tente novamente.'))}
 }
@@ -839,6 +840,7 @@ async function savePageWeight(){
   if(!id){alert('Selecione um animal.');return}
   if(!weight||weight<=0){alert('Informe um peso válido.');return}
   await api(`/api/animals/${id}/weighings`,{method:'POST',body:JSON.stringify({weighing_date:pageWeightDate.value,weight,notes:pageWeightNotes.value})});
+  invalidatePerformanceCache();
   pageWeightValue.value='';pageWeightNotes.value='';
   await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory()]);
 }
@@ -853,6 +855,7 @@ async function saveSingleWeight(){
   const id=Number(singleAnimal.value),w=Number(singleWeight.value);
   if(!id||!w||w<=0){alert('Informe animal e peso válido.');return}
   await api(`/api/animals/${id}/weighings`,{method:'POST',body:JSON.stringify({weighing_date:singleDate.value,weight:w,notes:singleNotes.value})});
+  invalidatePerformanceCache();
   closeModal('singleWeightModal');
   await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory()]);
 }
@@ -878,6 +881,7 @@ async function saveBatchWeight(){
   if(!batchLot.value){alert('Selecione um lote.');return}
   if(!items.length){alert('Informe o peso de pelo menos um animal.');return}
   await api('/api/weighings/batch',{method:'POST',body:JSON.stringify({weighing_date:batchDate.value,lot_name:batchLot.value,items})});
+  invalidatePerformanceCache();
   closeModal('batchWeightModal');
   await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory()]);
 }
@@ -985,10 +989,32 @@ async function openLotProfile(id){
  }catch(e){alert('Não foi possível abrir o desenvolvimento do lote: '+e.message)}
 }
 
-async function loadPerformance(){
+let performanceWeighingsCache=null,performanceWeighingsCacheAt=0;
+function invalidatePerformanceCache(){performanceWeighingsCache=null;performanceWeighingsCacheAt=0}
+function setPerformanceLoading(on){
+  const btn=document.getElementById('perfRefreshBtn');
+  if(btn){btn.disabled=on;btn.textContent=on?'Calculando...':'Atualizar indicadores'}
+  if(!on)return;
+  const msg='<div class="performance-empty">Calculando indicadores...</div>';
+  if(document.getElementById('perfAnimalRanking'))perfAnimalRanking.innerHTML=msg;
+  if(document.getElementById('perfLotRanking'))perfLotRanking.innerHTML='<tr><td colspan="5" class="empty">Calculando indicadores...</td></tr>';
+  if(document.getElementById('perfAttention'))perfAttention.innerHTML=msg;
+  if(document.getElementById('perfTargets'))perfTargets.innerHTML=msg;
+}
+async function loadPerformance(force=false){
   const root=document.getElementById('desempenho');if(!root)return;
+  setPerformanceLoading(true);
   try{
-    const [animals,weighings,lots,dash]=await Promise.all([api('/api/animals'),mgRows('weighings'),api('/api/lots'),api('/api/dashboard')]);
+    // Reaproveita dados já carregados no painel e consulta apenas o que estiver faltando.
+    const animals=(Array.isArray(animalsData)&&animalsData.length)?animalsData:await api('/api/animals');
+    const lots=(Array.isArray(lotsData)&&lotsData.length)?lotsData:await api('/api/lots');
+    const dash=window.mgDashboardData||await api('/api/dashboard');
+    const now=Date.now();
+    let weighings=performanceWeighingsCache;
+    if(force||!weighings||(now-performanceWeighingsCacheAt)>30000){
+      weighings=await mgRows('weighings');
+      performanceWeighingsCache=weighings;performanceWeighingsCacheAt=now;
+    }
     const by={};for(const w of weighings){(by[w.animal_id]??=[]).push(w)}
     const metrics=[];
     for(const a of animals){
@@ -1009,17 +1035,29 @@ async function loadPerformance(){
     perfReadyPct.textContent=targetTotal?`${Math.round(ready/targetTotal*100)}%`:'0%';
     perfReadyCount.textContent=targetTotal?`${ready} de ${targetTotal} animais com meta`:'Nenhum animal com meta definida';
     perfCostHead.textContent=money(dash.cost_per_head||0);
-    const lotRank=lots.slice().sort((a,b)=>Number(b.avg_gmd||-999)-Number(a.avg_gmd||-999));
-    const bestLot=lotRank.find(x=>Number.isFinite(Number(x.avg_gmd))&&Number(x.avg_gmd)!==0);
+
+    // Calcula o GMD de cada lote a partir dos GMDs individuais, em vez de depender do avg_gmd da listagem de lotes.
+    const lotMetrics=lots.map(l=>{
+      const members=metrics.filter(x=>x.a.lot===l.name);
+      const gmds=members.map(x=>x.gmd).filter(Number.isFinite);
+      const avgGmd=gmds.length?gmds.reduce((a,b)=>a+b,0)/gmds.length:null;
+      const weights=members.map(x=>x.last).filter(Number.isFinite);
+      const avgWeight=weights.length?weights.reduce((a,b)=>a+b,0)/weights.length:Number(l.avg_weight||0);
+      return {...l,_members:members,_avgGmd:avgGmd,_avgWeight:avgWeight};
+    });
+    const lotRank=lotMetrics.slice().sort((a,b)=>(b._avgGmd??-999)-(a._avgGmd??-999));
+    const bestLot=lotRank.find(x=>Number.isFinite(x._avgGmd));
     perfBestLot.textContent=bestLot?bestLot.name:'—';
-    perfBestLotGmd.textContent=bestLot?`${Number(bestLot.avg_gmd).toFixed(3)} kg/dia · ${bestLot.animals||0} animais`:'Sem GMD calculado nos lotes';
+    perfBestLotGmd.textContent=bestLot?`${bestLot._avgGmd.toFixed(3)} kg/dia · ${bestLot._members.length} animais`:'Sem GMD calculado nos lotes';
 
     perfAnimalRanking.innerHTML=withGmd.length?withGmd.slice(0,10).map((x,i)=>`<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">${i+1}</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · ${x.a.category||''}</small></div><div class="${x.gmd>=0?'rank-good':'rank-bad'}">${x.gmd>=0?'+':''}${x.gmd.toFixed(3)} kg/dia</div><div>${x.last!=null?x.last.toFixed(1)+' kg':'—'}</div></div>`).join(''):'<div class="performance-empty">Ainda não há histórico suficiente para montar o ranking. Registre pesagens em datas diferentes.</div>';
 
     perfLotRanking.innerHTML=lotRank.length?lotRank.map(l=>{
-      const members=metrics.filter(x=>x.a.lot===l.name),withTarget=members.filter(x=>x.target>0),readyLot=withTarget.filter(x=>x.last!=null&&x.last>=x.target).length;
+      const members=l._members,withTarget=members.filter(x=>x.target>0),readyLot=withTarget.filter(x=>x.last!=null&&x.last>=x.target).length;
       const meta=withTarget.length?`${Math.round(readyLot/withTarget.length*100)}%`:'—';
-      return `<tr onclick="openLotProfile(${l.id})"><td><b>${l.name}</b></td><td>${l.animals||0}</td><td>${Number(l.avg_weight||0)>0?Number(l.avg_weight).toFixed(1)+' kg':'—'}</td><td class="${Number(l.avg_gmd||0)<0?'bad':Number(l.avg_gmd||0)>0?'good':''}">${Number(l.avg_gmd||0)!==0?Number(l.avg_gmd).toFixed(3)+' kg/dia':'—'}</td><td>${meta}</td></tr>`
+      const gmdText=Number.isFinite(l._avgGmd)?`${l._avgGmd.toFixed(3)} kg/dia`:'—';
+      const gmdClass=Number.isFinite(l._avgGmd)?(l._avgGmd<0?'bad':l._avgGmd>0?'good':''):'';
+      return `<tr onclick="openLotProfile(${l.id})"><td><b>${l.name}</b></td><td>${members.length}</td><td>${l._avgWeight>0?l._avgWeight.toFixed(1)+' kg':'—'}</td><td class="${gmdClass}">${gmdText}</td><td>${meta}</td></tr>`
     }).join(''):'<tr><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr>';
 
     const attention=metrics.filter(x=>Number.isFinite(x.delta)&&x.delta<0).sort((a,b)=>a.delta-b.delta);
@@ -1029,7 +1067,7 @@ async function loadPerformance(){
     perfTargets.innerHTML=targets.length?targets.map(x=>`<div style="padding:10px 0;border-bottom:1px solid #edf1f4;cursor:pointer" onclick="openAnimalProfile(${x.a.id})"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px"><b>Animal #${x.a.number}</b><span>${x.last?.toFixed(1)||'0'} / ${x.target.toFixed(1)} kg · <b>${Math.round(x.progress)}%</b></span></div><div class="perf-progress"><i style="width:${x.progress}%"></i></div></div>`).join(''):'<div class="performance-empty">Defina uma meta de peso nos animais para acompanhar o progresso.</div>';
   }catch(e){
     console.error(e);alert('Não foi possível carregar os indicadores de desempenho: '+e.message);
-  }
+  }finally{setPerformanceLoading(false)}
 }
 
 async function loadWeightHistory(){
