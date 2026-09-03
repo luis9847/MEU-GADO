@@ -197,6 +197,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <button data-v="relatorios" onclick="show('relatorios',this)">▥ <span>Relatórios</span></button>
     <div class="nav-title">Mercado</div>
     <button data-v="mercado" onclick="show('mercado',this)">⌘ <span>Mercado</span></button>
+    <button data-v="saleSimulator" onclick="show('saleSimulator',this)">🧮 <span>Simulador de Venda</span></button>
   </div>
   <div class="side-bottom">
     <div class="farm-profile">
@@ -497,6 +498,58 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   </div>
 </section>
 </div></main></div>
+
+
+<section id="saleSimulator" class="view">
+  <div class="page-title"><div><h1>Simulador de Venda</h1><p>Estime o valor de venda usando o peso do rebanho e a última cotação disponível no Mercado Pecuário.</p></div></div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="head"><div><h3>1. O que você deseja simular?</h3><div class="sub">Escolha um animal ou um lote cadastrado.</div></div></div>
+    <div class="form">
+      <label>Tipo<select id="simType" onchange="simFillTargets()"><option value="animal">Animal</option><option value="lot">Lote</option></select></label>
+      <label>Animal / Lote<select id="simTarget" onchange="simTargetChanged()"></select></label>
+      <label>Peso vivo total (kg)<input id="simWeight" type="number" min="0" step="0.1" oninput="renderSaleSimulation()"></label>
+      <label>Rendimento de carcaça (%)<input id="simYield" type="number" min="1" max="100" step="0.1" value="54" oninput="renderSaleSimulation()"></label>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="head"><div><h3>2. Cotação de referência</h3><div class="sub">A cotação vem do mesmo Mercado Pecuário Automático já validado.</div></div></div>
+    <div class="form">
+      <label>Estado<select id="simUF" onchange="simFillRegions();renderSaleSimulation()"></select></label>
+      <label>Região / Praça<select id="simRegion" onchange="renderSaleSimulation()"></select></label>
+      <label>Categoria<select id="simCategory" onchange="renderSaleSimulation()">
+        <option value="boi_cash">Boi gordo · à vista</option>
+        <option value="boi_30">Boi gordo · 30 dias</option>
+        <option value="cow_cash">Vaca gorda · à vista</option>
+      </select></label>
+      <label>Preço de referência (R$/@)<input id="simMarketPrice" readonly></label>
+      <label>Oferta do comprador (R$/@) <small style="color:var(--muted)">opcional</small><input id="simBuyerPrice" type="number" min="0" step="0.01" placeholder="Use se já recebeu uma proposta" oninput="renderSaleSimulation()"></label>
+    </div>
+  </div>
+
+  <div class="dashboard-kpis" style="margin-bottom:12px">
+    <div class="metric-card"><div class="metric-top"><span>PESO VIVO</span><i>⚖</i></div><strong id="simKpiWeight">—</strong><small>peso usado no cálculo</small></div>
+    <div class="metric-card"><div class="metric-top"><span>CARCAÇA EST.</span><i>◒</i></div><strong id="simKpiCarcass">—</strong><small>peso vivo × rendimento</small></div>
+    <div class="metric-card"><div class="metric-top"><span>ARROBAS EST.</span><i>@</i></div><strong id="simKpiArrobas">—</strong><small>carcaça ÷ 15 kg</small></div>
+    <div class="metric-card"><div class="metric-top"><span>PREÇO USADO</span><i>R$</i></div><strong id="simKpiPrice">—</strong><small id="simKpiPriceHint">cotação de referência</small></div>
+    <div class="metric-card"><div class="metric-top"><span>VALOR BRUTO</span><i>↗</i></div><strong id="simKpiGross">—</strong><small>estimativa antes de descontos</small></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="head"><div><h3>Resultado da simulação</h3><div class="sub">Estimativa técnica — não substitui a pesagem e o romaneio do frigorífico.</div></div></div>
+      <div id="simResult" class="empty-state"><div class="empty-icon">🧮</div><b>Preencha os dados da simulação</b><span>O Meu Gado calculará automaticamente as arrobas e o valor bruto estimado.</span></div>
+    </div>
+    <div class="card">
+      <div class="head"><div><h3>Como calculamos</h3><div class="sub">Fórmula transparente para você conferir.</div></div></div>
+      <div class="alert"><i>1</i><div><b>Carcaça estimada</b><span>Peso vivo × rendimento informado.</span></div></div>
+      <div class="alert"><i>2</i><div><b>Arrobas estimadas</b><span>Quilos de carcaça ÷ 15.</span></div></div>
+      <div class="alert"><i>3</i><div><b>Valor bruto</b><span>Arrobas × preço da arroba selecionada.</span></div></div>
+      <div class="alert"><i>!</i><div><b>Atenção</b><span>Frete, impostos, descontos, bonificações e rendimento real podem alterar o valor final.</span></div></div>
+    </div>
+  </div>
+</section>
 
 <div class="modal" id="animalModal"><div class="modalbox animal-form-modal">
   <div class="modal-head-clean"><div><h3>Novo animal</h3><p>Cadastre os dados principais do animal</p></div><button onclick="closeModal('animalModal')">×</button></div>
@@ -1535,4 +1588,89 @@ async function saveProfile(){
 async function logout(){await api('/api/logout',{method:'POST'});location.href='/'}
 refreshNewsBadge();
 load();
+
+// V18 TESTE — Simulador de Venda
+const simStates={AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'};
+function simBRL(v){return Number.isFinite(v)?v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'—'}
+function simNum(v){const n=Number(v);return Number.isFinite(n)?n:0}
+function initSaleSimulator(){
+  const uf=document.getElementById('simUF'); if(!uf)return;
+  uf.innerHTML=Object.entries(simStates).map(([k,v])=>`<option value="${k}">${k} · ${v}</option>`).join('');
+  const preferred=(window.farm?.state||window.currentFarm?.state||'MG').toUpperCase();
+  if(simStates[preferred]) uf.value=preferred;
+  simFillTargets(); simFillRegions(); renderSaleSimulation();
+}
+function simFillTargets(){
+  const s=document.getElementById('simTarget'),type=document.getElementById('simType'); if(!s||!type)return;
+  const arr=type.value==='lot'?(window.lots||[]):((window.animals||[]).filter(a=>!a.exit_type&&!a.status?.match(/vendido|morto/i)));
+  s.innerHTML='<option value="">Selecione...</option>'+arr.map(x=>`<option value="${x.id}">${type.value==='lot'?(x.name||x.nome||('Lote '+x.id)):(x.number||x.name||x.nome||('Animal '+x.id))}</option>`).join('');
+  document.getElementById('simWeight').value=''; renderSaleSimulation();
+}
+function simTargetChanged(){
+  const type=document.getElementById('simType').value,id=document.getElementById('simTarget').value;
+  if(!id)return renderSaleSimulation();
+  if(type==='animal'){
+    const a=(window.animals||[]).find(x=>String(x.id)===String(id));
+    const ws=(window.weighings||[]).filter(w=>String(w.animal_id)===String(id)).sort((a,b)=>String(b.date||b.weighed_at||'').localeCompare(String(a.date||a.weighed_at||'')));
+    document.getElementById('simWeight').value=simNum(ws[0]?.weight||a?.current_weight||a?.weight||a?.initial_weight)||'';
+  }else{
+    const members=(window.animals||[]).filter(a=>String(a.lot_id)===String(id)&&!a.exit_type&&!a.status?.match(/vendido|morto/i));
+    let total=0;
+    for(const a of members){
+      const ws=(window.weighings||[]).filter(w=>String(w.animal_id)===String(a.id)).sort((x,y)=>String(y.date||y.weighed_at||'').localeCompare(String(x.date||x.weighed_at||'')));
+      total+=simNum(ws[0]?.weight||a.current_weight||a.weight||a.initial_weight);
+    }
+    document.getElementById('simWeight').value=total||'';
+  }
+  renderSaleSimulation();
+}
+function simFillRegions(){
+  const uf=document.getElementById('simUF')?.value, s=document.getElementById('simRegion'); if(!s)return;
+  const rows=(window.marketLiveData?.quotes||[]).filter(x=>x.uf===uf&&x.unit!=='kg');
+  s.innerHTML=rows.length?rows.map(x=>`<option value="${x.place}">${x.place}</option>`).join(''):'<option value="">Sem praça em R$/@</option>';
+  renderSaleSimulation();
+}
+function renderSaleSimulation(){
+  const uf=document.getElementById('simUF')?.value,region=document.getElementById('simRegion')?.value,cat=document.getElementById('simCategory')?.value;
+  const q=(window.marketLiveData?.quotes||[]).find(x=>x.uf===uf&&x.place===region&&x.unit!=='kg');
+  const market=simNum(q?.[cat]),buyer=simNum(document.getElementById('simBuyerPrice')?.value),price=buyer||market;
+  const weight=simNum(document.getElementById('simWeight')?.value),yieldPct=simNum(document.getElementById('simYield')?.value);
+  const carcass=weight*yieldPct/100, arrobas=carcass/15, gross=arrobas*price;
+  const mp=document.getElementById('simMarketPrice'); if(mp)mp.value=market?market.toFixed(2).replace('.',','):'';
+  const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};
+  set('simKpiWeight',weight?`${weight.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg`:'—');
+  set('simKpiCarcass',carcass?`${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg`:'—');
+  set('simKpiArrobas',arrobas?`${arrobas.toLocaleString('pt-BR',{maximumFractionDigits:2})} @`:'—');
+  set('simKpiPrice',price?`${simBRL(price)}/@`:'—');
+  set('simKpiPriceHint',buyer?'oferta informada pelo comprador':'cotação automática do mercado');
+  set('simKpiGross',gross?simBRL(gross):'—');
+  const r=document.getElementById('simResult'); if(!r)return;
+  if(!weight||!yieldPct||!price){
+    r.innerHTML='<div class="empty-icon">🧮</div><b>Preencha os dados da simulação</b><span>Selecione o rebanho e uma praça com cotação disponível.</span>'; return;
+  }
+  const diff=buyer&&market?(buyer-market):0;
+  r.innerHTML=`<div style="display:grid;gap:10px">
+    <div class="performance-row"><div><b>Preço de mercado</b><small>${uf} · ${region} · fechamento ${window.marketLiveData?.physical_updated_at||window.marketLiveData?.updated_at||'—'}</small></div><strong>${simBRL(market)}/@</strong></div>
+    ${buyer?`<div class="performance-row"><div><b>Oferta do comprador</b><small>${diff>=0?'acima':'abaixo'} da referência em ${simBRL(Math.abs(diff))}/@</small></div><strong>${simBRL(buyer)}/@</strong></div>`:''}
+    <div class="performance-row"><div><b>Carcaça estimada</b><small>${weight.toLocaleString('pt-BR')} kg × ${yieldPct.toLocaleString('pt-BR')}%</small></div><strong>${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg</strong></div>
+    <div class="performance-row"><div><b>Arrobas estimadas</b><small>${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg ÷ 15</small></div><strong>${arrobas.toLocaleString('pt-BR',{maximumFractionDigits:2})} @</strong></div>
+    <div style="padding:16px;border-radius:10px;background:#eef8f1"><span class="label">VALOR BRUTO ESTIMADO</span><div style="font-size:30px;font-weight:900;color:var(--green);margin-top:5px">${simBRL(gross)}</div><small>Antes de frete, impostos, descontos e ajustes de rendimento.</small></div>
+  </div>`;
+}
+const _simOldShowView=window.showView;
+if(typeof _simOldShowView==='function') window.showView=function(id){const r=_simOldShowView.apply(this,arguments);if(id==='saleSimulator'){if(!window.marketLiveData&&typeof loadMarket==='function')loadMarket().finally(()=>initSaleSimulator());else initSaleSimulator()}return r};
+
+
+const _mgOriginalShow=window.show;
+if(typeof _mgOriginalShow==='function'){
+  window.show=function(id,btn){
+    const r=_mgOriginalShow.apply(this,arguments);
+    if(id==='saleSimulator'){
+      if(!window.marketLiveData&&typeof loadMarket==='function') Promise.resolve(loadMarket()).finally(()=>initSaleSimulator());
+      else initSaleSimulator();
+    }
+    return r;
+  };
+}
+
 </script></body></html>
