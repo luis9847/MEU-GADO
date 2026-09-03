@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="lixeira-v20-1-teste"><div class="layout">
+<body data-build="lixeira-v20-2-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -1529,6 +1529,16 @@ async function loadPerformance(force=false){
   }catch(e){
     console.error(e);alert('Não foi possível carregar os indicadores de desempenho: '+e.message);
   }finally{setPerformanceLoading(false)}
+}
+
+
+async function deleteWeighing(id){
+  if(!confirm('Enviar esta pesagem para a Lixeira? Você poderá restaurá-la depois.'))return;
+  try{
+    await api(`/api/weighings/${id}`,{method:'DELETE'});
+    await Promise.all([loadWeightHistory(),loadAnimals(),dashboard()]);
+    await refreshTrashBadge();
+  }catch(e){alert('Não foi possível enviar a pesagem para a Lixeira. '+(e?.message||''))}
 }
 
 async function loadWeightHistory(){
