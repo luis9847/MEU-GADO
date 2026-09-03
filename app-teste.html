@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="lixeira-v20-2-teste"><div class="layout">
+<body data-build="lixeira-v20-3-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -514,7 +514,7 @@ html.mg-route-boot .view.active{display:none!important}
     </div>
     <div class="weigh-history card">
       <div class="panel-title"><div><b>Últimas pesagens</b><small>Histórico recente do rebanho</small></div></div>
-      <table><thead><tr><th>Animal</th><th>Data</th><th>Peso</th></tr></thead><tbody id="weightRows"></tbody></table>
+      <table><thead><tr><th>Animal</th><th>Data</th><th>Peso</th><th>Ação</th></tr></thead><tbody id="weightRows"></tbody></table>
     </div>
   </div>
 </section>
@@ -1292,7 +1292,7 @@ async function saveAnimal(){
 async function loadRecentWeighings(){
   if(!document.getElementById('weightRows'))return;
   const r=await api('/api/weighings/recent');
-  weightRows.innerHTML=r.length?r.slice(0,10).map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma pesagem registrada.</td></tr>';
+  weightRows.innerHTML=r.length?r.slice(0,10).map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td><td><button class="btn secondary delete-outline" onclick="deleteWeighing(${w.id})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhuma pesagem registrada.</td></tr>';
 }
 async function savePageWeight(){
   const id=Number(pageWeightAnimal.value),weight=Number(pageWeightValue.value);
