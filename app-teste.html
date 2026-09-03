@@ -505,7 +505,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <div class="form">
       <label>Tipo<select id="simType" onchange="simFillTargets()"><option value="animal">Animal</option><option value="lot">Lote</option></select></label>
       <label>Animal / Lote<select id="simTarget" onchange="simTargetChanged()"></select></label>
-      <label>Peso vivo total (kg)<input id="simWeight" type="number" min="0" step="0.1" oninput="renderSaleSimulation()"></label>
+      <label>Peso vivo total (kg)<input id="simWeight" type="number" min="0" step="0.1" oninput="renderSaleSimulation()"><small id="simLotCount" style="color:var(--muted)"></small></label>
       <label>Rendimento de carcaça (%)<input id="simYield" type="number" min="1" max="100" step="0.1" value="54" oninput="renderSaleSimulation()"></label>
     </div>
   </div>
@@ -519,6 +519,12 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
         <option value="boi_cash">Boi gordo · à vista</option>
         <option value="boi_30">Boi gordo · 30 dias</option>
         <option value="cow_cash">Vaca gorda · à vista</option>
+        <option value="bezerro">Bezerro macho</option>
+        <option value="bezerra">Bezerra fêmea</option>
+        <option value="garrote">Garrote</option>
+        <option value="boi_magro">Boi magro</option>
+        <option value="novilha">Novilha</option>
+        <option value="vaca_boiadeira">Vaca boiadeira</option>
       </select></label>
       <label>Preço de referência (R$/@)<input id="simMarketPrice" readonly></label>
       <label>Oferta do comprador (R$/@) <small style="color:var(--muted)">opcional</small><input id="simBuyerPrice" type="number" min="0" step="0.01" placeholder="Use se já recebeu uma proposta" oninput="renderSaleSimulation()"></label>
@@ -1605,7 +1611,9 @@ function simFillTargets(){
   const s=document.getElementById('simTarget'),type=document.getElementById('simType'); if(!s||!type)return;
   const arr=type.value==='lot'?(lotsData||[]):((animalsData||[]).filter(a=>!a.exit_type&&!a.status?.match(/vendido|morto/i)));
   s.innerHTML='<option value="">Selecione...</option>'+arr.map(x=>`<option value="${x.id}">${type.value==='lot'?(x.name||x.nome||('Lote '+x.id)):(x.number||x.name||x.nome||('Animal '+x.id))}</option>`).join('');
-  document.getElementById('simWeight').value=''; renderSaleSimulation();
+  document.getElementById('simWeight').value='';
+  const bp=document.getElementById('simBuyerPrice'); if(bp)bp.value='';
+  renderSaleSimulation();
 }
 function simTargetChanged(){
   const type=document.getElementById('simType').value,id=document.getElementById('simTarget').value;
@@ -1614,12 +1622,17 @@ function simTargetChanged(){
     const a=(animalsData||[]).find(x=>String(x.id)===String(id));
     document.getElementById('simWeight').value=simNum(a?.current_weight||a?.weight||a?.last_weight||a?.initial_weight)||'';
   }else{
-    const members=(animalsData||[]).filter(a=>String(a.lot_id)===String(id)&&!a.exit_type&&!a.status?.match(/vendido|morto/i));
+    const members=(animalsData||[]).filter(a=>{
+      const animalLot=a.lot_id ?? a.lotId ?? a.lote_id ?? a.loteId;
+      return String(animalLot)===String(id)&&!a.exit_type&&!a.status?.match(/vendido|morto/i);
+    });
     let total=0;
     for(const a of members){
-      total+=simNum(a.current_weight||a.weight||a.last_weight||a.initial_weight);
+      total+=simNum(a.current_weight ?? a.currentWeight ?? a.last_weight ?? a.lastWeight ?? a.weight ?? a.initial_weight ?? a.initialWeight);
     }
     document.getElementById('simWeight').value=total||'';
+    const count=document.getElementById('simLotCount');
+    if(count) count.textContent=`${members.length} animal${members.length===1?'':'is'} no lote`;
   }
   renderSaleSimulation();
 }
@@ -1629,18 +1642,44 @@ function simFillRegions(){
   s.innerHTML=rows.length?rows.map(x=>`<option value="${x.place}">${x.place}</option>`).join(''):'<option value="">Sem praça em R$/@</option>';
   renderSaleSimulation();
 }
+
+function simReplacementQuote(uf,cat){
+  const rows=marketLiveData?.replacement||marketLiveData?.replacements||marketLiveData?.replacement_quotes||[];
+  const aliases={
+    bezerro:['bezerro','bezerro_macho'],bezerra:['bezerra','bezerra_femea'],
+    garrote:['garrote'],boi_magro:['boi_magro','boi magro'],
+    novilha:['novilha'],vaca_boiadeira:['vaca_boiadeira','vaca boiadeira']
+  };
+  const keys=aliases[cat]||[];
+  return rows.find(x=>{
+    const xu=String(x.uf||x.state||'').toUpperCase();
+    const xc=String(x.category||x.categoria||x.type||x.tipo||x.key||'').toLowerCase().replace(/[- ]/g,'_');
+    return xu===uf && keys.some(k=>xc.includes(k.replace(/ /g,'_')));
+  });
+}
 function renderSaleSimulation(){
   const uf=document.getElementById('simUF')?.value,region=document.getElementById('simRegion')?.value,cat=document.getElementById('simCategory')?.value;
+  const isReplacement=['bezerro','bezerra','garrote','boi_magro','novilha','vaca_boiadeira'].includes(cat);
   const q=(marketQuotes||[]).find(x=>x.uf===uf&&x.place===region&&x.unit!=='kg');
-  const market=simNum(q?.[cat]),buyer=simNum(document.getElementById('simBuyerPrice')?.value),price=buyer||market;
+  const rq=isReplacement?simReplacementQuote(uf,cat):null;
+  // Replacement categories are quoted per head/kg; slaughter categories are R$/@.
+  const market=isReplacement?simNum(rq?.per_head||rq?.head_price||rq?.price_head||rq?.valor_cabeca):simNum(q?.[cat]);
+  const buyer=simNum(document.getElementById('simBuyerPrice')?.value),price=buyer||market;
   const weight=simNum(document.getElementById('simWeight')?.value),yieldPct=simNum(document.getElementById('simYield')?.value);
-  const carcass=weight*yieldPct/100, arrobas=carcass/15, gross=arrobas*price;
+  const carcass=weight*yieldPct/100, arrobas=carcass/15;
+  let headCount=1;
+  if(document.getElementById('simType')?.value==='lot'){
+    const lid=document.getElementById('simTarget')?.value;
+    headCount=(animalsData||[]).filter(a=>String(a.lot_id??a.lotId??a.lote_id??a.loteId)===String(lid)&&!a.exit_type&&!a.status?.match(/vendido|morto/i)).length||0;
+  }
+  const gross=isReplacement?(headCount*price):(arrobas*price);
   const mp=document.getElementById('simMarketPrice'); if(mp)mp.value=market?market.toFixed(2).replace('.',','):'';
+  const priceLabel=mp?.closest('label'); if(priceLabel) priceLabel.childNodes[0].nodeValue=isReplacement?'Preço de referência (R$/cabeça)':'Preço de referência (R$/@)';
   const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};
   set('simKpiWeight',weight?`${weight.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg`:'—');
   set('simKpiCarcass',carcass?`${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg`:'—');
-  set('simKpiArrobas',arrobas?`${arrobas.toLocaleString('pt-BR',{maximumFractionDigits:2})} @`:'—');
-  set('simKpiPrice',price?`${simBRL(price)}/@`:'—');
+  set('simKpiArrobas',isReplacement?(headCount?`${headCount} cab.`:'—'):(arrobas?`${arrobas.toLocaleString('pt-BR',{maximumFractionDigits:2})} @`:'—'));
+  set('simKpiPrice',price?`${simBRL(price)}${isReplacement?'/cab':'/@'}`:'—');
   set('simKpiPriceHint',buyer?'oferta informada pelo comprador':'cotação automática do mercado');
   set('simKpiGross',gross?simBRL(gross):'—');
   const r=document.getElementById('simResult'); if(!r)return;
