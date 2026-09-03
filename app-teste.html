@@ -497,9 +497,6 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     </div>
   </div>
 </section>
-</div></main></div>
-
-
 <section id="saleSimulator" class="view">
   <div class="page-title"><div><h1>Simulador de Venda</h1><p>Estime o valor de venda usando o peso do rebanho e a última cotação disponível no Mercado Pecuário.</p></div></div>
 
@@ -550,6 +547,10 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     </div>
   </div>
 </section>
+</div></main></div>
+
+
+
 
 <div class="modal" id="animalModal"><div class="modalbox animal-form-modal">
   <div class="modal-head-clean"><div><h3>Novo animal</h3><p>Cadastre os dados principais do animal</p></div><button onclick="closeModal('animalModal')">×</button></div>
@@ -1602,7 +1603,7 @@ function initSaleSimulator(){
 }
 function simFillTargets(){
   const s=document.getElementById('simTarget'),type=document.getElementById('simType'); if(!s||!type)return;
-  const arr=type.value==='lot'?(window.lots||[]):((window.animals||[]).filter(a=>!a.exit_type&&!a.status?.match(/vendido|morto/i)));
+  const arr=type.value==='lot'?(lotsData||[]):((animalsData||[]).filter(a=>!a.exit_type&&!a.status?.match(/vendido|morto/i)));
   s.innerHTML='<option value="">Selecione...</option>'+arr.map(x=>`<option value="${x.id}">${type.value==='lot'?(x.name||x.nome||('Lote '+x.id)):(x.number||x.name||x.nome||('Animal '+x.id))}</option>`).join('');
   document.getElementById('simWeight').value=''; renderSaleSimulation();
 }
@@ -1610,15 +1611,13 @@ function simTargetChanged(){
   const type=document.getElementById('simType').value,id=document.getElementById('simTarget').value;
   if(!id)return renderSaleSimulation();
   if(type==='animal'){
-    const a=(window.animals||[]).find(x=>String(x.id)===String(id));
-    const ws=(window.weighings||[]).filter(w=>String(w.animal_id)===String(id)).sort((a,b)=>String(b.date||b.weighed_at||'').localeCompare(String(a.date||a.weighed_at||'')));
-    document.getElementById('simWeight').value=simNum(ws[0]?.weight||a?.current_weight||a?.weight||a?.initial_weight)||'';
+    const a=(animalsData||[]).find(x=>String(x.id)===String(id));
+    document.getElementById('simWeight').value=simNum(a?.current_weight||a?.weight||a?.last_weight||a?.initial_weight)||'';
   }else{
-    const members=(window.animals||[]).filter(a=>String(a.lot_id)===String(id)&&!a.exit_type&&!a.status?.match(/vendido|morto/i));
+    const members=(animalsData||[]).filter(a=>String(a.lot_id)===String(id)&&!a.exit_type&&!a.status?.match(/vendido|morto/i));
     let total=0;
     for(const a of members){
-      const ws=(window.weighings||[]).filter(w=>String(w.animal_id)===String(a.id)).sort((x,y)=>String(y.date||y.weighed_at||'').localeCompare(String(x.date||x.weighed_at||'')));
-      total+=simNum(ws[0]?.weight||a.current_weight||a.weight||a.initial_weight);
+      total+=simNum(a.current_weight||a.weight||a.last_weight||a.initial_weight);
     }
     document.getElementById('simWeight').value=total||'';
   }
@@ -1626,13 +1625,13 @@ function simTargetChanged(){
 }
 function simFillRegions(){
   const uf=document.getElementById('simUF')?.value, s=document.getElementById('simRegion'); if(!s)return;
-  const rows=(window.marketLiveData?.quotes||[]).filter(x=>x.uf===uf&&x.unit!=='kg');
+  const rows=(marketQuotes||[]).filter(x=>x.uf===uf&&x.unit!=='kg');
   s.innerHTML=rows.length?rows.map(x=>`<option value="${x.place}">${x.place}</option>`).join(''):'<option value="">Sem praça em R$/@</option>';
   renderSaleSimulation();
 }
 function renderSaleSimulation(){
   const uf=document.getElementById('simUF')?.value,region=document.getElementById('simRegion')?.value,cat=document.getElementById('simCategory')?.value;
-  const q=(window.marketLiveData?.quotes||[]).find(x=>x.uf===uf&&x.place===region&&x.unit!=='kg');
+  const q=(marketQuotes||[]).find(x=>x.uf===uf&&x.place===region&&x.unit!=='kg');
   const market=simNum(q?.[cat]),buyer=simNum(document.getElementById('simBuyerPrice')?.value),price=buyer||market;
   const weight=simNum(document.getElementById('simWeight')?.value),yieldPct=simNum(document.getElementById('simYield')?.value);
   const carcass=weight*yieldPct/100, arrobas=carcass/15, gross=arrobas*price;
@@ -1650,7 +1649,7 @@ function renderSaleSimulation(){
   }
   const diff=buyer&&market?(buyer-market):0;
   r.innerHTML=`<div style="display:grid;gap:10px">
-    <div class="performance-row"><div><b>Preço de mercado</b><small>${uf} · ${region} · fechamento ${window.marketLiveData?.physical_updated_at||window.marketLiveData?.updated_at||'—'}</small></div><strong>${simBRL(market)}/@</strong></div>
+    <div class="performance-row"><div><b>Preço de mercado</b><small>${uf} · ${region} · fechamento ${marketLiveData?.physical_updated_at||marketLiveData?.updated_at||'—'}</small></div><strong>${simBRL(market)}/@</strong></div>
     ${buyer?`<div class="performance-row"><div><b>Oferta do comprador</b><small>${diff>=0?'acima':'abaixo'} da referência em ${simBRL(Math.abs(diff))}/@</small></div><strong>${simBRL(buyer)}/@</strong></div>`:''}
     <div class="performance-row"><div><b>Carcaça estimada</b><small>${weight.toLocaleString('pt-BR')} kg × ${yieldPct.toLocaleString('pt-BR')}%</small></div><strong>${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg</strong></div>
     <div class="performance-row"><div><b>Arrobas estimadas</b><small>${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg ÷ 15</small></div><strong>${arrobas.toLocaleString('pt-BR',{maximumFractionDigits:2})} @</strong></div>
@@ -1658,7 +1657,7 @@ function renderSaleSimulation(){
   </div>`;
 }
 const _simOldShowView=window.showView;
-if(typeof _simOldShowView==='function') window.showView=function(id){const r=_simOldShowView.apply(this,arguments);if(id==='saleSimulator'){if(!window.marketLiveData&&typeof loadMarket==='function')loadMarket().finally(()=>initSaleSimulator());else initSaleSimulator()}return r};
+if(typeof _simOldShowView==='function') window.showView=function(id){const r=_simOldShowView.apply(this,arguments);if(id==='saleSimulator'){if(!marketLiveData&&typeof loadMarket==='function')loadMarket().finally(()=>initSaleSimulator());else initSaleSimulator()}return r};
 
 
 const _mgOriginalShow=window.show;
@@ -1666,7 +1665,7 @@ if(typeof _mgOriginalShow==='function'){
   window.show=function(id,btn){
     const r=_mgOriginalShow.apply(this,arguments);
     if(id==='saleSimulator'){
-      if(!window.marketLiveData&&typeof loadMarket==='function') Promise.resolve(loadMarket()).finally(()=>initSaleSimulator());
+      if(!marketLiveData&&typeof loadMarket==='function') Promise.resolve(loadMarket()).finally(()=>initSaleSimulator());
       else initSaleSimulator();
     }
     return r;
