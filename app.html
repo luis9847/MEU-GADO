@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="navegacao-v19-5-oficial"><div class="layout">
+<body data-build="lixeira-v20-4-oficial"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -272,6 +272,7 @@ html.mg-route-boot .view.active{display:none!important}
     <button class="mydata-btn" onclick="show('perfil')">Meus dados</button>
     <button id="newsNavBtn" class="side-link news-link" onclick="openNews()">✦ <span>Novidades</span><b id="newsNewBadge" class="news-new">NOVO</b></button>
     <button class="side-link" data-v="ajuda" onclick="show('ajuda',this)">? <span>Ajuda</span></button>
+    <button class="side-link" data-v="lixeira" onclick="show('lixeira',this);loadTrash()">♲ <span>Lixeira</span><b id="trashCountBadge" class="news-new hidden">0</b></button>
     <button class="side-link" onclick="logout()">↪ <span>Sair</span></button>
   </div>
 </aside>
@@ -384,7 +385,7 @@ html.mg-route-boot .view.active{display:none!important}
       <p>O Meu Gado nasceu a partir de uma necessidade simples: ter em um único lugar todas as informações importantes para acompanhar um rebanho.</p>
       <div class="support-actions">
         <a class="support-whatsapp" target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Gostaria%20de%20saber%20mais%20sobre%20o%20Meu%20Gado.">💬 Fale conosco</a>
-        <a class="support-secondary" href="mailto:luisfelipepimenta9@gmail.com">✉ luisfelipepimenta9@gmail.com</a>
+        <a class="support-secondary" href="mailto:contatomeugado@outlook.com">✉ contatomeugado@outlook.com</a>
       </div>
     </div>
     <div class="support-phone">
@@ -430,7 +431,7 @@ html.mg-route-boot .view.active{display:none!important}
     <div class="support-phone">
       <span>Fale conosco</span>
       <b>(35) 99965-5305</b>
-      <small>Atendimento pelo WhatsApp<br><a href="mailto:luisfelipepimenta9@gmail.com" style="color:#147b4b;text-decoration:none">luisfelipepimenta9@gmail.com</a></small>
+      <small>Atendimento pelo WhatsApp<br><a href="mailto:contatomeugado@outlook.com" style="color:#147b4b;text-decoration:none">contatomeugado@outlook.com</a></small>
     </div>
   </div>
 
@@ -457,8 +458,8 @@ html.mg-route-boot .view.active{display:none!important}
     </div>
     <div><span class="mg-footer-title">Meu Gado</span><a href="#" onclick="show('inicio');return false">Início</a><a href="#" onclick="show('sobreNos');return false">Sobre nós</a><a href="#" onclick="show('relatorios');return false">Relatórios</a></div>
     <div><span class="mg-footer-title">Recursos</span><a href="#" onclick="show('mercado');return false">Mercado Pecuário</a><a href="#" onclick="show('saleSimulator');return false">Simulador de Venda</a><a href="#" onclick="openNews();return false">Novidades</a></div>
-    <div class="mg-footer-contact"><span class="mg-footer-title">Precisa de ajuda?</span><strong>(35) 99965-5305</strong><p>Fale diretamente com nosso suporte pelo WhatsApp.</p><a href="mailto:luisfelipepimenta9@gmail.com">luisfelipepimenta9@gmail.com</a><a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a></div>
-    <div class="mg-footer-bottom"><span>© 2026 Meu Gado. Todos os direitos reservados.</span><span>Suporte: (35) 99965-5305 · luisfelipepimenta9@gmail.com</span></div>
+    <div class="mg-footer-contact"><span class="mg-footer-title">Precisa de ajuda?</span><strong>(35) 99965-5305</strong><p>Fale diretamente com nosso suporte pelo WhatsApp.</p><a href="mailto:contatomeugado@outlook.com">contatomeugado@outlook.com</a><a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a></div>
+    <div class="mg-footer-bottom"><span>© 2026 Meu Gado. Todos os direitos reservados.</span><span>Suporte: (35) 99965-5305 · contatomeugado@outlook.com</span></div>
   </footer>
 </section>
 
@@ -513,7 +514,7 @@ html.mg-route-boot .view.active{display:none!important}
     </div>
     <div class="weigh-history card">
       <div class="panel-title"><div><b>Últimas pesagens</b><small>Histórico recente do rebanho</small></div></div>
-      <table><thead><tr><th>Animal</th><th>Data</th><th>Peso</th></tr></thead><tbody id="weightRows"></tbody></table>
+      <table><thead><tr><th>Animal</th><th>Data</th><th>Peso</th><th>Ação</th></tr></thead><tbody id="weightRows"></tbody></table>
     </div>
   </div>
 </section>
@@ -522,7 +523,7 @@ html.mg-route-boot .view.active{display:none!important}
 
 <section id="nutricao" class="view">
  <div class="head"><div><h2>Nutrição</h2><div class="sub">Consumo e custo da alimentação por lote</div></div><button class="btn primary" onclick="openNutrition()">+ Novo lançamento</button></div>
- <div class="card"><table><thead><tr><th>Data</th><th>Lote</th><th>Alimento</th><th>Quantidade</th><th>Custo</th></tr></thead><tbody id="nutritionRows"></tbody></table></div>
+ <div class="card"><table><thead><tr><th>Data</th><th>Lote</th><th>Alimento</th><th>Quantidade</th><th>Custo</th><th>Ação</th></tr></thead><tbody id="nutritionRows"></tbody></table></div>
 </section>
 <section id="gastos" class="view">
   <div class="page-title action-title">
@@ -562,6 +563,24 @@ html.mg-route-boot .view.active{display:none!important}
   </div>
 </section>
 
+
+<section id="lixeira" class="view">
+  <div class="page-title">
+    <div><h2>♲ Lixeira</h2><p>Registros excluídos ficam protegidos aqui. A exclusão definitiva automática está desativada enquanto validamos o backup.</p></div>
+    <button class="btn secondary" onclick="loadTrash()">Atualizar</button>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="benefit-box"><b>Proteção contra exclusão acidental.</b> Use <b>Restaurar</b> para devolver um registro ao sistema. Por segurança, esta versão de teste não possui botão de exclusão definitiva.</div>
+  </div>
+  <div class="card">
+    <div class="panel-title"><div><b>Itens na lixeira</b><small id="trashSummary">Carregando...</small></div></div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Tipo</th><th>Registro</th><th>Excluído em</th><th>Ação</th></tr></thead>
+      <tbody id="trashRows"><tr><td colspan="4" class="empty">Carregando...</td></tr></tbody>
+    </table></div>
+  </div>
+</section>
+
 <section id="novidades" class="view">
   <div class="news-hero">
     <div><div class="release-tag" style="background:rgba(255,255,255,.15);color:#fff">Meu Gado evoluindo com você</div><h2>✨ O que há de novo</h2><p>Acompanhe as melhorias liberadas no Meu Gado, entenda como elas ajudam no dia a dia da fazenda e veja como usar cada novidade.</p></div>
@@ -582,7 +601,7 @@ html.mg-route-boot .view.active{display:none!important}
         <div class="benefit-box"><b>Suporte mais fácil e acessível.</b> O cliente pode encontrar dúvidas frequentes, acessar atalhos úteis e falar diretamente com o suporte do Meu Gado.</div>
         <div class="release-points">
           <div class="release-point"><b>💬 WhatsApp</b>Contato direto com o suporte pelo número (35) 99965-5305.</div>
-          <div class="release-point"><b>✉ E-mail</b>Canal de atendimento pelo endereço luisfelipepimenta9@gmail.com.</div>
+          <div class="release-point"><b>✉ E-mail</b>Canal de atendimento pelo endereço contatomeugado@outlook.com.</div>
           <div class="release-point"><b>❓ Dúvidas frequentes</b>Respostas rápidas para as principais rotinas do sistema.</div>
           <div class="release-point"><b>ℹ Sobre nós</b>Nova página institucional explicando como o Meu Gado começou e seu propósito.</div>
         </div>
@@ -944,10 +963,10 @@ async function mgGetFarm(){
  mgFarm=r.data;
  return mgFarm
 }
-async function mgRows(table,select='*',order=null){const f=await mgGetFarm();let q=mgSb.from(table).select(select).eq('farm_id',f.id);if(order)q=q.order(order,{ascending:false});const r=await q;if(r.error)mgErr(r.error);return r.data||[]}
+async function mgRows(table,select='*',order=null){const f=await mgGetFarm();let q=mgSb.from(table).select(select).eq('farm_id',f.id).is('deleted_at',null);if(order)q=q.order(order,{ascending:false});const r=await q;if(r.error)mgErr(r.error);return r.data||[]}
 function mgBody(opt){try{return opt.body?JSON.parse(opt.body):{}}catch{return {}}}
 function mgDays(a,b){if(!a||!b)return 0;return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000)}
-async function mgAnimals(activeOnly=true){const f=await mgGetFarm();let q=mgSb.from('animals').select('*').eq('farm_id',f.id).order('id',{ascending:false});if(activeOnly)q=q.eq('status','active');else q=q.neq('status','active');let r=await q;if(r.error)mgErr(r.error);let arr=r.data||[];let w=await mgRows('weighings','*','weighing_date');const by={};for(const x of w){if(!by[x.animal_id])by[x.animal_id]=x}return arr.map(a=>({...a,current_weight:by[a.id]?.weight??a.entry_weight??null,last_weighing_date:by[a.id]?.weighing_date||null,photo_path:a.photo_path||a.photo_url||''}))}
+async function mgAnimals(activeOnly=true){const f=await mgGetFarm();let q=mgSb.from('animals').select('*').eq('farm_id',f.id).is('deleted_at',null).order('id',{ascending:false});if(activeOnly)q=q.eq('status','active');else q=q.neq('status','active');let r=await q;if(r.error)mgErr(r.error);let arr=r.data||[];let w=await mgRows('weighings','*','weighing_date');const by={};for(const x of w){if(!by[x.animal_id])by[x.animal_id]=x}return arr.map(a=>({...a,current_weight:by[a.id]?.weight??a.entry_weight??null,last_weighing_date:by[a.id]?.weighing_date||null,photo_path:a.photo_path||a.photo_url||''}))}
 async function mgDashboard(){
  let animals=await mgAnimals(true), w=await mgRows('weighings'), e=await mgRows('expenses'), h=await mgRows('health_events'), r=await mgRows('reproductive_events');
  let total=animals.length,cats={};animals.forEach(a=>cats[a.category]=(cats[a.category]||0)+1);
@@ -976,8 +995,8 @@ async function mgDashboard(){
  return {total,categories:{...cats,'Bezerro(a)':(cats.Bezerro||0)+(cats.Bezerra||0)},avg_weight:avg,avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready,expenses_total:exp,expenses_month:month,expenses_prev_month:prevMonth,cost_per_head:total?month/total:0,upcoming_health:alerts.filter(a=>a.type==='health').length,weighing_overdue:overdueWeights,weight_loss:weightLoss,repro_due:reproDue,alerts};
 }
 async function mgLotList(){let lots=await mgRows('lots'),animals=await mgAnimals(true),w=await mgRows('weighings');let latest={};[...w].sort((a,b)=>String(b.weighing_date).localeCompare(String(a.weighing_date))).forEach(x=>{if(!latest[x.animal_id])latest[x.animal_id]=x});return lots.map(l=>{let aa=animals.filter(a=>a.lot===l.name),vals=aa.map(a=>Number(latest[a.id]?.weight??a.entry_weight)).filter(Number.isFinite);return {...l,animals:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,avg_gmd:0}}).sort((a,b)=>(Number(b.active)-Number(a.active))||a.name.localeCompare(b.name))}
-async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from('animals').select('*').eq('farm_id',f.id).eq('id',id).maybeSingle();if(a.error)mgErr(a.error);if(!a.data)throw new Error('Animal não encontrado');let [w,h,r,e]=await Promise.all([mgSb.from('weighings').select('*').eq('farm_id',f.id).eq('animal_id',id).order('weighing_date',{ascending:false}),mgSb.from('health_events').select('*').eq('farm_id',f.id).eq('animal_id',id).order('event_date',{ascending:false}),mgSb.from('reproductive_events').select('*').eq('farm_id',f.id).eq('animal_id',id).order('event_date',{ascending:false}),mgSb.from('expenses').select('*').eq('farm_id',f.id).eq('animal_id',id).order('expense_date',{ascending:false})]);for(const q of [w,h,r,e])if(q.error)mgErr(q.error);let ws=w.data||[],gmd=0;if(ws.length>=2){let d=mgDays(ws.at(-1).weighing_date,ws[0].weighing_date);if(d>0)gmd=(Number(ws[0].weight)-Number(ws.at(-1).weight))/d}return {...a.data,photo_path:a.data.photo_path||a.data.photo_url||'',weighings:ws,health:h.data||[],reproduction:r.data||[],expenses:e.data||[],movements:[],current_weight:ws[0]?.weight??a.data.entry_weight??0,expenses_total:(e.data||[]).reduce((s,x)=>s+Number(x.amount||0),0),gmd}}
-async function mgLotProfile(id){let f=await mgGetFarm();let lr=await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',id).maybeSingle();if(lr.error)mgErr(lr.error);let l=lr.data;if(!l)throw new Error('Lote não encontrado');let aa=(await mgAnimals(true)).filter(a=>a.lot===l.name),ids=aa.map(a=>a.id),ww=await mgRows('weighings');let w=ww.filter(x=>ids.includes(x.animal_id)),byMonth={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(byMonth[m]??=[]).push(Number(x.weight))}let hist=Object.entries(byMonth).sort().map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}));let vals=aa.map(a=>Number(a.current_weight??a.entry_weight)).filter(Number.isFinite),g=[];for(const a of aa){let ws=w.filter(x=>x.animal_id===a.id).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));if(ws.length>=2){let d=mgDays(ws[0].weighing_date,ws.at(-1).weighing_date);if(d>0)g.push((Number(ws.at(-1).weight)-Number(ws[0].weight))/d)}}return {...l,animals_count:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total_weight:vals.reduce((a,b)=>a+b,0),avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready:aa.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)).length,history:hist,animals:aa}}
+async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from('animals').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(a.error)mgErr(a.error);if(!a.data)throw new Error('Animal não encontrado');let [w,h,r,e]=await Promise.all([mgSb.from('weighings').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('weighing_date',{ascending:false}),mgSb.from('health_events').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('event_date',{ascending:false}),mgSb.from('reproductive_events').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('event_date',{ascending:false}),mgSb.from('expenses').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('expense_date',{ascending:false})]);for(const q of [w,h,r,e])if(q.error)mgErr(q.error);let ws=w.data||[],gmd=0;if(ws.length>=2){let d=mgDays(ws.at(-1).weighing_date,ws[0].weighing_date);if(d>0)gmd=(Number(ws[0].weight)-Number(ws.at(-1).weight))/d}return {...a.data,photo_path:a.data.photo_path||a.data.photo_url||'',weighings:ws,health:h.data||[],reproduction:r.data||[],expenses:e.data||[],movements:[],current_weight:ws[0]?.weight??a.data.entry_weight??0,expenses_total:(e.data||[]).reduce((s,x)=>s+Number(x.amount||0),0),gmd}}
+async function mgLotProfile(id){let f=await mgGetFarm();let lr=await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(lr.error)mgErr(lr.error);let l=lr.data;if(!l)throw new Error('Lote não encontrado');let aa=(await mgAnimals(true)).filter(a=>a.lot===l.name),ids=aa.map(a=>a.id),ww=await mgRows('weighings');let w=ww.filter(x=>ids.includes(x.animal_id)),byMonth={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(byMonth[m]??=[]).push(Number(x.weight))}let hist=Object.entries(byMonth).sort().map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}));let vals=aa.map(a=>Number(a.current_weight??a.entry_weight)).filter(Number.isFinite),g=[];for(const a of aa){let ws=w.filter(x=>x.animal_id===a.id).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));if(ws.length>=2){let d=mgDays(ws[0].weighing_date,ws.at(-1).weighing_date);if(d>0)g.push((Number(ws.at(-1).weight)-Number(ws[0].weight))/d)}}return {...l,animals_count:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total_weight:vals.reduce((a,b)=>a+b,0),avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready:aa.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)).length,history:hist,animals:aa}}
 async function api(path,opt={}){
  const method=(opt.method||'GET').toUpperCase(),data=mgBody(opt),f=await mgGetFarm();
  if(path==='/api/me')return {user:{id:mgUser.id,email:mgUser.email,role:'client',full_name:mgUser.user_metadata?.full_name||mgUser.email.split('@')[0]},farm:f};
@@ -992,24 +1011,32 @@ async function api(path,opt={}){
  m=path.match(/^\/api\/animals\/(\d+)\/exit$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'inactive',exit_type:data.exit_type,exit_date:data.exit_date,exit_value:data.exit_value||0,exit_notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/animals\/(\d+)\/reactivate$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'active',exit_type:null,exit_date:null,exit_value:0,exit_notes:null}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/animals\/(\d+)\/move$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({lot:data.to_lot}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/animals\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('animals').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/animals\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('animals').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('O animal não foi enviado para a Lixeira. Atualize a página e tente novamente.');return {ok:true,id:r.data.id}}
  if(path==='/api/lots'&&method==='GET')return mgLotList();
  if(path==='/api/lots'&&method==='POST'){let r=await mgSb.from('lots').insert({farm_id:f.id,name:data.name,notes:data.notes||'',active:true});if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/lots\/(\d+)\/profile$/);if(m)return mgLotProfile(Number(m[1]));
  m=path.match(/^\/api\/lots\/(\d+)$/);if(m&&method==='PUT'){let old=(await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',Number(m[1])).single());if(old.error)mgErr(old.error);let r=await mgSb.from('lots').update({name:data.name,notes:data.notes||'',active:data.active!==false}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);if(old.data.name!==data.name)await mgSb.from('animals').update({lot:data.name}).eq('farm_id',f.id).eq('lot',old.data.name);return {ok:true}}
- if(m&&method==='DELETE'){let r=await mgSb.from('lots').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ if(m&&method==='DELETE'){
+   const lotId=Number(m[1]);
+   const lr=await mgSb.from('lots').select('name').eq('farm_id',f.id).eq('id',lotId).is('deleted_at',null).maybeSingle();if(lr.error)mgErr(lr.error);if(!lr.data)throw new Error('Lote não encontrado.');
+   const ar=await mgSb.from('animals').select('id',{count:'exact',head:true}).eq('farm_id',f.id).eq('lot',lr.data.name).is('deleted_at',null);if(ar.error)mgErr(ar.error);if((ar.count||0)>0)throw new Error('Este lote possui animais ativos. Mova os animais para outro lote antes de enviá-lo à Lixeira.');
+   let r=await mgSb.from('lots').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',lotId).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}
+ }
  if(path==='/api/weighings/recent'){let w=await mgRows('weighings','*','weighing_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x]));return w.filter(x=>map[x.animal_id]).slice(0,20).map(x=>({...x,number:map[x.animal_id].number,lot:map[x.animal_id].lot}))}
  if(path==='/api/weighings/history'){let w=await mgRows('weighings'),g={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(g[m]??=[]).push(Number(x.weight))}return Object.entries(g).sort().slice(-6).map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}))}
  if(path==='/api/weighings/batch'&&method==='POST'){let rows=(data.items||data.weighings||[]).map(x=>({farm_id:f.id,animal_id:Number(x.animal_id),weighing_date:data.weighing_date||x.weighing_date,weight:Number(x.weight),notes:x.notes||data.notes||''})).filter(x=>x.weight>0);let r=await mgSb.from('weighings').insert(rows);if(r.error)mgErr(r.error);return {ok:true,count:rows.length}}
  if(path==='/api/expenses'&&method==='GET'){let e=await mgRows('expenses','*','expense_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return e.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/expenses'&&method==='POST'){let text=(data.category+' '+data.description+' '+(data.notes||'')).toLowerCase();if(/(compra|aquisi).*(gado|animal|boi|vaca|bezer)/.test(text))throw new Error('Compra de gado não deve ser lançada no módulo Gastos');let r=await mgSb.from('expenses').insert({farm_id:f.id,animal_id:data.animal_id||null,lot:data.lot||'',category:data.category,expense_date:data.expense_date,amount:data.amount,description:data.description,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ if(m&&method==='DELETE'){let r=await mgSb.from('expenses').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/weighings\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('weighings').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/nutrition\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('nutrition_entries').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/health'&&method==='GET'){let h=await mgRows('health_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return h.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/health'&&method==='POST'){let r=await mgSb.from('health_events').insert({farm_id:f.id,animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- {let m=path.match(/^\/api\/health\/(\d+)$/);if(m&&['PUT','PATCH'].includes(method)){let r=await mgSb.from('health_events').update({animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''}).eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('health_events').delete().eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}}
+ {let m=path.match(/^\/api\/health\/(\d+)$/);if(m&&['PUT','PATCH'].includes(method)){let r=await mgSb.from('health_events').update({animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''}).eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('health_events').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('id',Number(m[1])).eq('farm_id',f.id).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}}
  if(path==='/api/reproduction'&&method==='GET'){let rr=await mgRows('reproductive_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return rr.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/reproduction'&&method==='POST'){let r=await mgSb.from('reproductive_events').insert({farm_id:f.id,animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').delete().eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
  if(path==='/api/nutrition'&&method==='POST'){let r=await mgSb.from('nutrition_entries').insert({farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:data.total_cost,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/market/arroba'){
@@ -1039,6 +1066,52 @@ function copySupportPhone(){
     navigator.clipboard.writeText(phone).then(()=>alert('Número do suporte copiado: '+phone)).catch(()=>alert('Suporte Meu Gado: '+phone));
   }else alert('Suporte Meu Gado: '+phone);
 }
+
+const MG_TRASH_TABLES=[
+  {table:'animals',label:'Animal',name:r=>'#'+(r.number||r.id)},
+  {table:'lots',label:'Lote',name:r=>r.name||('Lote '+r.id)},
+  {table:'weighings',label:'Pesagem',name:r=>(r.weighing_date||'')+' · '+(r.weight||'')+' kg'},
+  {table:'health_events',label:'Saúde',name:r=>(r.event_date||'')+' · '+(r.event_type||'Registro')},
+  {table:'reproductive_events',label:'Reprodução',name:r=>(r.event_date||'')+' · '+(r.event_type||'Evento')},
+  {table:'expenses',label:'Gasto',name:r=>(r.description||r.category||('Gasto '+r.id))},
+  {table:'nutrition_entries',label:'Nutrição',name:r=>(r.feed_name||'Lançamento')+' · '+(r.lot_name||'')}
+];
+function trashDate(v){try{return new Date(v).toLocaleString('pt-BR')}catch{return v||'—'}}
+async function getTrashItems(){
+  const f=await mgGetFarm(), all=[];
+  for(const cfg of MG_TRASH_TABLES){
+    const q=await mgSb.from(cfg.table).select('*').eq('farm_id',f.id).not('deleted_at','is',null).order('deleted_at',{ascending:false});
+    if(q.error)mgErr(q.error);
+    for(const row of (q.data||[]))all.push({...row,_table:cfg.table,_type:cfg.label,_name:cfg.name(row)});
+  }
+  return all.sort((a,b)=>String(b.deleted_at).localeCompare(String(a.deleted_at)));
+}
+async function refreshTrashBadge(){
+  try{
+    const items=await getTrashItems(), b=document.getElementById('trashCountBadge');
+    if(b){b.textContent=items.length;b.classList.toggle('hidden',!items.length)}
+  }catch(e){console.error('Lixeira:',e)}
+}
+async function loadTrash(){
+  try{
+    const items=await getTrashItems();
+    trashSummary.textContent=items.length?`${items.length} item(ns) recuperável(is)`:'Nenhum item excluído';
+    trashRows.innerHTML=items.length?items.map(x=>`<tr><td><b>${x._type}</b></td><td>${x._name}</td><td>${trashDate(x.deleted_at)}</td><td><button class="btn secondary" onclick="restoreTrashItem('${x._table}',${x.id})">Restaurar</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">A Lixeira está vazia.</td></tr>';
+    await refreshTrashBadge();
+  }catch(e){trashRows.innerHTML=`<tr><td colspan="4" class="empty">Não foi possível carregar a Lixeira: ${e.message}</td></tr>`}
+}
+async function restoreTrashItem(table,id){
+  const cfg=MG_TRASH_TABLES.find(x=>x.table===table);if(!cfg)return;
+  if(!confirm(`Restaurar este registro de ${cfg.label}?`))return;
+  try{
+    const f=await mgGetFarm();
+    const r=await mgSb.from(table).update({deleted_at:null,deleted_by:null}).eq('farm_id',f.id).eq('id',Number(id)).not('deleted_at','is',null).select('id').maybeSingle();
+    if(r.error)mgErr(r.error);if(!r.data)throw new Error('O registro não pôde ser restaurado.');
+    await loadTrash();
+    await Promise.all([loadAnimals(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro(),loadNutrition(),dashboard()]);
+  }catch(e){alert('Não foi possível restaurar. '+(e?.message||''))}
+}
+
 function show(id,btn){
   if(!document.getElementById(id)) id='inicio';
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
@@ -1057,6 +1130,7 @@ function openModal(id){document.getElementById(id).classList.add('show');const t
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 async function load(){
  const me=await api('/api/me');
+ refreshTrashBadge();
  if(me.user.role!=='client'){location.href='/admin';return}
  farmSide.textContent=me.farm.name||'Minha Fazenda';
  userTop.textContent=me.user.full_name||'Usuário';
@@ -1218,7 +1292,7 @@ async function saveAnimal(){
 async function loadRecentWeighings(){
   if(!document.getElementById('weightRows'))return;
   const r=await api('/api/weighings/recent');
-  weightRows.innerHTML=r.length?r.slice(0,10).map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Nenhuma pesagem registrada.</td></tr>';
+  weightRows.innerHTML=r.length?r.slice(0,10).map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td><td><button class="btn secondary delete-outline" onclick="deleteWeighing(${w.id})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhuma pesagem registrada.</td></tr>';
 }
 async function savePageWeight(){
   const id=Number(pageWeightAnimal.value),weight=Number(pageWeightValue.value);
@@ -1324,11 +1398,12 @@ async function openAnimalProfile(id){
  }catch(e){alert('Não foi possível abrir a ficha do animal: '+e.message)}
 }
 async function deleteAnimal(id,number){
-  if(!confirm(`Excluir definitivamente o animal #${number}? Todo o histórico dele será apagado. Esta ação não pode ser desfeita.`)) return;
+  if(!confirm(`Enviar o animal #${number} para a Lixeira? Ele deixará de aparecer no rebanho, mas poderá ser restaurado.`)) return;
   try{
     await api(`/api/animals/${id}`,{method:'DELETE'});
+    alert(`Animal #${number} enviado para a Lixeira com sucesso.`);
     closeModal('animalProfileModal');
-    await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro()]);
+    await Promise.all([loadAnimals(),dashboard(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro()]);await refreshTrashBadge();
   }catch(e){alert(e.message)}
 }
 function openAnimalExit(id){
@@ -1346,7 +1421,8 @@ async function saveAnimalExit(){
 
 function openMoveAnimal(id){selectedAnimalId=id;moveLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');moveDate.value=new Date().toISOString().slice(0,10);moveNotes.value='';openModal('moveAnimalModal')}
 async function saveMove(){await api(`/api/animals/${selectedAnimalId}/move`,{method:'POST',body:JSON.stringify({movement_date:moveDate.value,to_lot:moveLot.value,notes:moveNotes.value})});closeModal('moveAnimalModal');closeModal('animalProfileModal');await Promise.all([loadAnimals(),loadLots(),dashboard()])}
-async function loadNutrition(){const d=await api('/api/nutrition');nutritionRows.innerHTML=d.length?d.map(x=>`<tr><td>${x.entry_date}</td><td>${x.lot_name}</td><td>${x.feed_name}</td><td>${Number(x.quantity_kg).toFixed(2)} kg</td><td>${money(x.total_cost)}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum lançamento de nutrição.</td></tr>'}
+async function loadNutrition(){const d=await api('/api/nutrition');nutritionRows.innerHTML=d.length?d.map(x=>`<tr><td>${x.entry_date}</td><td>${x.lot_name}</td><td>${x.feed_name}</td><td>${Number(x.quantity_kg).toFixed(2)} kg</td><td>${money(x.total_cost)}</td><td><button class="btn secondary delete-outline" onclick="deleteNutrition(${x.id})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Nenhum lançamento de nutrição.</td></tr>'}
+async function deleteNutrition(id){if(!confirm('Enviar este lançamento de nutrição para a Lixeira?'))return;try{await api(`/api/nutrition/${id}`,{method:'DELETE'});await loadNutrition();await refreshTrashBadge()}catch(e){alert(e.message)}}
 function openNutrition(){nutLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');nutDate.value=new Date().toISOString().slice(0,10);openModal('nutritionModal')}
 async function saveNutrition(){await api('/api/nutrition',{method:'POST',body:JSON.stringify({lot_name:nutLot.value,entry_date:nutDate.value,feed_name:nutFeed.value,quantity_kg:Number(nutQty.value||0),total_cost:Number(nutCost.value||0),notes:nutNotes.value})});closeModal('nutritionModal');await loadNutrition()}
 
@@ -1455,6 +1531,16 @@ async function loadPerformance(force=false){
   }finally{setPerformanceLoading(false)}
 }
 
+
+async function deleteWeighing(id){
+  if(!confirm('Enviar esta pesagem para a Lixeira? Você poderá restaurá-la depois.'))return;
+  try{
+    await api(`/api/weighings/${id}`,{method:'DELETE'});
+    await Promise.all([loadWeightHistory(),loadAnimals(),dashboard()]);
+    await refreshTrashBadge();
+  }catch(e){alert('Não foi possível enviar a pesagem para a Lixeira. '+(e?.message||''))}
+}
+
 async function loadWeightHistory(){
   const h=await api('/api/weighings/history');
   if(!h.length){realChart.innerHTML='';chartEmpty.style.display='flex';return}
@@ -1530,8 +1616,8 @@ async function saveLot(){
   }finally{if(btn){btn.disabled=false;btn.textContent=oldText||'Salvar lote'}}
 }
 async function deleteLot(id){
-  if(!confirm('Excluir este lote? Só é possível excluir lotes sem animais.')) return;
-  try{await api(`/api/lots/${id}`,{method:'DELETE'});await loadLots()}catch(e){alert(e.message)}
+  if(!confirm('Enviar este lote para a Lixeira? Só é possível enviar lotes sem animais ativos.')) return;
+  try{await api(`/api/lots/${id}`,{method:'DELETE'});await loadLots();await refreshTrashBadge()}catch(e){alert(e.message)}
 }
 async function downloadReport(type){
  try{
@@ -1664,9 +1750,15 @@ async function loadExpenses(){
     <td>${e.category}</td>
     <td>${e.description||'-'}</td>
     <td>${money(e.amount)}</td>
-    <td><button class="btn secondary" onclick="editExpense(${e.id})">Editar</button></td>
+    <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editExpense(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteExpense(${e.id})">Excluir</button></div></td>
   </tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum gasto operacional lançado.</td></tr>';
 }
+
+async function deleteExpense(id){
+  if(!confirm('Enviar este gasto para a Lixeira? Você poderá restaurá-lo depois.'))return;
+  try{await api(`/api/expenses/${id}`,{method:'DELETE'});await Promise.all([loadExpenses(),dashboard()]);await refreshTrashBadge()}catch(e){alert('Não foi possível enviar o gasto para a Lixeira. '+(e?.message||''))}
+}
+
 function openNewExpense(){
   editingExpenseId=null;
   expenseModalTitle.textContent='Novo gasto';expenseSaveBtn.textContent='Salvar gasto';
@@ -1736,7 +1828,7 @@ async function saveHealth(){
   }catch(e){alert('Não foi possível salvar o registro de saúde. '+(e?.message||''))}
 }
 async function deleteHealth(id){
-  if(!confirm('Deseja realmente excluir este registro de saúde? Esta ação não poderá ser desfeita.'))return;
+  if(!confirm('Enviar este registro de saúde para a Lixeira? Você poderá restaurá-lo depois.'))return;
   try{
     await api(`/api/health/${id}`,{method:'DELETE'});
     if(Number(healthEditId)===Number(id)){healthEditId=null;closeModal('healthModal')}
@@ -1794,7 +1886,7 @@ async function saveRepro(){
   }catch(e){alert('Não foi possível salvar o evento reprodutivo. '+e.message)}
 }
 async function deleteRepro(id){
-  if(!confirm('Deseja realmente excluir este registro de reprodução? Esta ação não poderá ser desfeita.'))return;
+  if(!confirm('Enviar este registro de reprodução para a Lixeira? Você poderá restaurá-lo depois.'))return;
   try{
     await api(`/api/reproduction/${id}`,{method:'DELETE'});
     if(Number(editingReproId)===Number(id)){editingReproId=null;closeModal('reproModal')}
