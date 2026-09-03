@@ -453,10 +453,17 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <div class="market-kpi"><small>Praças disponíveis</small><b id="marketAvailable">0</b><span>regiões com preço publicado</span></div>
   </div>
   <div class="market-filters">
-    <label>Estado<select id="marketState" onchange="renderMarketQuotes()"><option value="">Todos</option></select></label>
-    <label>Categoria<select id="marketCategory" onchange="renderMarketQuotes()"><option value="boi_cash">Boi gordo · à vista</option><option value="boi_30">Boi gordo · 30 dias</option><option value="cow_cash">Vaca gorda · à vista</option></select></label>
-    <label>Buscar praça<input id="marketSearch" placeholder="Ex.: Triângulo, Barretos..." oninput="renderMarketQuotes()" style="width:100%;margin-top:5px;border:1px solid #d8e1de;border-radius:8px;padding:10px;font-size:10px"></label>
+    <label>Estado<select id="marketState" onchange="updateMarketRegions();renderMarketQuotes()"><option value="">Todos</option></select></label>
+    <label>Região / praça<select id="marketRegion" onchange="renderMarketQuotes()"><option value="">Todas</option></select></label>
+    <label>Categoria<select id="marketCategory" onchange="updateMarketRegions();renderMarketQuotes()">
+      <option value="boi_cash">Boi gordo · à vista</option>
+      <option value="boi_30">Boi gordo · 30 dias</option>
+      <option value="cow_cash">Vaca gorda · à vista</option>
+      <option value="calf_male_nelore">Bezerro Nelore · macho · 12 meses</option>
+      <option value="calf_female_nelore">Bezerra Nelore · fêmea · 12 meses</option>
+    </select></label>
   </div>
+  <div class="card" style="margin-bottom:12px;padding:12px 14px;font-size:10px;color:var(--muted)">Todos os 26 estados e o Distrito Federal aparecem no filtro. Quando uma fonte não publicar cotação para uma categoria ou praça, o sistema exibirá <b>Sem cotação disponível</b> em vez de ocultar o estado.</div>
   <div id="marketStates" class="market-region-grid"></div>
   <div class="market-test-note"><b>Versão de teste:</b> estes valores usam o último fechamento disponível das fontes consultadas. A atualização automática diária será conectada ao backend somente depois de aprovarmos esta tela e a origem dos dados.</div>
   <div class="head" style="margin-top:16px"><div><h3>Notícias do mercado</h3><div class="sub">Leituras recentes para acompanhar a pecuária</div></div></div>
@@ -610,7 +617,16 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   <div id="lotProfileBody"></div>
 </div></div>
 <script>
-let animalsData=[]; let lotsData=[]; let editingLotId=null; let editingExpenseId=null; let selectedAnimalId=null; let quickLotForAnimal=false; let animalCategoryFilter='Todos'; let pendingAnimalPhoto=''; let marketQuotes=[];
+const MG_BRAZIL_STATES=[
+  ['AC','Acre'],['AL','Alagoas'],['AP','Amapá'],['AM','Amazonas'],['BA','Bahia'],
+  ['CE','Ceará'],['DF','Distrito Federal'],['ES','Espírito Santo'],['GO','Goiás'],
+  ['MA','Maranhão'],['MT','Mato Grosso'],['MS','Mato Grosso do Sul'],['MG','Minas Gerais'],
+  ['PA','Pará'],['PB','Paraíba'],['PR','Paraná'],['PE','Pernambuco'],['PI','Piauí'],
+  ['RJ','Rio de Janeiro'],['RN','Rio Grande do Norte'],['RS','Rio Grande do Sul'],
+  ['RO','Rondônia'],['RR','Roraima'],['SC','Santa Catarina'],['SP','São Paulo'],
+  ['SE','Sergipe'],['TO','Tocantins']
+];
+let animalsData=[]; let lotsData=[]; let editingLotId=null; let editingExpenseId=null; let selectedAnimalId=null; let quickLotForAnimal=false; let animalCategoryFilter='Todos'; let pendingAnimalPhoto=''; let marketQuotes=[]; let marketCalfQuotes=[];
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
 let mgFarm=null,mgUser=null;
@@ -635,6 +651,24 @@ const mgMarket={
   {uf:'MS',state:'Mato Grosso do Sul',place:'Três Lagoas',boi_cash:336,boi_30:340,cow_cash:316},
   {uf:'BA',state:'Bahia',place:'Sul',boi_cash:326,boi_30:330,cow_cash:301.5}
  ],
+ calf_quotes:[
+  {uf:'SP',state:'São Paulo',calf_male_nelore:{head:3487.00,kg:14.53},calf_female_nelore:{head:2761.76,kg:13.15}},
+  {uf:'MG',state:'Minas Gerais',calf_male_nelore:{head:3505.00,kg:14.60},calf_female_nelore:{head:2610.71,kg:12.43}},
+  {uf:'GO',state:'Goiás',calf_male_nelore:{head:3494.80,kg:14.56},calf_female_nelore:{head:2627.06,kg:12.51}},
+  {uf:'MS',state:'Mato Grosso do Sul',calf_male_nelore:{head:3730.00,kg:15.54},calf_female_nelore:{head:2964.00,kg:14.11}},
+  {uf:'BA',state:'Bahia',calf_male_nelore:{head:3370.00,kg:14.04},calf_female_nelore:{head:2335.00,kg:11.12}},
+  {uf:'MT',state:'Mato Grosso',calf_male_nelore:{head:3748.27,kg:15.62},calf_female_nelore:{head:2669.10,kg:12.71}},
+  {uf:'PR',state:'Paraná',calf_male_nelore:{head:3911.07,kg:16.30},calf_female_nelore:{head:3005.08,kg:14.31}},
+  {uf:'PA',state:'Pará',calf_male_nelore:{head:3550.00,kg:14.79},calf_female_nelore:{head:2538.93,kg:12.09}},
+  {uf:'RO',state:'Rondônia',calf_male_nelore:{head:3532.62,kg:14.72},calf_female_nelore:{head:2479.62,kg:11.81}},
+  {uf:'TO',state:'Tocantins',calf_male_nelore:{head:3504.47,kg:14.60},calf_female_nelore:{head:2724.08,kg:12.97}},
+  {uf:'AC',state:'Acre',calf_male_nelore:{head:3015.38,kg:12.56},calf_female_nelore:{head:2088.89,kg:9.95}},
+  {uf:'MA',state:'Maranhão',calf_male_nelore:{head:3480.00,kg:14.50},calf_female_nelore:{head:2783.00,kg:13.25}},
+  {uf:'RJ',state:'Rio de Janeiro',calf_male_nelore:{head:3435.00,kg:14.31},calf_female_nelore:{head:2255.00,kg:10.74}},
+  {uf:'RR',state:'Roraima',calf_male_nelore:{head:2490.00,kg:10.38},calf_female_nelore:{head:2047.50,kg:9.75}}
+ ],
+ calf_updated_at:'02/09/2026',
+ calf_source:'Scot Consultoria / Notícias Agrícolas',
  news:[
   {date:'27/08/2026',title:'Boi/Cepea: Bezerro se valoriza mais que boi magro',url:'https://www.noticiasagricolas.com.br/noticias/boi/'},
   {date:'25/08/2026',title:'Abate de bovinos cresce 1,3% no segundo trimestre e supera 10,7 milhões de cabeças, aponta IBGE',url:'https://www.noticiasagricolas.com.br/noticias/boi/'},
@@ -1246,6 +1280,7 @@ async function downloadReport(type){
 async function loadMarket(){
   const d=await api('/api/market/arroba');
   marketQuotes=d.quotes||[];
+  marketCalfQuotes=d.calf_quotes||[];
   if(document.getElementById('marketUpdated')) marketUpdated.textContent=d.updated_at||'—';
   if(document.getElementById('marketBasis')) marketBasis.textContent=d.basis||'Mercado físico';
   if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(d.source||'—');
@@ -1254,27 +1289,72 @@ async function loadMarket(){
   if(document.getElementById('marketEsalqVar')) marketEsalqVar.textContent=d.esalq?`${d.esalq.variation>=0?'+':''}${Number(d.esalq.variation).toFixed(2)}% · ${d.esalq.date}`:'—';
   if(document.getElementById('marketFuture')) marketFuture.textContent=d.future?marketMoney(d.future.price)+'/@':'—';
   if(document.getElementById('marketFutureRef')) marketFutureRef.textContent=d.future?`${d.future.contract} · ${d.future.date}`:'—';
-  if(document.getElementById('marketAvailable')) marketAvailable.textContent=marketQuotes.length;
   if(document.getElementById('marketState')){
-    const ufs=[...new Map(marketQuotes.map(x=>[x.uf,x.state])).entries()];
-    marketState.innerHTML='<option value="">Todos</option>'+ufs.map(([uf,name])=>`<option value="${uf}">${uf} · ${name}</option>`).join('');
+    marketState.innerHTML='<option value="">Todos os estados</option>'+MG_BRAZIL_STATES.map(([uf,name])=>`<option value="${uf}">${uf} · ${name}</option>`).join('');
   }
   if(document.getElementById('marketNews')) marketNews.innerHTML=(d.news||[]).map(n=>`<a class="market-news-card" target="_blank" href="${n.url}"><b>${n.title}</b><span>${n.date} · Notícias Agrícolas ↗</span></a>`).join('');
+  updateMarketRegions();
   renderMarketQuotes();
 }
 function marketMoney(v){return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});}
+function isCalfCategory(cat){return cat==='calf_male_nelore'||cat==='calf_female_nelore';}
+function updateMarketRegions(){
+  const el=document.getElementById('marketRegion'); if(!el)return;
+  const uf=document.getElementById('marketState')?.value||'';
+  const cat=document.getElementById('marketCategory')?.value||'boi_cash';
+  if(isCalfCategory(cat)){
+    el.innerHTML='<option value="">Cotação estadual</option>';
+    el.disabled=true;
+    return;
+  }
+  el.disabled=false;
+  const places=[...new Set(marketQuotes.filter(x=>!uf||x.uf===uf).map(x=>x.place))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  if(uf && !places.length){
+    el.innerHTML='<option value="">Sem praça disponível</option>';
+    el.disabled=true;
+  }else{
+    el.disabled=false;
+    el.innerHTML='<option value="">Todas as regiões/praças</option>'+places.map(p=>`<option value="${p}">${p}</option>`).join('');
+  }
+}
 function renderMarketQuotes(){
   if(!document.getElementById('marketStates')) return;
   const uf=document.getElementById('marketState')?.value||'';
+  const region=document.getElementById('marketRegion')?.value||'';
   const cat=document.getElementById('marketCategory')?.value||'boi_cash';
-  const q=(document.getElementById('marketSearch')?.value||'').trim().toLowerCase();
-  const labels={boi_cash:'Boi gordo · à vista',boi_30:'Boi gordo · 30 dias',cow_cash:'Vaca gorda · à vista'};
-  const rows=marketQuotes.filter(x=>(!uf||x.uf===uf)&&(!q||x.place.toLowerCase().includes(q)||x.state.toLowerCase().includes(q)||x.uf.toLowerCase().includes(q)));
+  const labels={
+    boi_cash:'Boi gordo · à vista',
+    boi_30:'Boi gordo · 30 dias',
+    cow_cash:'Vaca gorda · à vista',
+    calf_male_nelore:'Bezerro Nelore · macho · 12 meses',
+    calf_female_nelore:'Bezerra Nelore · fêmea · 12 meses'
+  };
+  if(isCalfCategory(cat)){
+    const rows=marketCalfQuotes.filter(x=>!uf||x.uf===uf);
+    if(document.getElementById('marketAvailable')) marketAvailable.textContent=rows.length;
+    if(document.getElementById('marketUpdated')) marketUpdated.textContent=mgMarket.calf_updated_at||mgMarket.updated_at||'—';
+    if(document.getElementById('marketBasis')) marketBasis.textContent='Reposição Nelore · cotação estadual';
+    if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(mgMarket.calf_source||mgMarket.source||'—');
+    marketStates.innerHTML=rows.length?rows.map(x=>{
+      const q=x[cat];
+      return `<div class="market-region-card">
+        <div class="place"><div><b>${x.uf} · ${x.state}</b><span>Cotação estadual</span></div><span>${labels[cat]}</span></div>
+        <div class="quote">${marketMoney(q.head)}<small>/cabeça</small></div>
+        <div class="secondary-quote">${marketMoney(q.kg)}/kg · referência de 12 meses</div>
+      </div>`;
+    }).join(''):'<div class="performance-empty" style="grid-column:1/-1">Sem cotação disponível para esta categoria neste estado.</div>';
+    return;
+  }
+  if(document.getElementById('marketUpdated')) marketUpdated.textContent=mgMarket.updated_at||'—';
+  if(document.getElementById('marketBasis')) marketBasis.textContent=mgMarket.basis||'Mercado físico';
+  if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(mgMarket.source||'—');
+  const rows=marketQuotes.filter(x=>(!uf||x.uf===uf)&&(!region||x.place===region));
+  if(document.getElementById('marketAvailable')) marketAvailable.textContent=rows.length;
   marketStates.innerHTML=rows.length?rows.map(x=>`<div class="market-region-card">
     <div class="place"><div><b>${x.uf} · ${x.place}</b><span>${x.state}</span></div><span>${labels[cat]}</span></div>
     <div class="quote">${marketMoney(x[cat])}<small>/@</small></div>
     <div class="secondary-quote">À vista ${marketMoney(x.boi_cash)} · 30 dias ${marketMoney(x.boi_30)} · Vaca ${marketMoney(x.cow_cash)}</div>
-  </div>`).join(''):'<div class="performance-empty" style="grid-column:1/-1">Nenhuma praça encontrada para este filtro.</div>';
+  </div>`).join(''):'<div class="performance-empty" style="grid-column:1/-1">Sem cotação disponível para esta categoria/região neste estado.</div>';
 }
 
 async function loadExpenses(){
