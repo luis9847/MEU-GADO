@@ -175,7 +175,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 
 
 /* V11 — Mercado regional para teste */
-.market-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}.market-kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}.market-kpi small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:800}.market-kpi b{display:block;font-size:22px;margin-top:6px}.market-kpi span{display:block;color:var(--muted);font-size:9px;margin-top:4px}.market-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}.market-filters label{font-size:9px;font-weight:800}.market-filters select{width:100%;margin-top:5px;border:1px solid #d8e1de;border-radius:8px;padding:10px;background:#fff;font-size:10px}.market-region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.market-region-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px}.market-region-card .place{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.market-region-card .place b{font-size:11px}.market-region-card .place span{font-size:8px;color:var(--muted)}.market-region-card .quote{font-size:21px;font-weight:900;color:#0e7f3d;margin-top:10px}.market-region-card .quote small{font-size:9px;color:var(--muted);font-weight:600}.market-region-card .secondary-quote{font-size:9px;color:var(--muted);margin-top:4px}.market-news-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.market-news-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px;text-decoration:none;color:inherit}.market-news-card b{display:block;font-size:10px;line-height:1.4}.market-news-card span{display:block;font-size:8px;color:var(--muted);margin-top:5px}.market-test-note{font-size:9px;color:#745a16;background:#fff9e8;border:1px solid #ead9a2;border-radius:8px;padding:10px 12px;margin-top:12px;line-height:1.45}@media(max-width:900px){.market-kpis,.market-region-grid{grid-template-columns:1fr 1fr}.market-filters{grid-template-columns:1fr}}@media(max-width:600px){.market-kpis,.market-region-grid,.market-news-grid{grid-template-columns:1fr}}
+.market-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}.market-kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}.market-kpi small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:800}.market-kpi b{display:block;font-size:22px;margin-top:6px}.market-kpi span{display:block;color:var(--muted);font-size:9px;margin-top:4px}.market-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}.market-filters label{font-size:9px;font-weight:800}.market-filters select{width:100%;margin-top:5px;border:1px solid #d8e1de;border-radius:8px;padding:10px;background:#fff;font-size:10px}.market-region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.market-region-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px}.market-region-card .place{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.market-region-card .place div{min-width:0}.market-region-card .place b{display:block;font-size:11px;line-height:1.25}.market-region-card .place div span{display:block;margin-top:3px}.market-region-card .place>span{white-space:nowrap}.market-region-card .place span{font-size:8px;color:var(--muted)}.market-region-card .quote{font-size:21px;font-weight:900;color:#0e7f3d;margin-top:10px}.market-region-card .quote small{font-size:9px;color:var(--muted);font-weight:600}.market-region-card .secondary-quote{font-size:9px;color:var(--muted);margin-top:4px}.market-news-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.market-news-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px;text-decoration:none;color:inherit}.market-news-card b{display:block;font-size:10px;line-height:1.4}.market-news-card span{display:block;font-size:8px;color:var(--muted);margin-top:5px}.market-test-note{font-size:9px;color:#745a16;background:#fff9e8;border:1px solid #ead9a2;border-radius:8px;padding:10px 12px;margin-top:12px;line-height:1.45}@media(max-width:900px){.market-kpis,.market-region-grid{grid-template-columns:1fr 1fr}.market-filters{grid-template-columns:1fr}}@media(max-width:600px){.market-kpis,.market-region-grid,.market-news-grid{grid-template-columns:1fr}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 </head>
@@ -450,7 +450,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   <div class="market-kpis">
     <div class="market-kpi"><small>Indicador Esalq/B3</small><b id="marketEsalq">—</b><span id="marketEsalqVar">—</span></div>
     <div class="market-kpi"><small>B3 · Boi Gordo</small><b id="marketFuture">—</b><span id="marketFutureRef">—</span></div>
-    <div class="market-kpi"><small>Praças disponíveis</small><b id="marketAvailable">0</b><span>regiões com preço publicado</span></div>
+    <div class="market-kpi"><small id="marketAvailableLabel">Praças disponíveis</small><b id="marketAvailable">0</b><span id="marketAvailableHint">regiões com preço publicado</span></div>
   </div>
   <div class="market-filters">
     <label>Estado<select id="marketState" onchange="updateMarketRegions();renderMarketQuotes()"><option value="">Todos</option></select></label>
@@ -459,8 +459,12 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
       <option value="boi_cash">Boi gordo · à vista</option>
       <option value="boi_30">Boi gordo · 30 dias</option>
       <option value="cow_cash">Vaca gorda · à vista</option>
-      <option value="calf_male_nelore">Bezerro Nelore · macho · 12 meses</option>
-      <option value="calf_female_nelore">Bezerra Nelore · fêmea · 12 meses</option>
+      <option value="calf_male_nelore">Reposição · Bezerro macho · 12 meses</option>
+      <option value="calf_female_nelore">Reposição · Bezerra fêmea · 12 meses</option>
+      <option value="garrote_male">Reposição · Garrote macho · 18 meses</option>
+      <option value="boi_magro">Reposição · Boi magro · 345 kg</option>
+      <option value="novilha_female">Reposição · Novilha · 18 meses</option>
+      <option value="vaca_boiadeira">Reposição · Vaca boiadeira</option>
     </select></label>
   </div>
   <div class="card" style="margin-bottom:12px;padding:12px 14px;font-size:10px;color:var(--muted)">Todos os 26 estados e o Distrito Federal aparecem no filtro. Quando uma fonte não publicar cotação para uma categoria ou praça, o sistema exibirá <b>Sem cotação disponível</b> em vez de ocultar o estado.</div>
@@ -652,21 +656,23 @@ const mgMarket={
   {uf:'BA',state:'Bahia',place:'Sul',boi_cash:326,boi_30:330,cow_cash:301.5}
  ],
  calf_quotes:[
-  {uf:'SP',state:'São Paulo',calf_male_nelore:{head:3487.00,kg:14.53},calf_female_nelore:{head:2761.76,kg:13.15}},
-  {uf:'MG',state:'Minas Gerais',calf_male_nelore:{head:3505.00,kg:14.60},calf_female_nelore:{head:2610.71,kg:12.43}},
-  {uf:'GO',state:'Goiás',calf_male_nelore:{head:3494.80,kg:14.56},calf_female_nelore:{head:2627.06,kg:12.51}},
-  {uf:'MS',state:'Mato Grosso do Sul',calf_male_nelore:{head:3730.00,kg:15.54},calf_female_nelore:{head:2964.00,kg:14.11}},
-  {uf:'BA',state:'Bahia',calf_male_nelore:{head:3370.00,kg:14.04},calf_female_nelore:{head:2335.00,kg:11.12}},
-  {uf:'MT',state:'Mato Grosso',calf_male_nelore:{head:3748.27,kg:15.62},calf_female_nelore:{head:2669.10,kg:12.71}},
-  {uf:'PR',state:'Paraná',calf_male_nelore:{head:3911.07,kg:16.30},calf_female_nelore:{head:3005.08,kg:14.31}},
-  {uf:'PA',state:'Pará',calf_male_nelore:{head:3550.00,kg:14.79},calf_female_nelore:{head:2538.93,kg:12.09}},
-  {uf:'RO',state:'Rondônia',calf_male_nelore:{head:3532.62,kg:14.72},calf_female_nelore:{head:2479.62,kg:11.81}},
-  {uf:'TO',state:'Tocantins',calf_male_nelore:{head:3504.47,kg:14.60},calf_female_nelore:{head:2724.08,kg:12.97}},
-  {uf:'AC',state:'Acre',calf_male_nelore:{head:3015.38,kg:12.56},calf_female_nelore:{head:2088.89,kg:9.95}},
-  {uf:'MA',state:'Maranhão',calf_male_nelore:{head:3480.00,kg:14.50},calf_female_nelore:{head:2783.00,kg:13.25}},
-  {uf:'RJ',state:'Rio de Janeiro',calf_male_nelore:{head:3435.00,kg:14.31},calf_female_nelore:{head:2255.00,kg:10.74}},
-  {uf:'RR',state:'Roraima',calf_male_nelore:{head:2490.00,kg:10.38},calf_female_nelore:{head:2047.50,kg:9.75}}
- ],
+  {uf:'SP',state:'São Paulo',calf_male_nelore:{head:3487.00,kg:14.53,garrote_male:{head:3298.00,kg:12.93},boi_magro:{head:3893.80,kg:11.29},novilha_female:{head:3192.31,kg:11.82},vaca_boiadeira:{head:3435.00,kg:10.41}},calf_female_nelore:{head:2761.76,kg:13.15}},
+  {uf:'MG',state:'Minas Gerais',calf_male_nelore:{head:3505.00,kg:14.60,garrote_male:{head:3270.00,kg:12.82},boi_magro:{head:3833.50,kg:11.11},novilha_female:{head:3230.12,kg:11.96},vaca_boiadeira:{head:3265.92,kg:9.90}},calf_female_nelore:{head:2610.71,kg:12.43}},
+  {uf:'GO',state:'Goiás',calf_male_nelore:{head:3494.80,kg:14.56,garrote_male:{head:3505.00,kg:13.75},boi_magro:{head:3990.96,kg:11.57},novilha_female:{head:3174.58,kg:11.76},vaca_boiadeira:{head:3660.18,kg:11.09}},calf_female_nelore:{head:2627.06,kg:12.51}},
+  {uf:'MS',state:'Mato Grosso do Sul',calf_male_nelore:{head:3730.00,kg:15.54,garrote_male:{head:3588.00,kg:14.07},boi_magro:{head:4213.24,kg:12.21},novilha_female:{head:3418.39,kg:12.66},vaca_boiadeira:{head:3812.37,kg:11.55}},calf_female_nelore:{head:2964.00,kg:14.11}},
+  {uf:'BA',state:'Bahia',calf_male_nelore:{head:3370.00,kg:14.04,garrote_male:{head:3159.00,kg:12.39},boi_magro:{head:3825.00,kg:11.09},novilha_female:{head:2975.00,kg:11.02},vaca_boiadeira:{head:3336.67,kg:10.11}},calf_female_nelore:{head:2335.00,kg:11.12}},
+  {uf:'MT',state:'Mato Grosso',calf_male_nelore:{head:3748.27,kg:15.62,garrote_male:{head:3646.00,kg:14.30},boi_magro:{head:4130.15,kg:11.97},novilha_female:{head:3218.66,kg:11.92},vaca_boiadeira:{head:3505.54,kg:10.62}},calf_female_nelore:{head:2669.10,kg:12.71}},
+  {uf:'PR',state:'Paraná',calf_male_nelore:{head:3911.07,kg:16.30,garrote_male:{head:3792.00,kg:14.87},boi_magro:{head:4248.51,kg:12.31},novilha_female:{head:3512.00,kg:13.01},vaca_boiadeira:{head:3978.33,kg:12.06}},calf_female_nelore:{head:3005.08,kg:14.31}},
+  {uf:'PA',state:'Pará',calf_male_nelore:{head:3550.00,kg:14.79,garrote_male:{head:3256.00,kg:12.77},boi_magro:{head:3824.09,kg:11.08},novilha_female:{head:3065.45,kg:11.35},vaca_boiadeira:{head:3568.56,kg:10.81}},calf_female_nelore:{head:2538.93,kg:12.09}},
+  {uf:'RO',state:'Rondônia',calf_male_nelore:{head:3532.62,kg:14.72,garrote_male:{head:3189.00,kg:12.51},boi_magro:{head:3766.92,kg:10.92},novilha_female:{head:2973.60,kg:11.01},vaca_boiadeira:{head:3363.00,kg:10.19}},calf_female_nelore:{head:2479.62,kg:11.81}},
+  {uf:'TO',state:'Tocantins',calf_male_nelore:{head:3504.47,kg:14.60,garrote_male:{head:3220.00,kg:12.63},boi_magro:{head:3793.13,kg:10.99},novilha_female:{head:3117.33,kg:11.55},vaca_boiadeira:{head:3597.18,kg:10.90}},calf_female_nelore:{head:2724.08,kg:12.97}},
+  {uf:'AC',state:'Acre',calf_male_nelore:{head:3015.38,kg:12.56,garrote_male:{head:2634.00,kg:10.33},boi_magro:{head:3102.50,kg:8.99},novilha_female:{head:2600.00,kg:9.63},vaca_boiadeira:{head:2845.00,kg:8.62}},calf_female_nelore:{head:2088.89,kg:9.95}},
+  {uf:'MA',state:'Maranhão',calf_male_nelore:{head:3480.00,kg:14.50,garrote_male:{head:3143.00,kg:12.33},boi_magro:{head:3750.63,kg:10.87},novilha_female:{head:3377.50,kg:12.51},vaca_boiadeira:{head:3497.50,kg:10.60}},calf_female_nelore:{head:2783.00,kg:13.25}},
+  {uf:'RJ',state:'Rio de Janeiro',calf_male_nelore:{head:3435.00,kg:14.31,garrote_male:{head:2985.00,kg:11.71},boi_magro:{head:3502.00,kg:10.15},novilha_female:{head:2895.00,kg:10.72},vaca_boiadeira:{head:3065.00,kg:9.29}},calf_female_nelore:{head:2255.00,kg:10.74}},
+  {uf:'RR',state:'Roraima',calf_male_nelore:{head:2490.00,kg:10.38,garrote_male:{head:2600.00,kg:10.20},boi_magro:{head:3155.63,kg:9.15},novilha_female:{head:2554.20,kg:9.46},vaca_boiadeira:{head:2805.00,kg:8.50}},calf_female_nelore:{head:2047.50,kg:9.75}}
+,
+  {uf:'SC',state:'Santa Catarina',garrote_male:{head:4150.00,kg:13.83},boi_magro:{head:4850.00,kg:12.93},novilha_female:{head:3610.00,kg:13.37},vaca_boiadeira:{head:3545.00,kg:10.74}},
+  {uf:'RS',state:'Rio Grande do Sul',garrote_male:{head:4400.00,kg:14.67},boi_magro:{head:5345.00,kg:14.25},novilha_female:{head:3800.00,kg:14.07},vaca_boiadeira:{head:4365.90,kg:13.23}} ],
  calf_updated_at:'02/09/2026',
  calf_source:'Scot Consultoria / Notícias Agrícolas',
  news:[
@@ -1297,7 +1303,7 @@ async function loadMarket(){
   renderMarketQuotes();
 }
 function marketMoney(v){return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});}
-function isCalfCategory(cat){return cat==='calf_male_nelore'||cat==='calf_female_nelore';}
+function isCalfCategory(cat){return ['calf_male_nelore','calf_female_nelore','garrote_male','boi_magro','novilha_female','vaca_boiadeira'].includes(cat);}
 function updateMarketRegions(){
   const el=document.getElementById('marketRegion'); if(!el)return;
   const uf=document.getElementById('marketState')?.value||'';
@@ -1326,14 +1332,20 @@ function renderMarketQuotes(){
     boi_cash:'Boi gordo · à vista',
     boi_30:'Boi gordo · 30 dias',
     cow_cash:'Vaca gorda · à vista',
-    calf_male_nelore:'Bezerro Nelore · macho · 12 meses',
-    calf_female_nelore:'Bezerra Nelore · fêmea · 12 meses'
+    calf_male_nelore:'Bezerro macho · 12 meses',
+    calf_female_nelore:'Bezerra fêmea · 12 meses',
+    garrote_male:'Garrote macho · 18 meses',
+    boi_magro:'Boi magro · 345 kg',
+    novilha_female:'Novilha · 18 meses',
+    vaca_boiadeira:'Vaca boiadeira'
   };
   if(isCalfCategory(cat)){
-    const rows=marketCalfQuotes.filter(x=>!uf||x.uf===uf);
+    const rows=marketCalfQuotes.filter(x=>(!uf||x.uf===uf)&&x[cat]);
+    if(document.getElementById('marketAvailableLabel')) marketAvailableLabel.textContent='Cotações disponíveis';
+    if(document.getElementById('marketAvailableHint')) marketAvailableHint.textContent='estados com preço publicado';
     if(document.getElementById('marketAvailable')) marketAvailable.textContent=rows.length;
     if(document.getElementById('marketUpdated')) marketUpdated.textContent=mgMarket.calf_updated_at||mgMarket.updated_at||'—';
-    if(document.getElementById('marketBasis')) marketBasis.textContent='Reposição Nelore · cotação estadual';
+    if(document.getElementById('marketBasis')) marketBasis.textContent='Reposição bovina · cotação estadual';
     if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(mgMarket.calf_source||mgMarket.source||'—');
     marketStates.innerHTML=rows.length?rows.map(x=>{
       const q=x[cat];
@@ -1345,6 +1357,8 @@ function renderMarketQuotes(){
     }).join(''):'<div class="performance-empty" style="grid-column:1/-1">Sem cotação disponível para esta categoria neste estado.</div>';
     return;
   }
+  if(document.getElementById('marketAvailableLabel')) marketAvailableLabel.textContent='Praças disponíveis';
+  if(document.getElementById('marketAvailableHint')) marketAvailableHint.textContent='regiões com preço publicado';
   if(document.getElementById('marketUpdated')) marketUpdated.textContent=mgMarket.updated_at||'—';
   if(document.getElementById('marketBasis')) marketBasis.textContent=mgMarket.basis||'Mercado físico';
   if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(mgMarket.source||'—');
