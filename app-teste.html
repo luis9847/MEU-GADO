@@ -1622,17 +1622,25 @@ function simTargetChanged(){
     const a=(animalsData||[]).find(x=>String(x.id)===String(id));
     document.getElementById('simWeight').value=simNum(a?.current_weight||a?.weight||a?.last_weight||a?.initial_weight)||'';
   }else{
+    const lot=(lotsData||[]).find(x=>String(x.id)===String(id));
+    const lotName=lot?.name||'';
     const members=(animalsData||[]).filter(a=>{
-      const animalLot=a.lot_id ?? a.lotId ?? a.lote_id ?? a.loteId;
-      return String(animalLot)===String(id)&&!a.exit_type&&!a.status?.match(/vendido|morto/i);
+      const animalLotId=a.lot_id ?? a.lotId ?? a.lote_id ?? a.loteId;
+      const animalLotName=a.lot ?? a.lot_name ?? a.lote ?? a.lote_nome;
+      const belongs=(animalLotId!=null && String(animalLotId)===String(id)) ||
+                    (!!lotName && String(animalLotName||'').trim().toLowerCase()===String(lotName).trim().toLowerCase());
+      return belongs&&!a.exit_type&&!a.status?.match(/vendido|morto/i);
     });
     let total=0;
     for(const a of members){
-      total+=simNum(a.current_weight ?? a.currentWeight ?? a.last_weight ?? a.lastWeight ?? a.weight ?? a.initial_weight ?? a.initialWeight);
+      total+=simNum(a.current_weight ?? a.currentWeight ?? a.last_weight ?? a.lastWeight ?? a.weight ?? a.entry_weight ?? a.initial_weight ?? a.initialWeight);
     }
+    // The Lots module already exposes the consolidated total; use it as a safe fallback.
+    if(!total && lot) total=simNum(lot.total_weight ?? lot.totalWeight);
     document.getElementById('simWeight').value=total||'';
     const count=document.getElementById('simLotCount');
-    if(count) count.textContent=`${members.length} animal${members.length===1?'':'is'} no lote`;
+    const qty=members.length || simNum(lot?.animals);
+    if(count) count.textContent=`${qty} animal${qty===1?'':'is'} no lote`;
   }
   renderSaleSimulation();
 }
@@ -1670,7 +1678,15 @@ function renderSaleSimulation(){
   let headCount=1;
   if(document.getElementById('simType')?.value==='lot'){
     const lid=document.getElementById('simTarget')?.value;
-    headCount=(animalsData||[]).filter(a=>String(a.lot_id??a.lotId??a.lote_id??a.loteId)===String(lid)&&!a.exit_type&&!a.status?.match(/vendido|morto/i)).length||0;
+    const lot=(lotsData||[]).find(x=>String(x.id)===String(lid));
+    const lotName=lot?.name||'';
+    headCount=(animalsData||[]).filter(a=>{
+      const animalLotId=a.lot_id??a.lotId??a.lote_id??a.loteId;
+      const animalLotName=a.lot??a.lot_name??a.lote??a.lote_nome;
+      const belongs=(animalLotId!=null&&String(animalLotId)===String(lid)) ||
+                    (!!lotName&&String(animalLotName||'').trim().toLowerCase()===String(lotName).trim().toLowerCase());
+      return belongs&&!a.exit_type&&!a.status?.match(/vendido|morto/i);
+    }).length || simNum(lot?.animals);
   }
   const gross=isReplacement?(headCount*price):(arrobas*price);
   const mp=document.getElementById('simMarketPrice'); if(mp)mp.value=market?market.toFixed(2).replace('.',','):'';
