@@ -219,10 +219,19 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 @media(max-width:900px){.support-hero{grid-template-columns:1fr}.help-grid{grid-template-columns:1fr 1fr}.mg-footer{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.help-grid,.mg-footer{grid-template-columns:1fr}.support-hero h2{font-size:23px}}
 
+
+/* V19.2 — correções finais do rodapé e contato */
+.mg-footer{width:100%;max-width:100%;box-sizing:border-box;overflow:hidden}
+.mg-footer>div{min-width:0}
+.mg-footer-contact a{overflow-wrap:anywhere}
+.mg-footer-bottom{width:100%;box-sizing:border-box}
+@media(max-width:1100px){.mg-footer{grid-template-columns:1fr 1fr}.mg-footer-bottom{grid-column:1/-1}}
+@media(max-width:720px){.mg-footer{grid-template-columns:1fr}.mg-footer-bottom{grid-column:1;flex-direction:column}}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 </head>
-<body data-build="ajuda-v19-teste"><div class="layout">
+<body data-build="ajuda-v19-2-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -345,6 +354,32 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 </section>
 
 
+
+<section id="sobreNos" class="view">
+  <div class="page-title"><div><h2>Sobre nós</h2><p>Conheça o propósito do Meu Gado.</p></div></div>
+  <div class="support-hero">
+    <div>
+      <small>Meu Gado</small>
+      <h2>Tecnologia para uma gestão pecuária mais simples.</h2>
+      <p>O Meu Gado foi criado para ajudar produtores a organizar as principais informações do rebanho em um só lugar. Animais, lotes, pesagens, saúde, reprodução, gastos, mercado e simulações passam a fazer parte de uma gestão mais clara e prática.</p>
+      <div class="support-actions">
+        <a class="support-whatsapp" target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Gostaria%20de%20saber%20mais%20sobre%20o%20Meu%20Gado.">💬 Fale conosco</a>
+        <a class="support-secondary" href="mailto:luisfelipepiment9@gmail.com">✉ luisfelipepiment9@gmail.com</a>
+      </div>
+    </div>
+    <div class="support-phone">
+      <span>Nosso propósito</span>
+      <b>Controle que gera informação.</b>
+      <small>Organizar o rebanho para apoiar melhores decisões no campo.</small>
+    </div>
+  </div>
+  <div class="help-grid">
+    <div class="help-card"><i>✓</i><b>Organização</b><span>Centralizar as informações importantes do rebanho e da propriedade.</span></div>
+    <div class="help-card"><i>↗</i><b>Gestão</b><span>Transformar registros do dia a dia em informações úteis para o produtor.</span></div>
+    <div class="help-card"><i>♙</i><b>Pecuária</b><span>Construído com foco nas rotinas reais de quem trabalha com gado.</span></div>
+  </div>
+</section>
+
 <section id="ajuda" class="view">
   <div class="page-title"><div><h2>Central de Ajuda</h2><p>Encontre respostas rápidas ou fale diretamente com o suporte do Meu Gado.</p></div></div>
 
@@ -361,7 +396,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <div class="support-phone">
       <span>Fale conosco</span>
       <b>(35) 99965-5305</b>
-      <small>Atendimento pelo WhatsApp</small>
+      <small>Atendimento pelo WhatsApp<br><a href="mailto:luisfelipepiment9@gmail.com" style="color:#147b4b;text-decoration:none">luisfelipepiment9@gmail.com</a></small>
     </div>
   </div>
 
@@ -386,10 +421,10 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
     <div>
       <div class="mg-footer-brand"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><p>Controle profissional do rebanho.</p></div></div>
     </div>
-    <div><span class="mg-footer-title">Meu Gado</span><a href="#" onclick="show('inicio');return false">Início</a><a href="#" onclick="show('animais');return false">Animais</a><a href="#" onclick="show('relatorios');return false">Relatórios</a></div>
+    <div><span class="mg-footer-title">Meu Gado</span><a href="#" onclick="show('inicio');return false">Início</a><a href="#" onclick="show('sobreNos');return false">Sobre nós</a><a href="#" onclick="show('relatorios');return false">Relatórios</a></div>
     <div><span class="mg-footer-title">Recursos</span><a href="#" onclick="show('mercado');return false">Mercado Pecuário</a><a href="#" onclick="show('saleSimulator');return false">Simulador de Venda</a><a href="#" onclick="openNews();return false">Novidades</a></div>
-    <div class="mg-footer-contact"><span class="mg-footer-title">Precisa de ajuda?</span><strong>(35) 99965-5305</strong><p>Fale diretamente com nosso suporte pelo WhatsApp.</p><a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a></div>
-    <div class="mg-footer-bottom"><span>© 2026 Meu Gado. Todos os direitos reservados.</span><span>Suporte: (35) 99965-5305</span></div>
+    <div class="mg-footer-contact"><span class="mg-footer-title">Precisa de ajuda?</span><strong>(35) 99965-5305</strong><p>Fale diretamente com nosso suporte pelo WhatsApp.</p><a href="mailto:luisfelipepiment9@gmail.com">luisfelipepiment9@gmail.com</a><a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a></div>
+    <div class="mg-footer-bottom"><span>© 2026 Meu Gado. Todos os direitos reservados.</span><span>Suporte: (35) 99965-5305 · luisfelipepiment9@gmail.com</span></div>
   </footer>
 </section>
 
