@@ -1612,35 +1612,33 @@ function simFillTargets(){
   const arr=type.value==='lot'?(lotsData||[]):((animalsData||[]).filter(a=>!a.exit_type&&!a.status?.match(/vendido|morto/i)));
   s.innerHTML='<option value="">Selecione...</option>'+arr.map(x=>`<option value="${x.id}">${type.value==='lot'?(x.name||x.nome||('Lote '+x.id)):(x.number||x.name||x.nome||('Animal '+x.id))}</option>`).join('');
   document.getElementById('simWeight').value='';
+  window.simCurrentLotProfile=null;
+  const count=document.getElementById('simLotCount'); if(count) count.textContent='';
   const bp=document.getElementById('simBuyerPrice'); if(bp)bp.value='';
   renderSaleSimulation();
 }
-function simTargetChanged(){
+async function simTargetChanged(){
   const type=document.getElementById('simType').value,id=document.getElementById('simTarget').value;
   if(!id)return renderSaleSimulation();
   if(type==='animal'){
     const a=(animalsData||[]).find(x=>String(x.id)===String(id));
     document.getElementById('simWeight').value=simNum(a?.current_weight||a?.weight||a?.last_weight||a?.initial_weight)||'';
   }else{
-    const lot=(lotsData||[]).find(x=>String(x.id)===String(id));
-    const lotName=lot?.name||'';
-    const members=(animalsData||[]).filter(a=>{
-      const animalLotId=a.lot_id ?? a.lotId ?? a.lote_id ?? a.loteId;
-      const animalLotName=a.lot ?? a.lot_name ?? a.lote ?? a.lote_nome;
-      const belongs=(animalLotId!=null && String(animalLotId)===String(id)) ||
-                    (!!lotName && String(animalLotName||'').trim().toLowerCase()===String(lotName).trim().toLowerCase());
-      return belongs&&!a.exit_type&&!a.status?.match(/vendido|morto/i);
-    });
-    let total=0;
-    for(const a of members){
-      total+=simNum(a.current_weight ?? a.currentWeight ?? a.last_weight ?? a.lastWeight ?? a.weight ?? a.entry_weight ?? a.initial_weight ?? a.initialWeight);
-    }
-    // The Lots module already exposes the consolidated total; use it as a safe fallback.
-    if(!total && lot) total=simNum(lot.total_weight ?? lot.totalWeight);
-    document.getElementById('simWeight').value=total||'';
     const count=document.getElementById('simLotCount');
-    const qty=members.length || simNum(lot?.animals);
-    if(count) count.textContent=`${qty} animal${qty===1?'':'is'} no lote`;
+    if(count) count.textContent='Carregando lote...';
+    try{
+      const profile=await api(`/api/lots/${id}/profile`);
+      window.simCurrentLotProfile=profile;
+      const qty=Number(profile?.animals_count||profile?.animals?.length||0);
+      const total=Number(profile?.total_weight||0);
+      document.getElementById('simWeight').value=total||'';
+      if(count) count.textContent=`${qty} animal${qty===1?'':'is'} no lote`;
+    }catch(e){
+      window.simCurrentLotProfile=null;
+      document.getElementById('simWeight').value='';
+      if(count) count.textContent='Não foi possível carregar os animais do lote';
+      console.error('Simulador: erro ao carregar lote',e);
+    }
   }
   renderSaleSimulation();
 }
@@ -1679,14 +1677,7 @@ function renderSaleSimulation(){
   if(document.getElementById('simType')?.value==='lot'){
     const lid=document.getElementById('simTarget')?.value;
     const lot=(lotsData||[]).find(x=>String(x.id)===String(lid));
-    const lotName=lot?.name||'';
-    headCount=(animalsData||[]).filter(a=>{
-      const animalLotId=a.lot_id??a.lotId??a.lote_id??a.loteId;
-      const animalLotName=a.lot??a.lot_name??a.lote??a.lote_nome;
-      const belongs=(animalLotId!=null&&String(animalLotId)===String(lid)) ||
-                    (!!lotName&&String(animalLotName||'').trim().toLowerCase()===String(lotName).trim().toLowerCase());
-      return belongs&&!a.exit_type&&!a.status?.match(/vendido|morto/i);
-    }).length || simNum(lot?.animals);
+    headCount=simNum(window.simCurrentLotProfile?.animals_count) || simNum(window.simCurrentLotProfile?.animals?.length) || simNum(lot?.animals);
   }
   const gross=isReplacement?(headCount*price):(arrobas*price);
   const mp=document.getElementById('simMarketPrice'); if(mp)mp.value=market?market.toFixed(2).replace('.',','):'';
