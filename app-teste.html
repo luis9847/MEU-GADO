@@ -173,6 +173,9 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 .release-list{display:grid;gap:14px}.release-card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}.release-head{padding:18px 20px 10px;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.release-head h3{margin:5px 0 4px;font-size:18px}.release-head p{margin:0;color:var(--muted);font-size:10px}.release-date{font-size:9px;color:var(--muted);white-space:nowrap}.release-tag{display:inline-block;background:#e8f7ed;color:#0c8b42;border-radius:99px;padding:4px 8px;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.release-body{padding:0 20px 20px}.benefit-box{background:#f4faf6;border:1px solid #dcefe3;border-radius:9px;padding:12px 14px;margin:8px 0 13px;font-size:10px;line-height:1.55}.benefit-box b{color:#0d8140}.release-points{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 14px}.release-point{border:1px solid var(--line);border-radius:9px;padding:10px;font-size:10px;line-height:1.45}.release-point b{display:block;margin-bottom:3px}.news-shot{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f5f7f6;margin-top:12px}.news-shot img{display:block;width:100%;height:auto}.how-title{font-size:11px;font-weight:900;margin:14px 0 8px}.how-steps{counter-reset:step;display:grid;gap:7px}.how-step{counter-increment:step;display:grid;grid-template-columns:25px 1fr;gap:9px;align-items:start;font-size:10px;line-height:1.5}.how-step:before{content:counter(step);width:23px;height:23px;border-radius:50%;background:#e7f6ec;color:#118d45;display:grid;place-items:center;font-weight:900}.release-old{opacity:.92}
 @media(max-width:700px){.news-hero{padding:18px}.news-hero-mark{display:none}.release-points{grid-template-columns:1fr}.release-head{flex-direction:column}.release-date{white-space:normal}}
 
+
+/* V11 — Mercado regional para teste */
+.market-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}.market-kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}.market-kpi small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:800}.market-kpi b{display:block;font-size:22px;margin-top:6px}.market-kpi span{display:block;color:var(--muted);font-size:9px;margin-top:4px}.market-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}.market-filters label{font-size:9px;font-weight:800}.market-filters select{width:100%;margin-top:5px;border:1px solid #d8e1de;border-radius:8px;padding:10px;background:#fff;font-size:10px}.market-region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.market-region-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px}.market-region-card .place{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.market-region-card .place b{font-size:11px}.market-region-card .place span{font-size:8px;color:var(--muted)}.market-region-card .quote{font-size:21px;font-weight:900;color:#0e7f3d;margin-top:10px}.market-region-card .quote small{font-size:9px;color:var(--muted);font-weight:600}.market-region-card .secondary-quote{font-size:9px;color:var(--muted);margin-top:4px}.market-news-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.market-news-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px;text-decoration:none;color:inherit}.market-news-card b{display:block;font-size:10px;line-height:1.4}.market-news-card span{display:block;font-size:8px;color:var(--muted);margin-top:5px}.market-test-note{font-size:9px;color:#745a16;background:#fff9e8;border:1px solid #ead9a2;border-radius:8px;padding:10px 12px;margin-top:12px;line-height:1.45}@media(max-width:900px){.market-kpis,.market-region-grid{grid-template-columns:1fr 1fr}.market-filters{grid-template-columns:1fr}}@media(max-width:600px){.market-kpis,.market-region-grid,.market-news-grid{grid-template-columns:1fr}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 </head>
@@ -437,19 +440,27 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 </section>
 <section id="mercado" class="view">
   <div class="market-header">
-    <div><h2>Arroba do boi</h2><p>Preço do boi gordo por estado do Brasil</p></div>
-    <div class="market-date"><span>Atualização da fonte</span><b id="marketUpdated">—</b></div>
+    <div><h2>Mercado pecuário</h2><p>Cotações por estado e praça para apoiar suas decisões de venda</p></div>
+    <div class="market-date"><span>Último fechamento disponível</span><b id="marketUpdated">—</b></div>
   </div>
   <div class="market-note">
-    <div><b id="marketBasis">Preço bruto à vista (R$/@)</b><span id="marketSource">Fonte: —</span></div>
+    <div><b id="marketBasis">Mercado físico do boi gordo</b><span id="marketSource">Fonte: —</span></div>
     <a id="marketSourceLink" target="_blank" href="https://www.noticiasagricolas.com.br/cotacoes/boi-gordo">Abrir fonte ↗</a>
   </div>
-  <div class="market-state-toolbar">
-    <div class="market-search"><span>⌕</span><input id="marketSearch" placeholder="Buscar estado ou UF..." oninput="renderMarketQuotes()"></div>
-    <div class="market-summary"><b id="marketAvailable">0</b><span>estados com cotação publicada</span></div>
+  <div class="market-kpis">
+    <div class="market-kpi"><small>Indicador Esalq/B3</small><b id="marketEsalq">—</b><span id="marketEsalqVar">—</span></div>
+    <div class="market-kpi"><small>B3 · Boi Gordo</small><b id="marketFuture">—</b><span id="marketFutureRef">—</span></div>
+    <div class="market-kpi"><small>Praças disponíveis</small><b id="marketAvailable">0</b><span>regiões com preço publicado</span></div>
   </div>
-  <div id="marketStates" class="state-quote-grid"></div>
-  <div class="market-disclaimer">Estados sem preço aparecem como “Sem cotação disponível”. O Meu Gado não cria nem estima preços quando a fonte consultada não publica uma referência para o estado.</div>
+  <div class="market-filters">
+    <label>Estado<select id="marketState" onchange="renderMarketQuotes()"><option value="">Todos</option></select></label>
+    <label>Categoria<select id="marketCategory" onchange="renderMarketQuotes()"><option value="boi_cash">Boi gordo · à vista</option><option value="boi_30">Boi gordo · 30 dias</option><option value="cow_cash">Vaca gorda · à vista</option></select></label>
+    <label>Buscar praça<input id="marketSearch" placeholder="Ex.: Triângulo, Barretos..." oninput="renderMarketQuotes()" style="width:100%;margin-top:5px;border:1px solid #d8e1de;border-radius:8px;padding:10px;font-size:10px"></label>
+  </div>
+  <div id="marketStates" class="market-region-grid"></div>
+  <div class="market-test-note"><b>Versão de teste:</b> estes valores usam o último fechamento disponível das fontes consultadas. A atualização automática diária será conectada ao backend somente depois de aprovarmos esta tela e a origem dos dados.</div>
+  <div class="head" style="margin-top:16px"><div><h3>Notícias do mercado</h3><div class="sub">Leituras recentes para acompanhar a pecuária</div></div></div>
+  <div id="marketNews" class="market-news-grid"></div>
 </section>
 <section id="perfil" class="view">
   <div class="head"><div><h2>Meus dados</h2><div class="sub">Preencha todos os dados obrigatórios da propriedade</div></div><button class="btn primary" onclick="saveProfile()">Salvar</button></div>
@@ -603,9 +614,34 @@ let animalsData=[]; let lotsData=[]; let editingLotId=null; let editingExpenseId
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
 let mgFarm=null,mgUser=null;
-const mgMarket={updated_at:'28/08/2026',basis:'Preço físico, bruto, à vista por arroba',source:'Notícias Agrícolas / Scot Consultoria',source_url:'https://www.noticiasagricolas.com.br/cotacoes/boi-gordo',quotes:[
-['AC','Acre',306,306],['AL','Alagoas',343,343],['AP','Amapá',null,null],['AM','Amazonas',null,null],['BA','Bahia',323,323],['CE','Ceará',null,null],['DF','Distrito Federal',null,null],['ES','Espírito Santo',333,333],['GO','Goiás',326,326],['MA','Maranhão',338,338],['MT','Mato Grosso',321,323],['MS','Mato Grosso do Sul',336,339],['MG','Minas Gerais',331,336],['PA','Pará',330,341],['PB','Paraíba',null,null],['PR','Paraná',355.5,355.5],['PE','Pernambuco',null,null],['PI','Piauí',null,null],['RJ','Rio de Janeiro',341,341],['RN','Rio Grande do Norte',null,null],['RS','Rio Grande do Sul',188.25,190.5],['RO','Rondônia',324,324],['RR','Roraima',333,333],['SC','Santa Catarina',355.5,355.5],['SP','São Paulo',338,338],['SE','Sergipe',null,null],['TO','Tocantins',331,331]
-].map(x=>({uf:x[0],state:x[1],min:x[2],max:x[3],reference:x[0]==='RS'?'Conversão de R$/kg para arroba':''}))};
+const mgMarket={
+ updated_at:'02/09/2026',
+ basis:'Mercado físico · último fechamento disponível',
+ source:'Scot Consultoria / Cepea-Esalq / Notícias Agrícolas',
+ source_url:'https://www.noticiasagricolas.com.br/cotacoes/boi-gordo',
+ esalq:{price:347.40,variation:0.40,date:'02/09/2026'},
+ future:{contract:'SET 2026',price:358.00,date:'02/09/2026'},
+ quotes:[
+  {uf:'SP',state:'São Paulo',place:'Barretos',boi_cash:338,boi_30:342,cow_cash:318},
+  {uf:'SP',state:'São Paulo',place:'Araçatuba',boi_cash:338,boi_30:342,cow_cash:318},
+  {uf:'MG',state:'Minas Gerais',place:'Triângulo',boi_cash:331,boi_30:335,cow_cash:314},
+  {uf:'MG',state:'Minas Gerais',place:'Belo Horizonte',boi_cash:334,boi_30:338,cow_cash:316},
+  {uf:'MG',state:'Minas Gerais',place:'Norte',boi_cash:336,boi_30:340,cow_cash:314},
+  {uf:'MG',state:'Minas Gerais',place:'Sul',boi_cash:331,boi_30:335,cow_cash:311},
+  {uf:'GO',state:'Goiás',place:'Goiânia',boi_cash:326,boi_30:330,cow_cash:314},
+  {uf:'GO',state:'Goiás',place:'Região Sul',boi_cash:326,boi_30:330,cow_cash:311},
+  {uf:'MS',state:'Mato Grosso do Sul',place:'Dourados',boi_cash:339,boi_30:343,cow_cash:319},
+  {uf:'MS',state:'Mato Grosso do Sul',place:'Campo Grande',boi_cash:339,boi_30:343,cow_cash:318},
+  {uf:'MS',state:'Mato Grosso do Sul',place:'Três Lagoas',boi_cash:336,boi_30:340,cow_cash:316},
+  {uf:'BA',state:'Bahia',place:'Sul',boi_cash:326,boi_30:330,cow_cash:301.5}
+ ],
+ news:[
+  {date:'27/08/2026',title:'Boi/Cepea: Bezerro se valoriza mais que boi magro',url:'https://www.noticiasagricolas.com.br/noticias/boi/'},
+  {date:'25/08/2026',title:'Abate de bovinos cresce 1,3% no segundo trimestre e supera 10,7 milhões de cabeças, aponta IBGE',url:'https://www.noticiasagricolas.com.br/noticias/boi/'},
+  {date:'25/08/2026',title:'Mercado de genética bovina cresce 12,4% no primeiro semestre',url:'https://www.noticiasagricolas.com.br/noticias/boi/'},
+  {date:'20/08/2026',title:'Boi/Cepea: Preço da arroba perde força; valores da carne seguem firmes',url:'https://www.noticiasagricolas.com.br/noticias/boi/'}
+ ]
+};
 function mgErr(e){throw new Error(e?.message||String(e||'Erro'))}
 async function mgSession(){const s=await mgSb.auth.getSession();if(!s.data.session){location.href='/';throw new Error('Sessão encerrada')}mgUser=s.data.session.user;return mgUser}
 async function mgGetFarm(){
@@ -1211,27 +1247,34 @@ async function loadMarket(){
   const d=await api('/api/market/arroba');
   marketQuotes=d.quotes||[];
   if(document.getElementById('marketUpdated')) marketUpdated.textContent=d.updated_at||'—';
-  if(document.getElementById('marketBasis')) marketBasis.textContent=d.basis||'Preço da arroba';
+  if(document.getElementById('marketBasis')) marketBasis.textContent=d.basis||'Mercado físico';
   if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(d.source||'—');
   if(document.getElementById('marketSourceLink')&&d.source_url) marketSourceLink.href=d.source_url;
-  if(document.getElementById('marketAvailable')) marketAvailable.textContent=marketQuotes.filter(x=>x.min!=null).length;
+  if(document.getElementById('marketEsalq')) marketEsalq.textContent=d.esalq?marketMoney(d.esalq.price)+'/@':'—';
+  if(document.getElementById('marketEsalqVar')) marketEsalqVar.textContent=d.esalq?`${d.esalq.variation>=0?'+':''}${Number(d.esalq.variation).toFixed(2)}% · ${d.esalq.date}`:'—';
+  if(document.getElementById('marketFuture')) marketFuture.textContent=d.future?marketMoney(d.future.price)+'/@':'—';
+  if(document.getElementById('marketFutureRef')) marketFutureRef.textContent=d.future?`${d.future.contract} · ${d.future.date}`:'—';
+  if(document.getElementById('marketAvailable')) marketAvailable.textContent=marketQuotes.length;
+  if(document.getElementById('marketState')){
+    const ufs=[...new Map(marketQuotes.map(x=>[x.uf,x.state])).entries()];
+    marketState.innerHTML='<option value="">Todos</option>'+ufs.map(([uf,name])=>`<option value="${uf}">${uf} · ${name}</option>`).join('');
+  }
+  if(document.getElementById('marketNews')) marketNews.innerHTML=(d.news||[]).map(n=>`<a class="market-news-card" target="_blank" href="${n.url}"><b>${n.title}</b><span>${n.date} · Notícias Agrícolas ↗</span></a>`).join('');
   renderMarketQuotes();
 }
-function marketMoney(v){
-  return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});
-}
+function marketMoney(v){return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});}
 function renderMarketQuotes(){
   if(!document.getElementById('marketStates')) return;
+  const uf=document.getElementById('marketState')?.value||'';
+  const cat=document.getElementById('marketCategory')?.value||'boi_cash';
   const q=(document.getElementById('marketSearch')?.value||'').trim().toLowerCase();
-  const rows=marketQuotes.filter(x=>!q||x.state.toLowerCase().includes(q)||x.uf.toLowerCase().includes(q));
-  marketStates.innerHTML=rows.map(x=>{
-    const has=x.min!=null;
-    const value=!has?'Sem cotação disponível':(Number(x.min)===Number(x.max)?`${marketMoney(x.min)}/@`:`${marketMoney(x.min)} – ${marketMoney(x.max)}/@`);
-    return `<div class="state-quote-card ${has?'':'no-quote'}">
-      <div class="state-identity"><span>${x.uf}</span><div><b>${x.state}</b><small>${x.reference||''}</small></div></div>
-      <div class="state-value ${has?'':'muted-value'}">${value}</div>
-    </div>`;
-  }).join('');
+  const labels={boi_cash:'Boi gordo · à vista',boi_30:'Boi gordo · 30 dias',cow_cash:'Vaca gorda · à vista'};
+  const rows=marketQuotes.filter(x=>(!uf||x.uf===uf)&&(!q||x.place.toLowerCase().includes(q)||x.state.toLowerCase().includes(q)||x.uf.toLowerCase().includes(q)));
+  marketStates.innerHTML=rows.length?rows.map(x=>`<div class="market-region-card">
+    <div class="place"><div><b>${x.uf} · ${x.place}</b><span>${x.state}</span></div><span>${labels[cat]}</span></div>
+    <div class="quote">${marketMoney(x[cat])}<small>/@</small></div>
+    <div class="secondary-quote">À vista ${marketMoney(x.boi_cash)} · 30 dias ${marketMoney(x.boi_30)} · Vaca ${marketMoney(x.cow_cash)}</div>
+  </div>`).join(''):'<div class="performance-empty" style="grid-column:1/-1">Nenhuma praça encontrada para este filtro.</div>';
 }
 
 async function loadExpenses(){
