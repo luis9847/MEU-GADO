@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="lixeira-v20-4-teste"><div class="layout">
+<body data-build="termos-v21-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -2140,4 +2140,54 @@ if(typeof _mgOriginalShow==='function'){
   };
 }
 
-</script></body></html>
+</script>
+<div id="termsModal" class="modal" style="display:none;z-index:9999">
+  <div class="modal-card" style="max-width:900px;max-height:88vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
+      <div>
+        <h2 style="margin-bottom:4px">Termos de Uso — Meu Gado</h2>
+        <div class="muted">Versão 1.0 • 03/09/2026</div>
+      </div>
+      <button class="btn secondary" onclick="closeTermsOfUse()">Fechar</button>
+    </div>
+    <div style="line-height:1.65;margin-top:18px">
+      <p>Estes Termos de Uso regulam o acesso e a utilização da plataforma <strong>Meu Gado</strong>, destinada ao apoio à gestão de rebanhos e propriedades rurais. Ao criar uma conta e utilizar a plataforma, o usuário declara que leu e concorda com estes Termos.</p>
+      <h3>1. Responsável pela plataforma</h3>
+      <p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, com canal oficial de contato pelo e-mail <strong>contatomeugado@outlook.com</strong>. O CPF do responsável não é exibido publicamente por medida de minimização e proteção de dados pessoais.</p>
+      <h3>2. Finalidade do Meu Gado</h3>
+      <p>A plataforma oferece ferramentas para organização e acompanhamento de informações relacionadas ao rebanho, incluindo cadastro de animais e lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios, indicadores, informações de mercado e simulações de venda.</p>
+      <h3>3. Cadastro, acesso e segurança da conta</h3>
+      <p>O usuário é responsável por fornecer informações corretas e atualizadas, manter sua senha sob sigilo e impedir o uso indevido de sua conta. O usuário deverá comunicar o Meu Gado pelo canal oficial caso identifique acesso não autorizado ou outra ocorrência de segurança relacionada à sua conta.</p>
+      <h3>4. Informações inseridas pelo usuário</h3>
+      <p>O usuário é responsável pela veracidade, qualidade e licitude das informações que cadastrar. Os registros do rebanho permanecem vinculados à conta/propriedade correspondente e são utilizados para fornecer as funcionalidades contratadas ou disponibilizadas pela plataforma.</p>
+      <h3>5. Lixeira e exclusão de registros</h3>
+      <p>Determinados registros excluídos pelo usuário podem ser enviados para a Lixeira e permanecer disponíveis para restauração. Esse recurso reduz o risco de perda acidental, mas não substitui políticas de backup e não constitui garantia absoluta de recuperação de dados em todas as circunstâncias.</p>
+      <h3>6. Cotações, mercado e Simulador de Venda</h3>
+      <p>Cotações, referências de mercado, indicadores, cálculos, projeções e resultados apresentados pelo Meu Gado possuem caráter exclusivamente informativo e de apoio à gestão. Podem sofrer atrasos, indisponibilidades, divergências ou alterações conforme as fontes utilizadas. O Meu Gado não garante preço de compra ou venda, rentabilidade, negociação, produtividade ou qualquer resultado financeiro. A decisão comercial permanece sob responsabilidade do usuário.</p>
+      <h3>7. Disponibilidade e evolução da plataforma</h3>
+      <p>O Meu Gado poderá passar por atualizações, correções, manutenções e alterações de funcionalidades. Poderão ocorrer interrupções temporárias decorrentes de manutenção, falhas técnicas, serviços de terceiros, internet ou situações fora do controle razoável do responsável pela plataforma.</p>
+      <h3>8. Uso permitido e condutas proibidas</h3>
+      <p>O usuário não poderá utilizar a plataforma para finalidade ilícita, tentar acessar dados de terceiros sem autorização, contornar mecanismos de segurança, explorar vulnerabilidades, interferir no funcionamento do serviço ou utilizar a plataforma de forma que cause dano ao Meu Gado ou a outros usuários.</p>
+      <h3>9. Propriedade intelectual</h3>
+      <p>A marca, identidade visual, interface, textos, estrutura, software e demais elementos próprios do Meu Gado são protegidos pela legislação aplicável. O uso da plataforma não transfere ao usuário direitos de propriedade intelectual sobre esses elementos. Os dados e registros lícitos inseridos pelo usuário permanecem relacionados à sua atividade e não são apropriados pelo Meu Gado como conteúdo próprio.</p>
+      <h3>10. Proteção de dados pessoais</h3>
+      <p>O tratamento de dados pessoais observará a legislação brasileira aplicável, especialmente a Lei Geral de Proteção de Dados Pessoais (LGPD). Informações mais detalhadas sobre finalidades, bases legais, armazenamento, compartilhamento, segurança e direitos dos titulares serão apresentadas na Política de Privacidade do Meu Gado. Solicitações relacionadas a dados pessoais poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+      <h3>11. Responsabilidades e limitações</h3>
+      <p>O Meu Gado busca manter informações e funcionalidades adequadas ao apoio da gestão pecuária, mas não substitui avaliação veterinária, zootécnica, contábil, jurídica, financeira ou comercial quando profissionalmente necessária. Nenhuma disposição destes Termos exclui ou restringe direitos e responsabilidades que não possam ser afastados pela legislação brasileira aplicável, inclusive normas de proteção do consumidor quando incidentes.</p>
+      <h3>12. Suspensão e encerramento</h3>
+      <p>O acesso poderá ser suspenso ou encerrado em caso de violação destes Termos, tentativa de fraude, risco à segurança da plataforma ou determinação legal, observadas as regras e direitos aplicáveis. O usuário poderá solicitar orientações sobre encerramento da conta e tratamento dos dados pelo canal oficial.</p>
+      <h3>13. Alterações destes Termos</h3>
+      <p>Estes Termos poderão ser atualizados para refletir mudanças legais, técnicas ou comerciais. Quando a alteração for relevante, o Meu Gado buscará comunicá-la de forma adequada na plataforma. A versão e a data de atualização permanecerão identificadas neste documento.</p>
+      <h3>14. Legislação aplicável</h3>
+      <p>Estes Termos são regidos pela legislação da República Federativa do Brasil. Eventuais conflitos serão tratados conforme as regras legais de competência aplicáveis, sem impor ao consumidor renúncia a foro ou direito que a legislação lhe assegure.</p>
+      <h3>15. Contato</h3>
+      <p>Dúvidas sobre estes Termos podem ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+    </div>
+  </div>
+</div>
+<script>
+function showTermsOfUse(){var m=document.getElementById('termsModal');if(m)m.style.display='flex'}
+function closeTermsOfUse(){var m=document.getElementById('termsModal');if(m)m.style.display='none'}
+</script>
+
+</body></html>
