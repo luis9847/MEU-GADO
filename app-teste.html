@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="termos-v21-1-teste"><div class="layout">
+<body data-build="termos-v21-2-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -2142,8 +2142,8 @@ if(typeof _mgOriginalShow==='function'){
 }
 
 </script>
-<div id="termsModal" class="modal" style="display:none;z-index:9999">
-  <div class="modal-card" style="max-width:900px;max-height:88vh;overflow:auto">
+<div id="termsModal" class="modal" style="display:none;z-index:9999;position:fixed;inset:0;background:rgba(4,22,17,.72);align-items:center;justify-content:center;padding:20px">
+  <div class="modal-card" style="width:min(900px,96vw);max-height:88vh;overflow:auto;background:#ffffff!important;opacity:1!important;border-radius:18px;padding:28px;box-shadow:0 28px 90px rgba(0,0,0,.35);color:#183129">
     <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
       <div>
         <h2 style="margin-bottom:4px">Termos de Uso — Meu Gado</h2>
@@ -2187,8 +2187,8 @@ if(typeof _mgOriginalShow==='function'){
   </div>
 </div>
 <script>
-function showTermsOfUse(){var m=document.getElementById('termsModal');if(m)m.style.display='flex'}
-function closeTermsOfUse(){var m=document.getElementById('termsModal');if(m)m.style.display='none'}
+function showTermsOfUse(){var m=document.getElementById('termsModal');if(m){m.style.display='flex';document.body.style.overflow='hidden'}}
+function closeTermsOfUse(){var m=document.getElementById('termsModal');if(m){m.style.display='none';document.body.style.overflow=''}}
 </script>
 
 </body></html>
