@@ -23,7 +23,7 @@ button,input{font:inherit}
 button{cursor:pointer}
 .page{min-height:100vh;position:relative;background:
   linear-gradient(90deg,rgba(3,32,31,.82) 0%,rgba(3,32,31,.68) 46%,rgba(3,32,31,.26) 68%,rgba(3,32,31,.12) 100%),
-  url('/login-rebanho.jpg') center/cover no-repeat fixed;
+  url('/static/login-rebanho.jpg') center/cover no-repeat fixed;
 }
 .shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.22fr) minmax(420px,.78fr);gap:34px;padding:34px 48px}
 .hero{color:#fff;display:flex;flex-direction:column;min-width:0}
@@ -101,16 +101,34 @@ button{cursor:pointer}
   border-radius:50%!important;
 }
 
+
+.legal-consent{font-size:10px;line-height:1.55;color:#687872;margin:10px 0 12px;text-align:center}
+.legal-consent a,.legal-links a{color:#0b7f49;font-weight:800;text-decoration:none}
+.legal-links{text-align:center;font-size:10px;color:#74827d;margin-top:10px}
+.legal-modal{position:fixed;inset:0;background:rgba(4,22,17,.62);z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
+.legal-modal.open{display:flex}
+.legal-card{width:min(900px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.28);color:#263a33}
+.legal-card h2{margin:0 0 4px}.legal-card h3{margin-top:20px}.legal-card p{font-size:12px;line-height:1.65}
+.legal-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.legal-close{border:1px solid #d8e2dd;background:#fff;border-radius:10px;padding:9px 13px;cursor:pointer;font-weight:800}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
+
+<style>
+.login-support-v19{position:fixed;left:0;right:0;bottom:18px;text-align:center;font-size:11px;color:#74827d;z-index:20;padding:0 14px}
+.login-support-v19 a{color:#0b7f49;font-weight:800;text-decoration:none;margin:0 4px}
+.login-support-v19 strong{color:#344b43;font-weight:800}
+.support-sep{margin:0 4px;color:#b2bbb7}
+@media(max-width:650px){.login-support-v19{position:static;margin:20px auto 12px;line-height:1.9}.support-sep{display:none}.login-support-v19 a,.login-support-v19 strong{display:block}}
+</style>
 </head>
 <body>
 <div class="page">
   <div class="shell">
     <section class="hero">
       <div class="brand">
-        <div class="brand-logo"><img src="/meu-gado-logo.png" alt="Boi Nelore"></div>
+        <div class="brand-logo"><img src="/static/meu-gado-logo.png" alt="Boi Nelore"></div>
         <div><b>Meu <span>Gado</span></b><small>CONTROLE PROFISSIONAL DO REBANHO</small></div>
       </div>
 
@@ -178,6 +196,10 @@ button{cursor:pointer}
           <div class="field"><label>Crie uma senha</label><div class="password-wrap"><input id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('regPassword',this)">Mostrar</button></div></div>
           <div class="field"><label>Confirme sua senha</label><div class="password-wrap"><input id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('regPasswordConfirm',this)">Mostrar</button></div></div>
           <button class="btn green" onclick="doRegister()">Criar minha conta</button>
+          <div class="legal-consent">Ao criar sua conta, você declara que leu e concorda com os
+            <a href="#" onclick="openTerms();return false">Termos de Uso</a> e reconhece que a
+            <a href="#" onclick="privacyPending();return false">Política de Privacidade</a> será disponibilizada nesta etapa de adequação.
+          </div>
         </div>
 
         <div class="form" id="setupForm">
@@ -190,6 +212,7 @@ button{cursor:pointer}
         <div class="error" id="message"></div>
         <div class="help">💬 Precisa de ajuda? <span>Fale conosco</span></div>
         <div class="footer">© 2026 Meu Gado. Todos os direitos reservados.</div>
+        <div class="legal-links"><a href="#" onclick="openTerms();return false">Termos de Uso</a> · <a href="#" onclick="privacyPending();return false">Política de Privacidade</a> · <a href="mailto:contatomeugado@outlook.com">Contato</a></div>
       </div>
     </section>
   </div>
@@ -208,47 +231,41 @@ async function mgEnsureFarm(user){
   if(q.error) throw new Error(q.error.message);
   if(q.data) return q.data;
 
-  let p=null;
+  // Fonte principal: metadados gravados no próprio usuário do Supabase.
+  // Isso funciona mesmo quando a confirmação do e-mail é aberta em outro
+  // navegador, outra aba ou outro aparelho.
+  const meta=user?.user_metadata||{};
+  let p={
+    full_name:meta.full_name||'',
+    farm_name:meta.farm_name||'',
+    doc:meta.doc||'',
+    phone:meta.phone||'',
+    email:user?.email||meta.email||'',
+    city:meta.city||'',
+    state:meta.state||''
+  };
 
-  const raw=localStorage.getItem('mg_pending_profile_'+user.email.toLowerCase());
-
+  // Compatibilidade com cadastros iniciados antes desta correção.
+  const key='mg_pending_profile_'+String(user?.email||'').toLowerCase();
+  const raw=localStorage.getItem(key);
   if(raw){
-    p=JSON.parse(raw);
-  }else{
-    const meta=user.user_metadata||{};
-
-    if(meta.farm_name){
-      p={
-        full_name:meta.full_name||'',
-        farm_name:meta.farm_name||'',
-        doc:meta.doc||'',
-        phone:meta.phone||'',
-        email:user.email||'',
-        city:meta.city||'',
-        state:meta.state||''
-      };
-    }
+    try{p={...p,...JSON.parse(raw)}}catch{}
   }
 
-  if(!p || !p.farm_name) return null;
-
+  if(!p.farm_name||!p.doc) return null;
   const ins=await mgSb.from('farms').insert({
     owner_id:user.id,
     name:p.farm_name,
-    doc:p.doc||'',
+    doc:p.doc,
     phone:p.phone||'',
-    email:p.email||user.email||'',
+    email:user.email||p.email,
     city:p.city||'',
     state:(p.state||'').toUpperCase()
   }).select().single();
-
   if(ins.error) throw new Error(ins.error.message);
-
-  localStorage.removeItem('mg_pending_profile_'+user.email.toLowerCase());
-
+  localStorage.removeItem(key);
   return ins.data;
 }
- 
 async function api(path,opt={}){
   const method=(opt.method||'GET').toUpperCase();
   let data={}; try{data=opt.body?JSON.parse(opt.body):{}}catch{}
@@ -261,20 +278,19 @@ async function api(path,opt={}){
   }
   if(path==='/api/register'){
     localStorage.setItem('mg_pending_profile_'+data.email.toLowerCase(),JSON.stringify(data));
-   const r=await mgSb.auth.signUp({
-  email:data.email,
-  password:data.password,
-  options:{
-    data:{
-      full_name:data.full_name,
-      farm_name:data.farm_name,
-      doc:data.doc,
-      phone:data.phone,
-      city:data.city,
-      state:data.state
-    }
-  }
-});
+    const r=await mgSb.auth.signUp({
+      email:data.email,
+      password:data.password,
+      options:{data:{
+        full_name:data.full_name,
+        farm_name:data.farm_name,
+        doc:data.doc,
+        phone:data.phone||'',
+        email:data.email,
+        city:data.city||'',
+        state:(data.state||'').toUpperCase()
+      }}
+    });
     if(r.error) throw new Error(r.error.message);
     if(r.data.session){await mgEnsureFarm(r.data.user);return {ok:true,role:'client',needs_confirmation:false}}
     return {ok:true,role:'client',needs_confirmation:true};
@@ -394,5 +410,42 @@ function forgotPassword(){
 init();
 enableEnterSubmit();
 </script>
+
+<div class="login-support-v19">
+  <span>Precisa de ajuda?</span>
+  <a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Meu%20Gado.">Fale conosco</a>
+  <span class="support-sep">•</span>
+  <a href="mailto:contatomeugado@outlook.com">contatomeugado@outlook.com</a>
+  <span class="support-sep">•</span>
+  <strong>(35) 99965-5305</strong>
+</div>
+
+<div id="termsModal" class="legal-modal">
+  <div class="legal-card">
+    <div class="legal-head"><div><h2>Termos de Uso — Meu Gado</h2><small>Versão 1.0 • 03/09/2026</small></div><button class="legal-close" onclick="closeTerms()">Fechar</button></div>
+    <p>Estes Termos de Uso regulam o acesso e a utilização da plataforma <strong>Meu Gado</strong>, destinada ao apoio à gestão de rebanhos e propriedades rurais. Ao criar uma conta e utilizar a plataforma, o usuário declara que leu e concorda com estes Termos.</p>
+    <h3>1. Responsável pela plataforma</h3><p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, com canal oficial de contato pelo e-mail <strong>contatomeugado@outlook.com</strong>.</p>
+    <h3>2. Finalidade do Meu Gado</h3><p>A plataforma oferece ferramentas para organização e acompanhamento de informações relacionadas ao rebanho, incluindo cadastro de animais e lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios, indicadores, informações de mercado e simulações de venda.</p>
+    <h3>3. Cadastro, acesso e segurança da conta</h3><p>O usuário é responsável por fornecer informações corretas e atualizadas, manter sua senha sob sigilo e impedir o uso indevido de sua conta.</p>
+    <h3>4. Informações inseridas pelo usuário</h3><p>O usuário é responsável pela veracidade, qualidade e licitude das informações cadastradas. Os registros permanecem vinculados à conta/propriedade correspondente e são utilizados para fornecer as funcionalidades da plataforma.</p>
+    <h3>5. Lixeira e exclusão de registros</h3><p>Determinados registros excluídos podem ser enviados para a Lixeira e permanecer disponíveis para restauração. Esse recurso reduz o risco de perda acidental, mas não constitui garantia absoluta de recuperação em todas as circunstâncias.</p>
+    <h3>6. Cotações, mercado e Simulador de Venda</h3><p>Cotações, referências, indicadores, cálculos, projeções e resultados possuem caráter exclusivamente informativo e de apoio à gestão. O Meu Gado não garante preço de compra ou venda, rentabilidade, negociação, produtividade ou resultado financeiro. A decisão comercial permanece sob responsabilidade do usuário.</p>
+    <h3>7. Disponibilidade e evolução</h3><p>A plataforma poderá passar por atualizações, correções, manutenções e alterações de funcionalidades, podendo ocorrer interrupções temporárias.</p>
+    <h3>8. Uso permitido</h3><p>É proibido utilizar a plataforma para finalidade ilícita, acessar dados de terceiros sem autorização, contornar mecanismos de segurança, explorar vulnerabilidades ou interferir no funcionamento do serviço.</p>
+    <h3>9. Propriedade intelectual</h3><p>A marca, identidade visual, interface, textos, estrutura, software e demais elementos próprios do Meu Gado são protegidos pela legislação aplicável.</p>
+    <h3>10. Proteção de dados pessoais</h3><p>O tratamento de dados pessoais observará a legislação brasileira aplicável, especialmente a LGPD. Informações detalhadas serão apresentadas na Política de Privacidade. Solicitações poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+    <h3>11. Responsabilidades e limitações</h3><p>O Meu Gado é ferramenta de apoio à gestão e não substitui avaliação veterinária, zootécnica, contábil, jurídica, financeira ou comercial quando profissionalmente necessária. Direitos legalmente indisponíveis permanecem preservados.</p>
+    <h3>12. Suspensão e encerramento</h3><p>O acesso poderá ser suspenso ou encerrado em caso de violação destes Termos, fraude, risco de segurança ou determinação legal, observados os direitos aplicáveis.</p>
+    <h3>13. Alterações</h3><p>Estes Termos poderão ser atualizados para refletir mudanças legais, técnicas ou comerciais. Alterações relevantes serão comunicadas de forma adequada.</p>
+    <h3>14. Legislação aplicável</h3><p>Estes Termos são regidos pela legislação da República Federativa do Brasil, respeitadas as regras legais de competência e proteção do consumidor quando aplicáveis.</p>
+    <h3>15. Contato</h3><p>Dúvidas podem ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+  </div>
+</div>
+<script>
+function openTerms(){document.getElementById('termsModal').classList.add('open')}
+function closeTerms(){document.getElementById('termsModal').classList.remove('open')}
+function privacyPending(){alert('A Política de Privacidade do Meu Gado será a próxima etapa de adequação e ainda não está publicada.')}
+</script>
+
 </body>
 </html>
