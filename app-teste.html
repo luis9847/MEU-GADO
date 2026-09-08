@@ -244,7 +244,7 @@ html.mg-route-boot .view.active{display:none!important}
 </script>
 
 </head>
-<body data-build="termos-v21-teste"><div class="layout">
+<body data-build="termos-v21-1-teste"><div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -272,6 +272,7 @@ html.mg-route-boot .view.active{display:none!important}
     <button class="mydata-btn" onclick="show('perfil')">Meus dados</button>
     <button id="newsNavBtn" class="side-link news-link" onclick="openNews()">✦ <span>Novidades</span><b id="newsNewBadge" class="news-new">NOVO</b></button>
     <button class="side-link" data-v="ajuda" onclick="show('ajuda',this)">? <span>Ajuda</span></button>
+    <button class="side-link" onclick="showTermsOfUse()">▤ <span>Termos de Uso</span></button>
     <button class="side-link" data-v="lixeira" onclick="show('lixeira',this);loadTrash()">♲ <span>Lixeira</span><b id="trashCountBadge" class="news-new hidden">0</b></button>
     <button class="side-link" onclick="logout()">↪ <span>Sair</span></button>
   </div>
@@ -456,7 +457,7 @@ html.mg-route-boot .view.active{display:none!important}
     <div>
       <div class="mg-footer-brand"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><p>Controle profissional do rebanho.</p></div></div>
     </div>
-    <div><span class="mg-footer-title">Meu Gado</span><a href="#" onclick="show('inicio');return false">Início</a><a href="#" onclick="show('sobreNos');return false">Sobre nós</a><a href="#" onclick="show('relatorios');return false">Relatórios</a></div>
+    <div><span class="mg-footer-title">Meu Gado</span><a href="#" onclick="show('inicio');return false">Início</a><a href="#" onclick="show('sobreNos');return false">Sobre nós</a><a href="#" onclick="showTermsOfUse();return false">Termos de Uso</a><a href="#" onclick="show('relatorios');return false">Relatórios</a></div>
     <div><span class="mg-footer-title">Recursos</span><a href="#" onclick="show('mercado');return false">Mercado Pecuário</a><a href="#" onclick="show('saleSimulator');return false">Simulador de Venda</a><a href="#" onclick="openNews();return false">Novidades</a></div>
     <div class="mg-footer-contact"><span class="mg-footer-title">Precisa de ajuda?</span><strong>(35) 99965-5305</strong><p>Fale diretamente com nosso suporte pelo WhatsApp.</p><a href="mailto:contatomeugado@outlook.com">contatomeugado@outlook.com</a><a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a></div>
     <div class="mg-footer-bottom"><span>© 2026 Meu Gado. Todos os direitos reservados.</span><span>Suporte: (35) 99965-5305 · contatomeugado@outlook.com</span></div>
