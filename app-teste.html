@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
+<meta name="mg-build" content="app-teste-v22-1-footer-privacidade">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -228,6 +229,22 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 @media(max-width:1100px){.mg-footer{grid-template-columns:1fr 1fr}.mg-footer-bottom{grid-column:1/-1}}
 @media(max-width:720px){.mg-footer{grid-template-columns:1fr}.mg-footer-bottom{grid-column:1;flex-direction:column}}
 
+/* V22.1 — Rodapé institucional na página Início + Política de Privacidade/LGPD */
+.home-footer-wrap{margin-top:20px}
+.mg-legal-links{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.mg-legal-links a{display:inline-block!important;margin-top:0!important}
+.legal-modal-copy{line-height:1.68;margin-top:18px;color:#29443a}
+.legal-modal-copy h3{margin:20px 0 7px;color:#183129;font-size:15px}
+.legal-modal-copy p{margin:0 0 12px}
+.legal-modal-copy ul{margin:7px 0 14px 20px;padding:0}
+.legal-modal-copy li{margin:5px 0}
+@media(max-width:720px){
+  .mg-footer{padding:20px 18px}
+  .mg-footer-bottom{align-items:flex-start}
+  .mg-legal-links{flex-direction:column;align-items:flex-start;gap:3px}
+}
+
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -364,10 +381,45 @@ html.mg-route-boot .view.active{display:none!important}
     <div class="mobile-card">
       <div><small>ACESSO SIMPLES</small><b>Leve o Meu Gado com você</b><p>O painel é responsivo e pode ser usado pelo navegador do celular para consultar e registrar dados da fazenda.</p><button onclick="show('animais')">Abrir rebanho →</button></div>
       <div class="phone-mock"><span>Meu Gado</span><i>◆</i><i>⚖</i><i>↗</i><i>$</i></div>
-    </div>
+    </div>  </div>
+
+  <div class="home-footer-wrap">
+    <footer class="mg-footer">
+      <div>
+        <div class="mg-footer-brand"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><p>Controle profissional do rebanho.</p></div></div>
+      </div>
+      <div>
+        <span class="mg-footer-title">Meu Gado</span>
+        <a href="#" onclick="show('inicio');return false">Início</a>
+        <a href="#" onclick="show('sobreNos');return false">Sobre nós</a>
+        <a href="#" onclick="showTermsOfUse();return false">Termos de Uso</a>
+        <a href="#" onclick="showPrivacyPolicy();return false">Política de Privacidade</a>
+      </div>
+      <div>
+        <span class="mg-footer-title">Recursos</span>
+        <a href="#" onclick="show('mercado');return false">Mercado Pecuário</a>
+        <a href="#" onclick="show('saleSimulator');return false">Simulador de Venda</a>
+        <a href="#" onclick="openNews();return false">Novidades</a>
+        <a href="#" onclick="show('relatorios');return false">Relatórios</a>
+      </div>
+      <div class="mg-footer-contact">
+        <span class="mg-footer-title">Precisa de ajuda?</span>
+        <strong>(35) 99965-5305</strong>
+        <p>Fale diretamente com nosso suporte pelo WhatsApp.</p>
+        <a href="mailto:contatomeugado@outlook.com">contatomeugado@outlook.com</a>
+        <a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a>
+      </div>
+      <div class="mg-footer-bottom">
+        <span>© 2026 Meu Gado. Todos os direitos reservados.</span>
+        <div class="mg-legal-links">
+          <a href="#" onclick="showTermsOfUse();return false">Termos de Uso</a>
+          <a href="#" onclick="showPrivacyPolicy();return false">Política de Privacidade</a>
+          <span>Suporte: (35) 99965-5305 · contatomeugado@outlook.com</span>
+        </div>
+      </div>
+    </footer>
   </div>
 </section>
-
 
 
 
@@ -453,15 +505,6 @@ html.mg-route-boot .view.active{display:none!important}
     <details><summary>O valor do Simulador de Venda é o preço final?</summary><p>Não. É uma estimativa de apoio à negociação. Frete, descontos, comissão, rendimento real e outras condições comerciais podem alterar o valor recebido.</p></details>
   </div>
 
-  <footer class="mg-footer">
-    <div>
-      <div class="mg-footer-brand"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><p>Controle profissional do rebanho.</p></div></div>
-    </div>
-    <div><span class="mg-footer-title">Meu Gado</span><a href="#" onclick="show('inicio');return false">Início</a><a href="#" onclick="show('sobreNos');return false">Sobre nós</a><a href="#" onclick="showTermsOfUse();return false">Termos de Uso</a><a href="#" onclick="show('relatorios');return false">Relatórios</a></div>
-    <div><span class="mg-footer-title">Recursos</span><a href="#" onclick="show('mercado');return false">Mercado Pecuário</a><a href="#" onclick="show('saleSimulator');return false">Simulador de Venda</a><a href="#" onclick="openNews();return false">Novidades</a></div>
-    <div class="mg-footer-contact"><span class="mg-footer-title">Precisa de ajuda?</span><strong>(35) 99965-5305</strong><p>Fale diretamente com nosso suporte pelo WhatsApp.</p><a href="mailto:contatomeugado@outlook.com">contatomeugado@outlook.com</a><a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Sou%20cliente%20do%20Meu%20Gado%20e%20preciso%20de%20ajuda.">Fale conosco →</a></div>
-    <div class="mg-footer-bottom"><span>© 2026 Meu Gado. Todos os direitos reservados.</span><span>Suporte: (35) 99965-5305 · contatomeugado@outlook.com</span></div>
-  </footer>
 </section>
 
 <section id="animais" class="view">
@@ -2172,7 +2215,7 @@ if(typeof _mgOriginalShow==='function'){
       <h3>9. Propriedade intelectual</h3>
       <p>A marca, identidade visual, interface, textos, estrutura, software e demais elementos próprios do Meu Gado são protegidos pela legislação aplicável. O uso da plataforma não transfere ao usuário direitos de propriedade intelectual sobre esses elementos. Os dados e registros lícitos inseridos pelo usuário permanecem relacionados à sua atividade e não são apropriados pelo Meu Gado como conteúdo próprio.</p>
       <h3>10. Proteção de dados pessoais</h3>
-      <p>O tratamento de dados pessoais observará a legislação brasileira aplicável, especialmente a Lei Geral de Proteção de Dados Pessoais (LGPD). Informações mais detalhadas sobre finalidades, bases legais, armazenamento, compartilhamento, segurança e direitos dos titulares serão apresentadas na Política de Privacidade do Meu Gado. Solicitações relacionadas a dados pessoais poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+      <p>O tratamento de dados pessoais observará a legislação brasileira aplicável, especialmente a Lei Geral de Proteção de Dados Pessoais (LGPD). As informações sobre dados tratados, finalidades, bases legais, armazenamento, compartilhamentos, segurança, retenção e direitos dos titulares estão descritas na <a href="#" onclick="closeTermsOfUse();showPrivacyPolicy();return false">Política de Privacidade do Meu Gado</a>. Solicitações relacionadas a dados pessoais poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
       <h3>11. Responsabilidades e limitações</h3>
       <p>O Meu Gado busca manter informações e funcionalidades adequadas ao apoio da gestão pecuária, mas não substitui avaliação veterinária, zootécnica, contábil, jurídica, financeira ou comercial quando profissionalmente necessária. Nenhuma disposição destes Termos exclui ou restringe direitos e responsabilidades que não possam ser afastados pela legislação brasileira aplicável, inclusive normas de proteção do consumidor quando incidentes.</p>
       <h3>12. Suspensão e encerramento</h3>
@@ -2186,9 +2229,92 @@ if(typeof _mgOriginalShow==='function'){
     </div>
   </div>
 </div>
+
+<div id="privacyModal" class="modal" style="display:none;z-index:10000;position:fixed;inset:0;background:rgba(4,22,17,.72);align-items:center;justify-content:center;padding:20px">
+  <div class="modal-card" style="width:min(900px,96vw);max-height:88vh;overflow:auto;background:#ffffff!important;opacity:1!important;border-radius:18px;padding:28px;box-shadow:0 28px 90px rgba(0,0,0,.35);color:#183129">
+    <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
+      <div>
+        <h2 style="margin-bottom:4px">Política de Privacidade — Meu Gado</h2>
+        <div class="muted">Versão 1.0 • 08/09/2026</div>
+      </div>
+      <button class="btn secondary" onclick="closePrivacyPolicy()">Fechar</button>
+    </div>
+
+    <div class="legal-modal-copy">
+      <p>Esta Política de Privacidade explica como o <strong>Meu Gado</strong> trata dados pessoais relacionados ao cadastro e à utilização da plataforma, em conformidade com a legislação brasileira aplicável, especialmente a Lei nº 13.709/2018 — Lei Geral de Proteção de Dados Pessoais (LGPD).</p>
+
+      <h3>1. Quem é o responsável pelo tratamento</h3>
+      <p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, na qualidade de controlador dos dados pessoais tratados para a operação da plataforma. O canal oficial para assuntos de privacidade e proteção de dados é <strong>contatomeugado@outlook.com</strong>.</p>
+
+      <h3>2. Quais dados pessoais podem ser tratados</h3>
+      <p>Conforme o uso da plataforma, poderão ser tratados dados como:</p>
+      <ul>
+        <li>nome e informações de identificação do usuário;</li>
+        <li>CPF ou CNPJ informado no cadastro;</li>
+        <li>telefone, e-mail, cidade, estado e endereço informado;</li>
+        <li>nome da propriedade e informações relacionadas à atividade pecuária;</li>
+        <li>dados de autenticação, identificação da conta e registros técnicos necessários à segurança e funcionamento do serviço;</li>
+        <li>informações inseridas pelo próprio usuário para utilização das funcionalidades do Meu Gado.</li>
+      </ul>
+
+      <h3>3. Dados do rebanho e da propriedade</h3>
+      <p>O usuário poderá registrar informações relacionadas a animais, lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios e demais controles da propriedade. Em regra, essas informações são dados da atividade pecuária e não dados pessoais. Entretanto, quando algum registro contiver informação capaz de identificar uma pessoa natural, essa informação será tratada de acordo com esta Política e com a LGPD.</p>
+
+      <h3>4. Para quais finalidades os dados são utilizados</h3>
+      <p>Os dados poderão ser utilizados para criar e administrar a conta, autenticar o usuário, vincular dados à propriedade correta, disponibilizar funcionalidades da plataforma, prestar suporte, responder solicitações, manter segurança e prevenção a uso indevido, corrigir falhas, cumprir obrigações legais ou regulatórias e proteger direitos do Meu Gado ou de terceiros quando necessário.</p>
+
+      <h3>5. Bases legais</h3>
+      <p>O tratamento poderá ocorrer com fundamento nas bases legais previstas na LGPD que sejam adequadas a cada operação, incluindo execução de contrato ou de procedimentos relacionados ao serviço solicitado pelo usuário, cumprimento de obrigação legal ou regulatória, exercício regular de direitos e legítimo interesse, quando aplicável e observados os direitos e liberdades fundamentais do titular. Quando uma operação depender de consentimento, ele será solicitado de forma apropriada.</p>
+
+      <h3>6. Compartilhamento e fornecedores de tecnologia</h3>
+      <p>Para operar o Meu Gado, determinados dados podem ser processados por fornecedores de infraestrutura e tecnologia necessários ao funcionamento da plataforma, como serviços de autenticação, banco de dados, hospedagem e segurança. Atualmente, a infraestrutura utiliza serviços como <strong>Supabase</strong> e <strong>Vercel</strong>. O Meu Gado não vende dados pessoais de seus usuários.</p>
+      <p>Dados também poderão ser compartilhados quando houver obrigação legal, ordem de autoridade competente, necessidade de exercício regular de direitos ou outra hipótese autorizada pela legislação.</p>
+
+      <h3>7. Armazenamento e transferências internacionais</h3>
+      <p>Os serviços tecnológicos utilizados pelo Meu Gado podem operar infraestrutura localizada no Brasil ou no exterior. Quando houver transferência internacional de dados pessoais, o tratamento deverá observar os mecanismos e requisitos aplicáveis previstos na legislação brasileira de proteção de dados.</p>
+
+      <h3>8. Segurança</h3>
+      <p>O Meu Gado adota medidas técnicas e administrativas destinadas a reduzir riscos de acesso não autorizado, perda, alteração ou tratamento indevido de dados. Entre os mecanismos utilizados estão autenticação de usuários, separação lógica dos dados por conta/propriedade e controles de acesso na camada de banco de dados.</p>
+      <p>Nenhum sistema conectado à internet pode garantir segurança absoluta. Caso seja identificado incidente relevante envolvendo dados pessoais, serão adotadas as medidas cabíveis conforme a legislação e as orientações da autoridade competente.</p>
+
+      <h3>9. Lixeira, exclusão e conservação</h3>
+      <p>Alguns registros excluídos dentro do sistema podem ser enviados inicialmente para a Lixeira, permitindo restauração e reduzindo o risco de exclusão acidental. A existência da Lixeira não significa conservação permanente.</p>
+      <p>Os dados pessoais serão mantidos pelo período necessário ao cumprimento das finalidades descritas nesta Política. Após o encerramento da relação ou pedido de exclusão, determinados dados poderão continuar conservados quando isso for necessário ou permitido por lei, inclusive para cumprimento de obrigação legal ou regulatória, exercício regular de direitos, prevenção a fraudes ou outras hipóteses previstas na LGPD.</p>
+
+      <h3>10. Direitos do titular</h3>
+      <p>Nos termos da LGPD e conforme aplicável a cada situação, o titular poderá solicitar confirmação da existência de tratamento, acesso aos dados, correção de dados incompletos, inexatos ou desatualizados, informações sobre compartilhamentos, portabilidade quando regulamentada e aplicável, anonimização, bloqueio ou eliminação de dados nas hipóteses legais, informação sobre a possibilidade de não fornecer consentimento e suas consequências, além de revogação do consentimento quando essa for a base utilizada.</p>
+      <p>O exercício de direitos não é absoluto e poderá sofrer limitações previstas em lei, inclusive quando houver necessidade de conservação de determinados dados.</p>
+
+      <h3>11. Como exercer seus direitos</h3>
+      <p>Solicitações relacionadas à privacidade ou ao exercício de direitos poderão ser enviadas para <strong>contatomeugado@outlook.com</strong>. Para proteger os dados do próprio titular, poderá ser necessário confirmar a identidade ou solicitar informações adicionais antes do atendimento.</p>
+
+      <h3>12. Cookies e armazenamento no navegador</h3>
+      <p>O Meu Gado poderá utilizar recursos técnicos do navegador, como armazenamento local, para manter preferências e melhorar a continuidade da experiência, por exemplo, preservar a última área acessada. Quando tecnologias adicionais de rastreamento ou cookies não estritamente necessários forem implementados, esta Política e os mecanismos de informação ou escolha serão revistos quando exigido.</p>
+
+      <h3>13. Crianças e adolescentes</h3>
+      <p>O Meu Gado é uma plataforma voltada à gestão pecuária e não é direcionada especificamente a crianças. Caso seja identificado tratamento de dados de crianças ou adolescentes, serão observadas as regras específicas previstas na legislação aplicável.</p>
+
+      <h3>14. Alterações desta Política</h3>
+      <p>Esta Política poderá ser atualizada para refletir alterações legais, técnicas, operacionais ou comerciais. Quando houver mudança relevante, o Meu Gado buscará comunicar os usuários de forma adequada. A versão e a data da atualização permanecerão indicadas no documento.</p>
+
+      <h3>15. Contato</h3>
+      <p>Para dúvidas, solicitações ou assuntos relacionados à privacidade e proteção de dados, utilize o canal oficial: <strong>contatomeugado@outlook.com</strong>.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 function showTermsOfUse(){var m=document.getElementById('termsModal');if(m){m.style.display='flex';document.body.style.overflow='hidden'}}
 function closeTermsOfUse(){var m=document.getElementById('termsModal');if(m){m.style.display='none';document.body.style.overflow=''}}
+function showPrivacyPolicy(){var m=document.getElementById('privacyModal');if(m){m.style.display='flex';document.body.style.overflow='hidden'}}
+function closePrivacyPolicy(){var m=document.getElementById('privacyModal');if(m){m.style.display='none';document.body.style.overflow=''}}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if(document.getElementById('privacyModal')?.style.display==='flex') closePrivacyPolicy();
+    else if(document.getElementById('termsModal')?.style.display==='flex') closeTermsOfUse();
+  }
+});
+document.getElementById('privacyModal')?.addEventListener('click',function(e){if(e.target===this)closePrivacyPolicy()});
 </script>
 
 </body></html>
