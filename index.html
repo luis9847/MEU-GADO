@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Gestão Profissional do Rebanho</title>
-<meta name="mg-build" content="index-v24-cadastro-onboarding-teste">
+<meta name="mg-build" content="index-v27-imagens-raiz">
 <style>
 :root{
   --green:#148b45;
@@ -24,7 +24,7 @@ button,input{font:inherit}
 button{cursor:pointer}
 .page{min-height:100vh;position:relative;background:
   linear-gradient(90deg,rgba(3,32,31,.82) 0%,rgba(3,32,31,.68) 46%,rgba(3,32,31,.26) 68%,rgba(3,32,31,.12) 100%),
-  url('/static/login-rebanho.jpg') center/cover no-repeat fixed;
+  url('/login-rebanho.jpg') center/cover no-repeat fixed;
 }
 .shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.22fr) minmax(420px,.78fr);gap:34px;padding:34px 48px}
 .hero{color:#fff;display:flex;flex-direction:column;min-width:0}
@@ -126,6 +126,31 @@ button{cursor:pointer}
 .form-actions .btn{margin-top:10px}
 .secondary-btn{background:#fff!important;color:var(--green)!important;border:1.5px solid var(--green)!important;box-shadow:none!important}
 
+
+/* V26 — múltiplas atividades da propriedade */
+.activity-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:8px;
+}
+.activity-option{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #dbe5df;
+  border-radius:10px;
+  padding:10px 11px;
+  background:#fff;
+  font-size:11px;
+  font-weight:750;
+  color:#385048;
+  cursor:pointer;
+}
+.activity-option:hover{border-color:#8cc9a0;background:#f6fbf7}
+.activity-option input{width:auto;margin:0;accent-color:var(--green)}
+@media(max-width:520px){.activity-options{grid-template-columns:1fr}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
@@ -143,7 +168,7 @@ button{cursor:pointer}
   <div class="shell">
     <section class="hero">
       <div class="brand">
-        <div class="brand-logo"><img src="/static/meu-gado-logo.png" alt="Boi Nelore"></div>
+        <div class="brand-logo"><img src="/meu-gado-logo.png" alt="Boi Nelore"></div>
         <div><b>Meu <span>Gado</span></b><small>CONTROLE PROFISSIONAL DO REBANHO</small></div>
       </div>
 
@@ -236,17 +261,17 @@ button{cursor:pointer}
             </select>
           </div>
 
-          <div class="field"><label>Atividade principal</label>
-            <select id="onOperation">
-              <option value="">Selecione</option>
-              <option value="Cria">Cria</option>
-              <option value="Recria">Recria</option>
-              <option value="Engorda">Engorda</option>
-              <option value="Ciclo completo">Ciclo completo</option>
-              <option value="Confinamento">Confinamento</option>
-              <option value="Leite">Leite</option>
-              <option value="Outra">Outra</option>
-            </select>
+          <div class="field">
+            <label>Atividades da propriedade <span class="optional">(marque uma ou mais)</span></label>
+            <div class="activity-options" id="onOperationOptions">
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Cria"> Cria</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Recria"> Recria</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Engorda"> Engorda</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Confinamento"> Confinamento</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Leite"> Leite</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Ciclo completo"> Ciclo completo</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Outra"> Outra</label>
+            </div>
           </div>
 
           <div class="field"><label>Área da propriedade <span class="optional">(opcional)</span></label><input id="onArea" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Hectares"></div>
@@ -332,12 +357,13 @@ async function completeOnboarding(){
     const farmName=document.getElementById('onFarmName').value.trim();
     const city=document.getElementById('onCity').value.trim();
     const state=document.getElementById('onState').value.trim().toUpperCase();
-    const operation=document.getElementById('onOperation').value;
+    const operations=[...document.querySelectorAll('input[name="onOperation"]:checked')].map(el=>el.value);
     const livestockMode=document.getElementById('onLivestockMode').value;
     const areaRaw=document.getElementById('onArea').value.trim();
 
     if(!farmName) throw new Error('Informe o nome da propriedade.');
     if(!city||state.length!==2) throw new Error('Informe cidade e UF.');
+    if(!operations.length) throw new Error('Selecione pelo menos uma atividade da propriedade.');
 
     const payload={
       p_full_name:meta.full_name||'',
@@ -347,7 +373,7 @@ async function completeOnboarding(){
       p_city:city,
       p_state:state,
       p_address:document.getElementById('onAddress').value.trim()||null,
-      p_operation:operation||null,
+      p_operation:operations.length?operations.join(', '):null,
       p_area_hectares:areaRaw?Number(areaRaw):null,
       p_state_registration:document.getElementById('onStateRegistration').value.trim()||null,
       p_car:document.getElementById('onCar').value.trim()||null,
