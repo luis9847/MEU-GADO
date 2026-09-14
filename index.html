@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Gestão Profissional do Rebanho</title>
-<meta name="mg-build" content="index-v31-requisitos-senha">
+<meta name="mg-build" content="index-v32-bloqueio-duplicidade">
 <style>
 :root{
   --green:#148b45;
@@ -551,6 +551,13 @@ async function doRegister(){
     const passwordError=validateStrongPassword(password);
     if(passwordError) throw new Error(passwordError);
     if(password!==confirmPassword) throw new Error('As senhas não conferem.');
+
+    const availability=await mgSb.rpc('registration_identity_available',{
+      p_email:data.email,
+      p_document:data.document
+    });
+    if(availability.error) throw new Error('Não foi possível validar os dados do cadastro. Tente novamente.');
+    if(availability.data!==true) throw new Error('Já existe uma conta cadastrada com este e-mail ou CPF/CNPJ.');
 
     const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
     if(r.needs_confirmation){
