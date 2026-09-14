@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v66-alertas-saude-ajustados">
+<meta name="mg-build" content="app-v67-alerta-saude-na-origem">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -1685,9 +1685,45 @@ async function mgDashboard(){
  let alerts=[];
  for(const x of h){
   if(!x.next_due_date)continue;
-  const d=dayDiff(x.next_due_date),animal=animals.find(a=>a.id===x.animal_id),who=animal?`Animal #${animal.number}`:'Rebanho';
-  if(d<0)alerts.push({type:'health',level:'danger',title:`${who} · evento sanitário atrasado${x.product?' · '+x.product:''}`,detail:`Vencido há ${Math.abs(d)} dia(s) · ${x.next_due_date}.`,date:x.next_due_date,animal_id:x.animal_id||null});
-  else if(d<=7)alerts.push({type:'health',level:'warning',title:`${who} · saúde${x.product?' · '+x.product:''}`,detail:d===0?`Vence hoje · ${x.next_due_date}.`:`Vence em ${d} dia(s) · ${x.next_due_date}.`,date:x.next_due_date,animal_id:x.animal_id||null});
+
+  const d=dayDiff(x.next_due_date);
+  // Notificação começa somente 2 dias antes. A Agenda Sanitária continua mostrando 7 dias.
+  if(d>2)continue;
+
+  const animal=animals.find(a=>a.id===x.animal_id);
+  const who=animal?`Animal #${animal.number}`:(x.lot?`Lote ${x.lot}`:'Rebanho');
+  const product=x.product||x.event_type||'Procedimento';
+  const [yy,mm,dd]=String(x.next_due_date).split('-');
+  const dateBr=(yy&&mm&&dd)?`${dd}/${mm}/${yy}`:x.next_due_date;
+
+  let title='',detail='',level='warning';
+
+  if(d===2){
+    title='Próxima dose em 2 dias';
+    detail=`${who} — ${product} · Data: ${dateBr}`;
+  }else if(d===1){
+    title='Próxima dose amanhã';
+    detail=`${who} — ${product} · Data: ${dateBr}`;
+  }else if(d===0){
+    title='Próxima dose hoje';
+    detail=`${who} — ${product} · Data: ${dateBr}`;
+    level='danger';
+  }else{
+    const days=Math.abs(d);
+    title=`Dose atrasada há ${days} dia${days===1?'':'s'}`;
+    detail=`${who} — ${product} · Prevista para: ${dateBr}`;
+    level='danger';
+  }
+
+  alerts.push({
+    id:`health-dose-${x.id}-${x.next_due_date}`,
+    type:'health',
+    level,
+    title,
+    detail,
+    date:x.next_due_date,
+    animal_id:x.animal_id||null
+  });
  }
  let overdueWeights=0,weightLoss=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(last){const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
   let ws=(by[a.id]||[]).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));
@@ -3059,86 +3095,24 @@ async function deleteRepro(id){
     await Promise.all([loadRepro(),dashboard()]);
   }catch(e){alert('Não foi possível excluir o registro de reprodução. '+(e?.message||''))}
 }
-function mgHealthReminderAlerts(){
-  const today=new Date(); today.setHours(0,0,0,0);
-  return (healthData||[]).filter(e=>e.next_date).map(e=>{
-    const p=String(e.next_date).slice(0,10).split('-').map(Number);
-    if(p.length!==3)return null;
-
-    const due=new Date(p[0],p[1]-1,p[2]); due.setHours(0,0,0,0);
-    const diff=Math.round((due-today)/86400000);
-    if(diff>2)return null;
-
-    const who=e.animal_number?`Animal #${e.animal_number}`:(e.lot_name?`Lote ${e.lot_name}`:'Rebanho');
-    const product=e.product||e.event_type||'Procedimento';
-
-    let title,level='warning';
-    if(diff===2)title='Próxima dose em 2 dias';
-    else if(diff===1)title='Próxima dose amanhã';
-    else if(diff===0){title='Próxima dose hoje';level='danger';}
-    else {const n=Math.abs(diff);title=`Dose atrasada há ${n} dia${n===1?'':'s'}`;level='danger';}
-
-    return {
-      id:`health-dose-${e.id}-${e.next_date}`,
-      type:'health',
-      level,
-      title,
-      detail:`${who} — ${product}`,
-      animal_id:e.animal_id||null,
-      next_date:e.next_date
-    };
-  }).filter(Boolean).sort((a,b)=>String(a.next_date).localeCompare(String(b.next_date)));
-}
+function mgHealthReminderAlerts(){ return []; }
 
 async function openNotifications(){
-  let d=window.mgDashboardData||await api('/api/dashboard');window.mgDashboardData=d;
+  // Atualiza sempre ao abrir para refletir imediatamente doses, pesagens e demais alertas.
+  const d=await api('/api/dashboard');
+  window.mgDashboardData=d;
 
-  // Garante os registros de Saúde mesmo que o módulo ainda não tenha sido aberto.
-  if(!healthData||!healthData.length){
-    try{ healthData=await api('/api/health'); }catch(e){ console.error('Saúde nas notificações:',e); }
-  }
+  const list=d.alerts||[];
+  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}>
+    <span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':a.type==='health'?'✚':'!'}</span>
+    <div>
+      <b>${a.title}</b>
+      <small>${a.detail||''}</small>
+      ${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}
+    </div>
+  </div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
 
-  const doseAlerts=mgHealthReminderAlerts();
-
-  // Remove o alerta sanitário antigo do dashboard quando já existe
-  // um lembrete estruturado para a mesma próxima dose.
-  let list=(d.alerts||[]).filter(a=>{
-    if(a.type!=='health')return true;
-
-    const sameAnimal=doseAlerts.some(h=>Number(h.animal_id||0)===Number(a.animal_id||0));
-    if(!sameAnimal)return true;
-
-    // Também evita duplicidade por conteúdo/data.
-    const detail=String(a.detail||'').toLowerCase();
-    const looksLikeDue=/vence|dose|saúde|saude|vacina|medicamento|vermífugo|vermifugo|tratamento/.test(detail+' '+String(a.title||'').toLowerCase());
-    return !looksLikeDue;
-  });
-
-  doseAlerts.forEach(h=>{
-    if(!list.some(a=>a.id===h.id))list.push(h);
-  });
-
-  notificationsBody.innerHTML=list.length?list.map(a=>{
-    const healthDose=a.type==='health' && /^Próxima dose|^Dose atrasada/.test(a.title||'');
-    const icon=a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':a.type==='health'?'✚':'!';
-    const cls=a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple';
-
-    let detail=a.detail||'';
-    if(healthDose && a.next_date){
-      const [y,m,d]=String(a.next_date).split('-');
-      detail += `${detail?' · ':''}Data: ${d}/${m}/${y}`;
-    }
-
-    return `<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}>
-      <span class="alert-icon ${cls}">${icon}</span>
-      <div>
-        <b>${a.title}</b>
-        <small>${detail}</small>
-        ${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}
-      </div>
-    </div>`;
-  }).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
-
+  if(document.getElementById('notificationCount'))notificationCount.textContent=list.length;
   openModal('notificationsModal');
 }
 
