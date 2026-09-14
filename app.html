@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Gestão Profissional do Rebanho</title>
-<meta name="mg-build" content="index-v34-convite-equipe">
+<meta name="mg-build" content="index-v35-rota-app-html">
 <style>
 :root{
   --green:#148b45;
@@ -444,7 +444,7 @@ async function completeOnboarding(){
     const needsOnboarding=await mgNeedsOnboarding();
     if(!needsOnboarding){
       setMessage('Seu convite foi reconhecido. Abrindo a propriedade...',true);
-      setTimeout(()=>{location.href='/app';},500);
+      setTimeout(()=>{location.href='/app.html';},500);
       return;
     }
 
@@ -484,7 +484,7 @@ async function completeOnboarding(){
     if(r.error) throw new Error(r.error.message);
 
     setMessage('Propriedade configurada com sucesso. Abrindo seu painel...',true);
-    setTimeout(()=>{location.href='/app';},700);
+    setTimeout(()=>{location.href='/app.html';},700);
   }catch(e){setMessage(e.message)}
 }
 
@@ -566,7 +566,7 @@ async function init(){
     if(session?.user){
       const needs=await mgNeedsOnboarding();
       if(needs){showOnboarding(session.user);return;}
-      location.href='/app';
+      location.href='/app.html';
       return;
     }
 
@@ -590,7 +590,7 @@ async function doLogin(){
     if(!email||!password) throw new Error('Informe e-mail e senha.');
     const j=await api('/api/login',{method:'POST',body:JSON.stringify({email,password})});
     if(j.needs_onboarding){showOnboarding(j.user);return;}
-    location.href=j.role==='admin'?'/admin':'/app';
+    location.href=j.role==='admin'?'/admin':'/app.html';
   }catch(e){setMessage(e.message)}
 }
 
@@ -640,7 +640,7 @@ async function doRegister(){
       return;
     }
     if(r.needs_onboarding){showOnboarding(r.user);return;}
-    location.href='/app';
+    location.href='/app.html';
   }catch(e){mgResetCaptcha('register');setMessage(e.message)}
 }
 async function setupAdmin(){
