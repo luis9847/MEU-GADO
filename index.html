@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Gestão Profissional do Rebanho</title>
-<meta name="mg-build" content="index-v30-suporte-no-final">
+<meta name="mg-build" content="index-v31-requisitos-senha">
 <style>
 :root{
   --green:#148b45;
@@ -162,6 +162,9 @@ button{cursor:pointer}
   font-weight:850;font-size:11px;margin-top:10px;padding:6px
 }
 
+
+.password-rules{font-size:10px;color:#718078;line-height:1.45;margin-top:6px}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
@@ -246,7 +249,7 @@ button{cursor:pointer}
           <div class="field"><label>CPF/CNPJ</label><input id="regDoc" inputmode="numeric" placeholder="CPF ou CNPJ"></div>
           <div class="field"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email" placeholder="seu@email.com"></div>
           <div class="field"><label>Telefone / WhatsApp</label><input id="regPhone" inputmode="tel" placeholder="(00) 00000-0000"></div>
-          <div class="field"><label>Crie uma senha</label><div class="password-wrap"><input id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('regPassword',this)">Mostrar</button></div></div>
+          <div class="field"><label>Crie uma senha</label><div class="password-wrap"><input id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('regPassword',this)">Mostrar</button></div><div class="password-rules">Use pelo menos 10 caracteres, com letra maiúscula, letra minúscula, número e símbolo.</div></div>
           <div class="field"><label>Confirme sua senha</label><div class="password-wrap"><input id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('regPasswordConfirm',this)">Mostrar</button></div></div>
           <button class="btn green" onclick="doRegister()">Criar minha conta</button>
           <div class="legal-consent">Ao criar sua conta, você declara que leu e concorda com os
@@ -310,7 +313,7 @@ button{cursor:pointer}
             <b>Crie uma nova senha</b><br>
             Use uma senha com pelo menos 10 caracteres e diferente da senha anterior.
           </div>
-          <div class="field"><label>Nova senha</label><div class="password-wrap"><input id="resetPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('resetPassword',this)">Mostrar</button></div></div>
+          <div class="field"><label>Nova senha</label><div class="password-wrap"><input id="resetPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('resetPassword',this)">Mostrar</button></div><div class="password-rules">Use pelo menos 10 caracteres, com letra maiúscula, letra minúscula, número e símbolo.</div></div>
           <div class="field"><label>Confirmar nova senha</label><div class="password-wrap"><input id="resetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('resetPasswordConfirm',this)">Mostrar</button></div></div>
           <button class="btn green" id="resetPasswordBtn" onclick="saveNewPassword()">Salvar nova senha</button>
         </div>
@@ -519,6 +522,16 @@ async function doLogin(){
     location.href=j.role==='admin'?'/admin':'/app';
   }catch(e){setMessage(e.message)}
 }
+
+function validateStrongPassword(password){
+  if(password.length<10) return 'A senha deve ter pelo menos 10 caracteres.';
+  if(!/[a-z]/.test(password)) return 'A senha precisa ter pelo menos uma letra minúscula.';
+  if(!/[A-Z]/.test(password)) return 'A senha precisa ter pelo menos uma letra maiúscula.';
+  if(!/[0-9]/.test(password)) return 'A senha precisa ter pelo menos um número.';
+  if(!/[^A-Za-z0-9]/.test(password)) return 'A senha precisa ter pelo menos um símbolo.';
+  return '';
+}
+
 async function doRegister(){
   try{
     setMessage('');
@@ -535,7 +548,8 @@ async function doRegister(){
     if(!data.full_name||!data.document||!data.email||!data.phone) throw new Error('Preencha nome, CPF/CNPJ, e-mail e WhatsApp.');
     const docDigits=data.document.replace(/\D/g,'');
     if(docDigits.length!==11&&docDigits.length!==14) throw new Error('Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos.');
-    if(password.length<10) throw new Error('A senha deve ter pelo menos 10 caracteres.');
+    const passwordError=validateStrongPassword(password);
+    if(passwordError) throw new Error(passwordError);
     if(password!==confirmPassword) throw new Error('As senhas não conferem.');
 
     const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
@@ -555,7 +569,8 @@ async function setupAdmin(){
     const email=document.getElementById('setupEmail').value.trim();
     const password=document.getElementById('setupPassword').value;
     if(!fullName||!email) throw new Error('Preencha nome e e-mail.');
-    if(password.length<10) throw new Error('A senha deve ter pelo menos 10 caracteres.');
+    const passwordError=validateStrongPassword(password);
+    if(passwordError) throw new Error(passwordError);
     await api('/api/setup',{method:'POST',body:JSON.stringify({full_name:fullName,email,password})});
     location.href='/admin';
   }catch(e){setMessage(e.message)}
@@ -680,7 +695,8 @@ async function saveNewPassword(){
     setMessage('');
     const p1=document.getElementById('resetPassword').value;
     const p2=document.getElementById('resetPasswordConfirm').value;
-    if(p1.length<10)throw new Error('A nova senha deve ter pelo menos 10 caracteres.');
+    const passwordError=validateStrongPassword(p1);
+    if(passwordError)throw new Error(passwordError);
     if(p1!==p2)throw new Error('As senhas não conferem.');
 
     const btn=document.getElementById('resetPasswordBtn');
