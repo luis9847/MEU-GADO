@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v42-correcao-producao-leite">
+<meta name="mg-build" content="app-v43-dashboard-leiteiro">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -385,6 +385,25 @@ html[data-mg-role="vet"] .vet-hidden { display:none !important; }
   .dairy-grid,.dairy-form-grid{grid-template-columns:1fr}
 }
 
+
+/* V43 — Dashboard leiteiro */
+.dairy-chart{min-height:245px;display:flex;align-items:flex-end;gap:4px;padding:18px 8px 4px;border-top:1px solid var(--line);overflow:hidden}
+.dairy-chart-col{flex:1;min-width:7px;height:205px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}
+.dairy-chart-bar{width:100%;max-width:22px;min-height:2px;background:var(--green);border-radius:5px 5px 2px 2px;position:relative}
+.dairy-chart-bar:hover:after{content:attr(data-label);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#062e2c;color:#fff;padding:4px 6px;border-radius:6px;font-size:8px;white-space:nowrap;z-index:5}
+.dairy-chart-day{font-size:7px;color:var(--muted);height:12px}
+.dairy-insights{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dairy-insights>div{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fbfdfb}
+.dairy-insights span{display:block;color:var(--muted);font-size:9px;font-weight:700}
+.dairy-insights strong{display:block;font-size:17px;margin-top:5px}
+.dairy-alert-list{display:flex;flex-direction:column;gap:8px}
+.dairy-alert{border:1px solid var(--line);border-radius:11px;padding:10px 12px;display:flex;gap:9px;align-items:flex-start}
+.dairy-alert .ico{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#fff4dd;flex:0 0 auto}
+.dairy-alert b{display:block;font-size:10px}
+.dairy-alert small{display:block;color:var(--muted);font-size:8.5px;margin-top:2px}
+.dairy-alert.ok .ico{background:#e8f7ed}
+@media(max-width:600px){.dairy-insights{grid-template-columns:1fr}.dairy-chart{min-height:190px}.dairy-chart-col{height:150px}}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -736,12 +755,74 @@ html.mg-route-boot .view.active{display:none!important}
   </div>
 
   <div class="dairy-tabs">
-    <button class="dairy-tab active" onclick="switchDairyTab('production',this)">Produção diária</button>
+    <button class="dairy-tab active" onclick="switchDairyTab('dashboard',this)">Dashboard</button>
+    <button class="dairy-tab" onclick="switchDairyTab('production',this)">Produção diária</button>
     <button class="dairy-tab" onclick="switchDairyTab('lactations',this)">Lactações</button>
     <button class="dairy-tab" onclick="switchDairyTab('quality',this)">Qualidade</button>
   </div>
 
-  <div id="dairyTabProduction">
+  
+  <div id="dairyTabDashboard">
+    <div class="dairy-two">
+      <div class="card">
+        <div class="head">
+          <div><h3>Evolução da produção</h3><div class="sub">Produção total dos últimos 30 dias.</div></div>
+        </div>
+        <div id="dairyProductionChart" class="dairy-chart">
+          <div class="dairy-empty">Ainda não há dados suficientes para o gráfico.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="head">
+          <div><h3>Indicadores do rebanho leiteiro</h3><div class="sub">Situação atual da produção.</div></div>
+        </div>
+        <div class="dairy-insights">
+          <div><span>Melhor vaca hoje</span><strong id="dairyBestCow">—</strong></div>
+          <div><span>Maior produção individual</span><strong id="dairyBestCowLiters">0,0 L</strong></div>
+          <div><span>Média últimos 7 dias</span><strong id="dairyAvg7Days">0,0 L/dia</strong></div>
+          <div><span>Descarte no mês</span><strong id="dairyDiscardRate">0,0%</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dairy-two" style="margin-top:12px">
+      <div class="card">
+        <div class="head">
+          <div><h3>🏆 Ranking das vacas</h3><div class="sub">Produção acumulada no mês.</div></div>
+        </div>
+        <div style="overflow:auto">
+          <table class="dairy-table">
+            <thead><tr><th>#</th><th>Animal</th><th>Produção</th><th>Dias lançados</th><th>Média/dia</th></tr></thead>
+            <tbody id="dairyRankingRows"><tr><td colspan="5" class="dairy-empty">Sem produção registrada.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="head">
+          <div><h3>⚠️ Alertas leiteiros</h3><div class="sub">Pontos que merecem atenção.</div></div>
+        </div>
+        <div id="dairyAlerts" class="dairy-alert-list">
+          <div class="dairy-empty">Nenhum alerta no momento.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="head">
+        <div><h3>Lactações em andamento</h3><div class="sub">Dias em lactação e previsão de secagem.</div></div>
+      </div>
+      <div style="overflow:auto">
+        <table class="dairy-table">
+          <thead><tr><th>Animal</th><th>Início</th><th>Dias em lactação</th><th>Previsão de secagem</th><th>Produção hoje</th><th>Situação</th></tr></thead>
+          <tbody id="dairyDashboardLactations"><tr><td colspan="6" class="dairy-empty">Nenhuma lactação ativa.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<div id="dairyTabProduction">
     <div class="card">
       <div class="head"><div><h3>Registrar produção</h3><div class="sub">Um lançamento por vaca por dia.</div></div></div>
       <div class="dairy-form-grid">
@@ -3099,7 +3180,7 @@ function mgDairyAnimalLabel(a){return `${a.number}${a.breed?' · '+a.breed:''}`}
 function switchDairyTab(tab,btn){
   document.querySelectorAll('.dairy-tab').forEach(x=>x.classList.remove('active'));
   if(btn)btn.classList.add('active');
-  const ids={production:'dairyTabProduction',lactations:'dairyTabLactations',quality:'dairyTabQuality'};
+  const ids={dashboard:'dairyTabDashboard',production:'dairyTabProduction',lactations:'dairyTabLactations',quality:'dairyTabQuality'};
   Object.values(ids).forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   const target=document.getElementById(ids[tab]); if(target)target.style.display='block';
 }
@@ -3182,11 +3263,122 @@ async function loadMilkQuality(){
   if(tbody)tbody.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.test_date}</td><td>${r.sample_type==='tank'?'Tanque':('Animal '+(r.animals?.number||r.animal_id||''))}</td><td>${r.somatic_cell_count??'—'}</td><td>${r.bacterial_count??'—'}</td><td>${r.fat_percent!=null?r.fat_percent+'%':'—'}</td><td>${r.protein_percent!=null?r.protein_percent+'%':'—'}</td></tr>`).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma análise cadastrada.</td></tr>';
 }
 
+
+async function loadDairyDashboard(){
+  const f=await mgGetFarm();
+  const today=mgIsoToday();
+  const start30=new Date(); start30.setDate(start30.getDate()-29);
+  const start30iso=start30.toISOString().slice(0,10);
+  const firstMonth=today.slice(0,7)+'-01';
+
+  const {data,error}=await mgSb.from('milk_production')
+    .select('animal_id,production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,animals(number,breed)')
+    .eq('farm_id',f.id).gte('production_date',start30iso).order('production_date',{ascending:true});
+  if(error)throw error;
+
+  const rows=data||[];
+  const total=r=>Number(r.morning_liters||0)+Number(r.afternoon_liters||0)+Number(r.evening_liters||0);
+
+  // 30-day chart
+  const byDay={};
+  for(let i=0;i<30;i++){
+    const d=new Date(start30); d.setDate(start30.getDate()+i);
+    byDay[d.toISOString().slice(0,10)]=0;
+  }
+  rows.forEach(r=>{byDay[r.production_date]=(byDay[r.production_date]||0)+total(r)});
+  const vals=Object.values(byDay), max=Math.max(...vals,1);
+  const chart=document.getElementById('dairyProductionChart');
+  if(chart){
+    chart.innerHTML=Object.entries(byDay).map(([date,v],i)=>{
+      const h=Math.max(v?4:2,(v/max)*175);
+      const showDay=(i%5===0||i===29)?date.slice(8,10):'';
+      return `<div class="dairy-chart-col"><div class="dairy-chart-bar" style="height:${h}px" data-label="${date.split('-').reverse().join('/')} · ${mgFmtLiters(v)}"></div><div class="dairy-chart-day">${showDay}</div></div>`;
+    }).join('');
+  }
+
+  // Today / best cow
+  const todayRows=rows.filter(r=>r.production_date===today);
+  const todayByCow={};
+  todayRows.forEach(r=>{
+    const k=r.animal_id;
+    if(!todayByCow[k])todayByCow[k]={number:r.animals?.number||k,liters:0};
+    todayByCow[k].liters+=total(r);
+  });
+  const best=Object.values(todayByCow).sort((a,b)=>b.liters-a.liters)[0];
+  document.getElementById('dairyBestCow').textContent=best?`#${best.number}`:'—';
+  document.getElementById('dairyBestCowLiters').textContent=mgFmtLiters(best?.liters||0);
+
+  // Average 7 days
+  const d7=new Date(); d7.setDate(d7.getDate()-6);
+  const d7iso=d7.toISOString().slice(0,10);
+  const last7=rows.filter(r=>r.production_date>=d7iso);
+  const daySet=new Set(last7.map(r=>r.production_date));
+  const sum7=last7.reduce((s,r)=>s+total(r),0);
+  document.getElementById('dairyAvg7Days').textContent=`${mgFmtLiters(daySet.size?sum7/daySet.size:0)}/dia`;
+
+  // Month ranking
+  const monthRows=rows.filter(r=>r.production_date>=firstMonth);
+  const rank={};
+  monthRows.forEach(r=>{
+    const k=r.animal_id;
+    if(!rank[k])rank[k]={number:r.animals?.number||k,breed:r.animals?.breed||'',liters:0,days:new Set()};
+    rank[k].liters+=total(r); rank[k].days.add(r.production_date);
+  });
+  const ranking=Object.values(rank).sort((a,b)=>b.liters-a.liters);
+  const rt=document.getElementById('dairyRankingRows');
+  if(rt)rt.innerHTML=ranking.length?ranking.map((r,i)=>`<tr><td><b>${i+1}º</b></td><td><b>#${r.number}</b>${r.breed?`<br><small>${r.breed}</small>`:''}</td><td><b>${mgFmtLiters(r.liters)}</b></td><td>${r.days.size}</td><td>${mgFmtLiters(r.days.size?r.liters/r.days.size:0)}</td></tr>`).join(''):'<tr><td colspan="5" class="dairy-empty">Sem produção registrada.</td></tr>';
+
+  const monthTotal=monthRows.reduce((s,r)=>s+total(r),0);
+  const monthDiscard=monthRows.reduce((s,r)=>s+Number(r.discarded_liters||0),0);
+  document.getElementById('dairyDiscardRate').textContent=`${(monthTotal?monthDiscard/monthTotal*100:0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}%`;
+
+  // Lactations dashboard
+  const active=mgDairyLactations.filter(x=>x.status==='active');
+  const lactT=document.getElementById('dairyDashboardLactations');
+  if(lactT)lactT.innerHTML=active.length?active.map(x=>{
+    const start=x.lactation_start_date?new Date(x.lactation_start_date+'T00:00:00'):null;
+    const days=start?Math.max(0,Math.floor((new Date()-start)/86400000)):0;
+    const prod=todayByCow[x.animal_id]?.liters||0;
+    let situation='Normal';
+    if(x.expected_dry_off_date){
+      const diff=Math.ceil((new Date(x.expected_dry_off_date+'T00:00:00')-new Date())/86400000);
+      if(diff<=15)situation='Secagem próxima';
+    }
+    return `<tr><td><b>#${x.animals?.number||x.animal_id}</b></td><td>${x.lactation_start_date||'—'}</td><td>${days} dias</td><td>${x.expected_dry_off_date||'—'}</td><td>${mgFmtLiters(prod)}</td><td><span class="dairy-badge">${situation}</span></td></tr>`;
+  }).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma lactação ativa.</td></tr>';
+
+  // Alerts: dry-off + production drop
+  const alerts=[];
+  active.forEach(x=>{
+    if(x.expected_dry_off_date){
+      const diff=Math.ceil((new Date(x.expected_dry_off_date+'T00:00:00')-new Date())/86400000);
+      if(diff>=0&&diff<=15)alerts.push({ico:'📅',title:`Secagem próxima — #${x.animals?.number||x.animal_id}`,text:`Prevista em ${diff} dia(s): ${x.expected_dry_off_date}.`});
+      if(diff<0)alerts.push({ico:'⚠️',title:`Secagem vencida — #${x.animals?.number||x.animal_id}`,text:`Previsão era ${x.expected_dry_off_date}.`});
+    }
+  });
+
+  // compare each cow today vs its previous 7-day individual average
+  Object.entries(todayByCow).forEach(([id,t])=>{
+    const hist=rows.filter(r=>String(r.animal_id)===String(id)&&r.production_date<today&&r.production_date>=d7iso);
+    if(hist.length){
+      const avg=hist.reduce((s,r)=>s+total(r),0)/new Set(hist.map(r=>r.production_date)).size;
+      if(avg>0 && t.liters < avg*.8){
+        const drop=(1-t.liters/avg)*100;
+        alerts.push({ico:'📉',title:`Queda de produção — #${t.number}`,text:`Hoje está ${drop.toLocaleString('pt-BR',{maximumFractionDigits:0})}% abaixo da média recente.`});
+      }
+    }
+  });
+
+  const al=document.getElementById('dairyAlerts');
+  if(al)al.innerHTML=alerts.length?alerts.slice(0,8).map(a=>`<div class="dairy-alert"><div class="ico">${a.ico}</div><div><b>${a.title}</b><small>${a.text}</small></div></div>`).join(''):'<div class="dairy-alert ok"><div class="ico">✓</div><div><b>Nenhum alerta leiteiro</b><small>Os registros atuais não indicam atenção imediata.</small></div></div>';
+}
+
 async function loadDairyModule(){
   try{
     ['milkDate','lactCalvingDate','lactStartDate','dryDate','qualityDate'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=mgIsoToday();});
     await loadDairyAnimals();
     await Promise.all([loadDairyLactations(),loadMilkProduction(),loadMilkQuality()]);
+    await loadDairyDashboard();
   }catch(e){alert('Não foi possível carregar o módulo leiteiro. '+(e.message||e))}
 }
 
