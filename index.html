@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Gestão Profissional do Rebanho</title>
-<meta name="mg-build" content="index-v32-bloqueio-duplicidade">
+<meta name="mg-build" content="index-v33-turnstile">
 <style>
 :root{
   --green:#148b45;
@@ -165,6 +165,11 @@ button{cursor:pointer}
 
 .password-rules{font-size:10px;color:#718078;line-height:1.45;margin-top:6px}
 
+
+/* V33 — Cloudflare Turnstile */
+.captcha-wrap{display:flex;justify-content:center;min-height:65px;margin:10px 0 4px}
+.captcha-note{font-size:9.5px;color:#7b8982;text-align:center;line-height:1.4;margin:3px 0 8px}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
@@ -176,6 +181,7 @@ button{cursor:pointer}
 .support-sep{margin:0 4px;color:#b2bbb7}
 @media(max-width:650px){.login-support-v19{margin:0;line-height:1.9;padding:18px 14px}.support-sep{display:none}.login-support-v19 a,.login-support-v19 strong{display:block}}
 </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 </head>
 <body>
 <div class="page">
@@ -228,6 +234,8 @@ button{cursor:pointer}
           <div class="field"><label>E-mail</label><input id="loginEmail" type="email" autocomplete="username" placeholder="seu@email.com"></div>
           <div class="field"><div class="field-top"><label>Senha</label><button class="forgot" onclick="forgotPassword()">Esqueci minha senha</button></div><div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha"><button type="button" class="show-pass" onclick="togglePassword('loginPassword',this)">Mostrar</button></div></div>
           <label class="remember"><input id="rememberMe" type="checkbox" checked> Lembrar de mim</label>
+          <div class="captcha-wrap"><div id="turnstileLogin"></div></div>
+          <div class="captcha-note">Verificação de segurança contra acessos automatizados.</div>
           <button class="btn" onclick="doLogin()">🔒 &nbsp; Entrar</button>
 
           <div class="or">ou</div>
@@ -251,6 +259,8 @@ button{cursor:pointer}
           <div class="field"><label>Telefone / WhatsApp</label><input id="regPhone" inputmode="tel" placeholder="(00) 00000-0000"></div>
           <div class="field"><label>Crie uma senha</label><div class="password-wrap"><input id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('regPassword',this)">Mostrar</button></div><div class="password-rules">Use pelo menos 10 caracteres, com letra maiúscula, letra minúscula, número e símbolo.</div></div>
           <div class="field"><label>Confirme sua senha</label><div class="password-wrap"><input id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('regPasswordConfirm',this)">Mostrar</button></div></div>
+          <div class="captcha-wrap"><div id="turnstileRegister"></div></div>
+          <div class="captcha-note">Verificação de segurança contra cadastros automatizados.</div>
           <button class="btn green" onclick="doRegister()">Criar minha conta</button>
           <div class="legal-consent">Ao criar sua conta, você declara que leu e concorda com os
             <a href="#" onclick="openTerms();return false">Termos de Uso</a> e com a
@@ -304,6 +314,8 @@ button{cursor:pointer}
             Informe o e-mail da sua conta. Se ele estiver cadastrado, enviaremos um link para criar uma nova senha.
           </div>
           <div class="field"><label>E-mail</label><input id="forgotEmail" type="email" autocomplete="email" placeholder="seu@email.com"></div>
+          <div class="captcha-wrap"><div id="turnstileForgot"></div></div>
+          <div class="captcha-note">Verificação de segurança para proteger a recuperação de conta.</div>
           <button class="btn green" id="forgotSendBtn" onclick="sendPasswordReset()">Enviar link de recuperação</button>
           <button class="back-link" onclick="backToLogin()">← Voltar para o login</button>
         </div>
@@ -342,6 +354,39 @@ function formatError(detail){
   return 'Erro inesperado.';
 }
 const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
+
+const MG_TURNSTILE_SITE_KEY='0x4AAAAAAEz18CzViJsl3lHd';
+const mgCaptcha={login:null,register:null,forgot:null};
+const mgCaptchaWidget={login:null,register:null,forgot:null};
+
+function mgTurnstileReady(){
+  return typeof window.turnstile!=='undefined';
+}
+function mgRenderCaptcha(kind){
+  if(!mgTurnstileReady()){ setTimeout(()=>mgRenderCaptcha(kind),180); return; }
+  const ids={login:'turnstileLogin',register:'turnstileRegister',forgot:'turnstileForgot'};
+  const target=document.getElementById(ids[kind]);
+  if(!target || mgCaptchaWidget[kind]!==null) return;
+  mgCaptchaWidget[kind]=window.turnstile.render(target,{
+    sitekey:MG_TURNSTILE_SITE_KEY,
+    theme:'light',
+    callback:(token)=>{mgCaptcha[kind]=token;},
+    'expired-callback':()=>{mgCaptcha[kind]=null;},
+    'error-callback':()=>{mgCaptcha[kind]=null;}
+  });
+}
+function mgRequireCaptcha(kind){
+  const token=mgCaptcha[kind];
+  if(!token) throw new Error('Conclua a verificação de segurança antes de continuar.');
+  return token;
+}
+function mgResetCaptcha(kind){
+  mgCaptcha[kind]=null;
+  if(mgTurnstileReady() && mgCaptchaWidget[kind]!==null){
+    try{window.turnstile.reset(mgCaptchaWidget[kind]);}catch(_e){}
+  }
+}
+
 async function mgGetMembership(){
   const r=await mgSb.from('farm_members')
     .select('farm_id,role,active')
@@ -437,7 +482,13 @@ async function api(path,opt={}){
   let data={}; try{data=opt.body?JSON.parse(opt.body):{}}catch{}
   if(path==='/api/status') return {setup_required:false};
   if(path==='/api/login'){
-    const r=await mgSb.auth.signInWithPassword({email:data.email,password:data.password});
+    const captchaToken=mgRequireCaptcha('login');
+    const r=await mgSb.auth.signInWithPassword({
+      email:data.email,
+      password:data.password,
+      options:{captchaToken}
+    });
+    mgResetCaptcha('login');
     if(r.error) throw new Error(r.error.message==='Invalid login credentials'?'E-mail ou senha inválidos. Se esta é sua primeira vez no site online, clique em Criar minha conta.':r.error.message);
     const needs_onboarding=await mgNeedsOnboarding();
     return {ok:true,role:'client',needs_onboarding,user:r.data.user};
@@ -446,12 +497,15 @@ async function api(path,opt={}){
     const r=await mgSb.auth.signUp({
       email:data.email,
       password:data.password,
-      options:{data:{
-        full_name:data.full_name,
-        document:data.document,
-        phone:data.phone||'',
-        email:data.email
-      }}
+      options:{
+        captchaToken:data.captchaToken,
+        data:{
+          full_name:data.full_name,
+          document:data.document,
+          phone:data.phone||'',
+          email:data.email
+        }
+      }
     });
     if(r.error) throw new Error(r.error.message);
     if(r.data.session){
@@ -473,6 +527,7 @@ function switchTab(which){
   document.getElementById('setupForm').classList.remove('active');
   document.getElementById('loginTab').classList.toggle('active',which==='login');
   document.getElementById('registerTab').classList.toggle('active',which==='register');
+  setTimeout(()=>mgRenderCaptcha(which==='register'?'register':'login'),50);
   document.getElementById('title').textContent=which==='login'?'Bem-vindo de volta!':'Crie sua conta';
   document.getElementById('subtitle').textContent=which==='login'
     ?'Acesse sua conta e continue cuidando do que mais importa: seu rebanho.'
@@ -559,7 +614,10 @@ async function doRegister(){
     if(availability.error) throw new Error('Não foi possível validar os dados do cadastro. Tente novamente.');
     if(availability.data!==true) throw new Error('Já existe uma conta cadastrada com este e-mail ou CPF/CNPJ.');
 
+    const captchaToken=mgRequireCaptcha('register');
+    data.captchaToken=captchaToken;
     const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
+    mgResetCaptcha('register');
     if(r.needs_confirmation){
       setMessage('Conta criada. Confirme o e-mail recebido e depois entre para configurar sua propriedade.',true);
       switchTab('login');
@@ -567,7 +625,7 @@ async function doRegister(){
     }
     if(r.needs_onboarding){showOnboarding(r.user);return;}
     location.href='/app';
-  }catch(e){setMessage(e.message)}
+  }catch(e){mgResetCaptcha('register');setMessage(e.message)}
 }
 async function setupAdmin(){
   try{
@@ -648,6 +706,7 @@ function forgotPassword(){
   hideAllAuthForms();
   document.getElementById('tabs').style.display='none';
   document.getElementById('forgotForm').classList.add('active');
+  setTimeout(()=>mgRenderCaptcha('forgot'),50);
   document.getElementById('title').textContent='Esqueceu sua senha?';
   document.getElementById('subtitle').textContent='Nós enviaremos as instruções para o seu e-mail.';
   if(current)document.getElementById('forgotEmail').value=current;
@@ -658,6 +717,7 @@ function backToLogin(){
   hideAllAuthForms();
   document.getElementById('tabs').style.display='grid';
   document.getElementById('loginForm').classList.add('active');
+  setTimeout(()=>mgRenderCaptcha('login'),50);
   document.getElementById('loginTab').classList.add('active');
   document.getElementById('registerTab').classList.remove('active');
   document.getElementById('title').textContent='Bem-vindo de volta!';
@@ -674,7 +734,9 @@ async function sendPasswordReset(){
     btn.disabled=true;btn.textContent='Enviando...';
 
     const redirectTo=location.origin+location.pathname+'?recovery=1';
-    const {error}=await mgSb.auth.resetPasswordForEmail(email,{redirectTo});
+    const captchaToken=mgRequireCaptcha('forgot');
+    const {error}=await mgSb.auth.resetPasswordForEmail(email,{redirectTo,captchaToken});
+    mgResetCaptcha('forgot');
 
     btn.disabled=false;btn.textContent='Enviar link de recuperação';
     if(error)throw error;
@@ -683,6 +745,7 @@ async function sendPasswordReset(){
   }catch(e){
     const btn=document.getElementById('forgotSendBtn');
     if(btn){btn.disabled=false;btn.textContent='Enviar link de recuperação'}
+    mgResetCaptcha('forgot');
     setMessage(e.message||'Não foi possível enviar o e-mail de recuperação.');
   }
 }
@@ -732,6 +795,7 @@ mgSb.auth.onAuthStateChange((event,session)=>{
 
 init();
 enableEnterSubmit();
+setTimeout(()=>mgRenderCaptcha('login'),350);
 </script>
 
 <div class="login-support-v19">
