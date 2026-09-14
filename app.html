@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v62-biblioteca-vacinas-alertas">
+<meta name="mg-build" content="app-v63-vacinas-layout-melhorado">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -431,6 +431,16 @@ html[data-mg-role="vet"] .vet-hidden { display:none !important; }
 #saude select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff}
 @media(max-width:1100px){.health-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.health-kpis{grid-template-columns:1fr}}
+
+
+.health-product-info{margin-top:8px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#f8fbf9}
+.health-product-info .hp-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:800;font-size:12px}
+.health-product-info .hp-desc{font-size:10px;color:var(--muted);line-height:1.45;margin-top:4px}
+.hp-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:9px;font-weight:800}
+.hp-badge.required{background:#e8f7ee;color:#08783c}
+.hp-badge.conditional{background:#fff4dd;color:#9a6700}
+.hp-badge.protocol{background:#eef4ff;color:#175cd3}
+.hp-badge.alt{background:#f2ecff;color:#6b38a5}
 
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
@@ -1493,9 +1503,12 @@ html.mg-route-boot .view.active{display:none!important}
 
 <div class="modal" id="healthModal"><div class="modalbox"><div class="head"><h3 id="healthModalTitle">Registrar saúde</h3><button class="btn secondary" onclick="closeModal('healthModal')">Fechar</button></div><div class="form"><label>Tipo<select id="htype" onchange="updateHealthProductLibrary()"><option>Vacina</option><option>Medicamento</option><option>Vermífugo</option><option>Tratamento</option></select></label>
 <label>Produto
-  <input id="hproduct" list="healthProductList" placeholder="Selecione ou digite o produto">
-  <datalist id="healthProductList"></datalist>
-  <small id="healthProductHelp" class="sub" style="display:block;margin-top:5px"></small>
+  <select id="hproductPreset" onchange="selectHealthProductPreset()">
+    <option value="">Selecione o produto</option>
+  </select>
+  <input id="hproduct" placeholder="Digite o produto" style="display:none;margin-top:8px">
+  <div id="healthProductInfo" class="health-product-info" style="display:none"></div>
+  <small id="healthProductHelp" class="sub" style="display:block;margin-top:6px"></small>
 </label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button id="healthSaveBtn" class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
 
 <div class="modal" id="reproModal"><div class="modalbox"><div class="head"><h3 id="reproModalTitle">Evento reprodutivo</h3><button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button></div><div class="form"><label>Animal<select id="ranimal"></select></label><label>Evento<select id="rtype" onchange="updateReproPrediction()"><option>Inseminação artificial</option><option>Monta natural / pasto</option><option>Prenhez confirmada</option><option>Parto</option><option>Aborto</option><option>Desmame</option></select></label><label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label><label>Data prevista do parto<input id="rexpected" type="date"><small class="sub">Calculada automaticamente em aproximadamente 283 dias para cobertura/inseminação. Pode ser ajustada.</small></label><label class="full">Observações<textarea id="rnotes" placeholder="Ex.: lote do touro, sêmen utilizado, diagnóstico..."></textarea></label><button id="reproSaveBtn" class="btn primary full" onclick="saveRepro()">Salvar evento</button></div></div></div>
@@ -2822,30 +2835,67 @@ function renderHealth(){
 }
 
 const MG_VACCINE_LIBRARY = [
-  {value:'Brucelose B19', label:'Brucelose B19 — obrigatória nacional para fêmeas bovinas/bubalinas de 3 a 8 meses', status:'national'},
-  {value:'Brucelose RB51', label:'Brucelose RB51 — alternativa prevista para bovinos conforme PNCEBT/serviço veterinário', status:'national_alt'},
-  {value:'Raiva dos herbívoros', label:'Raiva dos herbívoros — exigência conforme área de ocorrência e regras do serviço veterinário estadual', status:'conditional'},
-  {value:'Clostridioses (polivalente)', label:'Clostridioses (polivalente) — protocolo sanitário/recomendação veterinária', status:'protocol'},
-  {value:'Botulismo', label:'Botulismo — protocolo sanitário/recomendação veterinária', status:'protocol'},
-  {value:'Leptospirose', label:'Leptospirose — protocolo sanitário/recomendação veterinária', status:'protocol'},
-  {value:'IBR/BVD', label:'IBR/BVD — protocolo sanitário/recomendação veterinária', status:'protocol'},
-  {value:'Doenças respiratórias bovinas', label:'Doenças respiratórias bovinas — protocolo sanitário/recomendação veterinária', status:'protocol'}
+  {value:'Brucelose B19', name:'Brucelose B19', badge:'Obrigatória nacional', badgeClass:'required', desc:'Fêmeas bovinas e bubalinas entre 3 e 8 meses, conforme o programa nacional de brucelose.'},
+  {value:'Brucelose RB51', name:'Brucelose RB51', badge:'Alternativa regulamentada', badgeClass:'alt', desc:'Alternativa prevista para bovinos conforme o PNCEBT e orientação do serviço veterinário responsável.'},
+  {value:'Raiva dos herbívoros', name:'Raiva dos herbívoros', badge:'Condicional', badgeClass:'conditional', desc:'Aplicação conforme área de ocorrência, risco epidemiológico e regras do serviço veterinário estadual.'},
+  {value:'Clostridioses (polivalente)', name:'Clostridioses (polivalente)', badge:'Protocolo sanitário', badgeClass:'protocol', desc:'Uso conforme protocolo sanitário da propriedade e orientação veterinária.'},
+  {value:'Botulismo', name:'Botulismo', badge:'Protocolo sanitário', badgeClass:'protocol', desc:'Uso conforme risco da propriedade e orientação veterinária.'},
+  {value:'Leptospirose', name:'Leptospirose', badge:'Protocolo sanitário', badgeClass:'protocol', desc:'Uso conforme protocolo sanitário e reprodutivo da propriedade.'},
+  {value:'IBR/BVD', name:'IBR/BVD', badge:'Protocolo sanitário', badgeClass:'protocol', desc:'Uso conforme programa sanitário e reprodutivo definido para o rebanho.'},
+  {value:'Doenças respiratórias bovinas', name:'Doenças respiratórias bovinas', badge:'Protocolo sanitário', badgeClass:'protocol', desc:'Uso conforme risco respiratório, manejo e orientação veterinária.'}
 ];
 
 function mgHealthFarmUf(){
   return String(mgFarm?.state||mgUser?.user_metadata?.state||'').trim().toUpperCase();
 }
 function updateHealthProductLibrary(){
-  const list=document.getElementById('healthProductList');
+  const preset=document.getElementById('hproductPreset');
+  const custom=document.getElementById('hproduct');
+  const info=document.getElementById('healthProductInfo');
   const help=document.getElementById('healthProductHelp');
-  if(!list||!help)return;
+  if(!preset||!custom||!info||!help)return;
+
+  preset.innerHTML='<option value="">Selecione o produto</option>';
+
   if(htype.value==='Vacina'){
-    list.innerHTML=MG_VACCINE_LIBRARY.map(x=>`<option value="${x.value}" label="${x.label}"></option>`).join('');
+    preset.innerHTML+=MG_VACCINE_LIBRARY.map(x=>`<option value="${x.value}">${x.name} · ${x.badge}</option>`).join('');
+    preset.innerHTML+='<option value="__other__">Outra vacina</option>';
+    custom.style.display='none';
+    custom.value='';
+    info.style.display='none';
     const uf=mgHealthFarmUf();
-    help.textContent=`Regras consideradas: obrigação nacional + normas locais da UF ${uf||'não informada'}. Febre aftosa não é listada como rotina: a vacinação está suspensa no Brasil.`;
+    help.textContent=`Biblioteca sanitária para uso nacional. UF da propriedade: ${uf||'não informada'}.`;
   }else{
-    list.innerHTML='';
+    preset.innerHTML='<option value="__other__">Digitar produto</option>';
+    preset.value='__other__';
+    custom.style.display='block';
+    info.style.display='none';
     help.textContent='Digite o nome comercial ou princípio ativo utilizado.';
+  }
+}
+function selectHealthProductPreset(){
+  const preset=document.getElementById('hproductPreset');
+  const custom=document.getElementById('hproduct');
+  const info=document.getElementById('healthProductInfo');
+  if(!preset||!custom||!info)return;
+
+  if(preset.value==='__other__'){
+    custom.style.display='block';
+    custom.value='';
+    custom.focus();
+    info.style.display='none';
+    return;
+  }
+
+  custom.style.display='none';
+  custom.value=preset.value||'';
+
+  const item=MG_VACCINE_LIBRARY.find(x=>x.value===preset.value);
+  if(item){
+    info.innerHTML=`<div class="hp-title">${item.name}<span class="hp-badge ${item.badgeClass}">${item.badge}</span></div><div class="hp-desc">${item.desc}</div>`;
+    info.style.display='block';
+  }else{
+    info.style.display='none';
   }
 }
 function mgMonthsBetween(birth, date=new Date()){
@@ -2890,14 +2940,15 @@ async function openNewHealthForBrucellosis(animalId){
   hanimal.value=String(animalId);
   htype.value='Vacina';
   updateHealthProductLibrary();
-  hproduct.value='Brucelose B19';
+  hproductPreset.value='Brucelose B19';
+  selectHealthProductPreset();
 }
 
 function openNewHealth(){
   healthEditId=null;
   if(document.getElementById('healthModalTitle'))healthModalTitle.textContent='Registrar saúde';
   if(document.getElementById('healthSaveBtn'))healthSaveBtn.textContent='Salvar evento';
-  htype.value='Vacina';updateHealthProductLibrary();hproduct.value='';hdate.value=new Date().toISOString().slice(0,10);hnext.value='';hanimal.value='';hlot.value='';hnotes.value='';
+  htype.value='Vacina';updateHealthProductLibrary();hproductPreset.value='';hproduct.value='';document.getElementById('healthProductInfo').style.display='none';hdate.value=new Date().toISOString().slice(0,10);hnext.value='';hanimal.value='';hlot.value='';hnotes.value='';
   openModal('healthModal');
 }
 function editHealth(id){
@@ -2905,7 +2956,13 @@ function editHealth(id){
   healthEditId=Number(id);
   if(document.getElementById('healthModalTitle'))healthModalTitle.textContent='Editar registro de saúde';
   if(document.getElementById('healthSaveBtn'))healthSaveBtn.textContent='Salvar alterações';
-  htype.value=e.event_type||'Vacina';updateHealthProductLibrary();hproduct.value=e.product||'';hdate.value=e.event_date||'';hnext.value=e.next_due_date||'';hanimal.value=e.animal_id?String(e.animal_id):'';hlot.value=e.lot||'';hnotes.value=e.notes||'';
+  htype.value=e.event_type||'Vacina';updateHealthProductLibrary();
+  if(htype.value==='Vacina'&&MG_VACCINE_LIBRARY.some(x=>x.value===(e.product||''))){
+    hproductPreset.value=e.product||'';selectHealthProductPreset();
+  }else{
+    hproductPreset.value='__other__';selectHealthProductPreset();hproduct.value=e.product||'';
+  }
+  hdate.value=e.event_date||'';hnext.value=e.next_due_date||'';hanimal.value=e.animal_id?String(e.animal_id):'';hlot.value=e.lot||'';hnotes.value=e.notes||'';
   openModal('healthModal');
 }
 async function saveHealth(){
