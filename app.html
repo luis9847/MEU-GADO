@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v30-recuperado-estavel">
+<meta name="mg-build" content="app-v31-equipe-acessos">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -310,6 +310,41 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
   .brand img{width:34px!important;height:34px!important}
 }
 
+
+/* V31 — Equipe e acessos */
+.team-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
+.team-hero h2{margin:0 0 5px}.team-hero p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
+.team-role-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}
+.team-role-card{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff}
+.team-role-card b{display:block;font-size:11px;color:var(--ink);margin-bottom:4px}
+.team-role-card small{font-size:9.5px;color:var(--muted);line-height:1.45}
+.team-invite-grid{display:grid;grid-template-columns:1.3fr 1.4fr 1fr 1fr auto;gap:8px;align-items:end}
+.team-field label{display:block;font-size:9.5px;font-weight:800;color:var(--muted);margin-bottom:5px}
+.team-field input,.team-field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:#fff;color:var(--ink);outline:none;font:inherit}
+.team-field input:focus,.team-field select:focus{border-color:#7dc594;box-shadow:0 0 0 3px #eaf7ee}
+.team-list{display:grid;gap:8px;margin-top:10px}
+.team-member{display:grid;grid-template-columns:minmax(170px,1.4fr) minmax(150px,1fr) 150px 110px auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff}
+.team-member-main{display:flex;align-items:center;gap:9px;min-width:0}
+.team-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e8f5ec;color:var(--green);font-weight:900;flex:0 0 auto}
+.team-member-main div{min-width:0}.team-member-main b,.team-member-main small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-member-main b{font-size:11px}.team-member-main small{font-size:9.5px;color:var(--muted);margin-top:2px}
+.team-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:850;background:#edf5ef;color:#27633a}
+.team-badge.pending{background:#fff5df;color:#9a6811}.team-badge.off{background:#f4eeee;color:#944}
+.team-actions{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.team-actions button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 8px;font-size:9px;font-weight:800;cursor:pointer;color:var(--ink)}
+.team-actions button.danger{color:#a33;border-color:#e8cccc}
+.team-empty{text-align:center;padding:28px;color:var(--muted);font-size:11px}
+.team-note{font-size:10px;line-height:1.55;color:var(--muted);background:#f6faf7;border:1px solid #e0ebe3;border-radius:10px;padding:10px 12px;margin-top:10px}
+@media(max-width:1000px){
+ .team-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .team-invite-grid{grid-template-columns:1fr 1fr}
+ .team-member{grid-template-columns:1fr 1fr}
+ .team-actions{justify-content:flex-start}
+}
+@media(max-width:650px){
+ .team-role-grid,.team-invite-grid,.team-member{grid-template-columns:1fr}
+}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -352,6 +387,7 @@ html.mg-route-boot .view.active{display:none!important}
       <button onclick="show('perfil')">⌄</button>
     </div>
     <button class="mydata-btn" onclick="show('perfil')">Meus dados</button>
+    <button class="mydata-btn" id="teamAccessBtn" onclick="openTeamAccess()">Equipe e acessos</button>
     <button id="newsNavBtn" class="side-link news-link" onclick="openNews()">✦ <span>Novidades</span><b id="newsNewBadge" class="news-new">NOVO</b></button>
     <button class="side-link" data-v="ajuda" onclick="show('ajuda',this)">? <span>Ajuda</span></button>
     <button class="side-link" onclick="showTermsOfUse()">▤ <span>Termos de Uso</span></button>
@@ -832,6 +868,56 @@ html.mg-route-boot .view.active{display:none!important}
     </div>
   </div>
 </section>
+
+<section id="equipeAcessos" class="view">
+  <div class="team-hero">
+    <div>
+      <h2>Equipe e acessos</h2>
+      <p>Convide pessoas para trabalhar na propriedade sem compartilhar a sua senha. Cada integrante acessa o Meu Gado com a própria conta.</p>
+    </div>
+    <button class="btn secondary" type="button" onclick="loadTeam()">↻ Atualizar</button>
+  </div>
+
+  <div class="team-role-grid">
+    <div class="team-role-card"><b>👑 Proprietário</b><small>Controle total da propriedade e da equipe.</small></div>
+    <div class="team-role-card"><b>🛡 Administrador</b><small>Gestão ampla e equipe, sem alterar o proprietário.</small></div>
+    <div class="team-role-card"><b>📋 Gerente</b><small>Gestão operacional, sem administrar usuários.</small></div>
+    <div class="team-role-card"><b>👷 Funcionário</b><small>Rotinas operacionais definidas para o dia a dia.</small></div>
+    <div class="team-role-card"><b>🩺 Veterinário</b><small>Acesso direcionado à saúde e reprodução.</small></div>
+  </div>
+
+  <div class="card" id="teamInviteCard">
+    <div class="head">
+      <div><h3>Convidar integrante</h3><div class="sub">Se a pessoa já tiver conta, o vínculo poderá ser feito diretamente. Caso contrário, o convite ficará pendente até ela criar a conta com o mesmo e-mail.</div></div>
+    </div>
+    <div class="team-invite-grid">
+      <div class="team-field"><label>Nome</label><input id="teamInviteName" placeholder="Nome do integrante"></div>
+      <div class="team-field"><label>E-mail</label><input id="teamInviteEmail" type="email" placeholder="email@exemplo.com"></div>
+      <div class="team-field"><label>Função</label>
+        <select id="teamInviteRole">
+          <option value="admin">Administrador</option>
+          <option value="manager">Gerente</option>
+          <option value="employee">Funcionário</option>
+          <option value="vet">Veterinário</option>
+        </select>
+      </div>
+      <div class="team-field"><label>Cargo / descrição</label><input id="teamInviteJob" placeholder="Ex.: Capataz"></div>
+      <button class="btn primary" type="button" onclick="inviteTeamMember()">Convidar</button>
+    </div>
+    <div class="team-note">Por segurança, somente proprietário e administrador podem gerenciar a equipe. O administrador não pode remover ou rebaixar o proprietário.</div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="head"><div><h3>Integrantes da propriedade</h3><div class="sub" id="teamSummary">Carregando...</div></div></div>
+    <div id="teamList" class="team-list"><div class="team-empty">Carregando equipe...</div></div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="head"><div><h3>Convites pendentes</h3><div class="sub">Convites aguardando a criação ou o primeiro acesso da conta.</div></div></div>
+    <div id="teamPendingList" class="team-list"><div class="team-empty">Nenhum convite pendente.</div></div>
+  </div>
+</section>
+
 <section id="saleSimulator" class="view">
   <div class="page-title"><div><h1>Simulador de Venda</h1><p>Estime o valor de venda usando o peso do rebanho e a última cotação disponível no Mercado Pecuário.</p></div></div>
 
@@ -1046,15 +1132,46 @@ const MG_BRAZIL_STATES=[
 let animalsData=[]; let lotsData=[]; let editingLotId=null; let editingExpenseId=null; let selectedAnimalId=null; let quickLotForAnimal=false; let animalCategoryFilter='Todos'; let pendingAnimalPhoto=''; let marketQuotes=[]; let marketCalfQuotes=[];
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
-let mgFarm=null,mgUser=null;
+let mgFarm=null,mgUser=null,mgFarmRole='owner',mgInvitationsClaimed=false;
 let marketLiveData=null;
 function mgErr(e){throw new Error(e?.message||String(e||'Erro'))}
-async function mgSession(){const s=await mgSb.auth.getSession();if(!s.data.session){location.href='/';throw new Error('Sessão encerrada')}mgUser=s.data.session.user;return mgUser}
+async function mgSession(){
+ const s=await mgSb.auth.getSession();
+ if(!s.data.session){location.href='/';throw new Error('Sessão encerrada')}
+ mgUser=s.data.session.user;
+ if(!mgInvitationsClaimed){
+   mgInvitationsClaimed=true;
+   try{await mgSb.rpc('team_claim_invitations')}catch(_e){}
+ }
+ return mgUser
+}
 async function mgGetFarm(){
  await mgSession();
  if(mgFarm)return mgFarm;
- let r=await mgSb.from('farms').select('*').eq('owner_id',mgUser.id).maybeSingle();
- if(r.error)mgErr(r.error);
+
+ // Nova arquitetura: primeiro procura a propriedade pelo vínculo em farm_members.
+ let member=await mgSb.from('farm_members')
+   .select('farm_id,role,active')
+   .eq('user_id',mgUser.id)
+   .eq('active',true)
+   .order('created_at',{ascending:true})
+   .limit(1)
+   .maybeSingle();
+
+ if(member.error)mgErr(member.error);
+
+ let r={data:null,error:null};
+ if(member.data){
+   mgFarmRole=member.data.role||'member';
+   r=await mgSb.from('farms').select('*').eq('id',member.data.farm_id).maybeSingle();
+   if(r.error)mgErr(r.error);
+ }else{
+   // Compatibilidade com clientes antigos.
+   r=await mgSb.from('farms').select('*').eq('owner_id',mgUser.id).maybeSingle();
+   if(r.error)mgErr(r.error);
+   if(r.data)mgFarmRole='owner';
+ }
+
  if(!r.data){
   const meta=mgUser?.user_metadata||{};
   let p={full_name:meta.full_name||'',farm_name:meta.farm_name||'',doc:meta.doc||'',phone:meta.phone||'',email:mgUser?.email||meta.email||'',city:meta.city||'',state:meta.state||''};
@@ -1064,11 +1181,12 @@ async function mgGetFarm(){
   if(p.farm_name&&p.doc){
    let z=await mgSb.from('farms').insert({owner_id:mgUser.id,name:p.farm_name,doc:p.doc,phone:p.phone||'',email:mgUser.email||p.email,city:p.city||'',state:(p.state||'').toUpperCase()}).select().single();
    if(z.error)mgErr(z.error);
-   r=z;
+   r=z;mgFarmRole='owner';
    localStorage.removeItem(key);
   }
  }
- if(!r.data){alert('Não foi possível concluir o cadastro da propriedade. Entre em contato com o suporte do Meu Gado.');location.href='/';throw new Error('Fazenda não encontrada')}
+
+ if(!r.data){alert('Não foi possível localizar uma propriedade vinculada à sua conta. Entre em contato com o suporte do Meu Gado.');location.href='/';throw new Error('Fazenda não encontrada')}
  mgFarm=r.data;
  return mgFarm
 }
@@ -1248,6 +1366,10 @@ async function load(){
  const ui=(me.user.full_name||'U').trim().charAt(0).toUpperCase();
  if(document.getElementById('farmInitial')) farmInitial.textContent=fi;
  if(document.getElementById('userInitial')) userInitial.textContent=ui;
+ if(document.getElementById('teamAccessBtn')){
+   document.getElementById('teamAccessBtn').style.display=['owner','admin','manager','employee','vet'].includes(mgFarmRole)?'block':'none';
+ }
+
  if(document.getElementById('pageWeightDate')&&!pageWeightDate.value) pageWeightDate.value=new Date().toISOString().slice(0,10);
  await Promise.all([dashboard(),loadAnimals(),profile(),loadLots(),loadExpenses(),loadHealth(),loadRepro(),loadWeightHistory(),loadNutrition(),loadMarket()]);
 }
@@ -2008,6 +2130,158 @@ async function openNotifications(){
   notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}><span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':a.type==='health'?'✚':'!'}</span><div><b>${a.title}</b><small>${a.detail||''}</small>${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}</div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
   openModal('notificationsModal');
 }
+
+const MG_TEAM_ROLE_LABELS={
+ owner:'Proprietário',admin:'Administrador',manager:'Gerente',employee:'Funcionário',vet:'Veterinário',member:'Membro'
+};
+function mgTeamRoleLabel(role){return MG_TEAM_ROLE_LABELS[role]||role||'Membro'}
+function mgTeamCanManage(){return ['owner','admin'].includes(mgFarmRole)}
+function mgTeamInitial(name,email){return String(name||email||'?').trim().charAt(0).toUpperCase()||'?'}
+
+async function mgRpcTry(name,payloads){
+ let lastError=null;
+ for(const payload of payloads){
+   const r=await mgSb.rpc(name,payload);
+   if(!r.error)return r.data;
+   lastError=r.error;
+   const msg=String(r.error.message||'');
+   if(!/function .* does not exist|Could not find the function|schema cache/i.test(msg))throw new Error(msg);
+ }
+ throw new Error(lastError?.message||('Não foi possível executar '+name));
+}
+
+async function openTeamAccess(){
+ show('equipeAcessos');
+ await loadTeam();
+}
+
+async function loadTeam(){
+ try{
+   const f=await mgGetFarm();
+   const canManage=mgTeamCanManage();
+   const inviteCard=document.getElementById('teamInviteCard');
+   if(inviteCard)inviteCard.style.display=canManage?'block':'none';
+
+   let data=await mgRpcTry('team_list',[
+     {p_farm_id:f.id},
+     {farm_id:f.id},
+     {target_farm_id:f.id}
+   ]);
+
+   // Aceita tanto objeto {members,invitations} quanto array simples.
+   let members=[],pending=[];
+   if(Array.isArray(data))members=data;
+   else{
+     members=data?.members||data?.team||data?.active_members||[];
+     pending=data?.invitations||data?.pending||data?.pending_invitations||[];
+   }
+
+   document.getElementById('teamSummary').textContent=`${members.length} integrante(s) · Seu acesso: ${mgTeamRoleLabel(mgFarmRole)}`;
+
+   const list=document.getElementById('teamList');
+   list.innerHTML=members.length?members.map(m=>{
+     const uid=m.user_id||m.id||'';
+     const role=m.role||'member';
+     const active=m.active!==false;
+     const name=m.display_name||m.full_name||m.name||m.email||'Integrante';
+     const email=m.email||'';
+     const job=m.job_title||m.title||'';
+     const isOwner=role==='owner';
+     const editable=canManage && !(mgFarmRole==='admin'&&isOwner) && uid!==mgUser.id;
+     return `<div class="team-member">
+       <div class="team-member-main"><div class="team-avatar">${mgTeamInitial(name,email)}</div><div><b>${name}</b><small>${email||job||'Conta vinculada'}</small></div></div>
+       <div><b style="font-size:10px">${job||'Sem cargo informado'}</b><small style="display:block;color:var(--muted);font-size:9px;margin-top:2px">${mgTeamRoleLabel(role)}</small></div>
+       <span class="team-badge ${active?'':'off'}">${active?'Ativo':'Desativado'}</span>
+       <select ${editable?'':'disabled'} onchange="teamChangeRole('${uid}',this.value)" style="border:1px solid var(--line);border-radius:8px;padding:7px;font-size:9px">
+         ${['owner','admin','manager','employee','vet'].map(r=>`<option value="${r}" ${r===role?'selected':''} ${r==='owner'&&mgFarmRole!=='owner'?'disabled':''}>${mgTeamRoleLabel(r)}</option>`).join('')}
+       </select>
+       <div class="team-actions">${editable?`<button onclick="teamToggleMember('${uid}',${active?'false':'true'})">${active?'Desativar':'Ativar'}</button>`:''}</div>
+     </div>`;
+   }).join(''):'<div class="team-empty">Nenhum integrante encontrado.</div>';
+
+   const pend=document.getElementById('teamPendingList');
+   pend.innerHTML=pending.length?pending.map(i=>{
+     const iid=i.id||i.invitation_id||'';
+     const email=i.email||i.invited_email||'';
+     const name=i.display_name||i.name||'Convite';
+     const role=i.role||'member';
+     return `<div class="team-member">
+       <div class="team-member-main"><div class="team-avatar">${mgTeamInitial(name,email)}</div><div><b>${name}</b><small>${email}</small></div></div>
+       <div><b style="font-size:10px">${i.job_title||i.title||'—'}</b><small style="display:block;color:var(--muted);font-size:9px">${mgTeamRoleLabel(role)}</small></div>
+       <span class="team-badge pending">Pendente</span>
+       <div></div>
+       <div class="team-actions">${canManage&&iid?`<button class="danger" onclick="cancelTeamInvitation('${iid}')">Cancelar</button>`:''}</div>
+     </div>`;
+   }).join(''):'<div class="team-empty">Nenhum convite pendente.</div>';
+ }catch(e){
+   document.getElementById('teamSummary').textContent='Não foi possível carregar a equipe.';
+   document.getElementById('teamList').innerHTML=`<div class="team-empty">${e.message}</div>`;
+ }
+}
+
+async function inviteTeamMember(){
+ try{
+   const f=await mgGetFarm();
+   if(!mgTeamCanManage())throw new Error('Seu perfil não pode convidar integrantes.');
+   const name=document.getElementById('teamInviteName').value.trim();
+   const email=document.getElementById('teamInviteEmail').value.trim().toLowerCase();
+   const role=document.getElementById('teamInviteRole').value;
+   const job=document.getElementById('teamInviteJob').value.trim();
+   if(!email||!email.includes('@'))throw new Error('Informe um e-mail válido.');
+   if(!name)throw new Error('Informe o nome do integrante.');
+
+   await mgRpcTry('team_invite',[
+     {p_farm_id:f.id,p_email:email,p_role:role,p_display_name:name,p_job_title:job||null},
+     {p_farm_id:f.id,p_email:email,p_role:role,p_name:name,p_job_title:job||null},
+     {farm_id:f.id,email,role,display_name:name,job_title:job||null}
+   ]);
+
+   teamInviteName.value='';teamInviteEmail.value='';teamInviteJob.value='';
+   alert('Convite processado com sucesso.');
+   await loadTeam();
+ }catch(e){alert('Não foi possível convidar. '+e.message)}
+}
+
+async function teamChangeRole(userId,role){
+ try{
+   const f=await mgGetFarm();
+   if(!confirm(`Alterar este integrante para ${mgTeamRoleLabel(role)}?`)){await loadTeam();return}
+   await mgRpcTry('team_update_member',[
+     {p_farm_id:f.id,p_user_id:userId,p_role:role},
+     {p_farm_id:f.id,p_member_user_id:userId,p_role:role},
+     {farm_id:f.id,user_id:userId,role}
+   ]);
+   await loadTeam();
+ }catch(e){alert('Não foi possível alterar a função. '+e.message);await loadTeam()}
+}
+
+async function teamToggleMember(userId,newActive){
+ try{
+   const f=await mgGetFarm();
+   const active=String(newActive)==='true';
+   if(!confirm(active?'Reativar o acesso deste integrante?':'Desativar o acesso deste integrante?'))return;
+   await mgRpcTry('team_update_member',[
+     {p_farm_id:f.id,p_user_id:userId,p_active:active},
+     {p_farm_id:f.id,p_member_user_id:userId,p_active:active},
+     {farm_id:f.id,user_id:userId,active}
+   ]);
+   await loadTeam();
+ }catch(e){alert('Não foi possível alterar o acesso. '+e.message)}
+}
+
+async function cancelTeamInvitation(invitationId){
+ try{
+   const f=await mgGetFarm();
+   if(!confirm('Cancelar este convite pendente?'))return;
+   await mgRpcTry('team_cancel_invitation',[
+     {p_farm_id:f.id,p_invitation_id:invitationId},
+     {p_invitation_id:invitationId},
+     {invitation_id:invitationId}
+   ]);
+   await loadTeam();
+ }catch(e){alert('Não foi possível cancelar o convite. '+e.message)}
+}
+
 async function profile(){
   const p=await api('/api/profile');
   pname.value=p.name||'';pdoc.value=p.doc||'';pphone.value=p.phone||'';pemail.value=p.email||'';
