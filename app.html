@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v50-financeiro-leite">
+<meta name="mg-build" content="app-v51-financeiro-leite-supabase">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -918,24 +918,91 @@ html.mg-route-boot .view.active{display:none!important}
   </div>
 </section>
 
+
 <div id="dairyTabFinance" class="dairy-tab-panel" style="display:none">
-  <div class="grid g4" style="margin-top:12px">
-    <div class="card"><div class="muted small">RECEITA DO MÊS</div><div class="kpi" id="milkRevenueMonth">R$ 0,00</div><div class="muted small" id="milkRevenueLiters">0,0 L vendidos</div></div>
-    <div class="card"><div class="muted small">PREÇO MÉDIO / LITRO</div><div class="kpi" id="milkAvgPrice">R$ 0,00</div><div class="muted small">Média do mês</div></div>
-    <div class="card"><div class="muted small">CUSTO POR LITRO</div><div class="kpi" id="milkCostLiter">R$ 0,00</div><div class="muted small" id="milkCostMonth">Custos: R$ 0,00</div></div>
-    <div class="card"><div class="muted small">RESULTADO DO LEITE</div><div class="kpi" id="milkProfitMonth">R$ 0,00</div><div class="muted small" id="milkMarginLiter">Margem: R$ 0,00/L</div></div>
-  </div>
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card"><h3>Registrar venda de leite</h3>
-      <div class="form-grid"><label>Data<input id="milkSaleDate" type="date"></label><label>Litros vendidos<input id="milkSaleLiters" type="number" min="0" step="0.01"></label><label>Preço por litro (R$)<input id="milkSalePrice" type="number" min="0" step="0.0001"></label><label>Comprador<input id="milkSaleBuyer" placeholder="Ex.: Laticínio"></label></div>
-      <button type="button" class="btn primary" onclick="saveMilkSale()">Salvar venda</button>
+  <div class="dairy-grid">
+    <div class="dairy-kpi">
+      <small>Receita do mês</small>
+      <strong id="milkRevenueMonth">R$ 0,00</strong>
+      <span id="milkRevenueLiters">0,0 L vendidos</span>
     </div>
-    <div class="card"><h3>Registrar custo do leite</h3>
-      <div class="form-grid"><label>Data<input id="milkExpenseDate" type="date"></label><label>Categoria<select id="milkExpenseCategory"><option>Alimentação</option><option>Medicamentos</option><option>Mão de obra</option><option>Ordenha</option><option>Energia</option><option>Manutenção</option><option>Outros</option></select></label><label>Valor (R$)<input id="milkExpenseValue" type="number" min="0" step="0.01"></label><label>Descrição<input id="milkExpenseDescription"></label></div>
-      <button type="button" class="btn primary" onclick="saveMilkExpense()">Salvar custo</button>
+    <div class="dairy-kpi">
+      <small>Preço médio / litro</small>
+      <strong id="milkAvgPrice">R$ 0,00</strong>
+      <span>Média ponderada do mês</span>
+    </div>
+    <div class="dairy-kpi">
+      <small>Custo por litro</small>
+      <strong id="milkCostLiter">R$ 0,00</strong>
+      <span id="milkCostMonth">Custos: R$ 0,00</span>
+    </div>
+    <div class="dairy-kpi">
+      <small>Resultado do leite</small>
+      <strong id="milkProfitMonth">R$ 0,00</strong>
+      <span id="milkMarginLiter">Margem: R$ 0,00/L</span>
     </div>
   </div>
-  <div class="grid g2" style="margin-top:12px"><div class="card"><h3>Vendas recentes</h3><div id="milkSalesList" class="muted small">Nenhuma venda registrada.</div></div><div class="card"><h3>Custos recentes</h3><div id="milkExpensesList" class="muted small">Nenhum custo registrado.</div></div></div>
+
+  <div class="dairy-two">
+    <div class="card">
+      <div class="head">
+        <div><h3>Registrar venda de leite</h3><div class="sub">Informe os litros comercializados e o valor recebido por litro.</div></div>
+      </div>
+      <div class="dairy-form-grid">
+        <div class="dairy-field"><label>Data</label><input id="milkSaleDate" type="date"></div>
+        <div class="dairy-field"><label>Litros vendidos</label><input id="milkSaleLiters" type="number" min="0" step="0.01" placeholder="0,00"></div>
+        <div class="dairy-field"><label>Preço por litro (R$)</label><input id="milkSalePrice" type="number" min="0" step="0.0001" placeholder="0,00"></div>
+        <div class="dairy-field"><label>Comprador</label><input id="milkSaleBuyer" placeholder="Ex.: Laticínio"></div>
+        <div class="dairy-field" style="grid-column:1/-1"><label>Observações</label><input id="milkSaleNotes" placeholder="Observações da venda"></div>
+      </div>
+      <div class="dairy-toolbar"><button type="button" class="btn primary" onclick="saveMilkSale()">Salvar venda</button></div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div><h3>Registrar custo do leite</h3><div class="sub">Custos exclusivos da atividade leiteira.</div></div>
+      </div>
+      <div class="dairy-form-grid">
+        <div class="dairy-field"><label>Data</label><input id="milkExpenseDate" type="date"></div>
+        <div class="dairy-field"><label>Categoria</label>
+          <select id="milkExpenseCategory">
+            <option>Alimentação</option>
+            <option>Medicamentos</option>
+            <option>Mão de obra</option>
+            <option>Ordenha</option>
+            <option>Energia</option>
+            <option>Manutenção</option>
+            <option>Outros</option>
+          </select>
+        </div>
+        <div class="dairy-field"><label>Valor (R$)</label><input id="milkExpenseValue" type="number" min="0" step="0.01" placeholder="0,00"></div>
+        <div class="dairy-field"><label>Descrição</label><input id="milkExpenseDescription" placeholder="Ex.: Ração das vacas em lactação"></div>
+        <div class="dairy-field" style="grid-column:1/-1"><label>Observações</label><input id="milkExpenseNotes" placeholder="Observações do custo"></div>
+      </div>
+      <div class="dairy-toolbar"><button type="button" class="btn primary" onclick="saveMilkExpense()">Salvar custo</button></div>
+    </div>
+  </div>
+
+  <div class="dairy-two" style="margin-top:12px">
+    <div class="card">
+      <div class="head"><div><h3>Vendas recentes</h3><div class="sub">Últimas vendas registradas.</div></div></div>
+      <div style="overflow:auto">
+        <table class="dairy-table">
+          <thead><tr><th>Data</th><th>Litros</th><th>Preço/L</th><th>Total</th><th>Comprador</th></tr></thead>
+          <tbody id="milkSalesRows"><tr><td colspan="5" class="dairy-empty">Nenhuma venda registrada.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="head"><div><h3>Custos recentes</h3><div class="sub">Últimos custos da atividade leiteira.</div></div></div>
+      <div style="overflow:auto">
+        <table class="dairy-table">
+          <thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th></tr></thead>
+          <tbody id="milkExpenseRows"><tr><td colspan="4" class="dairy-empty">Nenhum custo registrado.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <section id="desempenho" class="view">
@@ -3597,29 +3664,142 @@ function mgApplyDairyVisibility(){
   btn.style.display=(mode==='beef')?'none':'';
 }
 
-function mgMilkFinanceKey(t){const f=mgFarm();return 'mg_milk_'+t+'_'+(f?.id||'default')}
-function mgMilkFinanceRead(t){try{return JSON.parse(localStorage.getItem(mgMilkFinanceKey(t))||'[]')}catch(e){return []}}
-function mgMilkFinanceWrite(t,r){localStorage.setItem(mgMilkFinanceKey(t),JSON.stringify(r))}
-function mgMilkMoney(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
-function saveMilkSale(){
- const d=milkSaleDate.value,l=Number(milkSaleLiters.value||0),p=Number(milkSalePrice.value||0);
- if(!d||l<=0||p<=0)return alert('Informe data, litros vendidos e preço por litro.');
- const r=mgMilkFinanceRead('sales');r.unshift({id:String(Date.now()),date:d,liters:l,price:p,buyer:milkSaleBuyer.value||''});mgMilkFinanceWrite('sales',r);
- milkSaleLiters.value='';milkSalePrice.value='';milkSaleBuyer.value='';loadMilkFinance()
+
+function mgMilkMoney(v){
+  return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 }
-function saveMilkExpense(){
- const d=milkExpenseDate.value,v=Number(milkExpenseValue.value||0);if(!d||v<=0)return alert('Informe data e valor do custo.');
- const r=mgMilkFinanceRead('expenses');r.unshift({id:String(Date.now()),date:d,category:milkExpenseCategory.value,value:v,description:milkExpenseDescription.value||''});mgMilkFinanceWrite('expenses',r);
- milkExpenseValue.value='';milkExpenseDescription.value='';loadMilkFinance()
+
+async function saveMilkSale(){
+  try{
+    const f=await mgGetFarm();
+    const sale_date=document.getElementById('milkSaleDate').value;
+    const liters=Number(document.getElementById('milkSaleLiters').value||0);
+    const price_per_liter=Number(document.getElementById('milkSalePrice').value||0);
+    const buyer=document.getElementById('milkSaleBuyer').value.trim()||null;
+    const notes=document.getElementById('milkSaleNotes').value.trim()||null;
+
+    if(!sale_date||liters<=0||price_per_liter<=0){
+      throw new Error('Informe a data, os litros vendidos e o preço por litro.');
+    }
+
+    const {error}=await mgSb.from('milk_sales').insert({
+      farm_id:f.id,sale_date,liters,price_per_liter,buyer,notes
+    });
+    if(error)throw error;
+
+    ['milkSaleLiters','milkSalePrice','milkSaleBuyer','milkSaleNotes'].forEach(id=>{
+      const el=document.getElementById(id); if(el)el.value='';
+    });
+
+    await loadMilkFinance();
+    alert('Venda de leite salva com sucesso.');
+  }catch(e){
+    alert('Não foi possível salvar a venda. '+(e.message||e));
+  }
 }
-function loadMilkFinance(){
- const s=mgMilkFinanceRead('sales'),e=mgMilkFinanceRead('expenses'),ym=mgIsoToday().slice(0,7),ms=s.filter(x=>x.date.slice(0,7)===ym),me=e.filter(x=>x.date.slice(0,7)===ym);
- const liters=ms.reduce((a,x)=>a+Number(x.liters),0),rev=ms.reduce((a,x)=>a+Number(x.liters)*Number(x.price),0),cost=me.reduce((a,x)=>a+Number(x.value),0),profit=rev-cost;
- const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
- set('milkRevenueMonth',mgMilkMoney(rev));set('milkRevenueLiters',liters.toLocaleString('pt-BR',{minimumFractionDigits:1})+' L vendidos');set('milkAvgPrice',mgMilkMoney(liters?rev/liters:0));set('milkCostLiter',mgMilkMoney(liters?cost/liters:0));set('milkCostMonth','Custos: '+mgMilkMoney(cost));set('milkProfitMonth',mgMilkMoney(profit));set('milkMarginLiter','Margem: '+mgMilkMoney(liters?profit/liters:0)+'/L');
- milkSalesList.innerHTML=s.length?s.slice(0,8).map(x=>`<div style="padding:8px 0;border-bottom:1px solid #eee"><b>${mgFmtDate(x.date)}</b> · ${x.liters} L · ${mgMilkMoney(x.price)}/L · <b>${mgMilkMoney(x.liters*x.price)}</b>${x.buyer?' · '+mgEsc(x.buyer):''}</div>`).join(''):'Nenhuma venda registrada.';
- milkExpensesList.innerHTML=e.length?e.slice(0,8).map(x=>`<div style="padding:8px 0;border-bottom:1px solid #eee"><b>${mgFmtDate(x.date)}</b> · ${mgEsc(x.category)} · <b>${mgMilkMoney(x.value)}</b>${x.description?' · '+mgEsc(x.description):''}</div>`).join(''):'Nenhum custo registrado.'
+
+async function saveMilkExpense(){
+  try{
+    const f=await mgGetFarm();
+    const expense_date=document.getElementById('milkExpenseDate').value;
+    const category=document.getElementById('milkExpenseCategory').value;
+    const amount=Number(document.getElementById('milkExpenseValue').value||0);
+    const description=document.getElementById('milkExpenseDescription').value.trim()||null;
+    const notes=document.getElementById('milkExpenseNotes').value.trim()||null;
+
+    if(!expense_date||amount<=0){
+      throw new Error('Informe a data e o valor do custo.');
+    }
+
+    const {error}=await mgSb.from('milk_expenses').insert({
+      farm_id:f.id,expense_date,category,amount,description,notes
+    });
+    if(error)throw error;
+
+    ['milkExpenseValue','milkExpenseDescription','milkExpenseNotes'].forEach(id=>{
+      const el=document.getElementById(id); if(el)el.value='';
+    });
+
+    await loadMilkFinance();
+    alert('Custo do leite salvo com sucesso.');
+  }catch(e){
+    alert('Não foi possível salvar o custo. '+(e.message||e));
+  }
 }
+
+async function loadMilkFinance(){
+  try{
+    const f=await mgGetFarm();
+    const ym=mgIsoToday().slice(0,7);
+    const firstMonth=ym+'-01';
+
+    const [salesRes,expensesRes]=await Promise.all([
+      mgSb.from('milk_sales')
+        .select('id,sale_date,liters,price_per_liter,buyer,notes,created_at')
+        .eq('farm_id',f.id)
+        .order('sale_date',{ascending:false})
+        .limit(100),
+      mgSb.from('milk_expenses')
+        .select('id,expense_date,category,amount,description,notes,created_at')
+        .eq('farm_id',f.id)
+        .order('expense_date',{ascending:false})
+        .limit(100)
+    ]);
+
+    if(salesRes.error)throw salesRes.error;
+    if(expensesRes.error)throw expensesRes.error;
+
+    const sales=salesRes.data||[];
+    const expenses=expensesRes.data||[];
+    const monthSales=sales.filter(x=>x.sale_date>=firstMonth);
+    const monthExpenses=expenses.filter(x=>x.expense_date>=firstMonth);
+
+    const liters=monthSales.reduce((s,x)=>s+Number(x.liters||0),0);
+    const revenue=monthSales.reduce((s,x)=>s+Number(x.liters||0)*Number(x.price_per_liter||0),0);
+    const costs=monthExpenses.reduce((s,x)=>s+Number(x.amount||0),0);
+    const avgPrice=liters?revenue/liters:0;
+    const costLiter=liters?costs/liters:0;
+    const profit=revenue-costs;
+    const margin=liters?profit/liters:0;
+
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    set('milkRevenueMonth',mgMilkMoney(revenue));
+    set('milkRevenueLiters',liters.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' L vendidos');
+    set('milkAvgPrice',mgMilkMoney(avgPrice));
+    set('milkCostLiter',mgMilkMoney(costLiter));
+    set('milkCostMonth','Custos: '+mgMilkMoney(costs));
+    set('milkProfitMonth',mgMilkMoney(profit));
+    set('milkMarginLiter','Margem: '+mgMilkMoney(margin)+'/L');
+
+    const salesRows=document.getElementById('milkSalesRows');
+    if(salesRows){
+      salesRows.innerHTML=sales.length?sales.slice(0,12).map(x=>{
+        const total=Number(x.liters||0)*Number(x.price_per_liter||0);
+        return `<tr>
+          <td>${x.sale_date}</td>
+          <td>${Number(x.liters).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2})} L</td>
+          <td>${mgMilkMoney(x.price_per_liter)}</td>
+          <td><b>${mgMilkMoney(total)}</b></td>
+          <td>${mgEsc(x.buyer||'—')}</td>
+        </tr>`;
+      }).join(''):'<tr><td colspan="5" class="dairy-empty">Nenhuma venda registrada.</td></tr>';
+    }
+
+    const expenseRows=document.getElementById('milkExpenseRows');
+    if(expenseRows){
+      expenseRows.innerHTML=expenses.length?expenses.slice(0,12).map(x=>`<tr>
+        <td>${x.expense_date}</td>
+        <td>${mgEsc(x.category||'—')}</td>
+        <td>${mgEsc(x.description||'—')}</td>
+        <td><b>${mgMilkMoney(x.amount)}</b></td>
+      </tr>`).join(''):'<tr><td colspan="4" class="dairy-empty">Nenhum custo registrado.</td></tr>';
+    }
+  }catch(e){
+    console.error('Financeiro do leite:',e);
+    alert('Não foi possível carregar o financeiro do leite. '+(e.message||e));
+  }
+}
+
 
 </script>
 
