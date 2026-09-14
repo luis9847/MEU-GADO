@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v72-crias-e-racas-corrigidas">
+<meta name="mg-build" content="app-v73-relatorios-completos">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -471,6 +471,15 @@ html[data-mg-role="vet"] .vet-hidden { display:none !important; }
 @media(max-width:1000px){.repro-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.repro-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.repro-kpis{grid-template-columns:1fr}.repro-calf-grid{grid-template-columns:1fr}.repro-birth-head{flex-direction:column}}
 
+
+
+.report-period-card{display:grid;grid-template-columns:1fr 180px 180px auto;gap:12px;align-items:end;margin-bottom:14px;padding:14px}
+.report-period-card>div b{display:block;font-size:12px}.report-period-card>div small{display:block;color:var(--muted);margin-top:3px;font-size:9px}
+.report-period-card label{display:flex;flex-direction:column;gap:5px;font-size:9px;font-weight:700}
+.report-period-card input{border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff}
+.report-card button{cursor:pointer}
+@media(max-width:900px){.report-period-card{grid-template-columns:1fr 1fr}.report-period-card>div{grid-column:1/-1}}
+@media(max-width:600px){.report-period-card{grid-template-columns:1fr}.report-period-card>div{grid-column:auto}}
 
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
@@ -1333,15 +1342,33 @@ html.mg-route-boot .view.active{display:none!important}
 </section>
 
 <section id="relatorios" class="view">
-  <div class="page-title"><div><h2>Relatórios</h2><p>Exporte os dados do rebanho em CSV — abre direto no Excel/Planilhas.</p></div></div>
+  <div class="page-title">
+    <div>
+      <h2>Relatórios</h2>
+      <p>Exporte os principais dados da fazenda em CSV, compatível com Excel e Planilhas Google.</p>
+    </div>
+  </div>
+
+  <div class="card report-period-card">
+    <div>
+      <b>Período dos relatórios</b>
+      <small>Aplicado aos relatórios que possuem data.</small>
+    </div>
+    <label>De<input id="reportStartDate" type="date"></label>
+    <label>Até<input id="reportEndDate" type="date"></label>
+    <button class="btn secondary" type="button" onclick="clearReportPeriod()">Limpar período</button>
+  </div>
+
   <div class="report-grid">
-    <div class="report-card"><i>▤</i><b>Rebanho completo</b><p>Todos os animais ativos com idade, peso, sanidade e reprodução.</p><button onclick="downloadReport('rebanho')">Baixar CSV</button></div>
-    <div class="report-card"><i>◷</i><b>Pesagens</b><p>Todas as pesagens já registradas no sistema.</p><button onclick="downloadReport('pesagens')">Baixar CSV</button></div>
-    <div class="report-card"><i>⌁</i><b>Vacinação</b><p>Todas as vacinas aplicadas no rebanho.</p><button onclick="downloadReport('vacinacao')">Baixar CSV</button></div>
-    <div class="report-card"><i>♡</i><b>Reprodução</b><p>Enxertos, IA/IATF e resultados registrados.</p><button onclick="downloadReport('reproducao')">Baixar CSV</button></div>
-    <div class="report-card"><i>✦</i><b>Crias</b><p>Todos os nascimentos registrados.</p><button onclick="downloadReport('crias')">Baixar CSV</button></div>
-    <div class="report-card"><i>$</i><b>Baixas (vendidos/mortos)</b><p>Data, valor de venda ou causa da morte de cada animal baixado.</p><button onclick="downloadReport('baixas')">Baixar CSV</button></div>
-    <div class="report-card"><i>$</i><b>Gastos</b><p>Todos os lançamentos de despesas do rebanho.</p><button onclick="downloadReport('gastos')">Baixar CSV</button></div>
+    <div class="report-card"><i>▤</i><b>Rebanho completo</b><p>Animais ativos, categoria, raça, nascimento, lote, peso e vínculo materno.</p><button onclick="downloadReport('rebanho')">Baixar CSV</button></div>
+    <div class="report-card"><i>◷</i><b>Pesagens</b><p>Histórico completo de pesagens no período selecionado.</p><button onclick="downloadReport('pesagens')">Baixar CSV</button></div>
+    <div class="report-card"><i>✚</i><b>Saúde</b><p>Vacinas, medicamentos, vermífugos, tratamentos e próximas doses.</p><button onclick="downloadReport('saude')">Baixar CSV</button></div>
+    <div class="report-card"><i>♡</i><b>Reprodução</b><p>Cio, inseminações, montas, diagnósticos, prenhez, partos e abortos.</p><button onclick="downloadReport('reproducao')">Baixar CSV</button></div>
+    <div class="report-card"><i>♙</i><b>Crias</b><p>Bezerros e bezerras ativos, nascimento, raça, peso e mãe vinculada.</p><button onclick="downloadReport('crias')">Baixar CSV</button></div>
+    <div class="report-card"><i>↪</i><b>Baixas</b><p>Animais vendidos ou mortos, data, valor e observações da baixa.</p><button onclick="downloadReport('baixas')">Baixar CSV</button></div>
+    <div class="report-card"><i>🌾</i><b>Alimentação</b><p>Consumo, custo e custo por kg de cada lançamento por lote.</p><button onclick="downloadReport('alimentacao')">Baixar CSV</button></div>
+    <div class="report-card"><i>$</i><b>Gastos</b><p>Despesas operacionais registradas na propriedade.</p><button onclick="downloadReport('gastos')">Baixar CSV</button></div>
+    <div class="report-card"><i>🥛</i><b>Produção de leite</b><p>Produção diária por vaca, ordenhas, total e descarte.</p><button onclick="downloadReport('leite')">Baixar CSV</button></div>
   </div>
 </section>
 <section id="mercado" class="view">
@@ -2799,17 +2826,129 @@ async function deleteLot(id){
   if(!confirm('Enviar este lote para a Lixeira? Só é possível enviar lotes sem animais ativos.')) return;
   try{await api(`/api/lots/${id}`,{method:'DELETE'});await loadLots();await refreshTrashBadge()}catch(e){alert(e.message)}
 }
+function clearReportPeriod(){
+  const a=document.getElementById('reportStartDate');
+  const b=document.getElementById('reportEndDate');
+  if(a)a.value=''; if(b)b.value='';
+}
+function reportPeriod(){
+  return {
+    start:document.getElementById('reportStartDate')?.value||'',
+    end:document.getElementById('reportEndDate')?.value||''
+  };
+}
+function reportInPeriod(date){
+  if(!date)return true;
+  const {start,end}=reportPeriod();
+  const d=String(date).slice(0,10);
+  return (!start||d>=start)&&(!end||d<=end);
+}
 async function downloadReport(type){
  try{
   let rows=[],headers=[];
-  if(type==='rebanho'){rows=await api('/api/animals');headers=['Número','Categoria','Raça','Nascimento','Origem','Entrada','Peso entrada','Meta','Lote'];rows=rows.map(x=>[x.number,x.category,x.breed||'',x.birth_date||'',x.origin||'',x.entry_date||'',x.entry_weight||'',x.target_weight||'',x.lot||''])}
-  else if(type==='pesagens'){rows=await api('/api/weighings/recent');headers=['Data','Animal','Peso','Lote'];rows=rows.map(x=>[x.weighing_date,x.number,x.weight,x.lot||''])}
-  else if(type==='gastos'){rows=await api('/api/expenses');headers=['Data','Categoria','Descrição','Valor','Observação'];rows=rows.map(x=>[x.expense_date,x.category,x.description||'',x.amount,x.notes||''])}
-  else if(type==='vacinacao'){rows=await api('/api/health');headers=['Data','Animal','Evento','Produto','Próxima data'];rows=rows.map(x=>[x.event_date,x.animal_number||'',x.event_type,x.product||'',x.next_due_date||''])}
-  else if(type==='reproducao'){rows=await api('/api/reproduction');headers=['Data','Animal','Evento','Data prevista'];rows=rows.map(x=>[x.event_date,x.animal_number||'',x.event_type,x.expected_date||''])}
-  else {alert('Este relatório será habilitado na próxima revisão online.');return}
-  const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv='\ufeff'+[headers,...rows].map(r=>r.map(esc).join(';')).join('\n');const b=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`meu-gado-${type}.csv`;a.click();URL.revokeObjectURL(a.href)
- }catch(e){alert(e.message)}
+  const farm=await mgGetFarm();
+
+  if(type==='rebanho'){
+    const data=await api('/api/animals');
+    const byId=Object.fromEntries(data.map(x=>[x.id,x]));
+    headers=['Número','Categoria','Raça','Nascimento','Origem','Entrada','Peso entrada','Meta','Lote','Mãe'];
+    rows=data.map(x=>[
+      x.number,x.category,x.breed||'',x.birth_date||'',x.origin||'',x.entry_date||'',
+      x.entry_weight||'',x.target_weight||'',x.lot||'',
+      x.mother_id?(byId[x.mother_id]?.number||x.mother_id):''
+    ]);
+  }
+  else if(type==='pesagens'){
+    const data=await mgRows('weighings','*','weighing_date');
+    const animals=await api('/api/animals');
+    const map=Object.fromEntries(animals.map(x=>[x.id,x]));
+    headers=['Data','Animal','Categoria','Peso','Lote','Observação'];
+    rows=data.filter(x=>reportInPeriod(x.weighing_date)).map(x=>{
+      const a=map[x.animal_id]||{};
+      return [x.weighing_date,a.number||x.animal_id,a.category||'',x.weight,a.lot||'',x.notes||''];
+    });
+  }
+  else if(type==='saude'){
+    const data=await api('/api/health');
+    headers=['Data','Animal/Lote','Tipo','Produto','Próxima dose','Observação'];
+    rows=data.filter(x=>reportInPeriod(x.event_date)).map(x=>[
+      x.event_date,x.animal_number?('#'+x.animal_number):(x.lot||'Geral'),
+      x.event_type,x.product||'',x.next_due_date||'',x.notes||''
+    ]);
+  }
+  else if(type==='reproducao'){
+    const data=await api('/api/reproduction');
+    headers=['Data','Animal','Evento','Resultado','Data prevista','Observação'];
+    rows=data.filter(x=>reportInPeriod(x.event_date)).map(x=>[
+      x.event_date,x.animal_number||'',x.event_type,x.result||'',x.expected_date||'',x.notes||''
+    ]);
+  }
+  else if(type==='crias'){
+    const data=await api('/api/animals');
+    const byId=Object.fromEntries(data.map(x=>[x.id,x]));
+    const calves=data.filter(x=>['Bezerro','Bezerra'].includes(x.category));
+    headers=['Número','Sexo/Categoria','Raça','Nascimento','Peso ao nascer/entrada','Lote','Mãe'];
+    rows=calves.filter(x=>reportInPeriod(x.birth_date||x.entry_date)).map(x=>[
+      x.number,x.category,x.breed||'',x.birth_date||'',x.entry_weight||'',x.lot||'',
+      x.mother_id?(byId[x.mother_id]?.number||x.mother_id):''
+    ]);
+  }
+  else if(type==='baixas'){
+    const data=await api('/api/animals/exited');
+    headers=['Número','Categoria','Raça','Tipo da baixa','Data','Valor','Observação'];
+    rows=data.filter(x=>reportInPeriod(x.exit_date)).map(x=>[
+      x.number,x.category,x.breed||'',x.exit_type||'',x.exit_date||'',x.exit_value||'',x.exit_notes||''
+    ]);
+  }
+  else if(type==='alimentacao'){
+    const data=await api('/api/nutrition');
+    headers=['Data','Lote','Alimento','Quantidade kg','Custo total','Custo/kg','Observação'];
+    rows=data.filter(x=>reportInPeriod(x.entry_date)).map(x=>{
+      const q=Number(x.quantity_kg||0),c=Number(x.total_cost||0);
+      return [x.entry_date,x.lot_name||'',x.feed_name||'',q,c,q?c/q:0,x.notes||''];
+    });
+  }
+  else if(type==='gastos'){
+    const data=await api('/api/expenses');
+    headers=['Data','Categoria','Descrição','Valor','Lote','Observação'];
+    rows=data.filter(x=>reportInPeriod(x.expense_date)).map(x=>[
+      x.expense_date,x.category,x.description||'',x.amount,x.lot||'',x.notes||''
+    ]);
+  }
+  else if(type==='leite'){
+    const q=await mgSb.from('milk_production')
+      .select('production_date,animal_id,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes,animals(number,breed)')
+      .eq('farm_id',farm.id)
+      .order('production_date',{ascending:false});
+    if(q.error)throw q.error;
+    headers=['Data','Animal','Raça','Manhã L','Tarde L','Noite L','Total L','Descarte L','Observação'];
+    rows=(q.data||[]).filter(x=>reportInPeriod(x.production_date)).map(x=>{
+      const total=Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0);
+      return [x.production_date,x.animals?.number||x.animal_id,x.animals?.breed||'',x.morning_liters||0,x.afternoon_liters||0,x.evening_liters||0,total,x.discarded_liters||0,x.notes||''];
+    });
+  }
+  else {
+    throw new Error('Relatório não reconhecido.');
+  }
+
+  if(!rows.length){
+    alert('Não há dados para este relatório no período selecionado.');
+    return;
+  }
+
+  const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';
+  const csv='\ufeff'+[headers,...rows].map(r=>r.map(esc).join(';')).join('\n');
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  const {start,end}=reportPeriod();
+  a.href=URL.createObjectURL(b);
+  a.download=`meu-gado-${type}${start||end?`-${start||'inicio'}-a-${end||'hoje'}`:''}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+ }catch(e){
+  console.error('Relatório:',e);
+  alert('Não foi possível gerar o relatório. '+(e?.message||e));
+ }
 }
 async function loadMarket(){
   try{
