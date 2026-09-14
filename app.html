@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v37-perfis-simplificados">
+<meta name="mg-build" content="app-v38-sem-administrador">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -63,7 +63,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 .top-actions{display:flex;align-items:center;gap:18px}.notification-btn{border:0;background:none;font-size:9px;color:#263a32;display:flex;align-items:center;gap:6px}.notification-btn b{background:#139a48;color:#fff;border-radius:20px;min-width:17px;height:17px;display:grid;place-items:center;font-size:8px}
 .top-user{display:flex;align-items:center;gap:8px}.top-user>span{width:30px;height:30px;border-radius:50%;background:#dff4e6;color:#158e45;display:grid;place-items:center;font-weight:850}.top-user b{font-size:9px;display:block}.top-user small{font-size:8px;color:var(--muted)}
 .content{padding:16px 18px 40px;max-width:1500px;margin:0 auto;width:100%}
-.dashboard-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.dashboard-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .metric-card{background:#fff;border:1px solid var(--line);border-radius:7px;padding:12px 13px;min-height:93px;box-shadow:0 2px 7px rgba(29,56,42,.035)}
 .metric-top{display:flex;justify-content:space-between;align-items:center}.metric-top span{font-size:9px;font-weight:700}.metric-top i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#e8f7ed;color:#118f44;display:grid;place-items:center;font-size:11px}
 .metric-card strong{display:block;font-size:21px;margin-top:8px;letter-spacing:-.035em}.metric-card small{display:block;font-size:8px;color:var(--muted);margin-top:5px}
@@ -314,7 +314,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 /* V31 — Equipe e acessos */
 .team-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
 .team-hero h2{margin:0 0 5px}.team-hero p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
-.team-role-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}
+.team-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
 .team-role-card{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff}
 .team-role-card b{display:block;font-size:11px;color:var(--ink);margin-bottom:4px}
 .team-role-card small{font-size:9.5px;color:var(--muted);line-height:1.45}
@@ -886,8 +886,8 @@ html.mg-route-boot .view.active{display:none!important}
 
   <div class="team-role-grid">
     <div class="team-role-card"><b>👑 Proprietário</b><small>Controle total da propriedade e da equipe.</small></div>
-    <div class="team-role-card"><b>🛡 Administrador</b><small>Controle amplo da propriedade e da equipe operacional, sem alterar o proprietário.</small></div>
-    <div class="team-role-card"><b>📋 Gerente</b><small>Gestão operacional, sem administrar usuários.</small></div>
+    
+    <div class="team-role-card"><b>📋 Gerente</b><small>Gestão completa da propriedade e da equipe, sem alterar o Proprietário.</small></div>
     <div class="team-role-card"><b>👷 Funcionário</b><small>Rotinas operacionais definidas para o dia a dia.</small></div>
     <div class="team-role-card"><b>🩺 Veterinário</b><small>Acesso direcionado à saúde e reprodução.</small></div>
   </div>
@@ -910,7 +910,7 @@ html.mg-route-boot .view.active{display:none!important}
       <div class="team-field"><label>Cargo / descrição</label><input id="teamInviteJob" placeholder="Ex.: Capataz"></div>
       <button class="btn primary" type="button" onclick="inviteTeamMember()">Convidar</button>
     </div>
-    <div class="team-note">Por segurança, somente proprietário e administrador podem gerenciar a equipe. O administrador não pode remover ou rebaixar o proprietário.</div>
+    <div class="team-note">Por segurança, Proprietário e Gerente podem gerenciar a equipe. Somente o Proprietário pode alterar ou transferir o perfil de Proprietário.</div>
   </div>
 
   <div class="card" style="margin-top:12px">
