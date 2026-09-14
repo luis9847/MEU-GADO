@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Gestão Profissional do Rebanho</title>
-<meta name="mg-build" content="index-v28-recuperacao-senha">
+<meta name="mg-build" content="index-v29-politica-privacidade">
 <style>
 :root{
   --green:#148b45;
@@ -251,7 +251,7 @@ button{cursor:pointer}
           <button class="btn green" onclick="doRegister()">Criar minha conta</button>
           <div class="legal-consent">Ao criar sua conta, você declara que leu e concorda com os
             <a href="#" onclick="openTerms();return false">Termos de Uso</a> e com a
-            <a href="#" onclick="privacyPending();return false">Política de Privacidade</a>.
+            <a href="#" onclick="openPrivacy();return false">Política de Privacidade</a>.
           </div>
         </div>
 
@@ -325,7 +325,7 @@ button{cursor:pointer}
         <div class="error" id="message"></div>
         <div class="help">💬 Precisa de ajuda? <span>Fale conosco</span></div>
         <div class="footer">© 2026 Meu Gado. Todos os direitos reservados.</div>
-        <div class="legal-links"><a href="#" onclick="openTerms();return false">Termos de Uso</a> · <a href="#" onclick="privacyPending();return false">Política de Privacidade</a> · <a href="mailto:contatomeugado@outlook.com">Contato</a></div>
+        <div class="legal-links"><a href="#" onclick="openTerms();return false">Termos de Uso</a> · <a href="#" onclick="openPrivacy();return false">Política de Privacidade</a> · <a href="mailto:contatomeugado@outlook.com">Contato</a></div>
       </div>
     </section>
   </div>
@@ -741,10 +741,77 @@ enableEnterSubmit();
     <h3>15. Contato</h3><p>Dúvidas podem ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
   </div>
 </div>
+
+<div id="privacyModal" class="legal-modal">
+  <div class="legal-card">
+    <div class="legal-head">
+      <div>
+        <h2>Política de Privacidade — Meu Gado</h2>
+        <small>Versão 1.0 • 14/09/2026</small>
+      </div>
+      <button class="legal-close" onclick="closePrivacy()">Fechar</button>
+    </div>
+
+    <p>Esta Política de Privacidade explica como o <strong>Meu Gado</strong> trata dados pessoais relacionados ao cadastro e à utilização da plataforma, em conformidade com a legislação brasileira aplicável, especialmente a Lei nº 13.709/2018 — Lei Geral de Proteção de Dados Pessoais (LGPD).</p>
+
+    <h3>1. Responsável pelo tratamento</h3>
+    <p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, na qualidade de controlador dos dados pessoais tratados para a operação da plataforma. O canal oficial para assuntos de privacidade e proteção de dados é <strong>contatomeugado@outlook.com</strong>.</p>
+
+    <h3>2. Dados pessoais que podem ser tratados</h3>
+    <p>Conforme o uso da plataforma, poderão ser tratados dados como nome e informações de identificação do usuário, CPF ou CNPJ informado no cadastro, telefone, e-mail, cidade, estado e demais informações fornecidas pelo próprio usuário.</p>
+
+    <h3>3. Dados da propriedade e do rebanho</h3>
+    <p>O usuário poderá registrar informações relacionadas à propriedade rural, atividades desenvolvidas, animais, lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios e demais controles da atividade pecuária. Em regra, essas informações são dados da atividade rural e não dados pessoais. Entretanto, quando algum registro contiver informação capaz de identificar uma pessoa natural, essa informação será tratada de acordo com esta Política e com a LGPD.</p>
+
+    <h3>4. Dados de acesso, autenticação e segurança</h3>
+    <p>Também poderão ser tratados dados técnicos necessários ao funcionamento e à segurança do serviço, como identificadores de conta, registros de autenticação, sessões, data e horário de acessos, informações de recuperação de senha e registros necessários à prevenção de fraude, abuso ou acesso não autorizado.</p>
+
+    <h3>5. Finalidades do tratamento</h3>
+    <p>Os dados poderão ser utilizados para criar e administrar contas, autenticar usuários, vincular usuários às propriedades autorizadas, disponibilizar as funcionalidades do Meu Gado, manter a segurança da plataforma, prestar suporte, cumprir obrigações legais, prevenir fraudes, corrigir falhas e melhorar a experiência e o funcionamento do serviço.</p>
+
+    <h3>6. Bases legais</h3>
+    <p>O tratamento poderá ocorrer, conforme o caso, para execução de contrato ou de procedimentos relacionados ao uso da plataforma, cumprimento de obrigação legal ou regulatória, exercício regular de direitos, legítimo interesse do controlador e consentimento quando este for legalmente exigido.</p>
+
+    <h3>7. Compartilhamento e operadores</h3>
+    <p>Os dados poderão ser processados por fornecedores de infraestrutura, hospedagem, banco de dados, autenticação, envio de e-mails e outros serviços técnicos necessários ao funcionamento do Meu Gado. Esses fornecedores devem tratar os dados apenas para as finalidades contratadas e conforme as medidas de segurança aplicáveis.</p>
+
+    <h3>8. Transferência internacional</h3>
+    <p>Alguns fornecedores de tecnologia utilizados pela plataforma podem processar ou armazenar informações fora do Brasil. Quando isso ocorrer, o tratamento deverá observar as regras aplicáveis da LGPD sobre transferência internacional de dados e proteção adequada das informações.</p>
+
+    <h3>9. Armazenamento e retenção</h3>
+    <p>Os dados serão mantidos pelo período necessário para fornecer o serviço, cumprir obrigações legais e regulatórias, preservar direitos, prevenir fraudes e resolver disputas. Quando não houver mais fundamento legítimo para a retenção, os dados poderão ser eliminados ou anonimizados, observadas as hipóteses legais de conservação.</p>
+
+    <h3>10. Segurança</h3>
+    <p>O Meu Gado adota medidas técnicas e administrativas destinadas a reduzir riscos de acesso não autorizado, perda, alteração, destruição ou divulgação indevida de dados. Nenhum sistema é totalmente imune a incidentes, razão pela qual as medidas de segurança poderão ser continuamente revistas e aprimoradas.</p>
+
+    <h3>11. Direitos do titular</h3>
+    <p>Nos termos da LGPD, o titular poderá solicitar, quando aplicável, confirmação da existência de tratamento, acesso, correção, anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade, portabilidade, informações sobre compartilhamento, revogação do consentimento e demais direitos previstos em lei.</p>
+
+    <h3>12. Solicitações de privacidade</h3>
+    <p>Solicitações relacionadas a dados pessoais poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>. Poderão ser solicitadas informações adicionais para confirmar a identidade do requerente e proteger a conta contra solicitações fraudulentas.</p>
+
+    <h3>13. Cookies e armazenamento local</h3>
+    <p>A plataforma poderá utilizar mecanismos técnicos do navegador, como cookies, armazenamento local e tecnologias equivalentes, para manter sessões autenticadas, preferências e informações necessárias ao funcionamento e à segurança do serviço.</p>
+
+    <h3>14. Dados de terceiros</h3>
+    <p>O usuário que inserir dados pessoais de terceiros na plataforma declara possuir fundamento legítimo para esse tratamento e se responsabiliza pela licitude das informações fornecidas.</p>
+
+    <h3>15. Crianças e adolescentes</h3>
+    <p>O Meu Gado não é direcionado especificamente a crianças. Caso o tratamento de dados de crianças ou adolescentes venha a ocorrer, deverão ser observadas as exigências legais aplicáveis e o melhor interesse do titular.</p>
+
+    <h3>16. Alterações desta Política</h3>
+    <p>Esta Política poderá ser atualizada para refletir mudanças legais, técnicas ou operacionais. Alterações relevantes poderão ser comunicadas pela própria plataforma ou pelos canais de contato disponíveis.</p>
+
+    <h3>17. Contato</h3>
+    <p>Dúvidas, solicitações ou reclamações relacionadas a esta Política e ao tratamento de dados pessoais podem ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+  </div>
+</div>
+
 <script>
 function openTerms(){document.getElementById('termsModal').classList.add('open')}
 function closeTerms(){document.getElementById('termsModal').classList.remove('open')}
-function privacyPending(){alert('A Política de Privacidade do Meu Gado será a próxima etapa de adequação e ainda não está publicada.')}
+function openPrivacy(){document.getElementById('privacyModal').classList.add('open')}
+function closePrivacy(){document.getElementById('privacyModal').classList.remove('open')}
 </script>
 
 </body>
