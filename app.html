@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v68-agenda-sanitaria-padronizada">
+<meta name="mg-build" content="app-v69-reproducao-completa">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -442,6 +442,36 @@ html[data-mg-role="vet"] .vet-hidden { display:none !important; }
 .hp-badge.protocol{background:#eef4ff;color:#175cd3}
 .hp-badge.alt{background:#f2ecff;color:#6b38a5}
 
+
+.repro-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:12px 0}
+.repro-kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;min-height:92px;display:flex;flex-direction:column;justify-content:center}
+.repro-kpi small{font-size:10px;font-weight:800;color:var(--muted);margin-bottom:6px}
+.repro-kpi strong{font-size:25px;line-height:1;color:var(--ink);margin-bottom:6px}
+.repro-kpi span{font-size:11px;color:var(--muted)}
+.repro-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}
+.repro-agenda{display:grid;gap:9px}
+.repro-agenda-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.repro-agenda-item .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.repro-agenda-item b{display:block;margin-top:6px}
+.repro-agenda-item small{display:block;color:var(--muted);margin-top:3px}
+.repro-status-list{display:grid;gap:8px;max-height:360px;overflow:auto}
+.repro-status-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.repro-status-row b{display:block;font-size:12px}.repro-status-row small{display:block;color:var(--muted);margin-top:2px}
+.repro-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap}
+.repro-pill.pregnant{background:#e8f7ee;color:#08783c}
+.repro-pill.waiting{background:#fff4dd;color:#9a6700}
+.repro-pill.empty{background:#f3f4f6;color:#4b5563}
+.repro-pill.birth{background:#f2ecff;color:#6b38a5}
+.repro-pill.recent{background:#eef4ff;color:#175cd3}
+.repro-birth-box{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fbf9}
+.repro-birth-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.repro-birth-head small{display:block;color:var(--muted);font-weight:400;margin-top:3px}
+.repro-check{display:flex!important;flex-direction:row!important;align-items:center;gap:7px;white-space:nowrap}
+.repro-check input{width:auto!important}
+.repro-calf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+@media(max-width:1000px){.repro-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.repro-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.repro-kpis{grid-template-columns:1fr}.repro-calf-grid{grid-template-columns:1fr}.repro-birth-head{flex-direction:column}}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -812,7 +842,64 @@ html.mg-route-boot .view.active{display:none!important}
     </table>
   </div>
 </section>
-<section id="repro" class="view"><div class="head"><div><h2>Reprodução</h2><div class="sub">Matrizes, prenhez, partos e crias</div></div><button class="btn primary" onclick="openNewRepro()">+ Registrar evento</button></div><div class="card"><table><thead><tr><th>Data</th><th>Animal</th><th>Evento</th><th>Previsão</th><th>Ações</th></tr></thead><tbody id="reproRows"></tbody></table></div></section>
+<section id="repro" class="view">
+  <div class="head">
+    <div>
+      <h2>♡ Reprodução</h2>
+      <div class="sub">Cio, cobertura, diagnóstico, prenhez, partos e cadastro de crias.</div>
+    </div>
+    <button class="btn primary" onclick="openNewRepro()">+ Registrar evento</button>
+  </div>
+
+  <div class="repro-kpis">
+    <div class="repro-kpi"><small>PRENHAS</small><strong id="reproKpiPregnant">0</strong><span>Matrizes com prenhez ativa</span></div>
+    <div class="repro-kpi"><small>AGUARDANDO DIAGNÓSTICO</small><strong id="reproKpiDiagnosis">0</strong><span>Após inseminação/monta</span></div>
+    <div class="repro-kpi"><small>PARTOS PRÓXIMOS</small><strong id="reproKpiBirths">0</strong><span>Próximos 30 dias</span></div>
+    <div class="repro-kpi"><small>VAZIAS</small><strong id="reproKpiEmpty">0</strong><span>Sem prenhez ativa</span></div>
+  </div>
+
+  <div class="repro-grid">
+    <div class="card">
+      <div class="head" style="margin-bottom:10px">
+        <div><h3>Agenda reprodutiva</h3><div class="sub">Diagnósticos e partos que merecem atenção.</div></div>
+      </div>
+      <div id="reproAgenda" class="repro-agenda"></div>
+    </div>
+
+    <div class="card">
+      <div class="head" style="margin-bottom:10px">
+        <div><h3>Status das matrizes</h3><div class="sub">Situação atual calculada pelo histórico.</div></div>
+      </div>
+      <div id="reproStatusList" class="repro-status-list"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="head" style="margin-bottom:10px">
+      <div><h3>Histórico reprodutivo</h3><div class="sub">Eventos registrados para as matrizes da propriedade.</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="reproAnimalFilter" onchange="renderRepro()" style="min-width:160px"><option value="">Todas as matrizes</option></select>
+        <select id="reproEventFilter" onchange="renderRepro()" style="min-width:160px">
+          <option value="">Todos os eventos</option>
+          <option>Cio observado</option>
+          <option>Inseminação artificial</option>
+          <option>Monta natural / pasto</option>
+          <option>Diagnóstico de gestação</option>
+          <option>Prenhez confirmada</option>
+          <option>Parto</option>
+          <option>Aborto</option>
+          <option>Desmame</option>
+        </select>
+      </div>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>Data</th><th>Animal</th><th>Evento</th><th>Resultado</th><th>Previsão</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="reproRows"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
 <section id="nutricao" class="view">
   <div class="page-title action-title">
@@ -1511,8 +1598,67 @@ html.mg-route-boot .view.active{display:none!important}
   <small id="healthProductHelp" class="sub" style="display:block;margin-top:6px"></small>
 </label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button id="healthSaveBtn" class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
 
-<div class="modal" id="reproModal"><div class="modalbox"><div class="head"><h3 id="reproModalTitle">Evento reprodutivo</h3><button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button></div><div class="form"><label>Animal<select id="ranimal"></select></label><label>Evento<select id="rtype" onchange="updateReproPrediction()"><option>Inseminação artificial</option><option>Monta natural / pasto</option><option>Prenhez confirmada</option><option>Parto</option><option>Aborto</option><option>Desmame</option></select></label><label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label><label>Data prevista do parto<input id="rexpected" type="date"><small class="sub">Calculada automaticamente em aproximadamente 283 dias para cobertura/inseminação. Pode ser ajustada.</small></label><label class="full">Observações<textarea id="rnotes" placeholder="Ex.: lote do touro, sêmen utilizado, diagnóstico..."></textarea></label><button id="reproSaveBtn" class="btn primary full" onclick="saveRepro()">Salvar evento</button></div></div></div>
+<div class="modal" id="reproModal">
+  <div class="modalbox" style="width:min(820px,96vw)">
+    <div class="head">
+      <div><h3 id="reproModalTitle">Registrar evento reprodutivo</h3><div class="sub">O formulário muda conforme o evento selecionado.</div></div>
+      <button class="btn secondary" onclick="closeModal('reproModal')">Fechar</button>
+    </div>
 
+    <div class="form">
+      <label>Animal / matriz<select id="ranimal"></select></label>
+
+      <label>Evento
+        <select id="rtype" onchange="updateReproForm()">
+          <option>Cio observado</option>
+          <option>Inseminação artificial</option>
+          <option>Monta natural / pasto</option>
+          <option>Diagnóstico de gestação</option>
+          <option>Prenhez confirmada</option>
+          <option>Parto</option>
+          <option>Aborto</option>
+          <option>Desmame</option>
+        </select>
+      </label>
+
+      <label>Data do evento<input id="rdate" type="date" onchange="updateReproPrediction()"></label>
+
+      <label id="rResultWrap" style="display:none">Resultado
+        <select id="rresult" onchange="updateReproForm()">
+          <option value="">Selecione...</option>
+          <option value="Positivo">Positivo / Prenha</option>
+          <option value="Negativo">Negativo / Vazia</option>
+          <option value="Inconclusivo">Inconclusivo</option>
+        </select>
+      </label>
+
+      <label id="rExpectedWrap">Data prevista
+        <input id="rexpected" type="date">
+        <small id="rExpectedHelp" class="sub">Pode ser ajustada manualmente.</small>
+      </label>
+
+      <div id="rBirthFields" class="full repro-birth-box" style="display:none">
+        <div class="repro-birth-head">
+          <div><b>Cadastro da cria</b><small>Opcional. Ao salvar o parto, a cria pode ser cadastrada automaticamente no rebanho.</small></div>
+          <label class="repro-check"><input id="rCreateCalf" type="checkbox" onchange="toggleCalfFields()" checked> Cadastrar cria</label>
+        </div>
+
+        <div id="rCalfFields" class="repro-calf-grid">
+          <label>Número / brinco<input id="rCalfNumber" placeholder="Ex.: 004"></label>
+          <label>Sexo<select id="rCalfSex"><option value="Bezerro">Macho</option><option value="Bezerra">Fêmea</option></select></label>
+          <label>Peso ao nascer (kg)<input id="rCalfWeight" type="number" step="0.1" min="0" placeholder="Ex.: 35"></label>
+          <label>Raça<input id="rCalfBreed" placeholder="Ex.: Girolando"></label>
+        </div>
+      </div>
+
+      <label class="full">Observações
+        <textarea id="rnotes" placeholder="Ex.: touro/sêmen utilizado, protocolo, ocorrência no parto..."></textarea>
+      </label>
+
+      <button id="reproSaveBtn" class="btn primary full" onclick="saveRepro()">Salvar evento</button>
+    </div>
+  </div>
+</div>
 <div class="modal" id="notificationsModal"><div class="modalbox"><div class="head"><div><h3>Central de alertas</h3><div class="sub">Pendências e eventos que merecem atenção</div></div><button class="btn secondary" onclick="closeModal('notificationsModal')">Fechar</button></div><div id="notificationsBody"></div></div></div>
 
 
@@ -1729,95 +1875,47 @@ async function mgDashboard(){
   let ws=(by[a.id]||[]).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));
   if(ws.length>=2){const prevW=Number(ws.at(-2).weight),lastW=Number(ws.at(-1).weight),delta=lastW-prevW;if(Number.isFinite(delta)&&delta<0){weightLoss++;alerts.push({type:'loss',level:'danger',title:`Animal #${a.number} perdeu peso`,detail:`Perda de ${Math.abs(delta).toFixed(1)} kg na última pesagem · ${prevW.toFixed(1)} → ${lastW.toFixed(1)} kg.`,animal_id:a.id,date:ws.at(-1).weighing_date})}}}
  const terminalByAnimal={};for(const x of [...r].sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)))){if(!terminalByAnimal[x.animal_id]&&['Parto','Aborto'].includes(x.event_type))terminalByAnimal[x.animal_id]=x.event_date}
- let reproDue=0;for(const x of r){if(!x.expected_date||!['Inseminação artificial','Monta natural / pasto','Prenhez confirmada','Enxertada'].includes(x.event_type))continue;const terminal=terminalByAnimal[x.animal_id];if(terminal&&terminal>=x.event_date)continue;const d=dayDiff(x.expected_date);const a=animals.find(z=>z.id===x.animal_id);if(d<0){reproDue++;alerts.push({type:'repro',level:'danger',title:`${a?'Vaca #'+a.number:'Matriz'} com parto previsto vencido`,detail:`Previsão vencida há ${Math.abs(d)} dia(s) · ${x.expected_date}. Registre o parto ou atualize a previsão.`,date:x.expected_date,animal_id:x.animal_id})}else if(d<=30){reproDue++;alerts.push({type:'repro',level:d<=7?'danger':'warning',title:`${a?'Vaca #'+a.number:'Matriz'} próxima do parto`,detail:d===0?'Parto previsto para hoje.':`Parto previsto em ${d} dia(s) · ${x.expected_date}.`,date:x.expected_date,animal_id:x.animal_id})}}
- for(const a of readyAnimals)alerts.push({type:'ready',level:'success',title:`Animal #${a.number} atingiu a meta`,detail:`Peso atual ${Number(a.current_weight||0).toFixed(1)} kg · meta ${Number(a.target_weight||0).toFixed(1)} kg.`,animal_id:a.id});
- alerts.sort((a,b)=>({danger:0,warning:1,info:2,success:3}[a.level]??9)-({danger:0,warning:1,info:2,success:3}[b.level]??9));
- return {total,categories:{...cats,'Bezerro(a)':(cats.Bezerro||0)+(cats.Bezerra||0)},avg_weight:avg,avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready,expenses_total:exp,expenses_month:month,expenses_prev_month:prevMonth,cost_per_head:total?month/total:0,upcoming_health:alerts.filter(a=>a.type==='health').length,weighing_overdue:overdueWeights,weight_loss:weightLoss,repro_due:reproDue,alerts};
-}
-async function mgLotList(){let lots=await mgRows('lots'),animals=await mgAnimals(true),w=await mgRows('weighings');let latest={};[...w].sort((a,b)=>String(b.weighing_date).localeCompare(String(a.weighing_date))).forEach(x=>{if(!latest[x.animal_id])latest[x.animal_id]=x});return lots.map(l=>{let aa=animals.filter(a=>a.lot===l.name),vals=aa.map(a=>Number(latest[a.id]?.weight??a.entry_weight)).filter(Number.isFinite);return {...l,animals:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,avg_gmd:0}}).sort((a,b)=>(Number(b.active)-Number(a.active))||a.name.localeCompare(b.name))}
-async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from('animals').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(a.error)mgErr(a.error);if(!a.data)throw new Error('Animal não encontrado');let [w,h,r,e]=await Promise.all([mgSb.from('weighings').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('weighing_date',{ascending:false}),mgSb.from('health_events').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('event_date',{ascending:false}),mgSb.from('reproductive_events').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('event_date',{ascending:false}),mgSb.from('expenses').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('expense_date',{ascending:false})]);for(const q of [w,h,r,e])if(q.error)mgErr(q.error);let ws=w.data||[],gmd=0;if(ws.length>=2){let d=mgDays(ws.at(-1).weighing_date,ws[0].weighing_date);if(d>0)gmd=(Number(ws[0].weight)-Number(ws.at(-1).weight))/d}return {...a.data,photo_path:a.data.photo_path||a.data.photo_url||'',weighings:ws,health:h.data||[],reproduction:r.data||[],expenses:e.data||[],movements:[],current_weight:ws[0]?.weight??a.data.entry_weight??0,expenses_total:(e.data||[]).reduce((s,x)=>s+Number(x.amount||0),0),gmd}}
-async function mgLotProfile(id){let f=await mgGetFarm();let lr=await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(lr.error)mgErr(lr.error);let l=lr.data;if(!l)throw new Error('Lote não encontrado');let aa=(await mgAnimals(true)).filter(a=>a.lot===l.name),ids=aa.map(a=>a.id),ww=await mgRows('weighings');let w=ww.filter(x=>ids.includes(x.animal_id)),byMonth={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(byMonth[m]??=[]).push(Number(x.weight))}let hist=Object.entries(byMonth).sort().map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}));let vals=aa.map(a=>Number(a.current_weight??a.entry_weight)).filter(Number.isFinite),g=[];for(const a of aa){let ws=w.filter(x=>x.animal_id===a.id).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));if(ws.length>=2){let d=mgDays(ws[0].weighing_date,ws.at(-1).weighing_date);if(d>0)g.push((Number(ws.at(-1).weight)-Number(ws[0].weight))/d)}}return {...l,animals_count:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total_weight:vals.reduce((a,b)=>a+b,0),avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:0,ready:aa.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)).length,history:hist,animals:aa}}
-async function api(path,opt={}){
- const method=(opt.method||'GET').toUpperCase(),data=mgBody(opt),f=await mgGetFarm();
- if(path==='/api/me')return {user:{id:mgUser.id,email:mgUser.email,role:'client',full_name:mgUser.user_metadata?.full_name||mgUser.email.split('@')[0]},farm:f};
- if(path==='/api/profile'&&method==='GET')return f;
- if(path==='/api/profile'&&method==='PUT'){let r=await mgSb.from('farms').update(data).eq('id',f.id).select().single();if(r.error)mgErr(r.error);mgFarm=r.data;return {ok:true}}
- if(path==='/api/dashboard')return mgDashboard();
- if(path==='/api/animals'&&method==='GET')return mgAnimals(true);
- if(path==='/api/animals/exited')return mgAnimals(false);
- if(path==='/api/animals'&&method==='POST'){
-  const animalNumber=String(data.number||'').trim();
-  if(!animalNumber)throw new Error('Informe o número do animal.');
+ let reproDue=0;
+ for(const x of r){
+   if(!x.expected_date)continue;
+   const d=dayDiff(x.expected_date);
+   const animal=animals.find(a=>a.id===x.animal_id);
+   const who=animal?`Animal #${animal.number}`:'Matriz';
 
-  // V41: valida antes do INSERT para evitar mensagem técnica de unique constraint.
-  const dup=await mgSb.from('animals')
-    .select('id,number,status,deleted_at')
-    .eq('farm_id',f.id)
-    .eq('number',animalNumber)
-    .maybeSingle();
+   if(['Inseminação artificial','Monta natural / pasto'].includes(x.event_type)){
+     // Só alerta se não houver evento posterior que resolva o diagnóstico.
+     const later=r.some(z=>z.animal_id===x.animal_id && String(z.event_date)>=String(x.event_date) &&
+       ['Diagnóstico de gestação','Prenhez confirmada','Parto','Aborto'].includes(z.event_type));
+     if(later)continue;
+     if(d<=2){
+       reproDue++;
+       alerts.push({
+         type:'repro',
+         level:d<0?'danger':'warning',
+         title:d<0?'Diagnóstico reprodutivo atrasado':d===0?'Diagnóstico de gestação hoje':d===1?'Diagnóstico de gestação amanhã':'Diagnóstico de gestação em 2 dias',
+         detail:`${who} · ${x.expected_date}`,
+         animal_id:x.animal_id||null,
+         date:x.expected_date
+       });
+     }
+     continue;
+   }
 
-  if(dup.error)mgErr(dup.error);
-
-  if(dup.data){
-    if(dup.data.deleted_at){
-      throw new Error(`O número ${animalNumber} já pertence a um animal que está na Lixeira. Restaure o animal ou use outro número.`);
-    }
-    throw new Error(`Já existe um animal cadastrado com o número ${animalNumber} nesta propriedade.`);
-  }
-
-  let row={
-    farm_id:f.id,
-    number:animalNumber,
-    category:data.category,
-    breed:data.breed||'',
-    birth_date:data.birth_date||null,
-    origin:data.origin||'',
-    entry_date:data.entry_date||null,
-    entry_weight:data.entry_weight||null,
-    target_weight:data.target_weight||null,
-    lot:data.lot||'',
-    notes:data.notes||'',
-    photo_path:data.photo_data||'',
-    photo_url:data.photo_data||'',
-    status:'active'
-  };
-
-  let r=await mgSb.from('animals').insert(row).select().single();
-
-  if(r.error){
-    if(r.error.code==='23505' || /animals_farm_id_number_key|duplicate key/i.test(r.error.message||'')){
-      throw new Error(`Já existe um animal cadastrado com o número ${animalNumber} nesta propriedade.`);
-    }
-    mgErr(r.error);
-  }
-
-  if(data.entry_weight){
-    let q=await mgSb.from('weighings').insert({
-      farm_id:f.id,
-      animal_id:r.data.id,
-      weighing_date:data.entry_date||new Date().toISOString().slice(0,10),
-      weight:data.entry_weight,
-      notes:'Peso de entrada'
-    });
-    if(q.error)mgErr(q.error)
-  }
-  return {id:r.data.id,ok:true}
-}
- let m=path.match(/^\/api\/animals\/(\d+)\/profile$/);if(m)return mgAnimalProfile(Number(m[1]));
- m=path.match(/^\/api\/animals\/(\d+)\/weighings$/);if(m&&method==='POST'){let r=await mgSb.from('weighings').insert({farm_id:f.id,animal_id:Number(m[1]),weighing_date:data.weighing_date,weight:data.weight,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/animals\/(\d+)\/exit$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'inactive',exit_type:data.exit_type,exit_date:data.exit_date,exit_value:data.exit_value||0,exit_notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/animals\/(\d+)\/reactivate$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({status:'active',exit_type:null,exit_date:null,exit_value:0,exit_notes:null}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/animals\/(\d+)\/move$/);if(m&&method==='POST'){let r=await mgSb.from('animals').update({lot:data.to_lot}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/animals\/(\d+)$/);if(m&&method==='DELETE'){let r=await mgSb.from('animals').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('O animal não foi enviado para a Lixeira. Atualize a página e tente novamente.');return {ok:true,id:r.data.id}}
- if(path==='/api/lots'&&method==='GET')return mgLotList();
- if(path==='/api/lots'&&method==='POST'){let r=await mgSb.from('lots').insert({farm_id:f.id,name:data.name,notes:data.notes||'',active:true});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/lots\/(\d+)\/profile$/);if(m)return mgLotProfile(Number(m[1]));
- m=path.match(/^\/api\/lots\/(\d+)$/);if(m&&method==='PUT'){let old=(await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',Number(m[1])).single());if(old.error)mgErr(old.error);let r=await mgSb.from('lots').update({name:data.name,notes:data.notes||'',active:data.active!==false}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);if(old.data.name!==data.name)await mgSb.from('animals').update({lot:data.name}).eq('farm_id',f.id).eq('lot',old.data.name);return {ok:true}}
- if(m&&method==='DELETE'){
-   const lotId=Number(m[1]);
-   const lr=await mgSb.from('lots').select('name').eq('farm_id',f.id).eq('id',lotId).is('deleted_at',null).maybeSingle();if(lr.error)mgErr(lr.error);if(!lr.data)throw new Error('Lote não encontrado.');
-   const ar=await mgSb.from('animals').select('id',{count:'exact',head:true}).eq('farm_id',f.id).eq('lot',lr.data.name).is('deleted_at',null);if(ar.error)mgErr(ar.error);if((ar.count||0)>0)throw new Error('Este lote possui animais ativos. Mova os animais para outro lote antes de enviá-lo à Lixeira.');
-   let r=await mgSb.from('lots').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',lotId).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}
+   if(['Prenhez confirmada','Diagnóstico de gestação'].includes(x.event_type) && (x.event_type!=='Diagnóstico de gestação'||x.result==='Positivo')){
+     const terminal=r.some(z=>z.animal_id===x.animal_id && String(z.event_date)>=String(x.event_date) && ['Parto','Aborto'].includes(z.event_type));
+     if(terminal)continue;
+     if(d<=7){
+       reproDue++;
+       alerts.push({
+         type:'repro',
+         level:d<0?'danger':'warning',
+         title:d<0?'Parto previsto atrasado':d===0?'Parto previsto hoje':d===1?'Parto previsto amanhã':`Parto previsto em ${d} dias`,
+         detail:`${who} · ${x.expected_date}`,
+         animal_id:x.animal_id||null,
+         date:x.expected_date
+       });
+     }
+   }
  }
  if(path==='/api/weighings/recent'){let w=await mgRows('weighings','*','weighing_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x]));return w.filter(x=>map[x.animal_id]).slice(0,20).map(x=>({...x,number:map[x.animal_id].number,lot:map[x.animal_id].lot}))}
  if(path==='/api/weighings/history'){let w=await mgRows('weighings'),g={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(g[m]??=[]).push(Number(x.weight))}return Object.entries(g).sort().slice(-6).map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}))}
@@ -1841,8 +1939,8 @@ async function api(path,opt={}){
  if(path==='/api/health'&&method==='POST'){let r=await mgSb.from('health_events').insert({farm_id:f.id,animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
  {let m=path.match(/^\/api\/health\/(\d+)$/);if(m&&['PUT','PATCH'].includes(method)){let r=await mgSb.from('health_events').update({animal_id:data.animal_id||null,event_date:data.event_date,event_type:data.event_type,product:data.product||'',next_due_date:data.next_due_date||null,notes:data.notes||''}).eq('id',Number(m[1])).eq('farm_id',f.id);if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('health_events').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('id',Number(m[1])).eq('farm_id',f.id).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}}
  if(path==='/api/reproduction'&&method==='GET'){let rr=await mgRows('reproductive_events','*','event_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return rr.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
- if(path==='/api/reproduction'&&method==='POST'){let r=await mgSb.from('reproductive_events').insert({farm_id:f.id,animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/reproduction'&&method==='POST'){let r=await mgSb.from('reproductive_events').insert({farm_id:f.id,animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,result:data.result||null,expected_date:data.expected_date||null,notes:data.notes||''}).select('id').single();if(r.error)mgErr(r.error);return {ok:true,id:r.data.id}}
+ m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,result:data.result||null,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
  if(path==='/api/nutrition'&&method==='POST'){
    const payload={farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:data.total_cost,notes:data.notes||''};
@@ -3052,53 +3150,276 @@ async function deleteHealth(id){
 }
 function addDaysISO(dateStr,days){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
 let editingReproId=null;
+
+let reproData=[];
+let reproAnimals=[];
+
+function reproDateBr(v){
+  if(!v)return '—';
+  const p=String(v).slice(0,10).split('-');
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v;
+}
+function reproDayDiff(v){
+  if(!v)return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  const d=new Date(v+'T00:00:00');
+  return Math.round((d-today)/86400000);
+}
+function reproIsFemale(a){
+  return /(vaca|novilha|bezerra|f[eê]mea)/i.test(String(a?.category||''));
+}
+function reproLatestByAnimal(rows){
+  const map={};
+  [...rows].sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date))).forEach(e=>{
+    if(!map[e.animal_id])map[e.animal_id]=e;
+  });
+  return map;
+}
+function reproStatusForAnimal(animal, rows){
+  const events=rows.filter(e=>Number(e.animal_id)===Number(animal.id))
+    .sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)));
+  if(!events.length)return {key:'empty',label:'Vazia',expected:null,source:null};
+
+  const latest=events[0];
+
+  // Parto recente
+  if(latest.event_type==='Parto'){
+    const days=Math.abs(reproDayDiff(latest.event_date)||0);
+    if(days<=30)return {key:'recent',label:'Recém-parida',expected:null,source:latest};
+    return {key:'empty',label:'Vazia',expected:null,source:latest};
+  }
+
+  if(latest.event_type==='Aborto')return {key:'empty',label:'Vazia',expected:null,source:latest};
+
+  if(latest.event_type==='Diagnóstico de gestação'){
+    if(latest.result==='Positivo')return {key:'pregnant',label:'Prenha',expected:latest.expected_date||null,source:latest};
+    if(latest.result==='Negativo')return {key:'empty',label:'Vazia',expected:null,source:latest};
+    return {key:'waiting',label:'Aguardando novo diagnóstico',expected:latest.expected_date||null,source:latest};
+  }
+
+  if(latest.event_type==='Prenhez confirmada'){
+    return {key:'pregnant',label:'Prenha',expected:latest.expected_date||null,source:latest};
+  }
+
+  if(['Inseminação artificial','Monta natural / pasto'].includes(latest.event_type)){
+    return {key:'waiting',label:'Aguardando diagnóstico',expected:latest.expected_date||null,source:latest};
+  }
+
+  return {key:'empty',label:'Vazia',expected:null,source:latest};
+}
 function updateReproPrediction(){
-  const automatic=['Inseminação artificial','Monta natural / pasto'].includes(rtype.value);
-  if(automatic&&rdate.value)rexpected.value=addDaysISO(rdate.value,283);
-  if(['Parto','Aborto','Desmame'].includes(rtype.value))rexpected.value='';
+  if(!rdate.value)return;
+  const type=rtype.value;
+
+  if(['Inseminação artificial','Monta natural / pasto'].includes(type)){
+    // Por padrão, 30 dias para diagnóstico; usuário pode alterar.
+    rexpected.value=addDaysISO(rdate.value,30);
+    rExpectedHelp.textContent='Sugestão: diagnóstico em 30 dias. A data pode ser alterada.';
+  }else if(type==='Diagnóstico de gestação'){
+    if(rresult.value==='Positivo'){
+      // Se houver cobertura anterior, tenta calcular parto a partir dela.
+      const animalId=Number(ranimal.value||0);
+      const prior=(reproData||[]).filter(e=>Number(e.animal_id)===animalId &&
+        ['Inseminação artificial','Monta natural / pasto'].includes(e.event_type) &&
+        String(e.event_date)<=String(rdate.value))
+        .sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)))[0];
+      rexpected.value=prior?.event_date?addDaysISO(prior.event_date,283):addDaysISO(rdate.value,253);
+      rExpectedHelp.textContent='Previsão de parto sugerida. Pode ser ajustada.';
+    }else{
+      rexpected.value='';
+      rExpectedHelp.textContent='Sem previsão de parto enquanto não houver prenhez confirmada.';
+    }
+  }else if(type==='Prenhez confirmada'){
+    if(!rexpected.value)rexpected.value=addDaysISO(rdate.value,253);
+    rExpectedHelp.textContent='Previsão sugerida. Ajuste se houver data de cobertura conhecida.';
+  }else{
+    rexpected.value='';
+    rExpectedHelp.textContent='Pode ser ajustada manualmente quando aplicável.';
+  }
+}
+function updateReproForm(){
+  const type=rtype.value;
+  const diagnosis=type==='Diagnóstico de gestação';
+  rResultWrap.style.display=diagnosis?'flex':'none';
+  rExpectedWrap.style.display=['Inseminação artificial','Monta natural / pasto','Diagnóstico de gestação','Prenhez confirmada'].includes(type)?'flex':'none';
+  rBirthFields.style.display=type==='Parto'?'block':'none';
+  if(!diagnosis)rresult.value='';
+  updateReproPrediction();
+}
+function toggleCalfFields(){
+  rCalfFields.style.display=rCreateCalf.checked?'grid':'none';
+}
+function resetReproModal(){
+  editingReproId=null;
+  reproModalTitle.textContent='Registrar evento reprodutivo';
+  reproSaveBtn.textContent='Salvar evento';
+  if(ranimal.options.length)ranimal.selectedIndex=0;
+  rtype.value='Cio observado';
+  rdate.value=new Date().toISOString().slice(0,10);
+  rresult.value='';
+  rexpected.value='';
+  rnotes.value='';
+  rCreateCalf.checked=true;
+  rCalfNumber.value='';
+  rCalfSex.value='Bezerro';
+  rCalfWeight.value='';
+  rCalfBreed.value='';
+  toggleCalfFields();
+  updateReproForm();
 }
 function openNewRepro(){
-  editingReproId=null;
-  if(document.getElementById('reproModalTitle'))reproModalTitle.textContent='Evento reprodutivo';
-  if(document.getElementById('reproSaveBtn'))reproSaveBtn.textContent='Salvar evento';
-  if(ranimal.options.length)ranimal.selectedIndex=0;
-  rtype.value='Inseminação artificial';
-  rdate.value=new Date().toISOString().slice(0,10);
-  rnotes.value='';
-  updateReproPrediction();
+  resetReproModal();
   openModal('reproModal');
 }
 async function editRepro(id){
   try{
-    const rows=await api('/api/reproduction');
-    const e=rows.find(x=>Number(x.id)===Number(id));
+    const e=(reproData||[]).find(x=>Number(x.id)===Number(id)) || (await api('/api/reproduction')).find(x=>Number(x.id)===Number(id));
     if(!e)throw new Error('Evento não encontrado.');
     editingReproId=Number(id);
     reproModalTitle.textContent='Editar evento reprodutivo';
     reproSaveBtn.textContent='Salvar alterações';
     ranimal.value=String(e.animal_id||'');
-    rtype.value=e.event_type||'Inseminação artificial';
+    rtype.value=e.event_type||'Cio observado';
     rdate.value=e.event_date||'';
+    rresult.value=e.result||'';
     rexpected.value=e.expected_date||'';
     rnotes.value=e.notes||'';
+    rBirthFields.style.display='none'; // edição de evento não recria cria
+    updateReproForm();
+    if(rtype.value==='Parto')rBirthFields.style.display='none';
     openModal('reproModal');
   }catch(e){alert('Não foi possível editar o evento. '+e.message)}
 }
 async function loadRepro(){
-  const x=await api('/api/reproduction');
-  reproRows.innerHTML=x.length?x.map(e=>`<tr><td>${e.event_date}</td><td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number}</button>`:'-'}</td><td>${e.event_type}</td><td>${e.expected_date||'-'}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editRepro(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteRepro(${e.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum evento reprodutivo registrado.</td></tr>'
+  const [events,animals]=await Promise.all([api('/api/reproduction'),mgAnimals(true)]);
+  reproData=events||[];
+  reproAnimals=(animals||[]).filter(reproIsFemale);
+
+  // Matriz filters / modal
+  const options=reproAnimals.map(a=>`<option value="${a.id}">#${a.number} · ${a.category}${a.breed?' · '+a.breed:''}</option>`).join('');
+  ranimal.innerHTML=options||'<option value="">Nenhuma matriz cadastrada</option>';
+  reproAnimalFilter.innerHTML='<option value="">Todas as matrizes</option>'+options;
+
+  renderRepro();
+}
+function renderRepro(){
+  const females=reproAnimals||[];
+  const statuses=females.map(a=>({animal:a,status:reproStatusForAnimal(a,reproData)}));
+  const pregnant=statuses.filter(x=>x.status.key==='pregnant').length;
+  const waiting=statuses.filter(x=>x.status.key==='waiting').length;
+  const empty=statuses.filter(x=>x.status.key==='empty').length;
+  const births=statuses.filter(x=>x.status.key==='pregnant'&&x.status.expected!=null&&reproDayDiff(x.status.expected)>=0&&reproDayDiff(x.status.expected)<=30).length;
+
+  reproKpiPregnant.textContent=pregnant;
+  reproKpiDiagnosis.textContent=waiting;
+  reproKpiBirths.textContent=births;
+  reproKpiEmpty.textContent=empty;
+
+  // Status list
+  reproStatusList.innerHTML=statuses.length?statuses
+    .sort((a,b)=>a.animal.number.localeCompare(b.animal.number,undefined,{numeric:true}))
+    .map(x=>`<div class="repro-status-row">
+      <div><b>Animal #${x.animal.number}</b><small>${x.animal.category}${x.status.expected?' · previsão '+reproDateBr(x.status.expected):''}</small></div>
+      <span class="repro-pill ${x.status.key}">${x.status.label}</span>
+    </div>`).join('')
+    :'<div class="empty">Nenhuma matriz cadastrada.</div>';
+
+  // Agenda
+  const agenda=[];
+  statuses.forEach(x=>{
+    if(x.status.key==='waiting'&&x.status.expected){
+      const d=reproDayDiff(x.status.expected);
+      agenda.push({date:x.status.expected,priority:d<0?0:1,label:d<0?'Diagnóstico atrasado':d===0?'Diagnóstico hoje':d===1?'Diagnóstico amanhã':`Diagnóstico em ${d} dias`,animal:x.animal,kind:'Diagnóstico'});
+    }
+    if(x.status.key==='pregnant'&&x.status.expected){
+      const d=reproDayDiff(x.status.expected);
+      if(d<=45)agenda.push({date:x.status.expected,priority:d<0?0:2,label:d<0?'Parto previsto atrasado':d===0?'Parto previsto hoje':d===1?'Parto previsto amanhã':`Parto previsto em ${d} dias`,animal:x.animal,kind:'Parto'});
+    }
+  });
+  agenda.sort((a,b)=>a.priority-b.priority||String(a.date).localeCompare(String(b.date)));
+
+  reproAgenda.innerHTML=agenda.length?agenda.slice(0,8).map(x=>`<div class="repro-agenda-item">
+    <div class="top"><span class="repro-pill ${x.priority===0?'birth':x.kind==='Parto'?'pregnant':'waiting'}">${x.label}</span><small>${reproDateBr(x.date)}</small></div>
+    <b>Animal #${x.animal.number}</b>
+    <small>${x.kind==='Parto'?'Gestação em acompanhamento':'Aguardando diagnóstico de gestação'}</small>
+    <button class="animal-link" style="margin-top:7px" onclick="openAnimalProfile(${x.animal.id})">Abrir ficha ›</button>
+  </div>`).join(''):'<div class="empty">Nenhum evento reprodutivo pendente.</div>';
+
+  // History
+  const animalFilter=Number(reproAnimalFilter?.value||0);
+  const eventFilter=reproEventFilter?.value||'';
+  const rows=(reproData||[]).filter(e=>(!animalFilter||Number(e.animal_id)===animalFilter)&&(!eventFilter||e.event_type===eventFilter));
+
+  reproRows.innerHTML=rows.length?rows.map(e=>{
+    const a=females.find(x=>Number(x.id)===Number(e.animal_id));
+    const current=a?reproStatusForAnimal(a,reproData):null;
+    return `<tr>
+      <td>${reproDateBr(e.event_date)}</td>
+      <td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number}</button>`:'-'}</td>
+      <td><b>${e.event_type}</b></td>
+      <td>${e.result||'-'}</td>
+      <td>${e.expected_date?reproDateBr(e.expected_date):'-'}</td>
+      <td>${current?`<span class="repro-pill ${current.key}">${current.label}</span>`:'-'}</td>
+      <td><div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn secondary" onclick="editRepro(${e.id})">Editar</button>
+        <button class="btn secondary delete-outline" onclick="deleteRepro(${e.id})">Excluir</button>
+      </div></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="7" class="empty">Nenhum evento reprodutivo registrado.</td></tr>';
 }
 async function saveRepro(){
   if(!ranimal.value){alert('Selecione a vaca/matriz.');return}
   if(!rdate.value){alert('Informe a data do evento.');return}
-  const payload={animal_id:Number(ranimal.value),event_type:rtype.value,event_date:rdate.value,expected_date:rexpected.value||null,notes:rnotes.value};
+  if(rtype.value==='Diagnóstico de gestação'&&!rresult.value){alert('Informe o resultado do diagnóstico.');return}
+
+  const payload={
+    animal_id:Number(ranimal.value),
+    event_type:rtype.value,
+    event_date:rdate.value,
+    result:rresult.value||null,
+    expected_date:rexpected.value||null,
+    notes:rnotes.value
+  };
+
   try{
-    if(editingReproId)await api(`/api/reproduction/${editingReproId}`,{method:'PUT',body:JSON.stringify(payload)});
-    else await api('/api/reproduction',{method:'POST',body:JSON.stringify(payload)});
+    let reproResponse;
+    if(editingReproId){
+      reproResponse=await api(`/api/reproduction/${editingReproId}`,{method:'PUT',body:JSON.stringify(payload)});
+    }else{
+      reproResponse=await api('/api/reproduction',{method:'POST',body:JSON.stringify(payload)});
+    }
+
+    // Parto: cria automática, somente em novo evento.
+    if(!editingReproId && rtype.value==='Parto' && rCreateCalf.checked){
+      const calfNumber=String(rCalfNumber.value||'').trim();
+      if(!calfNumber)throw new Error('O parto foi salvo, mas informe o número/brinco da cria para cadastrá-la automaticamente.');
+
+      const mother=(reproAnimals||[]).find(a=>Number(a.id)===Number(ranimal.value));
+      const calfPayload={
+        number:calfNumber,
+        category:rCalfSex.value,
+        breed:rCalfBreed.value||mother?.breed||'',
+        birth_date:rdate.value,
+        origin:'Nascido na propriedade',
+        entry_date:rdate.value,
+        entry_weight:rCalfWeight.value?Number(rCalfWeight.value):null,
+        target_weight:null,
+        lot:mother?.lot||'',
+        notes:`Cria da mãe #${mother?.number||ranimal.value}. Cadastrada automaticamente pelo módulo Reprodução.`,
+        mother_id:Number(ranimal.value)
+      };
+
+      await api('/api/animals',{method:'POST',body:JSON.stringify(calfPayload)});
+    }
+
     closeModal('reproModal');
-    editingReproId=null;rnotes.value='';
-    await Promise.all([loadRepro(),dashboard()]);
-  }catch(e){alert('Não foi possível salvar o evento reprodutivo. '+e.message)}
+    editingReproId=null;
+    await Promise.all([loadRepro(),loadAnimals(),dashboard()]);
+    alert(rtype.value==='Parto'&&rCreateCalf.checked?'Parto e cria cadastrados com sucesso.':'Evento reprodutivo salvo com sucesso.');
+  }catch(e){
+    alert('Não foi possível concluir o registro. '+(e?.message||e));
+    // Mantém modal aberto se houve problema no cadastro da cria.
+  }
 }
 async function deleteRepro(id){
   if(!confirm('Enviar este registro de reprodução para a Lixeira? Você poderá restaurá-lo depois.'))return;
@@ -4258,6 +4579,7 @@ show=function(id,el){
     switchDairyTab('dashboard',dashboardBtn);
   }
   if(id==='nutricao')setTimeout(()=>loadNutrition().catch(e=>console.error('Alimentação:',e)),0);
+  if(id==='repro')setTimeout(()=>loadRepro().catch(e=>console.error('Reprodução:',e)),0);
   return result;
 };
 
