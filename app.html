@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-v35-funcionario-limpo">
+<meta name="mg-build" content="app-v36-funcionario-css-fixo">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -345,6 +345,12 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
  .team-role-grid,.team-invite-grid,.team-member{grid-template-columns:1fr}
 }
 
+
+/* V36 — bloqueio definitivo por perfil */
+html[data-mg-role="employee"] .employee-hidden{
+  display:none !important;
+}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -374,9 +380,9 @@ html.mg-route-boot .view.active{display:none!important}
     <button data-v="repro" onclick="show('repro',this)">♡ <span>Reprodução</span></button>
     <div class="nav-title" data-feature="performance-menu">Gestão</div>
     <button id="navDesempenho" data-v="desempenho" onclick="show('desempenho',this);loadPerformance(false)">↗ <span>Desempenho</span></button>
-    <div class="nav-title">Financeiro</div>
-    <button data-v="gastos" onclick="show('gastos',this)">$ <span>Gastos</span></button>
-    <button data-v="relatorios" onclick="show('relatorios',this)">▥ <span>Relatórios</span></button>
+    <div class="nav-title employee-hidden" id="navFinanceTitle">Financeiro</div>
+    <button class="employee-hidden" id="navGastos" data-v="gastos" onclick="show('gastos',this)">$ <span>Gastos</span></button>
+    <button class="employee-hidden" id="navRelatorios" data-v="relatorios" onclick="show('relatorios',this)">▥ <span>Relatórios</span></button>
     <div class="nav-title">Mercado</div>
     <button data-v="mercado" onclick="show('mercado',this)">⌘ <span>Mercado</span></button>
     <button data-v="saleSimulator" onclick="show('saleSimulator',this)">🧮 <span>Simulador de Venda</span></button>
@@ -410,7 +416,7 @@ html.mg-route-boot .view.active{display:none!important}
     <div class="metric-card"><div class="metric-top"><span>Peso médio</span><i>⚖</i></div><strong id="dAvg">0 kg</strong><small id="weightTrend">Peso atual do rebanho</small></div>
     <div class="metric-card"><div class="metric-top"><span>GMD médio</span><i>↗</i></div><strong id="dGmd">0 kg/dia</strong><small>Ganho médio diário</small></div>
     <div class="metric-card"><div class="metric-top"><span>Animais prontos</span><i>✓</i></div><strong id="dReady">0</strong><small>Meta de peso atingida</small></div>
-    <div class="metric-card"><div class="metric-top"><span>Gastos do mês</span><i>$</i></div><strong id="dMonth">R$ 0,00</strong><small>Lançamentos do período</small></div>
+    <div class="metric-card employee-hidden" id="dashExpensesMetric"><div class="metric-top"><span>Gastos do mês</span><i>$</i></div><strong id="dMonth">R$ 0,00</strong><small>Lançamentos do período</small></div>
   </div>
 
   <div id="firstSteps" class="onboarding-card" style="display:none">
@@ -437,7 +443,7 @@ html.mg-route-boot .view.active{display:none!important}
         <button onclick="openNewHealth()"><i>✚</i><span>Registrar<br>saúde</span></button>
         <button onclick="openNewRepro()"><i>♡</i><span>Registrar<br>reprodução</span></button>
         <button onclick="openLot()"><i>▱</i><span>Novo<br>lote</span></button>
-        <button onclick="openNewExpense()"><i>$</i><span>Novo<br>gasto</span></button>
+        <button class="employee-hidden" id="quickNewExpense" onclick="openNewExpense()"><i>$</i><span>Novo<br>gasto</span></button>
       </div>
     </div>
 
@@ -456,7 +462,7 @@ html.mg-route-boot .view.active{display:none!important}
       <div id="chartEmpty" class="compact-empty" style="display:none"><b>Sem histórico de pesagens</b><small>Registre pelo menos duas pesagens para acompanhar a evolução.</small></div>
     </div>
 
-    <div class="panel">
+    <div class="panel employee-hidden" id="dashFinanceSummary">
       <div class="panel-title"><div><b>Resumo financeiro</b><small id="financePeriod">Mês atual</small></div></div>
       <div class="summary-line"><span>Gastos do mês</span><b class="bad" id="dMonth2">R$ 0,00</b></div>
       <div class="summary-line"><span>Gastos acumulados</span><b id="dExpenses">R$ 0,00</b></div>
@@ -501,7 +507,7 @@ html.mg-route-boot .view.active{display:none!important}
         <a href="#" onclick="show('mercado');return false">Mercado Pecuário</a>
         <a href="#" onclick="show('saleSimulator');return false">Simulador de Venda</a>
         <a href="#" onclick="openNews();return false">Novidades</a>
-        <a href="#" onclick="show('relatorios');return false">Relatórios</a>
+        <a class="employee-hidden" href="#" onclick="show('relatorios');return false">Relatórios</a>
       </div>
       <div class="mg-footer-contact">
         <span class="mg-footer-title">Precisa de ajuda?</span>
@@ -685,7 +691,7 @@ html.mg-route-boot .view.active{display:none!important}
   <div class="performance-kpis">
     <div class="performance-kpi"><small>Melhor GMD individual</small><b id="perfBestGmd">—</b><span id="perfBestGmdAnimal">Sem dados suficientes</span></div>
     <div class="performance-kpi"><small>Animais na meta</small><b id="perfReadyPct">0%</b><span id="perfReadyCount">0 de 0 animais</span></div>
-    <div class="performance-kpi"><small>Custo mensal por cabeça</small><b id="perfCostHead">R$ 0,00</b><span>Gastos do mês ÷ animais ativos</span></div>
+    <div class="performance-kpi employee-hidden" id="perfCostKpi"><small>Custo mensal por cabeça</small><b id="perfCostHead">R$ 0,00</b><span>Gastos do mês ÷ animais ativos</span></div>
     <div class="performance-kpi"><small>Lote destaque</small><b id="perfBestLot">—</b><span id="perfBestLotGmd">Sem GMD calculado</span></div>
   </div>
   <div class="performance-grid">
@@ -1171,13 +1177,14 @@ async function mgGetFarm(){
  let r={data:null,error:null};
  if(member.data){
    mgFarmRole=member.data.role||'member';
+   document.documentElement.dataset.mgRole=mgFarmRole;
    r=await mgSb.from('farms').select('*').eq('id',member.data.farm_id).maybeSingle();
    if(r.error)mgErr(r.error);
  }else{
    // Compatibilidade com clientes antigos.
    r=await mgSb.from('farms').select('*').eq('owner_id',mgUser.id).maybeSingle();
    if(r.error)mgErr(r.error);
-   if(r.data)mgFarmRole='owner';
+   if(r.data){mgFarmRole='owner';document.documentElement.dataset.mgRole=mgFarmRole;}
  }
 
  if(!r.data){
@@ -1196,6 +1203,7 @@ async function mgGetFarm(){
 
  if(!r.data){throw new Error('Sua conta está autenticada, mas nenhuma propriedade ativa pôde ser carregada. Entre em contato com o suporte do Meu Gado.')}
  mgFarm=r.data;
+ document.documentElement.dataset.mgRole=mgFarmRole;
  return mgFarm
 }
 async function mgRows(table,select='*',order=null){const f=await mgGetFarm();let q=mgSb.from(table).select(select).eq('farm_id',f.id).is('deleted_at',null);if(order)q=q.order(order,{ascending:false});const r=await q;if(r.error)mgErr(r.error);return r.data||[]}
