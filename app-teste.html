@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v10-mobile">
+<meta name="mg-build" content="app-teste-v11-mobile-corrigido">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -860,6 +860,24 @@ html.mg-route-boot .view.active{display:none!important}
 #animalModal option{color:#111}
 #animalModal #acrossWrap{margin-top:0}
 </style>
+
+
+<script id="mg-mobile-device-detect">
+(function(){
+  function detect(){
+    var ua=navigator.userAgent||'';
+    var phone=/iPhone|iPod|Android.*Mobile|Windows Phone|Mobile/i.test(ua);
+    var smallScreen=Math.min(screen.width||9999,screen.height||9999)<=820;
+    var touch=(navigator.maxTouchPoints||0)>0;
+    var narrow=(window.innerWidth||9999)<=820;
+    var mobile=phone || (touch && (smallScreen || narrow));
+    document.documentElement.classList.toggle('mg-mobile-device',mobile);
+  }
+  detect();
+  window.addEventListener('resize',detect);
+  window.addEventListener('orientationchange',detect);
+})();
+</script>
 
 </head>
 <body data-build="termos-v21-2-teste"><div class="layout">
@@ -3652,6 +3670,245 @@ async function downloadReportPDF(type){
   @media print{
     body{background:#fff}
   }
+
+/* V11 — correção robusta para Safari/iPhone e navegadores internos.
+   Usa detecção do aparelho para não depender somente da largura do viewport. */
+html.mg-mobile-device body{overflow-x:hidden}
+html.mg-mobile-device body.mg-mobile-nav-open{overflow:hidden!important}
+
+html.mg-mobile-device .layout{
+  display:block!important;
+  grid-template-columns:none!important;
+  width:100%!important;
+  min-height:100vh!important;
+}
+html.mg-mobile-device .main{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+/* Menu completamente oculto quando fechado */
+html.mg-mobile-device .side{
+  position:fixed!important;
+  left:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:min(300px,86vw)!important;
+  height:100dvh!important;
+  z-index:1000!important;
+  transform:translate3d(-105%,0,0)!important;
+  transition:transform .22s ease!important;
+  padding:16px 13px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  box-shadow:10px 0 34px rgba(0,0,0,.25)!important;
+}
+html.mg-mobile-device body.mg-mobile-nav-open .side{
+  transform:translate3d(0,0,0)!important;
+}
+html.mg-mobile-device .side .brand div,
+html.mg-mobile-device .side .nav-title,
+html.mg-mobile-device .side .nav span,
+html.mg-mobile-device .side .farmbox small,
+html.mg-mobile-device .side .farm-profile b,
+html.mg-mobile-device .side .farm-profile small{
+  display:block!important;
+}
+html.mg-mobile-device .side .nav button{
+  width:100%!important;
+  text-align:left!important;
+  padding:12px!important;
+  font-size:13px!important;
+}
+html.mg-mobile-device .side .brand{padding-bottom:14px!important}
+html.mg-mobile-device .side-bottom{margin-top:18px!important}
+
+/* Fundo do menu */
+html.mg-mobile-device .mobile-nav-backdrop{
+  display:none!important;
+  position:fixed!important;
+  inset:0!important;
+  background:rgba(4,21,18,.52)!important;
+  z-index:990!important;
+}
+html.mg-mobile-device body.mg-mobile-nav-open .mobile-nav-backdrop{
+  display:block!important;
+}
+
+/* Cabeçalho mobile */
+html.mg-mobile-device .top{
+  position:sticky!important;
+  top:0!important;
+  z-index:200!important;
+  width:100%!important;
+  min-height:64px!important;
+  height:auto!important;
+  padding:9px 10px!important;
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) auto!important;
+  gap:8px!important;
+  align-items:center!important;
+  background:#fff!important;
+}
+html.mg-mobile-device .mobile-menu-btn{
+  display:inline-flex!important;
+  width:40px!important;
+  height:40px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:22px!important;
+  padding:0!important;
+}
+html.mg-mobile-device .search{
+  width:100%!important;
+  min-width:0!important;
+  grid-column:2!important;
+}
+html.mg-mobile-device .search input{
+  width:100%!important;
+  min-width:0!important;
+  font-size:12px!important;
+  padding-right:8px!important;
+}
+html.mg-mobile-device .top-actions{
+  grid-column:3!important;
+  display:flex!important;
+  gap:6px!important;
+  align-items:center!important;
+}
+html.mg-mobile-device .notification-btn span,
+html.mg-mobile-device .top-user>div{
+  display:none!important;
+}
+html.mg-mobile-device .content{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:12px 10px 34px!important;
+  overflow-x:hidden!important;
+}
+
+/* Cards ocupam toda a largura útil */
+html.mg-mobile-device .dashboard-kpis,
+html.mg-mobile-device .cards5{
+  grid-template-columns:1fr!important;
+}
+html.mg-mobile-device .grid2,
+html.mg-mobile-device .grid3,
+html.mg-mobile-device .dash-row,
+html.mg-mobile-device .dash-main-row,
+html.mg-mobile-device .profile-grid,
+html.mg-mobile-device .ap8-grid{
+  grid-template-columns:1fr!important;
+}
+
+/* Ficha do animal realmente em tela cheia */
+html.mg-mobile-device #animalProfileModal{
+  padding:0!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
+  background:#f6f8f9!important;
+  z-index:1400!important;
+}
+html.mg-mobile-device #animalProfileModal>.modalbox{
+  width:100vw!important;
+  max-width:100vw!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  margin:0!important;
+  border-radius:0!important;
+  padding:0 10px 28px!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+html.mg-mobile-device #animalProfileModal>.modalbox>.head{
+  position:sticky!important;
+  top:0!important;
+  z-index:20!important;
+  background:#fff!important;
+  margin:0 -10px 10px!important;
+  padding:11px 12px!important;
+  border-bottom:1px solid var(--line)!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-hero{
+  grid-template-columns:62px minmax(0,1fr)!important;
+  gap:10px!important;
+  padding:12px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-photo,
+html.mg-mobile-device #animalProfileModal .ap8-photo-placeholder{
+  width:60px!important;height:60px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-title b{font-size:20px!important}
+html.mg-mobile-device #animalProfileModal .ap8-hero-side{
+  grid-column:1/-1!important;
+  text-align:left!important;
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  border-top:1px solid var(--line)!important;
+  padding-top:9px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-kpis{
+  grid-template-columns:1fr 1fr!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-actions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-actions .btn{width:100%!important}
+html.mg-mobile-device #animalProfileModal .ap8-timeline .ap8-event{
+  grid-template-columns:30px minmax(0,1fr)!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-event time{
+  grid-column:2!important;
+  text-align:left!important;
+}
+
+/* Demais modais no celular */
+html.mg-mobile-device .modal:not(#animalProfileModal){
+  padding:0!important;
+  align-items:flex-end!important;
+}
+html.mg-mobile-device .modal:not(#animalProfileModal)>.modalbox{
+  width:100%!important;
+  max-width:none!important;
+  max-height:94dvh!important;
+  border-radius:18px 18px 0 0!important;
+}
+
+/* Formulários e ações */
+html.mg-mobile-device .form,
+html.mg-mobile-device .animal-form-modern,
+html.mg-mobile-device .expense-form-modern{
+  grid-template-columns:1fr!important;
+}
+html.mg-mobile-device .full{grid-column:auto!important}
+html.mg-mobile-device input,
+html.mg-mobile-device select,
+html.mg-mobile-device textarea{min-height:44px}
+html.mg-mobile-device .btn{min-height:42px!important}
+html.mg-mobile-device .quick{grid-template-columns:1fr 1fr!important}
+
+/* Tabelas: rolagem horizontal dentro do card */
+html.mg-mobile-device .card:has(table),
+html.mg-mobile-device .panel:has(table),
+html.mg-mobile-device .ap8-card:has(table){
+  overflow-x:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+html.mg-mobile-device .ap8-mini-table{min-width:620px!important}
+
+@media(max-width:430px){
+  html.mg-mobile-device #animalProfileModal .ap8-kpis,
+  html.mg-mobile-device #animalProfileModal .ap8-actions,
+  html.mg-mobile-device .quick{
+    grid-template-columns:1fr!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -6196,6 +6453,26 @@ document.addEventListener('keydown',function(e){
 window.addEventListener('resize',function(){
   if(window.innerWidth>760)mgCloseMobileNav();
 });
+</script>
+
+
+<script id="mg-mobile-v11-fix">
+(function(){
+  function closeNav(){ document.body.classList.remove('mg-mobile-nav-open'); }
+  window.mgCloseMobileNav=closeNav;
+  window.mgToggleMobileNav=function(){
+    document.body.classList.toggle('mg-mobile-nav-open');
+  };
+  document.addEventListener('click',function(e){
+    if(document.documentElement.classList.contains('mg-mobile-device') &&
+       e.target.closest('.side button[data-v], .side .side-link')){
+      setTimeout(closeNav,60);
+    }
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')closeNav();
+  });
+})();
 </script>
 
 </body></html>
