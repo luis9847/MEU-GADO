@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v17-central-alertas-corrigida">
+<meta name="mg-build" content="app-teste-v19-notificacoes-sincronizadas">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -2611,6 +2611,7 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
   <div id="healthProductInfo" class="health-product-info" style="display:none"></div>
   <small id="healthProductHelp" class="sub" style="display:block;margin-top:6px"></small>
 </label><label>Data<input id="hdate" type="date"></label><label>Próxima dose<input id="hnext" type="date"></label><label>Animal<select id="hanimal"><option value="">Lote/Geral</option></select></label><label>Lote<input id="hlot"></label><label class="full">Observações<textarea id="hnotes"></textarea></label><button id="healthSaveBtn" class="btn primary full" onclick="saveHealth()">Salvar evento</button></div></div></div>
+<div class="modal" id="healthApplicationModal"><div class="modalbox"><div class="head"><div><h3>Registrar aplicação</h3><div class="sub" id="healthApplicationSummary">Concluir pendência sanitária</div></div><button class="btn secondary" onclick="closeModal('healthApplicationModal')">Fechar</button></div><div class="form"><input id="healthApplicationSourceId" type="hidden"><label>Data da aplicação<input id="healthApplicationDate" type="date"></label><label>Próxima dose (opcional)<input id="healthApplicationNext" type="date"></label><label class="full">Observações<textarea id="healthApplicationNotes" placeholder="Ex.: dose aplicada sem intercorrências"></textarea></label><button id="healthApplicationSaveBtn" class="btn primary full" onclick="saveHealthApplication()">Confirmar aplicação</button></div></div></div>
 
 <div class="modal" id="reproModal">
   <div class="modalbox" style="width:min(820px,96vw)">
@@ -2901,7 +2902,8 @@ async function mgDashboard(){
     title,
     detail,
     date:x.next_due_date,
-    animal_id:x.animal_id||null
+    animal_id:x.animal_id||null,
+    health_event_id:x.id
   });
  }
  let overdueWeights=0,weightLoss=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(last){const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
@@ -3174,7 +3176,7 @@ async function dashboard(){
   if(document.getElementById('readyBadge')) readyBadge.textContent=d.ready||0;
   if(document.getElementById('weighBadge')) weighBadge.textContent=d.weighing_overdue||0;
   if(document.getElementById('reproBadge')) reproBadge.textContent=d.repro_due||0;
-  mgRefreshNotificationCount(d.alerts||[]);
+  await mgRefreshNotificationCount(d.alerts||[]);
   if(document.getElementById('firstSteps')) firstSteps.style.display=d.total===0?'grid':'none';
   if(document.getElementById('financePeriod')){
     const prev=Number(d.expenses_prev_month||0),cur=Number(d.expenses_month||0);
@@ -4649,6 +4651,52 @@ async function deleteHealth(id){
     await Promise.all([loadHealth(),dashboard()]);
   }catch(e){alert('Não foi possível excluir o registro de saúde. '+(e?.message||''))}
 }
+function mgAlertRegisterApplication(id){
+  const event=(healthData||[]).find(item=>Number(item.id)===Number(id));
+  if(!event){alert('Registro sanitário não encontrado. Atualize a página e tente novamente.');return}
+  document.getElementById('healthApplicationSourceId').value=String(event.id);
+  document.getElementById('healthApplicationDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('healthApplicationNext').value='';
+  document.getElementById('healthApplicationNotes').value='';
+  document.getElementById('healthApplicationSummary').textContent=`${event.event_type||'Procedimento'} · ${event.product||'Sem produto'}${event.animal_number?' · Animal #'+event.animal_number:''}`;
+  closeModal('notificationsModal');
+  openModal('healthApplicationModal');
+}
+async function saveHealthApplication(){
+  const sourceId=Number(document.getElementById('healthApplicationSourceId').value||0);
+  const appliedDate=document.getElementById('healthApplicationDate').value;
+  const nextDate=document.getElementById('healthApplicationNext').value||null;
+  const notes=document.getElementById('healthApplicationNotes').value.trim();
+  const source=(healthData||[]).find(item=>Number(item.id)===sourceId);
+  if(!source){alert('Registro sanitário não encontrado.');return}
+  if(!appliedDate){alert('Informe a data da aplicação.');return}
+
+  const button=document.getElementById('healthApplicationSaveBtn');
+  button.disabled=true;button.textContent='Salvando...';
+  try{
+    const payload={
+      event_type:source.event_type||'Vacina',
+      product:source.product||'',
+      event_date:appliedDate,
+      next_due_date:nextDate,
+      animal_id:source.animal_id?Number(source.animal_id):null,
+      lot:source.lot||'',
+      notes:notes||`Aplicação referente ao agendamento de ${source.next_due_date||source.event_date}.`
+    };
+    await api('/api/health',{method:'POST',body:JSON.stringify(payload)});
+    const f=await mgGetFarm();
+    const completed=await mgSb.from('health_events').update({next_due_date:null}).eq('farm_id',f.id).eq('id',sourceId).is('deleted_at',null);
+    if(completed.error)throw completed.error;
+    closeModal('healthApplicationModal');
+    closeModal('notificationsModal');
+    await Promise.all([loadHealth(),dashboard()]);
+    alert(nextDate?'Aplicação registrada e próxima dose agendada.':'Aplicação registrada e pendência concluída.');
+  }catch(e){
+    alert('Não foi possível registrar a aplicação. '+(e?.message||''));
+  }finally{
+    button.disabled=false;button.textContent='Confirmar aplicação';
+  }
+}
 function addDaysISO(dateStr,days){if(!dateStr)return'';const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
 let editingReproId=null;
 let reproData=[];
@@ -5003,19 +5051,55 @@ function mgSetNotificationCount(count){
   badge.textContent=total;
   badge.style.display=total?'grid':'none';
 }
-function mgRefreshNotificationCount(alerts){
+let mgAlertDatabaseUnavailable=false;
+async function mgDatabaseReadAlertIds(alerts){
+  if(mgAlertDatabaseUnavailable)return null;
+  try{
+    const f=await mgGetFarm();
+    const farmId=String(f.id),userId=String(mgUser.id);
+    const result=await mgSb.from('notification_reads').select('alert_key').eq('farm_id',farmId).eq('user_id',userId);
+    if(result.error)throw result.error;
+    const activeIds=new Set((Array.isArray(alerts)?alerts:[]).map(mgAlertIdentity));
+    const savedIds=(result.data||[]).map(row=>String(row.alert_key));
+    const obsolete=savedIds.filter(id=>!activeIds.has(id));
+    if(obsolete.length){
+      const removed=await mgSb.from('notification_reads').delete().eq('farm_id',farmId).eq('user_id',userId).in('alert_key',obsolete);
+      if(removed.error)throw removed.error;
+    }
+    return new Set(savedIds.filter(id=>activeIds.has(id)));
+  }catch(error){
+    mgAlertDatabaseUnavailable=true;
+    console.warn('Sincronização de notificações indisponível; usando este navegador.',error?.message||error);
+    return null;
+  }
+}
+async function mgRefreshNotificationCount(alerts){
   const list=Array.isArray(alerts)?alerts:[];
   const activeIds=new Set(list.map(mgAlertIdentity));
-  const readIds=mgReadAlertIds();
+  const databaseIds=await mgDatabaseReadAlertIds(list);
+  const readIds=databaseIds||mgReadAlertIds();
   const activeReadIds=new Set([...readIds].filter(id=>activeIds.has(id)));
   mgSaveReadAlertIds(activeReadIds);
   mgSetNotificationCount(list.filter(alert=>!activeReadIds.has(mgAlertIdentity(alert))).length);
 }
-function mgMarkAlertsAsRead(alerts){
+async function mgMarkAlertsAsRead(alerts){
+  const list=Array.isArray(alerts)?alerts:[];
   const readIds=mgReadAlertIds();
-  (Array.isArray(alerts)?alerts:[]).forEach(alert=>readIds.add(mgAlertIdentity(alert)));
+  list.forEach(alert=>readIds.add(mgAlertIdentity(alert)));
   mgSaveReadAlertIds(readIds);
   mgSetNotificationCount(0);
+  if(!mgAlertDatabaseUnavailable&&list.length){
+    try{
+      const f=await mgGetFarm();
+      const now=new Date().toISOString();
+      const rows=list.map(alert=>({farm_id:String(f.id),user_id:String(mgUser.id),alert_key:mgAlertIdentity(alert),read_at:now}));
+      const saved=await mgSb.from('notification_reads').upsert(rows,{onConflict:'farm_id,user_id,alert_key'});
+      if(saved.error)throw saved.error;
+    }catch(error){
+      mgAlertDatabaseUnavailable=true;
+      console.warn('A leitura foi salva somente neste navegador.',error?.message||error);
+    }
+  }
 }
 function mgAlertLevelLabel(level){
   if(level==='danger')return 'Urgente';
@@ -5076,6 +5160,7 @@ function mgRenderAlertCenter(){
         </div>
       </div>
       <div class="mg-alert-actions">
+        ${a.type==='health'&&a.health_event_id?`<button class="mg-alert-open" onclick="mgAlertRegisterApplication(${Number(a.health_event_id)})">Registrar aplicação</button>`:''}
         ${a.animal_id?`<button class="mg-alert-open" onclick="mgAlertOpenAnimal(${Number(a.animal_id)})">Abrir animal</button>`:''}
         <button class="mg-alert-module" onclick="mgAlertGoView('${meta.view}')">Ir para ${meta.actionLabel||meta.label}</button>
       </div>
@@ -5115,7 +5200,7 @@ async function openNotifications(){
     </div>
     <div id="mgAlertList" class="mg-alert-list"></div>`;
 
-  mgMarkAlertsAsRead(list);
+  await mgMarkAlertsAsRead(list);
   mgRenderAlertCenter();
   openModal('notificationsModal');
 }
