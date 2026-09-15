@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v15-ficha-mobile-compacta">
+<meta name="mg-build" content="app-teste-v17-central-alertas-corrigida">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -1314,6 +1314,42 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 }
 </style>
 
+
+<style id="mg-v17-alert-center">
+#notificationsModal>.modalbox{width:min(920px,96vw)!important}
+.mg-alert-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:4px 0 12px}
+.mg-alert-kpi{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 11px;min-width:0}
+.mg-alert-kpi small{display:block;font-size:10px!important;color:var(--muted);font-weight:800;text-transform:uppercase}
+.mg-alert-kpi b{display:block;font-size:20px;margin-top:4px}
+.mg-alert-kpi.danger b{color:#c4483d}.mg-alert-kpi.health b{color:#d98a16}.mg-alert-kpi.weight b{color:#3975ca}.mg-alert-kpi.repro b{color:#7c58c8}.mg-alert-kpi.ready b{color:#128b45}
+.mg-alert-filters{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 10px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.mg-alert-filter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px!important;font-weight:800;color:#53655d;cursor:pointer}
+.mg-alert-filter.active{background:#eaf7ee;border-color:#a9d8b8;color:#0d8340}
+.mg-alert-list{display:grid;gap:8px;padding-top:4px}
+.mg-alert-card{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:11px;background:#fff}
+.mg-alert-card.danger{border-left:4px solid #d94f45}.mg-alert-card.warning{border-left:4px solid #e39a24}.mg-alert-card.info{border-left:4px solid #3977ce}.mg-alert-card.success{border-left:4px solid #13944a}
+.mg-alert-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:#f2f6f4}
+.mg-alert-card.danger .mg-alert-icon{background:#fdeceb}.mg-alert-card.warning .mg-alert-icon{background:#fff3df}.mg-alert-card.info .mg-alert-icon{background:#eaf2ff}.mg-alert-card.success .mg-alert-icon{background:#e9f7ee}
+.mg-alert-main{min-width:0}.mg-alert-main b{display:block;font-size:12.5px!important;line-height:1.3}.mg-alert-main small{display:block;font-size:11px!important;line-height:1.45;color:var(--muted);margin-top:3px}
+.mg-alert-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.mg-alert-tag{display:inline-flex;align-items:center;min-height:22px;padding:3px 7px;border-radius:999px;background:#f2f5f3;color:#5c6c65;font-size:9.5px!important;font-weight:800}
+.mg-alert-actions{display:flex;flex-direction:column;gap:5px;min-width:118px}.mg-alert-actions button{min-height:34px;border-radius:8px;font-size:10.5px!important;font-weight:850;padding:7px 9px;cursor:pointer}
+.mg-alert-open{border:0;background:var(--green);color:#fff}.mg-alert-module{border:1px solid var(--line);background:#fff;color:#3d5249}
+.mg-alert-empty{padding:30px 14px;text-align:center;color:var(--muted)}.mg-alert-empty .icon{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;margin:0 auto 9px;background:#eaf7ee;font-size:21px}
+.mg-alert-empty b{display:block;color:var(--text);font-size:13px;margin-bottom:4px}.mg-alert-empty span{font-size:11px}
+@media(max-width:760px){
+  html.mg-mobile-device #notificationsModal{padding:0!important;align-items:stretch!important;justify-content:stretch!important;background:#f5f7f6!important}
+  html.mg-mobile-device #notificationsModal>.modalbox{width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;border-radius:0!important;padding:0 10px 24px!important}
+  html.mg-mobile-device #notificationsModal>.modalbox>.head{position:sticky;top:0;z-index:20;background:#fff;margin:0 -10px 10px;padding:11px 12px;border-bottom:1px solid var(--line)}
+  html.mg-mobile-device .mg-alert-summary{grid-template-columns:1fr 1fr!important}
+  html.mg-mobile-device .mg-alert-kpi:first-child{grid-column:1/-1}
+  html.mg-mobile-device .mg-alert-card{grid-template-columns:36px minmax(0,1fr)!important;align-items:start!important}
+  html.mg-mobile-device .mg-alert-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;min-width:0}
+  html.mg-mobile-device .mg-alert-filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:9px;scrollbar-width:none}
+  html.mg-mobile-device .mg-alert-filters::-webkit-scrollbar{display:none}
+  html.mg-mobile-device .mg-alert-filter{white-space:nowrap}
+}
+</style>
+
 </head>
 <body data-build="termos-v21-2-teste">
 
@@ -1379,7 +1415,7 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
   <button class="mobile-menu-btn" type="button" aria-label="Abrir menu" onclick="mgToggleMobileNav()">☰</button>
   <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Buscar por número do animal, lote ou raça..." oninput="filterAnimals()"></div>
   <div class="top-actions">
-    <button class="notification-btn" onclick="openNotifications()">♧ <span>Notificações</span><b id="notificationCount">0</b></button>
+    <button class="notification-btn" onclick="openNotifications()">🔔 <span>Notificações</span><b id="notificationCount">0</b></button>
     <div class="top-user"><span id="userInitial">F</span><div><b id="userTop">Usuário</b><small id="farmTop">Fazenda</small></div></div>
   </div>
 </div><div class="content">
@@ -3138,7 +3174,7 @@ async function dashboard(){
   if(document.getElementById('readyBadge')) readyBadge.textContent=d.ready||0;
   if(document.getElementById('weighBadge')) weighBadge.textContent=d.weighing_overdue||0;
   if(document.getElementById('reproBadge')) reproBadge.textContent=d.repro_due||0;
-  if(document.getElementById('notificationCount')) notificationCount.textContent=(d.alerts||[]).length;
+  mgRefreshNotificationCount(d.alerts||[]);
   if(document.getElementById('firstSteps')) firstSteps.style.display=d.total===0?'grid':'none';
   if(document.getElementById('financePeriod')){
     const prev=Number(d.expenses_prev_month||0),cur=Number(d.expenses_month||0);
@@ -4935,22 +4971,152 @@ async function deleteRepro(id){
 }
 function mgHealthReminderAlerts(){ return []; }
 
+
+function mgAlertTypeMeta(type){
+  if(type==='health') return {icon:'💉',label:'Saúde',view:'saude'};
+  if(type==='weight') return {icon:'⚖️',label:'Pesagem',view:'pesagem'};
+  if(type==='loss') return {icon:'📉',label:'Perda de peso',view:'pesagem'};
+  if(type==='repro') return {icon:'❤️',label:'Reprodução',view:'repro'};
+  if(type==='ready') return {icon:'✅',label:'Meta atingida',view:'desempenho',actionLabel:'Desempenho'};
+  return {icon:'⚠️',label:'Atenção',view:'inicio'};
+}
+function mgAlertIdentity(alert){
+  if(alert?.id)return String(alert.id);
+  return [alert?.type||'alert',alert?.animal_id||'',alert?.date||'',alert?.title||''].join('|');
+}
+function mgAlertReadStorageKey(){
+  return `mg_read_alerts_${mgFarm?.id||'farm'}_${mgUser?.id||'user'}`;
+}
+function mgReadAlertIds(){
+  try{
+    const value=JSON.parse(localStorage.getItem(mgAlertReadStorageKey())||'[]');
+    return new Set(Array.isArray(value)?value.map(String):[]);
+  }catch(e){return new Set()}
+}
+function mgSaveReadAlertIds(ids){
+  try{localStorage.setItem(mgAlertReadStorageKey(),JSON.stringify([...ids]))}catch(e){}
+}
+function mgSetNotificationCount(count){
+  const badge=document.getElementById('notificationCount');
+  if(!badge)return;
+  const total=Math.max(0,Number(count)||0);
+  badge.textContent=total;
+  badge.style.display=total?'grid':'none';
+}
+function mgRefreshNotificationCount(alerts){
+  const list=Array.isArray(alerts)?alerts:[];
+  const activeIds=new Set(list.map(mgAlertIdentity));
+  const readIds=mgReadAlertIds();
+  const activeReadIds=new Set([...readIds].filter(id=>activeIds.has(id)));
+  mgSaveReadAlertIds(activeReadIds);
+  mgSetNotificationCount(list.filter(alert=>!activeReadIds.has(mgAlertIdentity(alert))).length);
+}
+function mgMarkAlertsAsRead(alerts){
+  const readIds=mgReadAlertIds();
+  (Array.isArray(alerts)?alerts:[]).forEach(alert=>readIds.add(mgAlertIdentity(alert)));
+  mgSaveReadAlertIds(readIds);
+  mgSetNotificationCount(0);
+}
+function mgAlertLevelLabel(level){
+  if(level==='danger')return 'Urgente';
+  if(level==='warning')return 'Atenção';
+  if(level==='info')return 'Acompanhar';
+  if(level==='success')return 'Concluído';
+  return 'Aviso';
+}
+function mgAlertEscape(v){
+  if(typeof ap8Esc==='function')return ap8Esc(v);
+  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function mgAlertGoView(view){
+  closeModal('notificationsModal');
+  const btn=document.querySelector(`.side [data-v="${view}"]`);
+  show(view,btn||null);
+  if(typeof mgCloseMobileNav==='function')mgCloseMobileNav();
+}
+function mgAlertOpenAnimal(id){
+  closeModal('notificationsModal');
+  openAnimalProfile(id);
+}
+function mgSetAlertFilter(filter,btn){
+  window.mgAlertCenterFilter=filter;
+  document.querySelectorAll('.mg-alert-filter').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  mgRenderAlertCenter();
+}
+function mgRenderAlertCenter(){
+  const all=window.mgAlertCenterData||[];
+  const filter=window.mgAlertCenterFilter||'all';
+  let list=all;
+  if(filter==='urgent')list=all.filter(a=>a.level==='danger'||a.level==='warning');
+  else if(filter==='health')list=all.filter(a=>a.type==='health');
+  else if(filter==='weight')list=all.filter(a=>a.type==='weight'||a.type==='loss');
+  else if(filter==='repro')list=all.filter(a=>a.type==='repro');
+  else if(filter==='ready')list=all.filter(a=>a.type==='ready');
+
+  const body=document.getElementById('mgAlertList');
+  if(!body)return;
+
+  if(!list.length){
+    body.innerHTML=`<div class="mg-alert-empty"><div class="icon">✓</div><b>Nenhum alerta nesta categoria</b><span>Quando surgir algo que precise de atenção, ele aparecerá aqui.</span></div>`;
+    return;
+  }
+
+  body.innerHTML=list.map(a=>{
+    const meta=mgAlertTypeMeta(a.type);
+    return `<div class="mg-alert-card ${mgAlertEscape(a.level||'info')}">
+      <div class="mg-alert-icon">${meta.icon}</div>
+      <div class="mg-alert-main">
+        <b>${mgAlertEscape(a.title||'Alerta')}</b>
+        <small>${mgAlertEscape(a.detail||'')}</small>
+        <div class="mg-alert-tags">
+          <span class="mg-alert-tag">${meta.label}</span>
+          <span class="mg-alert-tag">${mgAlertLevelLabel(a.level)}</span>
+          ${a.date?`<span class="mg-alert-tag">📅 ${typeof ap8Date==='function'?ap8Date(a.date):mgAlertEscape(a.date)}</span>`:''}
+        </div>
+      </div>
+      <div class="mg-alert-actions">
+        ${a.animal_id?`<button class="mg-alert-open" onclick="mgAlertOpenAnimal(${Number(a.animal_id)})">Abrir animal</button>`:''}
+        <button class="mg-alert-module" onclick="mgAlertGoView('${meta.view}')">Ir para ${meta.actionLabel||meta.label}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+
 async function openNotifications(){
-  // Atualiza sempre ao abrir para refletir imediatamente doses, pesagens e demais alertas.
   const d=await api('/api/dashboard');
   window.mgDashboardData=d;
-
   const list=d.alerts||[];
-  notificationsBody.innerHTML=list.length?list.map(a=>`<div class="dashboard-alert" ${a.animal_id?`style="cursor:pointer" onclick="closeModal('notificationsModal');openAnimalProfile(${a.animal_id})"`:''}>
-    <span class="alert-icon ${a.level==='danger'?'orange':a.level==='success'?'green':a.level==='info'?'blue':'purple'}">${a.type==='repro'?'♡':a.type==='weight'?'⚖':a.type==='loss'?'↓':a.type==='ready'?'↗':a.type==='health'?'✚':'!'}</span>
-    <div>
-      <b>${a.title}</b>
-      <small>${a.detail||''}</small>
-      ${a.animal_id?'<small style="color:var(--green);font-weight:800;margin-top:3px">Abrir ficha do animal ›</small>':''}
-    </div>
-  </div>`).join(''):'<div class="empty-state"><div class="empty-icon">✓</div><b>Nenhum alerta no momento</b><span>Seu rebanho não possui pendências críticas registradas.</span></div>';
+  window.mgAlertCenterData=list;
+  window.mgAlertCenterFilter='all';
 
-  if(document.getElementById('notificationCount'))notificationCount.textContent=list.length;
+  const urgent=list.filter(a=>a.level==='danger'||a.level==='warning').length;
+  const health=list.filter(a=>a.type==='health').length;
+  const weight=list.filter(a=>a.type==='weight'||a.type==='loss').length;
+  const repro=list.filter(a=>a.type==='repro').length;
+  const ready=list.filter(a=>a.type==='ready').length;
+
+  notificationsBody.innerHTML=`
+    <div class="mg-alert-summary">
+      <div class="mg-alert-kpi danger"><small>Precisam de atenção</small><b>${urgent}</b></div>
+      <div class="mg-alert-kpi health"><small>Saúde</small><b>${health}</b></div>
+      <div class="mg-alert-kpi weight"><small>Pesagem</small><b>${weight}</b></div>
+      <div class="mg-alert-kpi repro"><small>Reprodução</small><b>${repro}</b></div>
+      <div class="mg-alert-kpi ready"><small>Metas</small><b>${ready}</b></div>
+    </div>
+    <div class="mg-alert-filters">
+      <button class="mg-alert-filter active" onclick="mgSetAlertFilter('all',this)">Todos (${list.length})</button>
+      <button class="mg-alert-filter" onclick="mgSetAlertFilter('urgent',this)">Urgentes (${urgent})</button>
+      <button class="mg-alert-filter" onclick="mgSetAlertFilter('health',this)">Saúde (${health})</button>
+      <button class="mg-alert-filter" onclick="mgSetAlertFilter('weight',this)">Pesagem (${weight})</button>
+      <button class="mg-alert-filter" onclick="mgSetAlertFilter('repro',this)">Reprodução (${repro})</button>
+      <button class="mg-alert-filter" onclick="mgSetAlertFilter('ready',this)">Metas (${ready})</button>
+    </div>
+    <div id="mgAlertList" class="mg-alert-list"></div>`;
+
+  mgMarkAlertsAsRead(list);
+  mgRenderAlertCenter();
   openModal('notificationsModal');
 }
 
