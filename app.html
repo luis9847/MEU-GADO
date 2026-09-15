@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v7-icones-completos">
+<meta name="mg-build" content="app-teste-v15-ficha-mobile-compacta">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -520,6 +520,322 @@ html[data-mg-role="vet"] .vet-hidden { display:none !important; }
 .side .nav button{gap:10px}
 .side .nav button>span{display:inline-block}
 
+
+/* V8 — Ficha individual completa do animal */
+.animal-profile-v8{display:grid;gap:12px}
+.ap8-hero{display:grid;grid-template-columns:82px 1fr auto;gap:14px;align-items:center;background:linear-gradient(135deg,#f8fcf9,#fff);border:1px solid #dce9e0;border-radius:13px;padding:14px}
+.ap8-photo{width:76px;height:76px;border-radius:13px;object-fit:cover;background:#edf2f3;border:1px solid #dce5e1}
+.ap8-photo-placeholder{width:76px;height:76px;border-radius:13px;background:#eaf4ed;display:grid;place-items:center;font-size:31px;border:1px solid #d8e7dd}
+.ap8-title b{display:block;font-size:22px;letter-spacing:-.03em}
+.ap8-title>span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.ap8-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ap8-chip{display:inline-flex;align-items:center;border:1px solid #dce5e1;border-radius:99px;background:#fff;padding:5px 8px;font-size:8px;font-weight:800;color:#3a5148}
+.ap8-chip.green{background:#eaf7ee;border-color:#d3eadb;color:#118b44}
+.ap8-hero-side{text-align:right}
+.ap8-hero-side small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:800}
+.ap8-hero-side b{display:block;font-size:18px;margin-top:4px}
+.ap8-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.ap8-kpi{background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px}
+.ap8-kpi small{display:block;color:var(--muted);font-size:8px;font-weight:800;text-transform:uppercase}
+.ap8-kpi b{display:block;font-size:17px;margin-top:5px}
+.ap8-kpi span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+.ap8-progress-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px}
+.ap8-progress-head{display:flex;justify-content:space-between;gap:12px;font-size:9px;margin-bottom:7px}
+.ap8-progress-track{height:8px;background:#edf1ef;border-radius:99px;overflow:hidden}
+.ap8-progress-track i{display:block;height:100%;background:var(--green);border-radius:99px}
+.ap8-actions{display:flex;gap:7px;flex-wrap:wrap}
+.ap8-actions button{font-size:9px}
+.ap8-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ap8-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:13px;min-width:0}
+.ap8-card h4{margin:0 0 9px;font-size:11px}
+.ap8-row{display:flex;justify-content:space-between;gap:15px;padding:7px 0;border-bottom:1px solid #edf1ef;font-size:9px}
+.ap8-row:last-child{border-bottom:0}.ap8-row span{color:var(--muted)}.ap8-row b{text-align:right}
+.ap8-section-sub{font-size:8px;color:var(--muted);margin:-5px 0 8px}
+.ap8-list{display:grid;gap:6px}
+.ap8-event{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;border-bottom:1px solid #edf1ef;padding:6px 0}
+.ap8-event:last-child{border-bottom:0}
+.ap8-event i{font-style:normal;width:27px;height:27px;border-radius:50%;background:#edf8f1;display:grid;place-items:center;font-size:11px}
+.ap8-event b{display:block;font-size:9px}.ap8-event small{display:block;color:var(--muted);font-size:7.5px;margin-top:2px;line-height:1.35}
+.ap8-event time{font-size:7px;color:var(--muted);white-space:nowrap}
+.ap8-empty{color:var(--muted);font-size:9px;padding:12px 0;text-align:center}
+.ap8-timeline{grid-column:1/-1}
+.ap8-timeline .ap8-event{grid-template-columns:30px 1fr 78px}
+.ap8-wide{grid-column:1/-1}
+.ap8-mini-table{width:100%;border-collapse:collapse}.ap8-mini-table th,.ap8-mini-table td{padding:7px 6px;font-size:8px}.ap8-mini-table th{font-size:7px}
+.ap8-status-up{color:#118b44}.ap8-status-down{color:#b13b34}
+@media(max-width:900px){.ap8-kpis{grid-template-columns:repeat(2,1fr)}.ap8-grid{grid-template-columns:1fr}.ap8-timeline,.ap8-wide{grid-column:auto}.ap8-hero{grid-template-columns:70px 1fr}.ap8-hero-side{grid-column:1/-1;text-align:left}.ap8-photo,.ap8-photo-placeholder{width:66px;height:66px}}
+@media(max-width:560px){.ap8-kpis{grid-template-columns:1fr 1fr}.ap8-actions{display:grid;grid-template-columns:1fr 1fr}.ap8-actions button{width:100%}}
+
+
+/* V9 — Legibilidade global
+   Aumenta a tipografia do site inteiro sem alterar regras de negócio. */
+html,body{font-size:15px!important}
+button,input,select,textarea{font-size:13px!important;line-height:1.35}
+
+/* Menu lateral e cabeçalho */
+.brand b{font-size:18px!important}
+.brand small{font-size:10.5px!important}
+.nav-title{font-size:10px!important}
+.nav button{font-size:13px!important;line-height:1.25}
+.farm-profile b{font-size:11px!important}
+.farm-profile small,.mydata-btn,.side-link{font-size:10.5px!important}
+.search input{font-size:12.5px!important}
+.notification-btn{font-size:11px!important}
+.top-user b{font-size:11px!important}
+.top-user small{font-size:10px!important}
+
+/* Textos gerais da área principal */
+.content p{font-size:12px!important;line-height:1.55}
+.content small{font-size:11px!important;line-height:1.4}
+.content label{font-size:12px!important}
+.content input,.content select,.content textarea{font-size:13px!important}
+.content .sub,.content .foot{font-size:12px!important;line-height:1.45}
+.content .label{font-size:11px!important}
+.content .status{font-size:10.5px!important}
+.content .btn{font-size:12px!important}
+.content table td{font-size:12px!important;line-height:1.4}
+.content table th{font-size:10.5px!important;line-height:1.35}
+.empty,.empty-state span,.performance-empty{font-size:12px!important}
+.empty-state b{font-size:14px!important}
+.alert b,.news{font-size:12px!important}
+.alert span{font-size:11px!important}
+.step-grid b{font-size:13px!important}
+.step-grid small{font-size:11px!important}
+
+/* KPIs e painéis */
+.metric-top span{font-size:11px!important}
+.metric-foot,.metric-card small{font-size:11px!important}
+.performance-kpi small,.performance-kpi span{font-size:11px!important}
+.rank-row{font-size:12px!important}
+.rank-main small{font-size:11px!important}
+
+/* Animais */
+.animal-search input{font-size:13px!important}
+.filter-pill{font-size:11.5px!important}
+.animal-count-line{font-size:11.5px!important}
+.animal-row-card>div small{font-size:11px!important}
+.animal-row-card>div b{font-size:12.5px!important}
+.animal-main b{font-size:13.5px!important}
+.animal-main small{font-size:11px!important}
+.animal-form-modern label,.radio-row label{font-size:12px!important}
+.animal-form-modern label small{font-size:11px!important}
+.photo-preview small{font-size:10px!important}
+
+/* Lotes e Pesagens */
+.lot-view-hint{font-size:11.5px!important}
+.lot-bar-wrap small,.lot-bar-wrap b{font-size:10.5px!important}
+.lot-performance table td{font-size:11.5px!important}
+.lot-performance table th{font-size:10px!important}
+.lot-status{font-size:10px!important}
+.inline-form-card label,.weigh-card label,.batch-content>label{font-size:12px!important}
+.inline-form-card label small,.weigh-card label small{font-size:11px!important}
+.form-eyebrow,.section-caption,.form-section-title{font-size:11px!important}
+
+/* Relatórios */
+.report-period-card>div b{font-size:14px!important}
+.report-period-card>div small{font-size:11px!important}
+.report-period-card label{font-size:11.5px!important}
+.report-card b{font-size:14px!important}
+.report-card p{font-size:12px!important;line-height:1.55}
+.report-card button{font-size:12px!important}
+
+/* Gastos */
+.expense-form-modern label{font-size:12px!important}
+.expense-form-modern label small{font-size:11px!important}
+.profile-required-note{font-size:11.5px!important}
+
+/* Leite */
+.dairy-kpi small,.dairy-kpi span{font-size:11px!important}
+.dairy-tab{font-size:11.5px!important}
+.dairy-field label{font-size:11.5px!important}
+.dairy-table{font-size:12px!important}
+.dairy-table th{font-size:10.5px!important}
+.dairy-badge{font-size:10px!important}
+.dairy-empty{font-size:12px!important}
+.dairy-insights span{font-size:11px!important}
+.dairy-alert b{font-size:12px!important}
+.dairy-alert small{font-size:11px!important}
+.dairy-chart-day{font-size:9.5px!important}
+
+/* Saúde */
+.health-kpi small{font-size:11px!important}
+.health-kpi span{font-size:12px!important}
+.health-agenda-item small{font-size:11px!important}
+.health-status{font-size:11px!important}
+.health-product-info .hp-title{font-size:13px!important}
+.health-product-info .hp-desc{font-size:11.5px!important}
+
+/* Reprodução */
+.repro-kpi small{font-size:11px!important}
+.repro-kpi span{font-size:12px!important}
+.repro-agenda-item small,.repro-status-row small,.repro-birth-head small{font-size:11px!important}
+.repro-status-row b{font-size:13px!important}
+.repro-pill{font-size:10.5px!important}
+
+/* Mercado e novidades */
+.market-kpi small,.market-kpi span{font-size:11px!important}
+.market-filters label{font-size:11.5px!important}
+.market-filters select{font-size:12px!important}
+.market-region-card .place b{font-size:12.5px!important}
+.market-region-card .place span,.market-region-card .secondary-quote{font-size:10.5px!important}
+.market-region-card .quote small{font-size:10.5px!important}
+.market-news-card b{font-size:12px!important}
+.market-news-card span,.market-test-note,.market-disclaimer{font-size:10.5px!important}
+.release-head p,.benefit-box,.release-point,.how-step{font-size:11.5px!important}
+.release-date,.release-tag{font-size:10px!important}
+.how-title{font-size:12.5px!important}
+
+/* Ficha individual V8 */
+.ap8-title b{font-size:23px!important}
+.ap8-title>span{font-size:12px!important}
+.ap8-chip{font-size:10.5px!important}
+.ap8-hero-side small{font-size:10px!important}
+.ap8-kpi small{font-size:10.5px!important}
+.ap8-kpi span{font-size:10px!important}
+.ap8-progress-head{font-size:11.5px!important}
+.ap8-card h4{font-size:14px!important}
+.ap8-row{font-size:11.5px!important;line-height:1.45}
+.ap8-section-sub{font-size:10.5px!important;line-height:1.45}
+.ap8-event b{font-size:11.5px!important}
+.ap8-event small{font-size:10px!important;line-height:1.4}
+.ap8-event time{font-size:9.5px!important}
+.ap8-empty{font-size:11.5px!important}
+.ap8-mini-table td{font-size:11.5px!important}
+.ap8-mini-table th{font-size:10px!important}
+
+/* Celular: mantém legibilidade sem estourar a tela */
+@media(max-width:700px){
+  html,body{font-size:14px!important}
+  .nav button{font-size:12px!important}
+  .content{padding-left:12px!important;padding-right:12px!important}
+  .report-card b,.ap8-card h4{font-size:13px!important}
+  .content table td{font-size:11.5px!important}
+  .content table th{font-size:10px!important}
+}
+
+
+/* V10 — experiência no celular/tablet */
+.mobile-menu-btn{display:none;border:1px solid var(--line);background:#fff;color:#17352b;width:38px;height:38px;border-radius:8px;font-size:20px;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.mobile-nav-backdrop{display:none}
+
+@media(max-width:760px){
+  body.mg-mobile-nav-open{overflow:hidden}
+  .layout{display:block!important;min-height:100vh}
+  .main{width:100%;min-width:0}
+
+  .side{
+    position:fixed!important;
+    left:0;top:0;bottom:0;
+    width:min(290px,86vw)!important;
+    height:100dvh!important;
+    z-index:300!important;
+    transform:translateX(-103%);
+    transition:transform .22s ease;
+    padding:16px 13px!important;
+    overflow-y:auto;
+    box-shadow:8px 0 28px rgba(0,0,0,.22);
+  }
+  body.mg-mobile-nav-open .side{transform:translateX(0)}
+  .side .brand div,.side .nav-title,.side .nav span,.side .farmbox small{display:block!important}
+  .side .nav button{text-align:left!important;padding:11px 12px!important;font-size:13px!important}
+  .side .nav-title{font-size:10px!important}
+  .side .farm-profile{grid-template-columns:32px 1fr 24px!important}
+  .side .farm-profile b,.side .farm-profile small{display:block!important}
+  .side-bottom{margin-top:18px!important}
+
+  .mobile-nav-backdrop{
+    position:fixed;inset:0;background:rgba(7,24,20,.48);
+    z-index:290;
+  }
+  body.mg-mobile-nav-open .mobile-nav-backdrop{display:block}
+
+  .top{
+    height:auto!important;min-height:62px;
+    padding:9px 12px!important;
+    gap:9px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .mobile-menu-btn{display:inline-flex}
+  .search{width:auto!important;flex:1;min-width:0;order:0}
+  .search input{width:100%;font-size:12px!important}
+  .top-actions{gap:8px!important;flex:0 0 auto}
+  .notification-btn span{display:none}
+  .top-user>div{display:none}
+
+  .content{padding:12px 10px 32px!important;width:100%;overflow-x:hidden}
+  .dashboard-kpis,.cards5{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .metric-card{min-height:92px!important;padding:11px!important}
+  .metric-card strong{font-size:21px!important}
+  .dash-row,.dash-main-row,.grid2,.grid3,.profile-grid,.ap8-grid{grid-template-columns:1fr!important}
+  .panel,.card,.metric-card,.ap8-card,.report-card{min-width:0}
+
+  .head{align-items:flex-start;gap:8px;flex-wrap:wrap}
+  .head>div:first-child{min-width:0}
+  .head .btn{width:auto}
+  .quick{grid-template-columns:1fr 1fr!important}
+
+  /* Formulários mais confortáveis ao toque */
+  .form,.animal-form-modern,.expense-form-modern{grid-template-columns:1fr!important}
+  .full{grid-column:auto!important}
+  input,select,textarea{min-height:43px}
+  textarea{min-height:90px}
+  .btn{min-height:42px;padding:10px 12px!important}
+  .filter-pill{min-height:36px}
+  .mini-add{min-height:43px}
+
+  /* Modais ocupam melhor o espaço do celular */
+  .modal{padding:0!important;align-items:flex-end!important}
+  .modalbox{
+    width:100%!important;
+    max-width:none!important;
+    max-height:94dvh!important;
+    border-radius:17px 17px 0 0!important;
+    padding:15px 12px 22px!important;
+  }
+
+  /* Ficha individual */
+  .ap8-hero{grid-template-columns:62px 1fr!important;padding:12px!important;gap:10px!important}
+  .ap8-photo,.ap8-photo-placeholder{width:60px!important;height:60px!important}
+  .ap8-title b{font-size:20px!important}
+  .ap8-hero-side{grid-column:1/-1!important;text-align:left!important;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:9px}
+  .ap8-kpis{grid-template-columns:1fr 1fr!important}
+  .ap8-actions{grid-template-columns:1fr 1fr!important;display:grid!important}
+  .ap8-actions .btn{width:100%!important}
+  .ap8-row{gap:8px!important}
+  .ap8-timeline .ap8-event{grid-template-columns:30px 1fr!important}
+  .ap8-event time{grid-column:2;text-align:left}
+
+  /* Relatórios */
+  .reports-grid,.report-grid{grid-template-columns:1fr!important}
+  .report-period-card{grid-template-columns:1fr!important;gap:10px!important}
+  .report-card{min-height:0!important}
+
+  /* Tabelas: rolagem horizontal apenas quando realmente necessária */
+  .card:has(table),.panel:has(table),.ap8-card:has(table){overflow-x:auto}
+  table{max-width:none}
+  th,td{white-space:nowrap}
+  .ap8-mini-table{min-width:620px}
+
+  /* Leite, saúde, reprodução e mercado */
+  .dairy-grid,.dairy-kpis,.health-kpis,.repro-kpis,.market-kpis{grid-template-columns:1fr 1fr!important}
+  .market-region-grid,.market-news-grid{grid-template-columns:1fr!important}
+
+  /* Botões lado a lado não ficam apertados */
+  .lot-actions{flex-wrap:wrap}
+  .lot-actions button{min-width:120px}
+}
+
+@media(max-width:430px){
+  .dashboard-kpis,.cards5,.ap8-kpis,.dairy-kpis,.health-kpis,.repro-kpis,.market-kpis{grid-template-columns:1fr!important}
+  .quick{grid-template-columns:1fr!important}
+  .ap8-actions{grid-template-columns:1fr!important}
+  .top{display:grid!important;grid-template-columns:auto 1fr auto}
+  .top-actions{grid-column:3}
+  .search{grid-column:2}
+  .metric-card strong{font-size:22px!important}
+}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -545,8 +861,483 @@ html.mg-route-boot .view.active{display:none!important}
 #animalModal #acrossWrap{margin-top:0}
 </style>
 
+
+<style id="mg-v13-mobile-auth-styles">
+/* V13 — Mobile robusto + login do app-teste */
+.mobile-menu-btn{display:none;border:1px solid var(--line);background:#fff;color:#17352b;width:40px;height:40px;border-radius:8px;font-size:22px;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.mobile-nav-backdrop{display:none}
+
+/* Login do teste: tela inteira e limpa */
+.mg-test-login-gate{
+  position:fixed;inset:0;z-index:200000;
+  display:none;align-items:center;justify-content:center;
+  padding:18px;background:#f3f7f4;
+  overflow:auto;
+}
+.mg-test-login-gate.show{display:flex}
+.mg-test-login-card{
+  width:min(430px,100%);
+  background:#fff;border:1px solid #dce7e0;border-radius:18px;
+  padding:22px;box-shadow:0 18px 55px rgba(8,45,32,.14);
+}
+.mg-test-login-brand{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.mg-test-login-brand img{width:58px!important;height:58px!important;max-width:58px!important;border-radius:50%;object-fit:cover;display:block}
+.mg-test-login-brand b{display:block;font-size:19px;color:#10392e}
+.mg-test-login-brand small{display:block;font-size:11px;color:#74827d;margin-top:2px}
+.mg-test-login-card h3{font-size:20px;margin:4px 0 6px;color:#142a22}
+.mg-test-login-card>p{font-size:12px;line-height:1.5;color:#687872;margin:0 0 16px}
+.mg-test-login-field{display:block;font-size:12px;font-weight:800;margin:11px 0;color:#243b32}
+.mg-test-login-field input{
+  display:block;width:100%;min-height:45px;margin-top:6px;
+  padding:11px 12px;border:1px solid #d9e4de;border-radius:9px;
+  background:#fff;font-size:14px;outline:none;
+}
+.mg-test-login-field input:focus{border-color:#75bf8e;box-shadow:0 0 0 3px #eaf7ee}
+.mg-test-login-captcha{display:flex;justify-content:center;min-height:66px;margin:12px 0 5px}
+.mg-test-login-error{min-height:18px;color:#aa3e37;font-size:11px;line-height:1.4;margin:7px 0}
+.mg-test-login-btn{
+  width:100%;min-height:45px;border:0;border-radius:9px;
+  background:#119447;color:#fff;font-size:13px;font-weight:900;cursor:pointer;
+}
+.mg-test-login-btn:disabled{opacity:.65}
+.mg-test-login-home{
+  width:100%;border:0;background:transparent;color:#16864a;
+  font-size:11px;font-weight:800;padding:9px;margin-top:5px;cursor:pointer;
+}
+
+/* Força o modo celular usando classe detectada pelo aparelho */
+html.mg-mobile-device body{overflow-x:hidden}
+html.mg-mobile-device body.mg-mobile-nav-open{overflow:hidden!important}
+html.mg-mobile-device .layout{display:block!important;grid-template-columns:none!important;width:100%!important;min-height:100vh!important}
+html.mg-mobile-device .main{width:100%!important;min-width:0!important;margin:0!important;padding:0!important}
+
+/* Menu lateral fica COMPLETAMENTE fora da tela quando fechado */
+html.mg-mobile-device .side{
+  position:fixed!important;left:0!important;top:0!important;bottom:0!important;
+  width:min(300px,86vw)!important;height:100dvh!important;
+  z-index:1000!important;overflow-y:auto!important;overflow-x:hidden!important;
+  transform:translate3d(-105%,0,0)!important;
+  transition:transform .22s ease!important;
+  padding:16px 13px!important;
+  box-shadow:10px 0 34px rgba(0,0,0,.25)!important;
+}
+html.mg-mobile-device body.mg-mobile-nav-open .side{transform:translate3d(0,0,0)!important}
+html.mg-mobile-device .side .brand div,
+html.mg-mobile-device .side .nav-title,
+html.mg-mobile-device .side .nav span,
+html.mg-mobile-device .side .farmbox small,
+html.mg-mobile-device .side .farm-profile b,
+html.mg-mobile-device .side .farm-profile small{display:block!important}
+html.mg-mobile-device .side .nav button{width:100%!important;text-align:left!important;padding:12px!important;font-size:13px!important}
+html.mg-mobile-device .side-bottom{margin-top:18px!important}
+
+html.mg-mobile-device .mobile-nav-backdrop{
+  display:none!important;position:fixed!important;inset:0!important;
+  background:rgba(4,21,18,.52)!important;z-index:990!important;
+}
+html.mg-mobile-device body.mg-mobile-nav-open .mobile-nav-backdrop{display:block!important}
+
+/* Cabeçalho */
+html.mg-mobile-device .top{
+  position:sticky!important;top:0!important;z-index:200!important;
+  width:100%!important;height:auto!important;min-height:64px!important;
+  padding:9px 10px!important;
+  display:grid!important;grid-template-columns:42px minmax(0,1fr) auto!important;
+  gap:8px!important;align-items:center!important;background:#fff!important;
+}
+html.mg-mobile-device .mobile-menu-btn{display:inline-flex!important;width:40px!important;height:40px!important;padding:0!important}
+html.mg-mobile-device .search{grid-column:2!important;width:100%!important;min-width:0!important}
+html.mg-mobile-device .search input{width:100%!important;min-width:0!important;font-size:12px!important}
+html.mg-mobile-device .top-actions{grid-column:3!important;display:flex!important;gap:6px!important;align-items:center!important}
+html.mg-mobile-device .notification-btn span,
+html.mg-mobile-device .top-user>div{display:none!important}
+
+html.mg-mobile-device .content{width:100%!important;max-width:none!important;margin:0!important;padding:12px 10px 34px!important;overflow-x:hidden!important}
+html.mg-mobile-device .dashboard-kpis,
+html.mg-mobile-device .cards5{grid-template-columns:1fr!important}
+html.mg-mobile-device .grid2,
+html.mg-mobile-device .grid3,
+html.mg-mobile-device .dash-row,
+html.mg-mobile-device .dash-main-row,
+html.mg-mobile-device .profile-grid,
+html.mg-mobile-device .ap8-grid{grid-template-columns:1fr!important}
+html.mg-mobile-device .form,
+html.mg-mobile-device .animal-form-modern,
+html.mg-mobile-device .expense-form-modern{grid-template-columns:1fr!important}
+html.mg-mobile-device .full{grid-column:auto!important}
+html.mg-mobile-device input,
+html.mg-mobile-device select,
+html.mg-mobile-device textarea{min-height:44px}
+html.mg-mobile-device .btn{min-height:42px!important}
+html.mg-mobile-device .quick{grid-template-columns:1fr 1fr!important}
+
+/* Ficha do animal em tela cheia */
+html.mg-mobile-device #animalProfileModal{
+  padding:0!important;align-items:stretch!important;justify-content:stretch!important;
+  background:#f6f8f9!important;z-index:1400!important;
+}
+html.mg-mobile-device #animalProfileModal>.modalbox{
+  width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;
+  margin:0!important;border-radius:0!important;padding:0 10px 28px!important;
+  overflow-y:auto!important;-webkit-overflow-scrolling:touch;
+}
+html.mg-mobile-device #animalProfileModal>.modalbox>.head{
+  position:sticky!important;top:0!important;z-index:20!important;background:#fff!important;
+  margin:0 -10px 10px!important;padding:11px 12px!important;border-bottom:1px solid var(--line)!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-hero{grid-template-columns:62px minmax(0,1fr)!important;gap:10px!important;padding:12px!important}
+html.mg-mobile-device #animalProfileModal .ap8-photo,
+html.mg-mobile-device #animalProfileModal .ap8-photo-placeholder{width:60px!important;height:60px!important}
+html.mg-mobile-device #animalProfileModal .ap8-hero-side{
+  grid-column:1/-1!important;text-align:left!important;display:flex!important;
+  justify-content:space-between!important;align-items:center!important;
+  border-top:1px solid var(--line)!important;padding-top:9px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-kpis{grid-template-columns:1fr 1fr!important}
+html.mg-mobile-device #animalProfileModal .ap8-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+html.mg-mobile-device #animalProfileModal .ap8-actions .btn{width:100%!important}
+html.mg-mobile-device #animalProfileModal .ap8-timeline .ap8-event{grid-template-columns:30px minmax(0,1fr)!important}
+html.mg-mobile-device #animalProfileModal .ap8-event time{grid-column:2!important;text-align:left!important}
+
+/* Demais modais */
+html.mg-mobile-device .modal:not(#animalProfileModal){padding:0!important;align-items:flex-end!important}
+html.mg-mobile-device .modal:not(#animalProfileModal)>.modalbox{
+  width:100%!important;max-width:none!important;max-height:94dvh!important;
+  border-radius:18px 18px 0 0!important;
+}
+
+@media(max-width:430px){
+  html.mg-mobile-device #animalProfileModal .ap8-kpis,
+  html.mg-mobile-device #animalProfileModal .ap8-actions,
+  html.mg-mobile-device .quick{grid-template-columns:1fr!important}
+}
+</style>
+
+<script id="mg-v13-device-auth">
+(function(){
+  function detectMobile(){
+    var ua=navigator.userAgent||'';
+    var phone=/iPhone|iPod|Android.*Mobile|Windows Phone|Mobile/i.test(ua);
+    var touch=(navigator.maxTouchPoints||0)>0;
+    var small=Math.min(screen.width||9999,screen.height||9999)<=900;
+    var narrow=(window.innerWidth||9999)<=900;
+    document.documentElement.classList.toggle('mg-mobile-device', phone || (touch && (small || narrow)));
+  }
+  detectMobile();
+  window.addEventListener('resize',detectMobile);
+  window.addEventListener('orientationchange',detectMobile);
+})();
+
+const MG_TEST_TURNSTILE_SITE_KEY='0x4AAAAAAEz18CzViJsl3lHd';
+let mgTestLoginPromise=null;
+let mgTestLoginResolve=null;
+let mgTestTurnstileWidget=null;
+let mgTestCaptchaToken=null;
+
+function mgTestRenderCaptcha(){
+  const target=document.getElementById('mgTestTurnstile');
+  if(!target)return;
+  if(typeof window.turnstile==='undefined'){setTimeout(mgTestRenderCaptcha,180);return;}
+  if(mgTestTurnstileWidget!==null)return;
+  mgTestTurnstileWidget=window.turnstile.render(target,{
+    sitekey:MG_TEST_TURNSTILE_SITE_KEY,
+    theme:'light',
+    callback:(token)=>{mgTestCaptchaToken=token;},
+    'expired-callback':()=>{mgTestCaptchaToken=null;},
+    'error-callback':()=>{mgTestCaptchaToken=null;}
+  });
+}
+
+function mgEnsureTestSession(){
+  if(mgTestLoginPromise)return mgTestLoginPromise;
+  document.getElementById('mgTestLoginGate')?.classList.add('show');
+  setTimeout(mgTestRenderCaptcha,100);
+  mgTestLoginPromise=new Promise(resolve=>{mgTestLoginResolve=resolve;});
+  return mgTestLoginPromise;
+}
+
+async function mgTestDoLogin(){
+  const email=document.getElementById('mgTestLoginEmail')?.value.trim();
+  const password=document.getElementById('mgTestLoginPassword')?.value||'';
+  const err=document.getElementById('mgTestLoginError');
+  const btn=document.getElementById('mgTestLoginBtn');
+  if(err)err.textContent='';
+  if(!email||!password){if(err)err.textContent='Informe seu e-mail e sua senha.';return;}
+  if(!mgTestCaptchaToken){if(err)err.textContent='Conclua a verificação de segurança.';return;}
+  try{
+    btn.disabled=true;btn.textContent='Entrando...';
+    const r=await mgSb.auth.signInWithPassword({
+      email,password,options:{captchaToken:mgTestCaptchaToken}
+    });
+    if(r.error)throw r.error;
+    const session=r.data?.session;
+    if(!session)throw new Error('A sessão não foi criada. Tente novamente.');
+    document.getElementById('mgTestLoginGate')?.classList.remove('show');
+    if(mgTestLoginResolve){
+      const resolve=mgTestLoginResolve;
+      mgTestLoginResolve=null;
+      resolve(session);
+    }
+    mgTestLoginPromise=Promise.resolve(session);
+  }catch(e){
+    if(err)err.textContent=e?.message||'Não foi possível entrar.';
+    try{
+      if(window.turnstile&&mgTestTurnstileWidget!==null)window.turnstile.reset(mgTestTurnstileWidget);
+    }catch(_e){}
+    mgTestCaptchaToken=null;
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Entrar no Meu Gado';}
+  }
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&document.getElementById('mgTestLoginGate')?.classList.contains('show'))mgTestDoLogin();
+});
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+
+
+<style id="mg-v14-mobile-polish">
+/* V14 — polimento visual do menu mobile e cabeçalho */
+html.mg-mobile-device .side{
+  width:min(292px,84vw)!important;
+  padding:12px 10px 14px!important;
+}
+
+/* Marca mais compacta no menu */
+html.mg-mobile-device .side .brand{
+  gap:9px!important;
+  padding:0 7px 11px!important;
+  min-height:auto!important;
+}
+html.mg-mobile-device .side .brand img{
+  width:38px!important;
+  height:38px!important;
+  flex:0 0 38px!important;
+}
+html.mg-mobile-device .side .brand b{font-size:15px!important}
+html.mg-mobile-device .side .brand small{font-size:9px!important;margin-top:1px!important}
+
+/* Títulos de grupo mais discretos */
+html.mg-mobile-device .side .nav-title{
+  font-size:9px!important;
+  line-height:1.1!important;
+  margin:9px 9px 4px!important;
+  padding:0!important;
+  letter-spacing:.11em!important;
+}
+
+/* Cada item fica em uma linha: ícone à esquerda + texto ao lado */
+html.mg-mobile-device .side .nav button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  min-height:38px!important;
+  margin:1px 0!important;
+  padding:8px 10px!important;
+  border-radius:7px!important;
+  text-align:left!important;
+  font-size:12.5px!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+}
+html.mg-mobile-device .side .nav button span{
+  display:inline!important;
+  margin:0!important;
+  flex:1!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Parte inferior mais compacta para reduzir rolagem */
+html.mg-mobile-device .side-bottom{
+  margin-top:12px!important;
+  padding-top:8px!important;
+}
+html.mg-mobile-device .side .farm-profile{
+  grid-template-columns:28px 1fr 20px!important;
+  gap:7px!important;
+  padding:7px 8px!important;
+  border-radius:7px!important;
+}
+html.mg-mobile-device .side .farm-profile>span{
+  width:28px!important;
+  height:28px!important;
+  font-size:11px!important;
+}
+html.mg-mobile-device .side .farm-profile b{font-size:10px!important}
+html.mg-mobile-device .side .farm-profile small{font-size:8.5px!important}
+html.mg-mobile-device .side .mydata-btn{
+  margin-top:5px!important;
+  min-height:34px!important;
+  padding:7px 8px!important;
+  font-size:10px!important;
+}
+html.mg-mobile-device .side .side-link{
+  min-height:34px!important;
+  padding:7px 8px!important;
+  font-size:10.5px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  white-space:nowrap!important;
+}
+html.mg-mobile-device .side .side-link span{
+  display:inline!important;
+  margin:0!important;
+  flex:1!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+html.mg-mobile-device .side .news-new{
+  font-size:7px!important;
+  padding:2px 5px!important;
+}
+
+/* Cabeçalho: mais limpo e com busca maior */
+html.mg-mobile-device .top{
+  grid-template-columns:42px minmax(0,1fr) 38px!important;
+  gap:7px!important;
+  padding:8px 9px!important;
+}
+html.mg-mobile-device .mobile-menu-btn{
+  width:40px!important;
+  height:40px!important;
+  border-radius:10px!important;
+}
+html.mg-mobile-device .search{
+  min-width:0!important;
+}
+html.mg-mobile-device .search span{
+  left:10px!important;
+  font-size:13px!important;
+}
+html.mg-mobile-device .search input{
+  height:40px!important;
+  min-height:40px!important;
+  padding:9px 9px 9px 30px!important;
+  border-radius:9px!important;
+  font-size:12px!important;
+  text-overflow:ellipsis!important;
+}
+html.mg-mobile-device .top-actions{
+  width:38px!important;
+  justify-content:flex-end!important;
+}
+html.mg-mobile-device .notification-btn{
+  width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  position:relative!important;
+  border-radius:50%!important;
+}
+html.mg-mobile-device .notification-btn b{
+  position:absolute!important;
+  right:-3px!important;
+  top:-3px!important;
+  min-width:16px!important;
+  height:16px!important;
+  font-size:8px!important;
+}
+html.mg-mobile-device .top-user{
+  display:none!important;
+}
+
+/* Dá mais respiro ao conteúdo logo abaixo do cabeçalho */
+html.mg-mobile-device .content{padding-top:10px!important}
+
+/* iPhone mais estreito */
+@media(max-width:390px){
+  html.mg-mobile-device .side{width:min(282px,86vw)!important}
+  html.mg-mobile-device .top{grid-template-columns:40px minmax(0,1fr) 34px!important}
+  html.mg-mobile-device .mobile-menu-btn{width:38px!important;height:38px!important}
+  html.mg-mobile-device .search input{font-size:11.5px!important}
+}
+</style>
+
+
+<style id="mg-v15-animal-profile-mobile">
+/* V15 — acabamento da ficha do animal no celular */
+html.mg-mobile-device #animalProfileModal .ap8-hero-side{
+  display:none!important; /* remove repetição do Peso atual no topo */
+}
+
+/* Esconde o primeiro KPI (Peso atual) somente no mobile */
+html.mg-mobile-device #animalProfileModal .ap8-kpis .ap8-kpi:first-child{
+  display:none!important;
+}
+
+/* Os 4 KPIs restantes viram grade 2x2 */
+html.mg-mobile-device #animalProfileModal .ap8-kpis{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+}
+
+/* Cards mais compactos sem reduzir legibilidade */
+html.mg-mobile-device #animalProfileModal .ap8-kpi{
+  padding:10px!important;
+  min-height:88px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-kpi small{
+  font-size:10px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-kpi b{
+  font-size:18px!important;
+  line-height:1.15!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-kpi span{
+  font-size:9.5px!important;
+  line-height:1.35!important;
+}
+
+/* Progresso e ações um pouco mais enxutos */
+html.mg-mobile-device #animalProfileModal .ap8-progress-card{
+  padding:10px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-progress-head{
+  font-size:10.5px!important;
+}
+html.mg-mobile-device #animalProfileModal .ap8-actions{
+  margin-top:2px!important;
+  gap:7px!important;
+}
+
+/* Mantém 2 colunas até celulares menores; só 1 coluna em telas muito estreitas */
+@media(max-width:360px){
+  html.mg-mobile-device #animalProfileModal .ap8-kpis{
+    grid-template-columns:1fr!important;
+  }
+}
+</style>
+
 </head>
-<body data-build="termos-v21-2-teste"><div class="layout">
+<body data-build="termos-v21-2-teste">
+
+<div id="mgTestLoginGate" class="mg-test-login-gate">
+  <div class="mg-test-login-card">
+    <div class="mg-test-login-brand">
+      <img src="/meu-gado-logo.png" alt="Meu Gado">
+      <div><b>Meu Gado</b><small>Versão de teste</small></div>
+    </div>
+    <h3>Entre para carregar sua fazenda</h3>
+    <p>Se a sessão não estiver disponível neste navegador, faça o login abaixo. Você continuará na versão de teste.</p>
+    <label class="mg-test-login-field">E-mail
+      <input id="mgTestLoginEmail" type="email" autocomplete="username" inputmode="email" placeholder="seu@email.com">
+    </label>
+    <label class="mg-test-login-field">Senha
+      <input id="mgTestLoginPassword" type="password" autocomplete="current-password" placeholder="Sua senha">
+    </label>
+    <div id="mgTestTurnstile" class="mg-test-login-captcha"></div>
+    <div id="mgTestLoginError" class="mg-test-login-error"></div>
+    <button id="mgTestLoginBtn" class="mg-test-login-btn" type="button" onclick="mgTestDoLogin()">Entrar no Meu Gado</button>
+    <button class="mg-test-login-home" type="button" onclick="location.href='/'">Voltar à página inicial</button>
+  </div>
+</div>
+<div class="layout">
 <aside class="side">
   <div class="brand"><img src="/meu-gado-logo.png"><div><b>Meu Gado</b><small>Controle profissional do rebanho</small></div></div>
   <div class="nav">
@@ -582,8 +1373,10 @@ html.mg-route-boot .view.active{display:none!important}
     <button class="side-link" onclick="logout()">↪ <span>Sair</span></button>
   </div>
 </aside>
+<div class="mobile-nav-backdrop" onclick="mgCloseMobileNav()"></div>
 
 <main class="main"><div class="top">
+  <button class="mobile-menu-btn" type="button" aria-label="Abrir menu" onclick="mgToggleMobileNav()">☰</button>
   <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Buscar por número do animal, lote ou raça..." oninput="filterAnimals()"></div>
   <div class="top-actions">
     <button class="notification-btn" onclick="openNotifications()">♧ <span>Notificações</span><b id="notificationCount">0</b></button>
@@ -1898,7 +2691,7 @@ html.mg-route-boot .view.active{display:none!important}
   <div class="batch-footer"><button class="btn secondary" onclick="closeModal('batchWeightModal')">Cancelar</button><button id="saveBatchBtn" class="btn primary" onclick="saveBatchWeight()">Salvar pesagens</button></div>
 </div></div>
 
-<div class="modal" id="animalProfileModal"><div class="modalbox" style="width:min(980px,96vw)">
+<div class="modal" id="animalProfileModal"><div class="modalbox" style="width:min(1180px,97vw)">
  <div class="head"><div><h3 id="profileAnimalTitle">Ficha do animal</h3><div class="sub" id="profileAnimalSub"></div></div><button class="btn secondary" onclick="closeModal('animalProfileModal')">Fechar</button></div>
  <div id="animalProfileBody"></div>
 </div></div>
@@ -1943,15 +2736,14 @@ let marketLiveData=null;
 function mgErr(e){throw new Error(e?.message||String(e||'Erro'))}
 async function mgSession(){
  let session=null;
- for(let i=0;i<12;i++){
-   const s=await mgSb.auth.getSession();
-   session=s?.data?.session||null;
+ for(let i=0;i<8;i++){
+   const rs=await mgSb.auth.getSession();
+   session=rs?.data?.session||null;
    if(session)break;
-   await new Promise(r=>setTimeout(r,200));
+   await new Promise(r=>setTimeout(r,180));
  }
- if(!session){
-   throw new Error('A sessão não ficou disponível após o login. Volte à página inicial e entre novamente.');
- }
+ if(!session) session=await mgEnsureTestSession();
+ if(!session?.user) throw new Error('Não foi possível iniciar a sessão.');
  mgUser=session.user;
  if(!mgInvitationsClaimed){
    mgInvitationsClaimed=true;
@@ -5638,6 +6430,277 @@ document.addEventListener('click',e=>{
   const txt=(e.target?.textContent||'').trim().toLowerCase();
   if(txt==='produção diária'||txt==='leite') setTimeout(mgEnsureDairyAnimalOptions,250);
 });
+</script>
+
+
+<script id="mg-animal-profile-v8">
+function ap8Date(v){
+  if(!v)return '—';
+  const p=String(v).slice(0,10).split('-');
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v;
+}
+function ap8Esc(v){
+  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function ap8ProfileGmd(a){
+  const ws=[...(a.weighings||[])].sort((x,y)=>String(y.weighing_date).localeCompare(String(x.weighing_date)));
+  if(ws.length<2)return null;
+  const last=ws[0];
+  const prev=ws.find((w,i)=>i>0&&String(w.weighing_date).slice(0,10)!==String(last.weighing_date).slice(0,10));
+  if(!prev)return null;
+  const d=mgDays(prev.weighing_date,last.weighing_date);
+  if(d<=0)return null;
+  const g=(Number(last.weight)-Number(prev.weight))/d;
+  return Number.isFinite(g)?g:null;
+}
+function ap8Event(icon,title,sub,date){
+  return `<div class="ap8-event"><i>${icon}</i><div><b>${title}</b><small>${sub||''}</small></div><time>${ap8Date(date)}</time></div>`;
+}
+async function ap8SafeQuery(builder,fallback=[]){
+  try{
+    const {data,error}=await builder;
+    if(error)throw error;
+    return data??fallback;
+  }catch(e){
+    console.warn('Ficha animal V8:',e?.message||e);
+    return fallback;
+  }
+}
+
+openAnimalProfile = async function(id){
+ try{
+  selectedAnimalId=id;
+  const a=await api(`/api/animals/${id}/profile`);
+  const f=await mgGetFarm();
+
+  let mother=null,offspring=[],nutrition=[],milk=[],lactations=[];
+  const tasks=[];
+
+  if(a.mother_id){
+    tasks.push(ap8SafeQuery(
+      mgSb.from('animals').select('id,number,category,breed').eq('farm_id',f.id).eq('id',a.mother_id).maybeSingle(),
+      null
+    ).then(x=>mother=x));
+  }
+  tasks.push(ap8SafeQuery(
+    mgSb.from('animals').select('id,number,category,breed,birth_date').eq('farm_id',f.id).eq('mother_id',id).is('deleted_at',null).order('birth_date',{ascending:false}),
+    []
+  ).then(x=>offspring=x));
+
+  if(a.lot){
+    tasks.push(ap8SafeQuery(
+      mgSb.from('nutrition_entries').select('id,entry_date,feed_name,quantity_kg,total_cost,notes').eq('farm_id',f.id).eq('lot_name',a.lot).is('deleted_at',null).order('entry_date',{ascending:false}).limit(6),
+      []
+    ).then(x=>nutrition=x));
+  }
+
+  tasks.push(ap8SafeQuery(
+    mgSb.from('milk_production').select('production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes').eq('farm_id',f.id).eq('animal_id',id).order('production_date',{ascending:false}).limit(12),
+    []
+  ).then(x=>milk=x));
+
+  tasks.push(ap8SafeQuery(
+    mgSb.from('dairy_lactations').select('calving_date,lactation_start_date,dry_off_date,expected_dry_off_date,lactation_number,status,notes').eq('farm_id',f.id).eq('animal_id',id).order('lactation_start_date',{ascending:false}).limit(6),
+    []
+  ).then(x=>lactations=x));
+
+  await Promise.all(tasks);
+
+  profileAnimalTitle.textContent=`Ficha do animal #${a.number}`;
+  profileAnimalSub.textContent=`Visão completa do histórico e desempenho`;
+
+  const target=Number(a.target_weight||0);
+  const current=Number(a.current_weight||0);
+  const progress=target?Math.min(100,current/target*100):0;
+  const gmd=ap8ProfileGmd(a);
+  const ws=[...(a.weighings||[])].sort((x,y)=>String(y.weighing_date).localeCompare(String(x.weighing_date)));
+  const previous=ws.find((w,i)=>i>0&&String(w.weighing_date).slice(0,10)!==String(ws[0]?.weighing_date).slice(0,10));
+  const delta=previous&&ws[0]?Number(ws[0].weight)-Number(previous.weight):null;
+  const age=ageFromBirth(a.birth_date);
+  const sex=animalSexFromCategory(a.category);
+  const photo=a.photo_path?`<img class="ap8-photo" src="${ap8Esc(a.photo_path)}" alt="Animal ${ap8Esc(a.number)}">`:`<div class="ap8-photo-placeholder">🐄</div>`;
+  const status=(a.status||'active')==='active'?'Ativo':'Inativo';
+
+  const milkTotal=milk.reduce((sum,x)=>sum+Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0),0);
+  const lastMilk=milk[0];
+  const currentLact=lactations.find(x=>x.status==='active')||lactations[0]||null;
+
+  const timeline=[];
+  if(a.birth_date)timeline.push({date:a.birth_date,html:ap8Event('🐮','Nascimento',`${a.origin||'Registro de nascimento'}${mother?` · mãe #${mother.number}`:''}`,a.birth_date)});
+  if(a.entry_date)timeline.push({date:a.entry_date,html:ap8Event('🏠','Entrada no rebanho',`${a.entry_weight?`${a.entry_weight} kg · `:''}${a.origin||'Entrada cadastrada'}`,a.entry_date)});
+  (a.weighings||[]).forEach(x=>timeline.push({date:x.weighing_date,html:ap8Event('⚖️',`Pesagem · ${Number(x.weight).toFixed(1)} kg`,x.notes||'Peso registrado',x.weighing_date)}));
+  (a.health||[]).forEach(x=>timeline.push({date:x.event_date,html:ap8Event('💉',x.event_type||'Saúde',`${x.product||''}${x.notes?` · ${x.notes}`:''}`,x.event_date)}));
+  (a.reproduction||[]).forEach(x=>timeline.push({date:x.event_date,html:ap8Event('❤️',x.event_type||'Reprodução',`${x.result||''}${x.notes?` · ${x.notes}`:''}`,x.event_date)}));
+  (a.expenses||[]).forEach(x=>timeline.push({date:x.expense_date,html:ap8Event('💰',x.category||'Gasto',`${x.description||''} · ${money(x.amount||0)}`,x.expense_date)}));
+  milk.slice(0,8).forEach(x=>{
+    const total=Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0);
+    timeline.push({date:x.production_date,html:ap8Event('🥛',`Produção de leite · ${total.toFixed(1)} L`,x.notes||'Produção diária',x.production_date)});
+  });
+  timeline.sort((x,y)=>String(y.date||'').localeCompare(String(x.date||'')));
+
+  animalProfileBody.innerHTML=`
+  <div class="animal-profile-v8">
+    <div class="ap8-hero">
+      ${photo}
+      <div class="ap8-title">
+        <b>Animal #${ap8Esc(a.number)}</b>
+        <span>${ap8Esc(a.category||'Sem categoria')} · ${ap8Esc(a.breed||'Raça não informada')}</span>
+        <div class="ap8-chips">
+          <span class="ap8-chip green">${status}</span>
+          <span class="ap8-chip">📍 ${ap8Esc(a.lot||'Sem lote')}</span>
+          <span class="ap8-chip">${sex}</span>
+          <span class="ap8-chip">${age||'Idade não informada'}</span>
+        </div>
+      </div>
+      <div class="ap8-hero-side"><small>Peso atual</small><b>${current?current.toFixed(1)+' kg':'—'}</b></div>
+    </div>
+
+    <div class="ap8-kpis">
+      <div class="ap8-kpi"><small>Peso atual</small><b>${current?current.toFixed(1)+' kg':'—'}</b><span>${ws[0]?`em ${ap8Date(ws[0].weighing_date)}`:'Sem pesagem'}</span></div>
+      <div class="ap8-kpi"><small>GMD</small><b>${gmd!=null?gmd.toFixed(3)+' kg/dia':'—'}</b><span>Últimas datas distintas</span></div>
+      <div class="ap8-kpi"><small>Meta</small><b>${target?target.toFixed(0)+' kg':'—'}</b><span>${target?progress.toFixed(0)+'% atingido':'Não definida'}</span></div>
+      <div class="ap8-kpi"><small>Última variação</small><b class="${delta!=null&&delta<0?'ap8-status-down':'ap8-status-up'}">${delta!=null?(delta>0?'+':'')+delta.toFixed(1)+' kg':'—'}</b><span>Vs. pesagem anterior</span></div>
+      <div class="ap8-kpi"><small>Gastos vinculados</small><b>${money(a.expenses_total||0)}</b><span>${(a.expenses||[]).length} registro(s)</span></div>
+    </div>
+
+    <div class="ap8-progress-card">
+      <div class="ap8-progress-head"><span>Progresso para meta de peso</span><b>${target?`${current.toFixed(1)} / ${target.toFixed(0)} kg`:'Meta não definida'}</b></div>
+      <div class="ap8-progress-track"><i style="width:${target?progress:0}%"></i></div>
+    </div>
+
+    <div class="ap8-actions">
+      <button class="btn primary" onclick="closeModal('animalProfileModal');openSingleWeight(${a.id})">⚖️ Nova pesagem</button>
+      <button class="btn secondary" onclick="closeModal('animalProfileModal');openNewHealth();setTimeout(()=>{hanimal.value='${a.id}'},50)">💉 Registrar saúde</button>
+      ${/vaca|novilha|bezerra|f[eê]mea/i.test(String(a.category||''))?`<button class="btn secondary" onclick="closeModal('animalProfileModal');openNewRepro();setTimeout(()=>{ranimal.value='${a.id}'},50)">❤️ Reprodução</button>`:''}
+      <button class="btn secondary" onclick="openMoveAnimal(${a.id})">🗂️ Mover de lote</button>
+      <button class="btn secondary danger-outline" onclick="openAnimalExit(${a.id})">Dar baixa</button>
+    </div>
+
+    <div class="ap8-grid">
+      <div class="ap8-card">
+        <h4>Identificação</h4>
+        <div class="ap8-row"><span>Número</span><b>#${ap8Esc(a.number)}</b></div>
+        <div class="ap8-row"><span>Categoria</span><b>${ap8Esc(a.category||'—')}</b></div>
+        <div class="ap8-row"><span>Sexo</span><b>${ap8Esc(sex||'—')}</b></div>
+        <div class="ap8-row"><span>Raça</span><b>${ap8Esc(a.breed||'—')}</b></div>
+        <div class="ap8-row"><span>Nascimento</span><b>${ap8Date(a.birth_date)}</b></div>
+        <div class="ap8-row"><span>Idade</span><b>${ap8Esc(age||'—')}</b></div>
+        <div class="ap8-row"><span>Origem</span><b>${ap8Esc(a.origin||'—')}</b></div>
+        <div class="ap8-row"><span>Lote atual</span><b>${ap8Esc(a.lot||'Sem lote')}</b></div>
+      </div>
+
+      <div class="ap8-card">
+        <h4>Filiação e crias</h4>
+        <div class="ap8-row"><span>Mãe</span><b>${mother?`#${ap8Esc(mother.number)} · ${ap8Esc(mother.breed||mother.category||'')}`:'Não informada'}</b></div>
+        <div class="ap8-row"><span>Crias cadastradas</span><b>${offspring.length}</b></div>
+        ${offspring.length?`<div class="ap8-list" style="margin-top:7px">${offspring.slice(0,6).map(c=>ap8Event('🐮',`#${ap8Esc(c.number)} · ${ap8Esc(c.category||'')}`,ap8Esc(c.breed||''),c.birth_date)).join('')}</div>`:'<div class="ap8-empty">Nenhuma cria vinculada.</div>'}
+      </div>
+
+      <div class="ap8-card ap8-wide">
+        <h4>Evolução de peso</h4>
+        <div class="ap8-section-sub">Histórico de pesagens e desenvolvimento do animal.</div>
+        ${weightEvolutionHtml(a)}
+        ${ws.length?`<div style="overflow:auto;margin-top:8px"><table class="ap8-mini-table"><thead><tr><th>Data</th><th>Peso</th><th>Variação</th><th>Observação</th></tr></thead><tbody>${ws.slice(0,10).map((w,idx)=>{
+          const next=ws[idx+1],diff=next?Number(w.weight)-Number(next.weight):null;
+          return `<tr><td>${ap8Date(w.weighing_date)}</td><td><b>${Number(w.weight).toFixed(1)} kg</b></td><td class="${diff!=null&&diff<0?'ap8-status-down':'ap8-status-up'}">${diff!=null?(diff>0?'+':'')+diff.toFixed(1)+' kg':'—'}</td><td>${ap8Esc(w.notes||'')}</td></tr>`
+        }).join('')}</tbody></table></div>`:'<div class="ap8-empty">Sem pesagens registradas.</div>'}
+      </div>
+
+      <div class="ap8-card">
+        <h4>Saúde</h4>
+        ${(a.health||[]).length?`<div class="ap8-list">${a.health.slice(0,8).map(x=>ap8Event('💉',ap8Esc(x.event_type||'Registro'),`${ap8Esc(x.product||'')}${x.next_due_date?` · próxima ${ap8Date(x.next_due_date)}`:''}`,x.event_date)).join('')}</div>`:'<div class="ap8-empty">Sem registros sanitários.</div>'}
+      </div>
+
+      <div class="ap8-card">
+        <h4>Reprodução</h4>
+        ${(a.reproduction||[]).length?`<div class="ap8-list">${a.reproduction.slice(0,8).map(x=>ap8Event('❤️',ap8Esc(x.event_type||'Evento'),`${ap8Esc(x.result||'')}${x.expected_date?` · previsão ${ap8Date(x.expected_date)}`:''}`,x.event_date)).join('')}</div>`:'<div class="ap8-empty">Sem registros reprodutivos.</div>'}
+      </div>
+
+      <div class="ap8-card">
+        <h4>Alimentação do lote</h4>
+        <div class="ap8-section-sub">Lançamentos compartilhados pelo lote atual ${ap8Esc(a.lot||'')}.</div>
+        ${nutrition.length?`<div class="ap8-list">${nutrition.map(x=>ap8Event('🌾',ap8Esc(x.feed_name||'Alimentação'),`${Number(x.quantity_kg||0).toFixed(1)} kg · ${money(x.total_cost||0)}`,x.entry_date)).join('')}</div>`:'<div class="ap8-empty">Sem alimentação recente para este lote.</div>'}
+      </div>
+
+      <div class="ap8-card">
+        <h4>Produção de leite</h4>
+        ${milk.length?`
+          <div class="ap8-row"><span>Produção nos ${milk.length} lançamentos</span><b>${milkTotal.toFixed(1)} L</b></div>
+          <div class="ap8-row"><span>Último lançamento</span><b>${lastMilk?ap8Date(lastMilk.production_date):'—'}</b></div>
+          <div class="ap8-row"><span>Lactação</span><b>${currentLact?`${currentLact.status==='active'?'Em lactação':'Encerrada'}${currentLact.lactation_number?' · nº '+currentLact.lactation_number:''}`:'—'}</b></div>
+        `:'<div class="ap8-empty">Sem produção de leite vinculada.</div>'}
+      </div>
+
+      <div class="ap8-card">
+        <h4>Gastos vinculados</h4>
+        ${(a.expenses||[]).length?`<div class="ap8-list">${a.expenses.slice(0,7).map(x=>ap8Event('💰',ap8Esc(x.category||'Gasto'),`${money(x.amount||0)}${x.description?` · ${ap8Esc(x.description)}`:''}`,x.expense_date)).join('')}</div>`:'<div class="ap8-empty">Sem gastos individuais vinculados.</div>'}
+      </div>
+
+      <div class="ap8-card ap8-timeline">
+        <h4>Linha do tempo do animal</h4>
+        <div class="ap8-section-sub">Pesagens, saúde, reprodução, gastos e produção reunidos em ordem cronológica.</div>
+        ${timeline.length?`<div class="ap8-list">${timeline.slice(0,18).map(x=>x.html).join('')}</div>`:'<div class="ap8-empty">Ainda não há eventos suficientes para montar a linha do tempo.</div>'}
+      </div>
+    </div>
+  </div>`;
+  openModal('animalProfileModal');
+ }catch(e){
+  console.error('Ficha animal V8:',e);
+  alert('Não foi possível abrir a ficha do animal: '+(e?.message||e));
+ }
+};
+</script>
+
+
+<script id="mg-mobile-v10">
+function mgToggleMobileNav(){
+  document.body.classList.toggle('mg-mobile-nav-open');
+}
+function mgCloseMobileNav(){
+  document.body.classList.remove('mg-mobile-nav-open');
+}
+document.addEventListener('click',function(e){
+  if(window.innerWidth<=760 && e.target.closest('.side button[data-v],.side .side-link[data-v]')){
+    setTimeout(mgCloseMobileNav,40);
+  }
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')mgCloseMobileNav();
+});
+window.addEventListener('resize',function(){
+  if(window.innerWidth>760)mgCloseMobileNav();
+});
+</script>
+
+
+<script id="mg-v13-mobile-menu">
+window.mgToggleMobileNav=function(){document.body.classList.toggle('mg-mobile-nav-open')};
+window.mgCloseMobileNav=function(){document.body.classList.remove('mg-mobile-nav-open')};
+document.addEventListener('click',function(e){
+  if(document.documentElement.classList.contains('mg-mobile-device') &&
+     e.target.closest('.side button[data-v],.side .side-link')){
+    setTimeout(window.mgCloseMobileNav,50);
+  }
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')window.mgCloseMobileNav();
+});
+</script>
+
+
+<script id="mg-v14-mobile-polish-js">
+(function(){
+  function polishMobileHeader(){
+    const input=document.getElementById('globalSearch');
+    if(!input)return;
+    const mobile=document.documentElement.classList.contains('mg-mobile-device');
+    input.placeholder=mobile?'Buscar animal, lote ou raça...':'Buscar por número do animal, lote ou raça...';
+  }
+  document.addEventListener('DOMContentLoaded',polishMobileHeader);
+  window.addEventListener('resize',polishMobileHeader);
+  window.addEventListener('orientationchange',function(){setTimeout(polishMobileHeader,120)});
+  setTimeout(polishMobileHeader,250);
+})();
 </script>
 
 </body></html>
