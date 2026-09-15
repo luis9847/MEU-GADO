@@ -503,6 +503,16 @@ html.mg-route-boot .view.active{display:none!important}
 })();
 </script>
 
+
+<style>
+#animais .animal-filters{display:flex;flex-wrap:wrap;gap:8px}
+#animais .filter-pill{white-space:nowrap}
+#animalModal #asex[readonly]{background:#f5f7f6;color:#44544c;font-weight:700}
+#animalModal optgroup{font-weight:800;color:#0b6b3a}
+#animalModal option{color:#111}
+#animalModal #acrossWrap{margin-top:0}
+</style>
+
 </head>
 <body data-build="termos-v21-2-teste"><div class="layout">
 <aside class="side">
@@ -760,8 +770,12 @@ html.mg-route-boot .view.active{display:none!important}
     <div class="animal-filters">
       <button class="filter-pill active" data-cat="Todos" onclick="setAnimalFilter('Todos',this)">Todos</button>
       <button class="filter-pill" data-cat="Boi" onclick="setAnimalFilter('Boi',this)">Bois</button>
+      <button class="filter-pill" data-cat="Novilho" onclick="setAnimalFilter('Novilho',this)">Novilhos</button>
+      <button class="filter-pill" data-cat="Bezerro" onclick="setAnimalFilter('Bezerro',this)">Bezerros</button>
       <button class="filter-pill" data-cat="Vaca" onclick="setAnimalFilter('Vaca',this)">Vacas</button>
-      <button class="filter-pill" data-cat="Bezerro(a)" onclick="setAnimalFilter('Bezerro(a)',this)">Crias</button>
+      <button class="filter-pill" data-cat="Novilha" onclick="setAnimalFilter('Novilha',this)">Novilhas</button>
+      <button class="filter-pill" data-cat="Bezerra" onclick="setAnimalFilter('Bezerra',this)">Bezerras</button>
+      <button class="filter-pill" data-cat="Crias" onclick="setAnimalFilter('Crias',this)">Crias</button>
     </div>
     <div class="animal-count-line"><span id="animalCountLabel">0 animal(is)</span><button class="text-link strong-link" onclick="toggleExitedAnimals()">Ver baixados (vendidos/mortos)</button></div>
   </div>
@@ -1584,20 +1598,72 @@ html.mg-route-boot .view.active{display:none!important}
         <div id="aphotoPreview" class="photo-preview">▣<small>Foto</small></div>
       </label>
       <label>Número do animal <b>*</b><input id="anum" placeholder="Ex.: 125"></label>
-      <label>Categoria<select id="acat">
-        <option>Boi gordo</option>
-        <option>Vaca gorda</option>
-        <option>Bezerro</option>
-        <option>Bezerra</option>
-        <option>Garrote</option>
-        <option>Boi magro</option>
-        <option>Novilha</option>
-        <option>Vaca boiadeira</option>
-        <option>Boi</option>
-        <option>Vaca</option>
+      <label>Categoria <b>*</b><select id="acat" onchange="syncAnimalCategorySex()">
+        <option value="Boi">Boi</option>
+        <option value="Novilho">Novilho</option>
+        <option value="Bezerro">Bezerro</option>
+        <option value="Vaca">Vaca</option>
+        <option value="Novilha">Novilha</option>
+        <option value="Bezerra">Bezerra</option>
       </select></label>
     </div>
-    <label>Raça <small>opcional</small><select id="abreed"><option>Nelore</option><option>Angus</option><option>Senepol</option><option>Brahman</option><option>Girolando</option><option>Outra</option></select></label>
+
+    <div class="two-cols">
+      <label>Sexo<input id="asex" value="Macho" readonly></label>
+      <label>Aptidão<select id="aaptitude">
+        <option value="Corte">Corte</option>
+        <option value="Leite">Leite</option>
+        <option value="Dupla aptidão">Dupla aptidão</option>
+      </select></label>
+    </div>
+
+    <label>Raça <small>opcional</small>
+      <select id="abreed" onchange="syncAnimalBreedAptitude()">
+        <optgroup label="Corte">
+          <option value="Nelore" data-apt="Corte">Nelore</option>
+          <option value="Nelore Mocho" data-apt="Corte">Nelore Mocho</option>
+          <option value="Angus" data-apt="Corte">Angus</option>
+          <option value="Red Angus" data-apt="Corte">Red Angus</option>
+          <option value="Brahman" data-apt="Corte">Brahman</option>
+          <option value="Brangus" data-apt="Corte">Brangus</option>
+          <option value="Hereford" data-apt="Corte">Hereford</option>
+          <option value="Braford" data-apt="Corte">Braford</option>
+          <option value="Senepol" data-apt="Corte">Senepol</option>
+          <option value="Tabapuã" data-apt="Corte">Tabapuã</option>
+          <option value="Canchim" data-apt="Corte">Canchim</option>
+          <option value="Charolês" data-apt="Corte">Charolês</option>
+          <option value="Limousin" data-apt="Corte">Limousin</option>
+          <option value="Devon" data-apt="Corte">Devon</option>
+          <option value="Bonsmara" data-apt="Corte">Bonsmara</option>
+          <option value="Santa Gertrudis" data-apt="Corte">Santa Gertrudis</option>
+          <option value="Simbrasil" data-apt="Corte">Simbrasil</option>
+          <option value="Indubrasil" data-apt="Corte">Indubrasil</option>
+        </optgroup>
+        <optgroup label="Leite">
+          <option value="Holandesa" data-apt="Leite">Holandesa</option>
+          <option value="Girolando" data-apt="Leite">Girolando</option>
+          <option value="Gir Leiteiro" data-apt="Leite">Gir Leiteiro</option>
+          <option value="Jersey" data-apt="Leite">Jersey</option>
+          <option value="Pardo-Suíça" data-apt="Leite">Pardo-Suíça</option>
+          <option value="Ayrshire" data-apt="Leite">Ayrshire</option>
+          <option value="Guernsey" data-apt="Leite">Guernsey</option>
+        </optgroup>
+        <optgroup label="Dupla aptidão">
+          <option value="Guzerá" data-apt="Dupla aptidão">Guzerá</option>
+          <option value="Sindi" data-apt="Dupla aptidão">Sindi</option>
+          <option value="Simental" data-apt="Dupla aptidão">Simental</option>
+          <option value="Caracu" data-apt="Dupla aptidão">Caracu</option>
+        </optgroup>
+        <optgroup label="Cruzamentos / outros">
+          <option value="Mestiço/Cruzado" data-apt="">Mestiço/Cruzado</option>
+          <option value="Outra raça" data-apt="">Outra raça</option>
+        </optgroup>
+      </select>
+    </label>
+    <div id="acrossWrap" class="two-cols" style="display:none">
+      <label>Raça da mãe <small>opcional</small><input id="adamBreed" placeholder="Ex.: Gir"></label>
+      <label>Raça do pai <small>opcional</small><input id="asireBreed" placeholder="Ex.: Holandês"></label>
+    </div>
 
     <div class="form-section-title">NASCIMENTO</div>
     <label>Data de nascimento <small>opcional</small><input id="abirth" type="date"></label>
@@ -2248,7 +2314,7 @@ function renderAnimalScreen(){
   let arr=animalsData.filter(a=>{
     const catok=
       animalCategoryFilter==='Todos' ||
-      (animalCategoryFilter==='Bezerro(a)' && ['Bezerro','Bezerra'].includes(a.category)) ||
+      (animalCategoryFilter==='Crias' && ['Bezerro','Bezerra'].includes(a.category)) ||
       a.category===animalCategoryFilter;
     const qok=!q||`${a.number} ${a.breed||''} ${a.lot||''}`.toLowerCase().includes(q);
     return catok&&qok;
@@ -2297,6 +2363,43 @@ async function reactivateAnimal(id){
   }catch(e){alert(e.message)}
 }
 
+
+function animalSexFromCategory(category){
+  return ['Vaca','Novilha','Bezerra'].includes(category)?'Fêmea':'Macho';
+}
+function syncAnimalCategorySex(){
+  const cat=document.getElementById('acat');
+  const sex=document.getElementById('asex');
+  if(cat&&sex) sex.value=animalSexFromCategory(cat.value);
+}
+function syncAnimalBreedAptitude(){
+  const breed=document.getElementById('abreed');
+  const apt=document.getElementById('aaptitude');
+  const cross=document.getElementById('acrossWrap');
+  if(!breed)return;
+  const opt=breed.options[breed.selectedIndex];
+  const suggested=opt?.dataset?.apt||'';
+  if(apt&&suggested) apt.value=suggested;
+  if(cross) cross.style.display=['Mestiço/Cruzado','Outra raça'].includes(breed.value)?'grid':'none';
+}
+function animalExtraMeta(){
+  const sex=document.getElementById('asex')?.value||'';
+  const aptitude=document.getElementById('aaptitude')?.value||'';
+  const dam=document.getElementById('adamBreed')?.value?.trim()||'';
+  const sire=document.getElementById('asireBreed')?.value?.trim()||'';
+  return {sex,aptitude,dam,sire};
+}
+function appendAnimalMetaToNotes(notes){
+  const m=animalExtraMeta();
+  const parts=[];
+  if(m.sex)parts.push(`Sexo: ${m.sex}`);
+  if(m.aptitude)parts.push(`Aptidão: ${m.aptitude}`);
+  if(m.dam)parts.push(`Raça da mãe: ${m.dam}`);
+  if(m.sire)parts.push(`Raça do pai: ${m.sire}`);
+  const meta=parts.length?`[Cadastro Meu Gado] ${parts.join(' | ')}`:'';
+  return [notes?.trim()||'',meta].filter(Boolean).join('\n');
+}
+
 function previewAnimalPhoto(input){
   const file=input.files&&input.files[0];
   if(!file){pendingAnimalPhoto='';aphotoPreview.innerHTML='▣<small>Foto</small>';return}
@@ -2324,6 +2427,11 @@ async function openNewAnimal(){
     if(number) number.value='';
     if(birth) birth.value='';
     if(breed) breed.value='Nelore';
+    const cat=document.getElementById('acat'); if(cat) cat.value='Boi';
+    const apt=document.getElementById('aaptitude'); if(apt) apt.value='Corte';
+    const dam=document.getElementById('adamBreed'); if(dam) dam.value='';
+    const sire=document.getElementById('asireBreed'); if(sire) sire.value='';
+    syncAnimalCategorySex(); syncAnimalBreedAptitude();
     if(entryDate) entryDate.value=new Date().toISOString().slice(0,10);
     if(entryWeight) entryWeight.value='';
     if(targetWeight) targetWeight.value='';
@@ -2349,7 +2457,8 @@ async function saveAnimal(){
     await api('/api/animals',{method:'POST',body:JSON.stringify({
       category:el('acat')?.value||'Boi',number,ear_tag:'',breed:el('abreed')?.value||'',birth_date:el('abirth')?.value||null,
       origin,entry_date:el('adate')?.value||new Date().toISOString().slice(0,10),entry_weight:el('aweight')?.value?Number(el('aweight').value):null,
-      target_weight:el('atarget')?.value?Number(el('atarget').value):null,lot:el('alot')?.value||'',purchase_value:0,notes:el('anotes')?.value||'',
+      target_weight:el('atarget')?.value?Number(el('atarget').value):null,lot:el('alot')?.value||'',purchase_value:0,
+      notes:appendAnimalMetaToNotes(el('anotes')?.value||''),
       photo_data:pendingAnimalPhoto||''
     })});
     closeModal('animalModal');
@@ -2476,7 +2585,7 @@ async function openAnimalProfile(id){
   </div>
   <div class="profile-grid">
    ${weightEvolutionHtml(a)}
-   <div class="card"><h4>Identificação</h4><p>Número: <b>#${a.number}</b></p><p>Categoria: <b>${a.category||'-'}</b></p><p>Raça: <b>${a.breed||'-'}</b></p><p>Origem: <b>${a.origin||'-'}</b></p><p>Lote atual: <b>${a.lot||'-'}</b></p><p>Nascimento: <b>${a.birth_date||'-'}</b></p><p>Idade: <b>${ageFromBirth(a.birth_date)}</b></p></div>
+   <div class="card"><h4>Identificação</h4><p>Número: <b>#${a.number}</b></p><p>Categoria: <b>${a.category||'-'}</b></p><p>Sexo: <b>${animalSexFromCategory(a.category)}</b></p><p>Raça: <b>${a.breed||'-'}</b></p><p>Origem: <b>${a.origin||'-'}</b></p><p>Lote atual: <b>${a.lot||'-'}</b></p><p>Nascimento: <b>${a.birth_date||'-'}</b></p><p>Idade: <b>${ageFromBirth(a.birth_date)}</b></p></div>
    <div class="card"><h4>Histórico de pesagens</h4>${a.weighings.length?a.weighings.slice(0,10).map(w=>`<p>${w.weighing_date}: <b>${w.weight} kg</b>${w.notes?`<small> · ${w.notes}</small>`:''}</p>`).join(''):'<p class="sub">Sem pesagens.</p>'}</div>
    <div class="card"><h4>Saúde</h4>${a.health.length?a.health.slice(0,8).map(x=>`<p>${x.event_date}: <b>${x.event_type||'Registro'}</b>${x.product?` · ${x.product}`:''}</p>`).join(''):'<p class="sub">Sem registros sanitários.</p>'}</div>
    <div class="card"><h4>Movimentações</h4>${a.movements.length?a.movements.slice(0,8).map(x=>`<p>${x.movement_date}: <b>${x.from_lot||'Sem lote'} → ${x.to_lot}</b></p>`).join(''):'<p class="sub">Sem movimentações.</p>'}</div>
