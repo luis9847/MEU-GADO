@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v9-letras-maiores">
+<meta name="mg-build" content="app-teste-v10-mobile">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -713,6 +713,129 @@ button,input,select,textarea{font-size:13px!important;line-height:1.35}
   .content table th{font-size:10px!important}
 }
 
+
+/* V10 — experiência no celular/tablet */
+.mobile-menu-btn{display:none;border:1px solid var(--line);background:#fff;color:#17352b;width:38px;height:38px;border-radius:8px;font-size:20px;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.mobile-nav-backdrop{display:none}
+
+@media(max-width:760px){
+  body.mg-mobile-nav-open{overflow:hidden}
+  .layout{display:block!important;min-height:100vh}
+  .main{width:100%;min-width:0}
+
+  .side{
+    position:fixed!important;
+    left:0;top:0;bottom:0;
+    width:min(290px,86vw)!important;
+    height:100dvh!important;
+    z-index:300!important;
+    transform:translateX(-103%);
+    transition:transform .22s ease;
+    padding:16px 13px!important;
+    overflow-y:auto;
+    box-shadow:8px 0 28px rgba(0,0,0,.22);
+  }
+  body.mg-mobile-nav-open .side{transform:translateX(0)}
+  .side .brand div,.side .nav-title,.side .nav span,.side .farmbox small{display:block!important}
+  .side .nav button{text-align:left!important;padding:11px 12px!important;font-size:13px!important}
+  .side .nav-title{font-size:10px!important}
+  .side .farm-profile{grid-template-columns:32px 1fr 24px!important}
+  .side .farm-profile b,.side .farm-profile small{display:block!important}
+  .side-bottom{margin-top:18px!important}
+
+  .mobile-nav-backdrop{
+    position:fixed;inset:0;background:rgba(7,24,20,.48);
+    z-index:290;
+  }
+  body.mg-mobile-nav-open .mobile-nav-backdrop{display:block}
+
+  .top{
+    height:auto!important;min-height:62px;
+    padding:9px 12px!important;
+    gap:9px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .mobile-menu-btn{display:inline-flex}
+  .search{width:auto!important;flex:1;min-width:0;order:0}
+  .search input{width:100%;font-size:12px!important}
+  .top-actions{gap:8px!important;flex:0 0 auto}
+  .notification-btn span{display:none}
+  .top-user>div{display:none}
+
+  .content{padding:12px 10px 32px!important;width:100%;overflow-x:hidden}
+  .dashboard-kpis,.cards5{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .metric-card{min-height:92px!important;padding:11px!important}
+  .metric-card strong{font-size:21px!important}
+  .dash-row,.dash-main-row,.grid2,.grid3,.profile-grid,.ap8-grid{grid-template-columns:1fr!important}
+  .panel,.card,.metric-card,.ap8-card,.report-card{min-width:0}
+
+  .head{align-items:flex-start;gap:8px;flex-wrap:wrap}
+  .head>div:first-child{min-width:0}
+  .head .btn{width:auto}
+  .quick{grid-template-columns:1fr 1fr!important}
+
+  /* Formulários mais confortáveis ao toque */
+  .form,.animal-form-modern,.expense-form-modern{grid-template-columns:1fr!important}
+  .full{grid-column:auto!important}
+  input,select,textarea{min-height:43px}
+  textarea{min-height:90px}
+  .btn{min-height:42px;padding:10px 12px!important}
+  .filter-pill{min-height:36px}
+  .mini-add{min-height:43px}
+
+  /* Modais ocupam melhor o espaço do celular */
+  .modal{padding:0!important;align-items:flex-end!important}
+  .modalbox{
+    width:100%!important;
+    max-width:none!important;
+    max-height:94dvh!important;
+    border-radius:17px 17px 0 0!important;
+    padding:15px 12px 22px!important;
+  }
+
+  /* Ficha individual */
+  .ap8-hero{grid-template-columns:62px 1fr!important;padding:12px!important;gap:10px!important}
+  .ap8-photo,.ap8-photo-placeholder{width:60px!important;height:60px!important}
+  .ap8-title b{font-size:20px!important}
+  .ap8-hero-side{grid-column:1/-1!important;text-align:left!important;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:9px}
+  .ap8-kpis{grid-template-columns:1fr 1fr!important}
+  .ap8-actions{grid-template-columns:1fr 1fr!important;display:grid!important}
+  .ap8-actions .btn{width:100%!important}
+  .ap8-row{gap:8px!important}
+  .ap8-timeline .ap8-event{grid-template-columns:30px 1fr!important}
+  .ap8-event time{grid-column:2;text-align:left}
+
+  /* Relatórios */
+  .reports-grid,.report-grid{grid-template-columns:1fr!important}
+  .report-period-card{grid-template-columns:1fr!important;gap:10px!important}
+  .report-card{min-height:0!important}
+
+  /* Tabelas: rolagem horizontal apenas quando realmente necessária */
+  .card:has(table),.panel:has(table),.ap8-card:has(table){overflow-x:auto}
+  table{max-width:none}
+  th,td{white-space:nowrap}
+  .ap8-mini-table{min-width:620px}
+
+  /* Leite, saúde, reprodução e mercado */
+  .dairy-grid,.dairy-kpis,.health-kpis,.repro-kpis,.market-kpis{grid-template-columns:1fr 1fr!important}
+  .market-region-grid,.market-news-grid{grid-template-columns:1fr!important}
+
+  /* Botões lado a lado não ficam apertados */
+  .lot-actions{flex-wrap:wrap}
+  .lot-actions button{min-width:120px}
+}
+
+@media(max-width:430px){
+  .dashboard-kpis,.cards5,.ap8-kpis,.dairy-kpis,.health-kpis,.repro-kpis,.market-kpis{grid-template-columns:1fr!important}
+  .quick{grid-template-columns:1fr!important}
+  .ap8-actions{grid-template-columns:1fr!important}
+  .top{display:grid!important;grid-template-columns:auto 1fr auto}
+  .top-actions{grid-column:3}
+  .search{grid-column:2}
+  .metric-card strong{font-size:22px!important}
+}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
 
@@ -775,8 +898,10 @@ html.mg-route-boot .view.active{display:none!important}
     <button class="side-link" onclick="logout()">↪ <span>Sair</span></button>
   </div>
 </aside>
+<div class="mobile-nav-backdrop" onclick="mgCloseMobileNav()"></div>
 
 <main class="main"><div class="top">
+  <button class="mobile-menu-btn" type="button" aria-label="Abrir menu" onclick="mgToggleMobileNav()">☰</button>
   <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Buscar por número do animal, lote ou raça..." oninput="filterAnimals()"></div>
   <div class="top-actions">
     <button class="notification-btn" onclick="openNotifications()">♧ <span>Notificações</span><b id="notificationCount">0</b></button>
@@ -6050,6 +6175,27 @@ openAnimalProfile = async function(id){
   alert('Não foi possível abrir a ficha do animal: '+(e?.message||e));
  }
 };
+</script>
+
+
+<script id="mg-mobile-v10">
+function mgToggleMobileNav(){
+  document.body.classList.toggle('mg-mobile-nav-open');
+}
+function mgCloseMobileNav(){
+  document.body.classList.remove('mg-mobile-nav-open');
+}
+document.addEventListener('click',function(e){
+  if(window.innerWidth<=760 && e.target.closest('.side button[data-v],.side .side-link[data-v]')){
+    setTimeout(mgCloseMobileNav,40);
+  }
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')mgCloseMobileNav();
+});
+window.addEventListener('resize',function(){
+  if(window.innerWidth>760)mgCloseMobileNav();
+});
 </script>
 
 </body></html>
