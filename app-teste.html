@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-lotes-pesagem-v3">
+<meta name="mg-build" content="app-teste-lotes-pesagem-v3.1-fix-script">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -3379,66 +3379,6 @@ window.onload=()=>{
 };
 <\/script>
 
-<script id="mg-lotes-pesagem-teste">
-let lotV2Filter='all';
-function setLotV2Filter(filter,btn){
-  lotV2Filter=filter;
-  document.querySelectorAll('[data-lot-filter]').forEach(x=>x.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  renderLotsV2();
-}
-function renderLotsV2(){
-  const box=document.getElementById('lotCards'); if(!box)return;
-  const q=(document.getElementById('lotSearch')?.value||'').trim().toLowerCase();
-  const arr=(lotsData||[]).filter(x=>{
-    const text=`${x.name||''} ${x.notes||''}`.toLowerCase();
-    return (!q||text.includes(q)) &&
-      (lotV2Filter==='all'||(lotV2Filter==='active'&&x.active)||(lotV2Filter==='empty'&&Number(x.animals||0)===0));
-  });
-  box.innerHTML=arr.length?arr.map(x=>{
-    const animals=Number(x.animals||0), weight=Number(x.avg_weight||0), gmd=Number(x.avg_gmd||0), ready=Number(x.ready||0);
-    const pct=animals?Math.round(ready/animals*100):0;
-    return `<div class="card lot-card"><button class="lot-open" onclick="openLotProfile(${x.id})">
-      <div class="lot-v2-head"><div><div class="lot-v2-name">${x.name}</div><div class="lot-v2-note">${x.notes||'Sem observações'}</div></div><span class="lot-v2-status ${x.active?'':'inactive'}">${x.active?'Ativo':'Inativo'}</span></div>
-      <div class="lot-v2-metrics"><div><small>Animais</small><b>${animals}</b></div><div><small>Peso médio</small><b>${animals&&weight?weight.toFixed(1)+' kg':'—'}</b></div><div><small>GMD médio</small><b>${gmd?gmd.toFixed(3)+' kg/dia':'—'}</b></div></div>
-      <div class="lot-v2-progress"><div class="lot-v2-progress-head"><span>Animais na meta</span><b>${ready}/${animals} · ${pct}%</b></div><div class="lot-v2-progress-track"><i style="width:${pct}%"></i></div></div>
-      <div class="lot-v2-open"><span>Ver desenvolvimento do lote</span><span>→</span></div></button>
-      <div class="lot-actions"><button class="btn secondary" onclick="editLot(${x.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteLot(${x.id})">Excluir</button></div></div>`;
-  }).join(''):`<div class="lots-v2-empty"><b>Nenhum lote encontrado.</b><div class="sub">Ajuste a busca/filtro ou cadastre um novo lote.</div></div>`;
-}
-function updateLotsV2Kpis(){
-  const active=(lotsData||[]).filter(x=>x.active), withAnimals=active.filter(x=>Number(x.animals||0)>0);
-  const animals=active.reduce((n,x)=>n+Number(x.animals||0),0);
-  const weights=withAnimals.map(x=>Number(x.avg_weight||0)).filter(x=>x>0);
-  const ranked=withAnimals.filter(x=>Number(x.avg_gmd||0)!==0).sort((a,b)=>Number(b.avg_gmd)-Number(a.avg_gmd));
-  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  set('lotsKpiActive',active.length); set('lotsKpiTotal',`${(lotsData||[]).length} lote(s) cadastrado(s)`); set('lotsKpiAnimals',animals);
-  set('lotsKpiWeight',weights.length?(weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1)+' kg':'—');
-  set('lotsKpiGmd',ranked.length?Number(ranked[0].avg_gmd).toFixed(3)+' kg/dia':'—'); set('lotsKpiBest',ranked.length?`Lote ${ranked[0].name}`:'Sem dados suficientes');
-}
-function updateWeightV2Kpis(){
-  const list=(animalsData||[]);
-  const weighted=list.filter(a=>Number(a.current_weight||0)>0);
-  const weights=weighted.map(a=>Number(a.current_weight)).filter(Number.isFinite);
-  const gmds=list.map(a=>Number(a.gmd)).filter(v=>Number.isFinite(v)&&v!==0);
-  const ready=list.filter(a=>Number(a.current_weight||0)>0&&Number(a.target_weight||0)>0&&Number(a.current_weight)>=Number(a.target_weight)).length;
-  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  set('wKpiAnimals',weighted.length);
-  set('wKpiAvg',weights.length?(weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1)+' kg':'—');
-  set('wKpiGmd',gmds.length?(gmds.reduce((a,b)=>a+b,0)/gmds.length).toFixed(3)+' kg/dia':'—');
-  set('wKpiReady',ready);
-}
-const mgOriginalLoadLots=loadLots;
-loadLots=async function(){
-  await mgOriginalLoadLots();
-  renderLotsV2(); updateLotsV2Kpis();
-};
-const mgOriginalLoadAnimals=loadAnimals;
-loadAnimals=async function(){
-  await mgOriginalLoadAnimals();
-  updateWeightV2Kpis();
-};
-</script>
 
 </body>
 </html>`);
@@ -5494,6 +5434,68 @@ async function loadMilkFinance(){
 }
 
 
+</script>
+
+
+<script id="mg-lotes-pesagem-teste">
+let lotV2Filter='all';
+function setLotV2Filter(filter,btn){
+  lotV2Filter=filter;
+  document.querySelectorAll('[data-lot-filter]').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderLotsV2();
+}
+function renderLotsV2(){
+  const box=document.getElementById('lotCards'); if(!box)return;
+  const q=(document.getElementById('lotSearch')?.value||'').trim().toLowerCase();
+  const arr=(lotsData||[]).filter(x=>{
+    const text=`${x.name||''} ${x.notes||''}`.toLowerCase();
+    return (!q||text.includes(q)) &&
+      (lotV2Filter==='all'||(lotV2Filter==='active'&&x.active)||(lotV2Filter==='empty'&&Number(x.animals||0)===0));
+  });
+  box.innerHTML=arr.length?arr.map(x=>{
+    const animals=Number(x.animals||0), weight=Number(x.avg_weight||0), gmd=Number(x.avg_gmd||0), ready=Number(x.ready||0);
+    const pct=animals?Math.round(ready/animals*100):0;
+    return `<div class="card lot-card"><button class="lot-open" onclick="openLotProfile(${x.id})">
+      <div class="lot-v2-head"><div><div class="lot-v2-name">${x.name}</div><div class="lot-v2-note">${x.notes||'Sem observações'}</div></div><span class="lot-v2-status ${x.active?'':'inactive'}">${x.active?'Ativo':'Inativo'}</span></div>
+      <div class="lot-v2-metrics"><div><small>Animais</small><b>${animals}</b></div><div><small>Peso médio</small><b>${animals&&weight?weight.toFixed(1)+' kg':'—'}</b></div><div><small>GMD médio</small><b>${gmd?gmd.toFixed(3)+' kg/dia':'—'}</b></div></div>
+      <div class="lot-v2-progress"><div class="lot-v2-progress-head"><span>Animais na meta</span><b>${ready}/${animals} · ${pct}%</b></div><div class="lot-v2-progress-track"><i style="width:${pct}%"></i></div></div>
+      <div class="lot-v2-open"><span>Ver desenvolvimento do lote</span><span>→</span></div></button>
+      <div class="lot-actions"><button class="btn secondary" onclick="editLot(${x.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteLot(${x.id})">Excluir</button></div></div>`;
+  }).join(''):`<div class="lots-v2-empty"><b>Nenhum lote encontrado.</b><div class="sub">Ajuste a busca/filtro ou cadastre um novo lote.</div></div>`;
+}
+function updateLotsV2Kpis(){
+  const active=(lotsData||[]).filter(x=>x.active), withAnimals=active.filter(x=>Number(x.animals||0)>0);
+  const animals=active.reduce((n,x)=>n+Number(x.animals||0),0);
+  const weights=withAnimals.map(x=>Number(x.avg_weight||0)).filter(x=>x>0);
+  const ranked=withAnimals.filter(x=>Number(x.avg_gmd||0)!==0).sort((a,b)=>Number(b.avg_gmd)-Number(a.avg_gmd));
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set('lotsKpiActive',active.length); set('lotsKpiTotal',`${(lotsData||[]).length} lote(s) cadastrado(s)`); set('lotsKpiAnimals',animals);
+  set('lotsKpiWeight',weights.length?(weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1)+' kg':'—');
+  set('lotsKpiGmd',ranked.length?Number(ranked[0].avg_gmd).toFixed(3)+' kg/dia':'—'); set('lotsKpiBest',ranked.length?`Lote ${ranked[0].name}`:'Sem dados suficientes');
+}
+function updateWeightV2Kpis(){
+  const list=(animalsData||[]);
+  const weighted=list.filter(a=>Number(a.current_weight||0)>0);
+  const weights=weighted.map(a=>Number(a.current_weight)).filter(Number.isFinite);
+  const gmds=list.map(a=>Number(a.gmd)).filter(v=>Number.isFinite(v)&&v!==0);
+  const ready=list.filter(a=>Number(a.current_weight||0)>0&&Number(a.target_weight||0)>0&&Number(a.current_weight)>=Number(a.target_weight)).length;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set('wKpiAnimals',weighted.length);
+  set('wKpiAvg',weights.length?(weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1)+' kg':'—');
+  set('wKpiGmd',gmds.length?(gmds.reduce((a,b)=>a+b,0)/gmds.length).toFixed(3)+' kg/dia':'—');
+  set('wKpiReady',ready);
+}
+const mgOriginalLoadLots=loadLots;
+loadLots=async function(){
+  await mgOriginalLoadLots();
+  renderLotsV2(); updateLotsV2Kpis();
+};
+const mgOriginalLoadAnimals=loadAnimals;
+loadAnimals=async function(){
+  await mgOriginalLoadAnimals();
+  updateWeightV2Kpis();
+};
 </script>
 
 </body></html>
