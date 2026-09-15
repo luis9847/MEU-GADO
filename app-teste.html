@@ -3174,7 +3174,7 @@ async function dashboard(){
   if(document.getElementById('readyBadge')) readyBadge.textContent=d.ready||0;
   if(document.getElementById('weighBadge')) weighBadge.textContent=d.weighing_overdue||0;
   if(document.getElementById('reproBadge')) reproBadge.textContent=d.repro_due||0;
-  if(document.getElementById('notificationCount')) notificationCount.textContent=(d.alerts||[]).length;
+  mgRefreshNotificationCount(d.alerts||[]);
   if(document.getElementById('firstSteps')) firstSteps.style.display=d.total===0?'grid':'none';
   if(document.getElementById('financePeriod')){
     const prev=Number(d.expenses_prev_month||0),cur=Number(d.expenses_month||0);
@@ -4977,8 +4977,45 @@ function mgAlertTypeMeta(type){
   if(type==='weight') return {icon:'⚖️',label:'Pesagem',view:'pesagem'};
   if(type==='loss') return {icon:'📉',label:'Perda de peso',view:'pesagem'};
   if(type==='repro') return {icon:'❤️',label:'Reprodução',view:'repro'};
-  if(type==='ready') return {icon:'✅',label:'Meta atingida',view:'desempenho'};
+  if(type==='ready') return {icon:'✅',label:'Meta atingida',view:'desempenho',actionLabel:'Desempenho'};
   return {icon:'⚠️',label:'Atenção',view:'inicio'};
+}
+function mgAlertIdentity(alert){
+  if(alert?.id)return String(alert.id);
+  return [alert?.type||'alert',alert?.animal_id||'',alert?.date||'',alert?.title||''].join('|');
+}
+function mgAlertReadStorageKey(){
+  return `mg_read_alerts_${mgFarm?.id||'farm'}_${mgUser?.id||'user'}`;
+}
+function mgReadAlertIds(){
+  try{
+    const value=JSON.parse(localStorage.getItem(mgAlertReadStorageKey())||'[]');
+    return new Set(Array.isArray(value)?value.map(String):[]);
+  }catch(e){return new Set()}
+}
+function mgSaveReadAlertIds(ids){
+  try{localStorage.setItem(mgAlertReadStorageKey(),JSON.stringify([...ids]))}catch(e){}
+}
+function mgSetNotificationCount(count){
+  const badge=document.getElementById('notificationCount');
+  if(!badge)return;
+  const total=Math.max(0,Number(count)||0);
+  badge.textContent=total;
+  badge.style.display=total?'grid':'none';
+}
+function mgRefreshNotificationCount(alerts){
+  const list=Array.isArray(alerts)?alerts:[];
+  const activeIds=new Set(list.map(mgAlertIdentity));
+  const readIds=mgReadAlertIds();
+  const activeReadIds=new Set([...readIds].filter(id=>activeIds.has(id)));
+  mgSaveReadAlertIds(activeReadIds);
+  mgSetNotificationCount(list.filter(alert=>!activeReadIds.has(mgAlertIdentity(alert))).length);
+}
+function mgMarkAlertsAsRead(alerts){
+  const readIds=mgReadAlertIds();
+  (Array.isArray(alerts)?alerts:[]).forEach(alert=>readIds.add(mgAlertIdentity(alert)));
+  mgSaveReadAlertIds(readIds);
+  mgSetNotificationCount(0);
 }
 function mgAlertLevelLabel(level){
   if(level==='danger')return 'Urgente';
@@ -5040,7 +5077,7 @@ function mgRenderAlertCenter(){
       </div>
       <div class="mg-alert-actions">
         ${a.animal_id?`<button class="mg-alert-open" onclick="mgAlertOpenAnimal(${Number(a.animal_id)})">Abrir animal</button>`:''}
-        <button class="mg-alert-module" onclick="mgAlertGoView('${meta.view}')">Ir para ${meta.label}</button>
+        <button class="mg-alert-module" onclick="mgAlertGoView('${meta.view}')">Ir para ${meta.actionLabel||meta.label}</button>
       </div>
     </div>`;
   }).join('');
@@ -5078,7 +5115,7 @@ async function openNotifications(){
     </div>
     <div id="mgAlertList" class="mg-alert-list"></div>`;
 
-  if(document.getElementById('notificationCount'))notificationCount.textContent=list.length;
+  mgMarkAlertsAsRead(list);
   mgRenderAlertCenter();
   openModal('notificationsModal');
 }
