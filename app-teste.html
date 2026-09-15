@@ -4659,6 +4659,7 @@ function mgAlertRegisterApplication(id){
   document.getElementById('healthApplicationNext').value='';
   document.getElementById('healthApplicationNotes').value='';
   document.getElementById('healthApplicationSummary').textContent=`${event.event_type||'Procedimento'} · ${event.product||'Sem produto'}${event.animal_number?' · Animal #'+event.animal_number:''}`;
+  closeModal('notificationsModal');
   openModal('healthApplicationModal');
 }
 async function saveHealthApplication(){
