@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v8-ficha-animal">
+<meta name="mg-build" content="app-teste-v9-letras-maiores">
 <style>
 :root{--green:#119447;--green2:#0a7839;--dark:#052f31;--bg:#f3f6fa;--card:#fff;--line:#e2e8ef;--text:#12243a;--muted:#6e7c8d;--orange:#e89a21;--red:#d84e45;--blue:#2e6fd4;--purple:#8059d4}
 *{box-sizing:border-box}html,body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.layout{display:grid;grid-template-columns:255px 1fr;min-height:100vh}.side{background:linear-gradient(180deg,#052f31,#062729);color:#fff;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;padding:0 4px 18px}.brand img{width:48px;height:48px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.15)}.brand b{font-size:18px;display:block}.brand small{font-size:10px;color:#bfd0d1}.nav-title{font-size:10px;color:#6fba8a;text-transform:uppercase;letter-spacing:.12em;margin:14px 10px 6px}.nav button{width:100%;border:0;background:transparent;color:#eef6f7;padding:11px 12px;border-radius:10px;text-align:left;font-weight:800;margin:2px 0}.nav button.active,.nav button:hover{background:var(--green)}.farmbox{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}.farmbox b{display:block}.farmbox small{color:#bdd0d1}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;position:sticky;top:0;z-index:20}.search{width:min(470px,48vw)}.search input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px}.user{font-size:12px;color:var(--muted)}.content{padding:18px 22px 44px}.view{display:none}.view.active{display:block}.cards5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 12px rgba(30,50,75,.035)}.label{font-size:10px;color:#66758a;text-transform:uppercase;font-weight:850}.value{font-size:26px;font-weight:900;margin-top:6px}.foot{font-size:11px;color:var(--muted);margin-top:6px}.good{color:var(--green)}.bad{color:var(--red)}.grid3{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:12px;margin-top:12px}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h2,.head h3{margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850}.primary{background:var(--green);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:92px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}.quick b{display:block;font-size:23px;color:var(--green);margin-bottom:5px}.alert{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}.alert:last-child{border-bottom:0}.alert i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#edf7f1}.alert b{display:block;font-size:11px}.alert span{font-size:10px;color:var(--muted)}.news{display:block;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.news b{display:block}.news small{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf1f4;text-align:left;font-size:11px}th{font-size:9px;text-transform:uppercase;color:#657386}.status{padding:4px 7px;border-radius:99px;background:#e7f6ec;color:#168a47;font-size:9px;font-weight:850}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label{font-size:11px;font-weight:800}.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;margin-top:5px}.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:rgba(6,24,29,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalbox{width:min(700px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px}.marketline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf1f4;font-size:11px}.chart{height:180px;display:flex;align-items:flex-end;gap:9px;padding:10px 10px 22px}.chart i{flex:1;background:linear-gradient(#48b66f,#15924a);border-radius:6px 6px 0 0;min-height:8px;position:relative}.chart i span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#7d8998}
@@ -565,6 +565,153 @@ html[data-mg-role="vet"] .vet-hidden { display:none !important; }
 .ap8-status-up{color:#118b44}.ap8-status-down{color:#b13b34}
 @media(max-width:900px){.ap8-kpis{grid-template-columns:repeat(2,1fr)}.ap8-grid{grid-template-columns:1fr}.ap8-timeline,.ap8-wide{grid-column:auto}.ap8-hero{grid-template-columns:70px 1fr}.ap8-hero-side{grid-column:1/-1;text-align:left}.ap8-photo,.ap8-photo-placeholder{width:66px;height:66px}}
 @media(max-width:560px){.ap8-kpis{grid-template-columns:1fr 1fr}.ap8-actions{display:grid;grid-template-columns:1fr 1fr}.ap8-actions button{width:100%}}
+
+
+/* V9 — Legibilidade global
+   Aumenta a tipografia do site inteiro sem alterar regras de negócio. */
+html,body{font-size:15px!important}
+button,input,select,textarea{font-size:13px!important;line-height:1.35}
+
+/* Menu lateral e cabeçalho */
+.brand b{font-size:18px!important}
+.brand small{font-size:10.5px!important}
+.nav-title{font-size:10px!important}
+.nav button{font-size:13px!important;line-height:1.25}
+.farm-profile b{font-size:11px!important}
+.farm-profile small,.mydata-btn,.side-link{font-size:10.5px!important}
+.search input{font-size:12.5px!important}
+.notification-btn{font-size:11px!important}
+.top-user b{font-size:11px!important}
+.top-user small{font-size:10px!important}
+
+/* Textos gerais da área principal */
+.content p{font-size:12px!important;line-height:1.55}
+.content small{font-size:11px!important;line-height:1.4}
+.content label{font-size:12px!important}
+.content input,.content select,.content textarea{font-size:13px!important}
+.content .sub,.content .foot{font-size:12px!important;line-height:1.45}
+.content .label{font-size:11px!important}
+.content .status{font-size:10.5px!important}
+.content .btn{font-size:12px!important}
+.content table td{font-size:12px!important;line-height:1.4}
+.content table th{font-size:10.5px!important;line-height:1.35}
+.empty,.empty-state span,.performance-empty{font-size:12px!important}
+.empty-state b{font-size:14px!important}
+.alert b,.news{font-size:12px!important}
+.alert span{font-size:11px!important}
+.step-grid b{font-size:13px!important}
+.step-grid small{font-size:11px!important}
+
+/* KPIs e painéis */
+.metric-top span{font-size:11px!important}
+.metric-foot,.metric-card small{font-size:11px!important}
+.performance-kpi small,.performance-kpi span{font-size:11px!important}
+.rank-row{font-size:12px!important}
+.rank-main small{font-size:11px!important}
+
+/* Animais */
+.animal-search input{font-size:13px!important}
+.filter-pill{font-size:11.5px!important}
+.animal-count-line{font-size:11.5px!important}
+.animal-row-card>div small{font-size:11px!important}
+.animal-row-card>div b{font-size:12.5px!important}
+.animal-main b{font-size:13.5px!important}
+.animal-main small{font-size:11px!important}
+.animal-form-modern label,.radio-row label{font-size:12px!important}
+.animal-form-modern label small{font-size:11px!important}
+.photo-preview small{font-size:10px!important}
+
+/* Lotes e Pesagens */
+.lot-view-hint{font-size:11.5px!important}
+.lot-bar-wrap small,.lot-bar-wrap b{font-size:10.5px!important}
+.lot-performance table td{font-size:11.5px!important}
+.lot-performance table th{font-size:10px!important}
+.lot-status{font-size:10px!important}
+.inline-form-card label,.weigh-card label,.batch-content>label{font-size:12px!important}
+.inline-form-card label small,.weigh-card label small{font-size:11px!important}
+.form-eyebrow,.section-caption,.form-section-title{font-size:11px!important}
+
+/* Relatórios */
+.report-period-card>div b{font-size:14px!important}
+.report-period-card>div small{font-size:11px!important}
+.report-period-card label{font-size:11.5px!important}
+.report-card b{font-size:14px!important}
+.report-card p{font-size:12px!important;line-height:1.55}
+.report-card button{font-size:12px!important}
+
+/* Gastos */
+.expense-form-modern label{font-size:12px!important}
+.expense-form-modern label small{font-size:11px!important}
+.profile-required-note{font-size:11.5px!important}
+
+/* Leite */
+.dairy-kpi small,.dairy-kpi span{font-size:11px!important}
+.dairy-tab{font-size:11.5px!important}
+.dairy-field label{font-size:11.5px!important}
+.dairy-table{font-size:12px!important}
+.dairy-table th{font-size:10.5px!important}
+.dairy-badge{font-size:10px!important}
+.dairy-empty{font-size:12px!important}
+.dairy-insights span{font-size:11px!important}
+.dairy-alert b{font-size:12px!important}
+.dairy-alert small{font-size:11px!important}
+.dairy-chart-day{font-size:9.5px!important}
+
+/* Saúde */
+.health-kpi small{font-size:11px!important}
+.health-kpi span{font-size:12px!important}
+.health-agenda-item small{font-size:11px!important}
+.health-status{font-size:11px!important}
+.health-product-info .hp-title{font-size:13px!important}
+.health-product-info .hp-desc{font-size:11.5px!important}
+
+/* Reprodução */
+.repro-kpi small{font-size:11px!important}
+.repro-kpi span{font-size:12px!important}
+.repro-agenda-item small,.repro-status-row small,.repro-birth-head small{font-size:11px!important}
+.repro-status-row b{font-size:13px!important}
+.repro-pill{font-size:10.5px!important}
+
+/* Mercado e novidades */
+.market-kpi small,.market-kpi span{font-size:11px!important}
+.market-filters label{font-size:11.5px!important}
+.market-filters select{font-size:12px!important}
+.market-region-card .place b{font-size:12.5px!important}
+.market-region-card .place span,.market-region-card .secondary-quote{font-size:10.5px!important}
+.market-region-card .quote small{font-size:10.5px!important}
+.market-news-card b{font-size:12px!important}
+.market-news-card span,.market-test-note,.market-disclaimer{font-size:10.5px!important}
+.release-head p,.benefit-box,.release-point,.how-step{font-size:11.5px!important}
+.release-date,.release-tag{font-size:10px!important}
+.how-title{font-size:12.5px!important}
+
+/* Ficha individual V8 */
+.ap8-title b{font-size:23px!important}
+.ap8-title>span{font-size:12px!important}
+.ap8-chip{font-size:10.5px!important}
+.ap8-hero-side small{font-size:10px!important}
+.ap8-kpi small{font-size:10.5px!important}
+.ap8-kpi span{font-size:10px!important}
+.ap8-progress-head{font-size:11.5px!important}
+.ap8-card h4{font-size:14px!important}
+.ap8-row{font-size:11.5px!important;line-height:1.45}
+.ap8-section-sub{font-size:10.5px!important;line-height:1.45}
+.ap8-event b{font-size:11.5px!important}
+.ap8-event small{font-size:10px!important;line-height:1.4}
+.ap8-event time{font-size:9.5px!important}
+.ap8-empty{font-size:11.5px!important}
+.ap8-mini-table td{font-size:11.5px!important}
+.ap8-mini-table th{font-size:10px!important}
+
+/* Celular: mantém legibilidade sem estourar a tela */
+@media(max-width:700px){
+  html,body{font-size:14px!important}
+  .nav button{font-size:12px!important}
+  .content{padding-left:12px!important;padding-right:12px!important}
+  .report-card b,.ap8-card h4{font-size:13px!important}
+  .content table td{font-size:11.5px!important}
+  .content table th{font-size:10px!important}
+}
 
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
