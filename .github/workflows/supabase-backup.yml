@@ -35,6 +35,20 @@ jobs:
             > "backup/$BACKUP_NAME"
 
           test -s "backup/$BACKUP_NAME"
+           DECRYPTED_NAME="backup/restore-test.dump"
+           
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+            -pass env:BACKUP_ENCRYPTION_PASSWORD \
+            -in "backup/$BACKUP_NAME" \
+            -out "$DECRYPTED_NAME"
+
+          docker run --rm \
+            -v "$PWD/backup:/backup:ro" \
+            postgres:17 \
+            pg_restore --list "/backup/restore-test.dump" > /dev/null
+
+          rm -f "$DECRYPTED_NAME"
+          
           sha256sum "backup/$BACKUP_NAME" > "backup/$BACKUP_NAME.sha256"
 
       - name: Guardar backup criptografado
