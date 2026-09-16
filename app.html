@@ -1383,6 +1383,7 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 .mg-sync-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.mg-sync-kpi{border:1px solid #dfe8e3;border-radius:12px;padding:12px}.mg-sync-kpi small{display:block;color:#65776f}.mg-sync-kpi b{display:block;font-size:22px;margin-top:5px}.mg-sync-list{display:grid;gap:8px;max-height:360px;overflow:auto}.mg-sync-row{display:grid;grid-template-columns:1fr auto;gap:12px;border:1px solid #e0e9e4;border-radius:11px;padding:11px}.mg-sync-row small{display:block;color:#687b72;margin-top:4px}.mg-sync-status{font-size:10px;font-weight:900;border-radius:99px;padding:5px 8px;height:max-content}.mg-sync-status.pending{background:#fff3d8;color:#8a6518}.mg-sync-status.success{background:#e4f6ea;color:#087b3e}.mg-sync-status.error{background:#fde7e5;color:#a83d36}
 @media(max-width:650px){.mg-connection-bar{left:50%;right:auto;top:76px;bottom:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 24px);justify-content:center;flex-wrap:nowrap;padding:7px 10px;border-radius:999px;white-space:nowrap}.mg-connection-bar #mgPendingText{width:auto;text-align:left}.mg-connection-bar button{padding:5px 8px}.mg-offline-toast{left:50%;top:124px;bottom:auto}.mg-sync-summary{grid-template-columns:1fr}.mg-sync-row{grid-template-columns:1fr}}
 @media(max-width:760px){.weight-history-filters{grid-template-columns:1fr 1fr!important}.weight-history-filters input:first-child{grid-column:1/-1}.weigh-history{overflow-x:auto}}
+body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
 </style>
 </head>
 <body data-build="modo-campo-offline-v1-oficial">
@@ -3113,8 +3114,8 @@ async function apiOnline(path,opt={}){
  if(path==='/api/weighings/history'){let w=await mgRows('weighings'),g={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(g[m]??=[]).push(Number(x.weight))}return Object.entries(g).sort().slice(-6).map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}))}
  if(path==='/api/weighings/batch'&&method==='POST'){let rows=(data.items||data.weighings||[]).map(x=>({farm_id:f.id,animal_id:Number(x.animal_id),weighing_date:data.weighing_date||x.weighing_date,weight:Number(x.weight),notes:x.notes||data.notes||''})).filter(x=>x.weight>0);let r=await mgSb.from('weighings').insert(rows).select('id');if(r.error)mgErr(r.error);if((r.data||[]).length!==rows.length)throw new Error('Nem todas as pesagens do lote foram confirmadas pelo banco de dados.');return {ok:true,count:r.data.length,ids:r.data.map(x=>x.id)}}
  if(path==='/api/expenses'&&method==='GET'){let e=await mgRows('expenses','*','expense_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return e.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
- if(path==='/api/expenses'&&method==='POST'){let text=(data.category+' '+data.description+' '+(data.notes||'')).toLowerCase();if(/(compra|aquisi).*(gado|animal|boi|vaca|bezer)/.test(text))throw new Error('Compra de gado não deve ser lançada no módulo Gastos');let r=await mgSb.from('expenses').insert({farm_id:f.id,animal_id:data.animal_id||null,lot:data.lot||'',category:data.category,expense_date:data.expense_date,amount:data.amount,description:data.description,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
+ if(path==='/api/expenses'&&method==='POST'){let text=(data.category+' '+data.description+' '+(data.notes||'')).toLowerCase();if(/(compra|aquisi).*(gado|animal|boi|vaca|bezer)/.test(text))throw new Error('Compra de gado não deve ser lançada no módulo Gastos');let r=await mgSb.from('expenses').insert({farm_id:f.id,animal_id:data.animal_id||null,lot:data.lot||'',category:mgNormalizeLabel(data.category||'OUTROS'),expense_date:data.expense_date,amount:data.amount,description:data.description,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){if(data.category)data.category=mgNormalizeLabel(data.category);let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
  if(m&&method==='DELETE'){let r=await mgSb.from('expenses').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/weighings\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('weighings').update({weighing_date:data.weighing_date,weight:Number(data.weight),notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('Pesagem não encontrada.');return {ok:true,id:r.data.id}}
  if(m&&method==='DELETE'){let r=await mgSb.from('weighings').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
@@ -3137,7 +3138,8 @@ async function apiOnline(path,opt={}){
  if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
  if(path==='/api/nutrition'&&method==='POST'){
    const nutritionCost=Number(data.total_cost||0);
-   const payload={farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:nutritionCost,notes:data.notes||''};
+   const normalizedFeed=mgNormalizeLabel(data.feed_name||'ALIMENTAÇÃO');
+   const payload={farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:normalizedFeed,quantity_kg:data.quantity_kg,total_cost:nutritionCost,notes:data.notes||''};
    let r=await mgSb.from('nutrition_entries').insert(payload).select('id').single();
    if(r.error)mgErr(r.error);
    const nutritionId=r.data.id;
@@ -3149,7 +3151,7 @@ async function apiOnline(path,opt={}){
      farm_id:f.id,
      animal_id:null,
      lot:data.lot_name||'',
-     category:String(data.feed_name||'Alimentação').trim()||'Alimentação',
+     category:normalizedFeed,
      expense_date:data.entry_date,
      amount:nutritionCost,
      description:'Alimentação · '+(data.feed_name||'Lançamento')+(data.lot_name?' · '+data.lot_name:''),
@@ -3482,7 +3484,7 @@ function renderDashboardComposition(categories,total){
 function renderDashboardExpenses(rows){
   const root=document.getElementById('dashExpenseBars');if(!root)return;
   const ym=new Date().toISOString().slice(0,7),by={};
-  rows.filter(x=>String(x.expense_date||'').slice(0,7)===ym).forEach(x=>{const key=String(x.category||'Outros');by[key]=(by[key]||0)+Number(x.amount||0);});
+  rows.filter(x=>String(x.expense_date||'').slice(0,7)===ym).forEach(x=>{const key=mgNormalizeLabel(x.category||'OUTROS');by[key]=(by[key]||0)+Number(x.amount||0);});
   const list=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,6),max=Math.max(0,...list.map(x=>x[1]));
   root.innerHTML=list.length?list.map(([name,value])=>`<div class="expense-bar-row"><span title="${mgSafeText(name)}">${mgSafeText(name)}</span><div class="expense-track"><i style="width:${max?Math.max(5,value/max*100):0}%"></i></div><b>${money(value)}</b></div>`).join(''):'<div class="insight-empty">Nenhum gasto registrado neste mês.<br>Os lançamentos aparecerão aqui automaticamente.</div>';
 }
@@ -3535,6 +3537,7 @@ function mgGlobalExactAnimal(query){
   const matches=animalsData.filter(a=>String(a.number||'').trim().toLowerCase()===needle);
   return matches.length===1?matches[0]:null;
 }
+function mgNormalizeLabel(value){return String(value??'').trim().replace(/\s+/g,' ').toLocaleUpperCase('pt-BR')}
 function openGlobalSearchResult(){
   const exact=mgGlobalExactAnimal(document.getElementById('globalSearch')?.value||'');
   if(exact){mgGlobalSearchOpened=String(exact.id);openAnimalProfile(exact.id);return}
@@ -3952,7 +3955,7 @@ async function loadNutrition(){
      farm_id:f.id,
      animal_id:null,
      lot:x.lot_name||'',
-     category:String(x.feed_name||'Alimentação').trim()||'Alimentação',
+     category:mgNormalizeLabel(x.feed_name||'ALIMENTAÇÃO'),
      expense_date:x.entry_date,
      amount:Number(x.total_cost||0),
      description:'Alimentação · '+(x.feed_name||'Lançamento')+(x.lot_name?' · '+x.lot_name:''),
@@ -3980,7 +3983,7 @@ async function loadNutrition(){
    return `<tr>
      <td>${x.entry_date}</td>
      <td><b>${mgEsc(x.lot_name||'—')}</b></td>
-     <td>${mgEsc(x.feed_name||'—')}</td>
+     <td>${mgEsc(mgNormalizeLabel(x.feed_name||'—'))}</td>
      <td>${q.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})} kg</td>
      <td>${money(c)}</td>
      <td>${q?money(c/q):money(0)}</td>
@@ -4813,7 +4816,7 @@ async function loadExpenses(){
     const autoNutrition=/\[AUTO:NUTRITION:\d+\]/.test(String(e.notes||''));
     return `<tr>
       <td>${e.expense_date}</td>
-      <td>${e.category}${autoNutrition?' <span style="font-size:9px;padding:3px 6px;border-radius:999px;background:#e8f7ee;color:#08783c;font-weight:800">AUTOMÁTICO</span>':''}</td>
+      <td>${mgNormalizeLabel(e.category)}${autoNutrition?' <span style="font-size:9px;padding:3px 6px;border-radius:999px;background:#e8f7ee;color:#08783c;font-weight:800">AUTOMÁTICO</span>':''}</td>
       <td>${e.description||'-'}</td>
       <td>${money(e.amount)}</td>
       <td>${autoNutrition
