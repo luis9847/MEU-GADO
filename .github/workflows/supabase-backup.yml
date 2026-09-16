@@ -12,12 +12,8 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    steps:
-      - name: Instalar cliente PostgreSQL
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes postgresql-client
 
+    steps:
       - name: Gerar e criptografar backup
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -26,11 +22,18 @@ jobs:
           set -euo pipefail
           test -n "$SUPABASE_DB_URL"
           test -n "$BACKUP_ENCRYPTION_PASSWORD"
+
           mkdir -p backup
           BACKUP_NAME="meu-gado-$(date -u +'%Y-%m-%dT%H-%M-%SZ').dump.enc"
-          pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-acl \
-            | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 -pass env:BACKUP_ENCRYPTION_PASSWORD \
+
+          docker run --rm \
+            -e SUPABASE_DB_URL \
+            postgres:17 \
+            sh -c 'pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-acl' \
+            | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+                -pass env:BACKUP_ENCRYPTION_PASSWORD \
             > "backup/$BACKUP_NAME"
+
           test -s "backup/$BACKUP_NAME"
           sha256sum "backup/$BACKUP_NAME" > "backup/$BACKUP_NAME.sha256"
 
