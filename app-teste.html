@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-v21-modo-campo-offline">
+<meta name="mg-build" content="app-teste-v21-1-modo-campo-offline-posicao">
 <meta name="theme-color" content="#052f31">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1380,7 +1380,7 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 <style id="mg-offline-ui-v1">
 .mg-connection-bar{position:fixed;right:14px;bottom:14px;z-index:199990;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 28px);padding:9px 11px;border:1px solid #d9e5de;border-radius:12px;background:rgba(255,255,255,.97);box-shadow:0 10px 32px rgba(5,47,49,.18);font-size:11px;color:#365046;backdrop-filter:blur(8px)}
 .mg-connection-bar strong{color:#15382c}.mg-connection-dot{width:9px;height:9px;border-radius:50%;background:#d79624;box-shadow:0 0 0 3px #faefd8}.mg-connection-bar.offline .mg-connection-dot{background:#d84e45;box-shadow:0 0 0 3px #fde8e6}.mg-connection-bar.online .mg-connection-dot{background:#119447;box-shadow:0 0 0 3px #e1f4e8}.mg-connection-bar.syncing .mg-connection-dot{background:#2e6fd4;box-shadow:0 0 0 3px #e4edfb;animation:mgPulse 1s infinite}.mg-connection-bar button{border:0;border-radius:8px;background:#e8f6ed;color:#08763b;padding:7px 9px;font-size:10px;font-weight:900}.mg-connection-bar #mgSyncNowBtn:disabled{display:none}.mg-offline-toast{position:fixed;left:50%;bottom:72px;z-index:199991;transform:translate(-50%,18px);max-width:min(460px,calc(100vw - 28px));padding:11px 14px;border-radius:11px;background:#15382f;color:#fff;font-size:12px;font-weight:750;box-shadow:0 12px 35px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:.22s}.mg-offline-toast.show{opacity:1;transform:translate(-50%,0)}.mg-offline-toast.error{background:#a83d36}.mg-offline-toast.pending{background:#8a6518}@keyframes mgPulse{50%{opacity:.35}}
-@media(max-width:650px){.mg-connection-bar{left:10px;right:10px;bottom:10px;justify-content:center;flex-wrap:wrap}.mg-connection-bar #mgPendingText{width:100%;text-align:center}.mg-offline-toast{bottom:92px}}
+@media(max-width:650px){.mg-connection-bar{left:50%;right:auto;top:76px;bottom:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 24px);justify-content:center;flex-wrap:nowrap;padding:7px 10px;border-radius:999px;white-space:nowrap}.mg-connection-bar #mgPendingText{width:auto;text-align:left}.mg-connection-bar button{padding:5px 8px}.mg-offline-toast{left:50%;top:124px;bottom:auto}}
 </style>
 </head>
 <body data-build="modo-campo-offline-v1-teste">
