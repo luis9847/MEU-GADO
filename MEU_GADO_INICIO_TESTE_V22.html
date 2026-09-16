@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Gado — Gestão Profissional do Rebanho</title>
+<meta name="mg-build" content="index-v36-dashboard-real-v22">
+<style>
+:root{
+  --green:#148b45;
+  --green-2:#0f6e37;
+  --green-3:#30ad61;
+  --dark:#05292a;
+  --dark-2:#07383a;
+  --ink:#102635;
+  --muted:#6b7b88;
+  --line:#dfe7e4;
+  --soft:#f4f8f5;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#eef4f0}
+button,input{font:inherit}
+button{cursor:pointer}
+.page{min-height:100vh;position:relative;background:
+  linear-gradient(90deg,rgba(3,32,31,.82) 0%,rgba(3,32,31,.68) 46%,rgba(3,32,31,.26) 68%,rgba(3,32,31,.12) 100%),
+  url('/login-rebanho.jpg') center/cover no-repeat fixed;
+}
+.shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.22fr) minmax(420px,.78fr);gap:34px;padding:34px 48px}
+.hero{color:#fff;display:flex;flex-direction:column;min-width:0}
+.brand{display:flex;gap:16px;align-items:center}
+.brand-logo{width:76px;height:76px;border-radius:20px;overflow:hidden;border:2px solid rgba(255,255,255,.28);background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.24)}
+.brand-logo img{width:100%;height:100%;object-fit:cover}
+.brand b{font-size:27px;letter-spacing:-.02em;display:block}
+.brand b span{color:#45c473}
+.brand small{display:block;margin-top:5px;font-size:11px;letter-spacing:.11em;color:#e1ece8}
+.hero-copy{margin-top:auto;margin-bottom:34px;max-width:780px}
+.hero-copy h1{font-size:62px;line-height:1.01;letter-spacing:-.045em;margin:0 0 22px;max-width:730px}
+.hero-copy h1 span{color:#45c473}
+.hero-copy .question{font-size:20px;line-height:1.45;font-weight:850;max-width:650px;margin:0 0 11px}
+.hero-copy .lead{font-size:17px;line-height:1.58;color:#eaf4ef;max-width:650px;margin:0}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:26px;max-width:790px}
+.feature{min-height:150px;padding:18px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(12,55,42,.68),rgba(7,42,34,.82));border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(7px);box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.feature-icon{font-size:29px;margin-bottom:13px}
+.feature b{font-size:13px;display:block;margin-bottom:7px}
+.feature p{font-size:11px;line-height:1.45;color:#dbe9e3;margin:0}
+.result-banner{margin-top:20px;max-width:790px;padding:18px 20px;border-radius:16px;background:rgba(8,54,38,.78);border:1px solid rgba(255,255,255,.12);display:flex;gap:14px;align-items:center}
+.trophy{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#178e48;font-size:22px;flex:0 0 auto}
+.result-banner b{font-size:14px}.result-banner b span{color:#4bcd77}.result-banner p{margin:4px 0 0;font-size:12px;color:#dceae4}
+.trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:790px;margin-top:20px}
+.trust{border:1px solid rgba(255,255,255,.10);background:rgba(6,39,34,.68);padding:13px 15px;border-radius:12px;font-size:11px;font-weight:800;display:flex;gap:9px;align-items:center}
+.trust i{font-style:normal;font-size:19px;color:#4bcd77}
+
+.login-wrap{display:grid;place-items:center}
+.login-card{width:min(510px,100%);background:rgba(255,255,255,.97);border-radius:24px;padding:36px 34px 26px;box-shadow:0 28px 80px rgba(0,24,20,.24);border:1px solid rgba(255,255,255,.55)}
+.card-head{text-align:center}
+.card-head h2{font-size:32px;letter-spacing:-.03em;margin:0;color:#0a362d}
+.card-head p{font-size:14px;line-height:1.5;color:var(--muted);margin:10px auto 0;max-width:330px}
+.divider{display:flex;align-items:center;gap:13px;margin:26px 0 20px;color:#78938a}
+.divider:before,.divider:after{content:"";height:1px;background:#9cc8ab;flex:1}
+.divider .mini-cow{font-size:20px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#eef5f0;border-radius:12px;margin-bottom:18px}
+.tab{border:0;padding:10px;border-radius:9px;background:transparent;color:#667970;font-weight:800}
+.tab.active{background:#fff;color:var(--green);box-shadow:0 4px 12px rgba(17,71,45,.08)}
+.form{display:none}.form.active{display:block}
+.field{margin:13px 0}
+.field-top{display:flex;justify-content:space-between;align-items:center}
+.field label{font-size:12px;font-weight:850;display:block;margin-bottom:7px}
+.field input{width:100%;padding:13px 14px;border:1px solid #dbe5df;border-radius:10px;outline:none;background:#fff}
+.field input:focus{border-color:#7dc594;box-shadow:0 0 0 3px #eaf7ee}
+.row{display:grid;grid-template-columns:1fr 92px;gap:9px}
+.forgot{border:0;background:transparent;color:var(--green);padding:0;font-size:11px;font-weight:800}
+.remember{display:flex;align-items:center;gap:8px;font-size:11px;color:#687b71;margin:10px 0 3px}
+.remember input{width:auto;accent-color:var(--green)}
+.btn{width:100%;border:0;border-radius:11px;padding:13px 16px;background:linear-gradient(135deg,#0e503f,#063d34);color:#fff;font-weight:900;font-size:14px;margin-top:10px;box-shadow:0 9px 22px rgba(7,62,48,.18)}
+.btn.green{background:linear-gradient(135deg,#1e9b50,#147d40)}
+.or{display:flex;align-items:center;gap:12px;color:#87978f;font-size:11px;margin:19px 0}
+.or:before,.or:after{content:"";height:1px;background:#d7e2dc;flex:1}
+.signup-card{padding:18px;border-radius:16px;background:linear-gradient(180deg,#f2f8f4,#edf6f0);border:1px solid #deebe2;text-align:center}
+.signup-icon{width:48px;height:48px;border-radius:50%;margin:0 auto 9px;display:grid;place-items:center;border:2px solid var(--green);color:var(--green);font-size:22px}
+.signup-card h3{font-size:18px;margin:0 0 5px;color:#103a30}.signup-card p{font-size:11px;line-height:1.45;color:#687b72;margin:0 0 12px}
+.outline{width:100%;border:1.5px solid var(--green);background:#fff;color:var(--green);border-radius:10px;padding:11px;font-weight:900}
+.help{text-align:center;margin-top:15px;font-size:11px;color:#75867e}.help span{color:var(--green);font-weight:800}
+.error{font-size:12px;color:#b44038;margin-top:10px;line-height:1.4;min-height:17px}.success{color:#167d42}
+.footer{text-align:center;color:#a0aaa5;font-size:10px;margin-top:12px}
+
+@media(max-width:1150px){
+  .shell{grid-template-columns:1fr;padding:26px}.hero{min-height:690px}.hero-copy{margin-top:90px}.login-wrap{padding-bottom:30px}.login-card{max-width:600px}
+}
+@media(max-width:720px){
+  .page{background-attachment:scroll}.shell{padding:18px;gap:20px}.hero{min-height:560px}.brand-logo{width:58px;height:58px;border-radius:16px}.brand b{font-size:22px}.hero-copy{margin-top:70px}.hero-copy h1{font-size:43px}.hero-copy .question{font-size:17px}.hero-copy .lead{font-size:14px}.feature-grid{grid-template-columns:repeat(2,1fr)}.trust-row{grid-template-columns:1fr}.login-card{padding:28px 20px}.row{grid-template-columns:1fr}
+}
+
+.password-wrap{position:relative}
+.password-wrap input{padding-right:78px!important}
+.show-pass{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#148b45;font-size:11px;font-weight:800;padding:5px 7px}
+
+/* V3.2 — logo oficial no acesso */
+.logo img,.login-logo img,.brand-logo img{
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:50%!important;
+}
+
+
+.legal-consent{font-size:10px;line-height:1.55;color:#687872;margin:10px 0 12px;text-align:center}
+.legal-consent a,.legal-links a{color:#0b7f49;font-weight:800;text-decoration:none}
+.legal-links{text-align:center;font-size:10px;color:#74827d;margin-top:10px}
+.legal-modal{position:fixed;inset:0;background:rgba(4,22,17,.62);z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
+.legal-modal.open{display:flex}
+.legal-card{width:min(900px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.28);color:#263a33}
+.legal-card h2{margin:0 0 4px}.legal-card h3{margin-top:20px}.legal-card p{font-size:12px;line-height:1.65}
+.legal-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.legal-close{border:1px solid #d8e2dd;background:#fff;border-radius:10px;padding:9px 13px;cursor:pointer;font-weight:800}
+
+
+/* V24 — cadastro em etapas + onboarding da propriedade */
+.stepper{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 18px}
+.step-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e7efe9;color:#728077;font-size:11px;font-weight:900}
+.step-dot.active{background:var(--green);color:#fff}
+.step-line{width:42px;height:2px;background:#d7e2dc}
+.onboarding-note{font-size:11px;line-height:1.5;color:#687b72;background:#f2f8f4;border:1px solid #deebe2;border-radius:11px;padding:11px 12px;margin:10px 0}
+.field select{width:100%;padding:13px 14px;border:1px solid #dbe5df;border-radius:10px;outline:none;background:#fff;color:var(--ink)}
+.field select:focus{border-color:#7dc594;box-shadow:0 0 0 3px #eaf7ee}
+.optional{font-size:9px;font-weight:700;color:#91a098;margin-left:4px}
+.form-actions{display:flex;gap:9px}
+.form-actions .btn{margin-top:10px}
+.secondary-btn{background:#fff!important;color:var(--green)!important;border:1.5px solid var(--green)!important;box-shadow:none!important}
+
+
+/* V26 — múltiplas atividades da propriedade */
+.activity-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:8px;
+}
+.activity-option{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #dbe5df;
+  border-radius:10px;
+  padding:10px 11px;
+  background:#fff;
+  font-size:11px;
+  font-weight:750;
+  color:#385048;
+  cursor:pointer;
+}
+.activity-option:hover{border-color:#8cc9a0;background:#f6fbf7}
+.activity-option input{width:auto;margin:0;accent-color:var(--green)}
+@media(max-width:520px){.activity-options{grid-template-columns:1fr}}
+
+
+/* V28 — recuperação de senha */
+.password-help-box{
+  background:#f2f8f4;border:1px solid #deebe2;border-radius:12px;
+  padding:12px 13px;margin:10px 0 14px;font-size:11px;line-height:1.55;color:#60736a
+}
+.back-link{
+  width:100%;border:0;background:transparent;color:var(--green);
+  font-weight:850;font-size:11px;margin-top:10px;padding:6px
+}
+
+
+.password-rules{font-size:10px;color:#718078;line-height:1.45;margin-top:6px}
+
+
+/* V33 — Cloudflare Turnstile */
+.captcha-wrap{display:flex;justify-content:center;min-height:65px;margin:10px 0 4px}
+.captcha-note{font-size:9.5px;color:#7b8982;text-align:center;line-height:1.4;margin:3px 0 8px}
+
+/* V20 — nova página comercial */
+html{scroll-behavior:smooth}
+.page{background:#fff;overflow:hidden}
+.site-header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,calc((100vw - 1400px)/2));background:rgba(255,255,255,.96);border-bottom:1px solid #e6ece8;position:relative;z-index:20}
+.site-brand{display:flex;align-items:center;gap:11px;color:#092f26;text-decoration:none;font-size:22px;font-weight:950}
+.site-brand img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #e3b94d}
+.site-nav{display:flex;gap:34px;align-items:center}.site-nav a{color:#30463e;text-decoration:none;font-size:13px;font-weight:800}.site-nav a:hover{color:var(--green)}
+.header-actions{display:flex;gap:10px}.header-btn{border-radius:9px;padding:10px 18px;font-size:12px;font-weight:900;border:1px solid var(--green);background:#fff;color:var(--green)}.header-btn.primary{background:var(--green);color:#fff;box-shadow:0 8px 20px rgba(20,139,69,.18)}
+.shell{min-height:auto;display:block;padding:0}
+.hero{min-height:640px;padding:64px max(24px,calc((100vw - 1400px)/2));display:grid;grid-template-columns:minmax(420px,.86fr) minmax(600px,1.14fr);gap:44px;align-items:center;color:#092f26;background:linear-gradient(90deg,rgba(255,253,246,.97) 0%,rgba(255,253,246,.91) 40%,rgba(255,253,246,.48) 62%,rgba(255,253,246,.08) 100%),url('/hero-meu-gado-v20.webp') center/cover no-repeat}
+.hero-copy{margin:0;max-width:640px}.eyebrow{display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:#f4eedb;color:#08763c;padding:8px 13px;font-size:10px;font-weight:950;letter-spacing:.045em;margin-bottom:20px}
+.hero-copy h1{font-size:54px;line-height:1.03;letter-spacing:-.045em;margin:0 0 17px;max-width:620px;color:#062f26}.hero-copy h1 span{color:inherit}.hero-copy .lead{font-size:17px;line-height:1.6;color:#40564e;max-width:580px;margin:0}
+.hero-actions{display:flex;gap:12px;margin:26px 0 18px}.hero-cta{border:0;border-radius:10px;padding:14px 21px;background:var(--green);color:#fff;font-size:13px;font-weight:950;box-shadow:0 10px 24px rgba(20,139,69,.23)}.hero-cta.secondary{background:#fff;color:#173d33;border:1px solid #8aa098;box-shadow:none}
+.hero-trust{display:flex;flex-wrap:wrap;gap:18px;font-size:11px;color:#365148;font-weight:800}.hero-trust span:before{content:'✓';display:inline-grid;place-items:center;width:18px;height:18px;margin-right:6px;border-radius:50%;background:#0e7440;color:#fff}
+.product-stage{position:relative;min-height:455px;display:flex;align-items:center;justify-content:center}.browser-demo{width:94%;background:#fff;border:9px solid #18211f;border-top-width:25px;border-radius:17px;box-shadow:0 30px 60px rgba(3,30,24,.32);overflow:hidden;transform:perspective(1200px) rotateY(-3deg)}
+.browser-demo:before{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#42504c;top:9px;left:50%;z-index:2}.dashboard-shot{display:block;width:100%;height:342px;object-fit:cover;object-position:top left;background:#f4f7f5}
+.demo-top{height:35px;background:#073b32;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 15px;font-size:10px;font-weight:900}.demo-body{display:grid;grid-template-columns:120px 1fr;min-height:315px}.demo-side{background:#062e2c;color:#d7ebe3;padding:17px 12px}.demo-side b{display:block;color:#fff;margin-bottom:18px}.demo-side span{display:block;font-size:9px;padding:8px 3px;border-bottom:1px solid rgba(255,255,255,.05)}.demo-main{padding:17px;background:#f4f7f5}.demo-main h3{font-size:15px;margin:0 0 4px}.demo-main>p{font-size:9px;color:#6c7d76;margin:0 0 13px}.demo-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.demo-stat{background:#fff;border:1px solid #e0e8e3;border-radius:8px;padding:11px}.demo-stat small{font-size:7px;color:#687a72;display:block}.demo-stat strong{font-size:15px;display:block;margin-top:6px;color:#0a352b}.demo-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:9px;margin-top:9px}.demo-card{background:#fff;border:1px solid #e0e8e3;border-radius:8px;padding:11px;min-height:126px}.demo-card b{font-size:9px}.task{font-size:8px;padding:8px 0;border-bottom:1px solid #edf1ef;color:#42574f}.chart{height:76px;margin-top:15px;position:relative;border-bottom:1px solid #dfe7e2;background:linear-gradient(165deg,transparent 48%,#1ba157 49%,#1ba157 51%,transparent 52%)}
+.phone-demo{position:absolute;right:0;bottom:8px;width:155px;background:#fff;border:7px solid #17221f;border-radius:25px;box-shadow:0 20px 40px rgba(0,0,0,.26);padding:14px 9px 11px}.phone-demo h4{margin:0 0 10px;font-size:10px;color:#0c3a30}.phone-stat{border:1px solid #e2e9e5;border-radius:7px;padding:8px;margin:6px 0;font-size:8px;color:#667871}.phone-stat b{display:block;font-size:13px;color:#0b342b;margin-top:3px}
+.benefits{padding:36px max(24px,calc((100vw - 1400px)/2)) 28px;background:#fff;text-align:center}.benefits h2,.steps h2{font-size:27px;letter-spacing:-.03em;color:#082f27;margin:0 0 25px}.benefit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.benefit{padding:20px 18px;text-align:left;border:1px solid #e1e8e4;border-radius:13px;box-shadow:0 8px 25px rgba(12,54,42,.06)}.benefit-icon{font-size:25px;margin-bottom:10px}.benefit b{display:block;font-size:13px;color:#163e34;margin-bottom:5px}.benefit p{font-size:10.5px;line-height:1.5;color:#677970;margin:0}
+.steps{padding:40px max(24px,calc((100vw - 1400px)/2));background:#063d32;color:#fff;text-align:center}.steps h2{color:#fff}.step-grid{display:grid;grid-template-columns:repeat(3,1fr);max-width:950px;margin:auto}.step{padding:5px 34px;position:relative}.step:not(:last-child):after{content:'›';position:absolute;right:-4px;top:13px;font-size:34px;color:#67b889}.step-number{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;margin:0 auto 12px;border:2px solid #53b778;color:#fff;font-size:19px;font-weight:950}.step b{display:block;font-size:15px;margin-bottom:5px}.step p{font-size:11px;line-height:1.5;color:#d4e5df;margin:0}
+.login-wrap{position:fixed;inset:0;z-index:1000;display:none;place-items:center;padding:18px;background:rgba(3,27,23,.76);backdrop-filter:blur(7px);overflow:auto}.login-wrap.open{display:grid}.login-card{position:relative;max-height:94vh;overflow:auto}.modal-close{position:absolute;right:18px;top:16px;width:32px;height:32px;border:1px solid #dce5e0;background:#fff;border-radius:9px;color:#587068;font-size:18px;z-index:2}.auth-brand{display:flex;justify-content:center;align-items:center;gap:9px;margin-bottom:16px}.auth-brand img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #dcb84c}.auth-brand b{display:block;color:#073b31;font-size:16px}.auth-brand small{display:block;color:#718079;font-size:9px;margin-top:2px}
+body.modal-open{overflow:hidden}
+@media(max-width:1050px){.site-nav{display:none}.hero{grid-template-columns:1fr;padding-top:48px}.hero-copy{text-align:center;margin:auto}.hero-copy .lead{margin:auto}.hero-actions,.hero-trust{justify-content:center}.product-stage{min-height:410px}.benefit-grid{grid-template-columns:repeat(2,1fr)}.benefit:last-child{grid-column:1/-1}}
+@media(max-width:650px){.site-header{height:66px}.site-brand img{width:44px;height:44px}.site-brand{font-size:19px}.header-actions .primary{display:none}.header-btn{padding:9px 14px}.hero{display:block;min-height:auto;padding:45px 18px 35px}.hero-copy h1{font-size:39px}.hero-copy .lead{font-size:14px}.hero-actions{flex-direction:column}.hero-cta{width:100%}.hero-trust{display:grid;gap:10px;text-align:left;margin:0 auto;max-width:220px}.product-stage{min-height:330px;margin-top:25px}.browser-demo{width:100%;border-width:6px;border-top-width:20px}.demo-body{grid-template-columns:78px 1fr;min-height:230px}.demo-side{padding:10px 7px}.demo-stats{grid-template-columns:repeat(2,1fr)}.demo-stat:nth-child(n+3){display:none}.demo-grid{grid-template-columns:1fr}.demo-grid .demo-card:last-child{display:none}.phone-demo{width:120px}.benefit-grid,.step-grid{grid-template-columns:1fr}.steps .step{margin-bottom:25px}.step:not(:last-child):after{display:none}}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MG_SB_URL="https://eghqluvfvawiynzobaza.supabase.co";window.MG_SB_KEY="sb_publishable_HeFeOGNPzLBGM4ugAVjE5w_J6IcSuGY";</script>
+
+<style>
+.login-support-v19{position:static;text-align:center;font-size:11px;color:#74827d;padding:18px 14px 12px;margin-top:0;background:rgba(255,255,255,.96)}
+.login-support-v19 a{color:#0b7f49;font-weight:800;text-decoration:none;margin:0 4px}
+.login-support-v19 strong{color:#344b43;font-weight:800}
+.support-sep{margin:0 4px;color:#b2bbb7}
+@media(max-width:650px){.login-support-v19{margin:0;line-height:1.9;padding:18px 14px}.support-sep{display:none}.login-support-v19 a,.login-support-v19 strong{display:block}}
+</style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="site-brand" href="#inicio"><img src="/meu-gado-logo.png" alt="Logotipo Meu Gado"><span>Meu Gado</span></a>
+    <nav class="site-nav"><a href="#recursos">Recursos</a><a href="#como-funciona">Como funciona</a><a href="#para-quem">Para quem é</a><a href="mailto:contatomeugado@outlook.com">Contato</a></nav>
+    <div class="header-actions"><button class="header-btn" onclick="openAuth('login')">Entrar</button><button class="header-btn primary" onclick="openAuth('register')">Começar gratuitamente</button></div>
+  </header>
+  <div class="shell">
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <div class="eyebrow">🌿 GESTÃO PECUÁRIA SIMPLES E INTELIGENTE</div>
+        <h1>Seu rebanho organizado. Suas decisões mais lucrativas.</h1>
+        <p class="lead">Controle animais, pesagens, saúde, reprodução, lotes e gastos. Acompanhe gráficos, cotações regionais e notícias do setor em um só lugar.</p>
+        <div class="hero-actions"><button class="hero-cta" onclick="openAuth('register')">Começar gratuitamente →</button><button class="hero-cta secondary" onclick="document.getElementById('recursos').scrollIntoView()">▶ &nbsp;Ver como funciona</button></div>
+        <div class="hero-trust"><span>Fácil de usar</span><span>Acesso pelo celular</span><span>Dados protegidos</span></div>
+      </div>
+      <div class="product-stage" aria-label="Demonstração do painel Meu Gado">
+        <div class="browser-demo"><img class="dashboard-shot" src="/painel-meu-gado-v22.png" alt="Painel real do Meu Gado com 28 animais, gráficos de desempenho, mercado pecuário e gastos por alimentação"></div>
+        <div class="phone-demo"><h4>Resumo da fazenda</h4><div class="phone-stat">Total de animais<b>28</b></div><div class="phone-stat">Peso médio<b>193,8 kg</b></div><div class="phone-stat">GMD médio<b>0,032 kg/dia</b></div></div>
+      </div>
+    </section>
+
+    <section class="login-wrap">
+      <div class="login-card">
+        <button class="modal-close" onclick="closeAuth()" aria-label="Fechar">×</button>
+        <div class="auth-brand"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><small>Gestão pecuária inteligente</small></div></div>
+        <div class="card-head">
+          <h2 id="title">Bem-vindo de volta!</h2>
+          <p id="subtitle">Acesse sua conta e continue cuidando do que mais importa: seu rebanho.</p>
+        </div>
+        <div class="divider"><span></span><div class="mini-cow">🐂</div><span></span></div>
+
+        <div class="tabs" id="tabs">
+          <button class="tab active" id="loginTab" onclick="switchTab('login')">Entrar</button>
+          <button class="tab" id="registerTab" onclick="switchTab('register')">Criar minha conta</button>
+        </div>
+
+        <div class="form active" id="loginForm">
+          <div class="field"><label>E-mail</label><input id="loginEmail" type="email" autocomplete="username" placeholder="seu@email.com"></div>
+          <div class="field"><div class="field-top"><label>Senha</label><button class="forgot" onclick="forgotPassword()">Esqueci minha senha</button></div><div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha"><button type="button" class="show-pass" onclick="togglePassword('loginPassword',this)">Mostrar</button></div></div>
+          <label class="remember"><input id="rememberMe" type="checkbox" checked> Lembrar de mim</label>
+          <div class="captcha-wrap"><div id="turnstileLogin"></div></div>
+          <div class="captcha-note">Verificação de segurança contra acessos automatizados.</div>
+          <button class="btn" onclick="doLogin()">🔒 &nbsp; Entrar</button>
+
+          <div class="or">ou</div>
+
+          <div class="signup-card">
+            <div class="signup-icon">👤</div>
+            <h3>Ainda não usa o Meu Gado?</h3>
+            <p>Comece agora a transformar os dados da sua fazenda em resultado.</p>
+            <button class="outline" onclick="switchTab('register')">👤+ &nbsp; Criar minha conta</button>
+          </div>
+        </div>
+
+        <div class="form" id="registerForm">
+          <div class="stepper" aria-label="Etapas do cadastro">
+            <div class="step-dot active">1</div><div class="step-line"></div><div class="step-dot">2</div>
+          </div>
+          <div class="onboarding-note"><b>Etapa 1 de 2 — Crie sua conta.</b><br>Primeiro cadastramos o responsável. Os dados da propriedade serão informados depois do primeiro acesso.</div>
+          <div class="field"><label>Nome completo</label><input id="regName" autocomplete="name" placeholder="Nome do responsável"></div>
+          <div class="field"><label>CPF/CNPJ</label><input id="regDoc" inputmode="numeric" placeholder="CPF ou CNPJ"></div>
+          <div class="field"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email" placeholder="seu@email.com"></div>
+          <div class="field"><label>Telefone / WhatsApp</label><input id="regPhone" inputmode="tel" placeholder="(00) 00000-0000"></div>
+          <div class="field"><label>Crie uma senha</label><div class="password-wrap"><input id="regPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('regPassword',this)">Mostrar</button></div><div class="password-rules">Use pelo menos 10 caracteres, com letra maiúscula, letra minúscula, número e símbolo.</div></div>
+          <div class="field"><label>Confirme sua senha</label><div class="password-wrap"><input id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('regPasswordConfirm',this)">Mostrar</button></div></div>
+          <div class="captcha-wrap"><div id="turnstileRegister"></div></div>
+          <div class="captcha-note">Verificação de segurança contra cadastros automatizados.</div>
+          <button class="btn green" onclick="doRegister()">Criar minha conta</button>
+          <div class="legal-consent">Ao criar sua conta, você declara que leu e concorda com os
+            <a href="#" onclick="openTerms();return false">Termos de Uso</a> e com a
+            <a href="#" onclick="openPrivacy();return false">Política de Privacidade</a>.
+          </div>
+        </div>
+
+        <div class="form" id="onboardingForm">
+          <div class="stepper" aria-label="Etapas do cadastro">
+            <div class="step-dot">✓</div><div class="step-line"></div><div class="step-dot active">2</div>
+          </div>
+          <div class="onboarding-note"><b>Etapa 2 de 2 — Configure sua propriedade.</b><br>Essas informações organizam o painel e podem ser atualizadas depois.</div>
+
+          <div class="field"><label>Nome da propriedade</label><input id="onFarmName" placeholder="Ex.: Fazenda Boa Vista"></div>
+          <div class="row"><div class="field"><label>Cidade</label><input id="onCity" placeholder="Cidade"></div><div class="field"><label>UF</label><input id="onState" maxlength="2" placeholder="MG"></div></div>
+
+          <div class="field"><label>Tipo de pecuária</label>
+            <select id="onLivestockMode">
+              <option value="beef">Pecuária de corte</option>
+              <option value="dairy">Pecuária de leite</option>
+              <option value="mixed">Mista</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Atividades da propriedade <span class="optional">(marque uma ou mais)</span></label>
+            <div class="activity-options" id="onOperationOptions">
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Cria"> Cria</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Recria"> Recria</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Engorda"> Engorda</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Confinamento"> Confinamento</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Leite"> Leite</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Ciclo completo"> Ciclo completo</label>
+              <label class="activity-option"><input type="checkbox" name="onOperation" value="Outra"> Outra</label>
+            </div>
+          </div>
+
+          <div class="field"><label>Área da propriedade <span class="optional">(opcional)</span></label><input id="onArea" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Hectares"></div>
+          <div class="field"><label>Endereço <span class="optional">(opcional)</span></label><input id="onAddress" placeholder="Estrada, comunidade, zona rural..."></div>
+          <div class="field"><label>Inscrição Estadual <span class="optional">(opcional)</span></label><input id="onStateRegistration" placeholder="Inscrição do produtor/empresa"></div>
+          <div class="field"><label>CAR <span class="optional">(opcional)</span></label><input id="onCar" placeholder="Cadastro Ambiental Rural"></div>
+
+          <button class="btn green" onclick="completeOnboarding()">Concluir configuração</button>
+          <button class="btn secondary-btn" onclick="doLogoutFromOnboarding()">Sair e concluir depois</button>
+        </div>
+
+        
+        <div class="form" id="forgotForm">
+          <div class="password-help-box">
+            <b>Recuperar acesso</b><br>
+            Informe o e-mail da sua conta. Se ele estiver cadastrado, enviaremos um link para criar uma nova senha.
+          </div>
+          <div class="field"><label>E-mail</label><input id="forgotEmail" type="email" autocomplete="email" placeholder="seu@email.com"></div>
+          <div class="captcha-wrap"><div id="turnstileForgot"></div></div>
+          <div class="captcha-note">Verificação de segurança para proteger a recuperação de conta.</div>
+          <button class="btn green" id="forgotSendBtn" onclick="sendPasswordReset()">Enviar link de recuperação</button>
+          <button class="back-link" onclick="backToLogin()">← Voltar para o login</button>
+        </div>
+
+        <div class="form" id="resetPasswordForm">
+          <div class="password-help-box">
+            <b>Crie uma nova senha</b><br>
+            Use uma senha com pelo menos 10 caracteres e diferente da senha anterior.
+          </div>
+          <div class="field"><label>Nova senha</label><div class="password-wrap"><input id="resetPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" class="show-pass" onclick="togglePassword('resetPassword',this)">Mostrar</button></div><div class="password-rules">Use pelo menos 10 caracteres, com letra maiúscula, letra minúscula, número e símbolo.</div></div>
+          <div class="field"><label>Confirmar nova senha</label><div class="password-wrap"><input id="resetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('resetPasswordConfirm',this)">Mostrar</button></div></div>
+          <button class="btn green" id="resetPasswordBtn" onclick="saveNewPassword()">Salvar nova senha</button>
+        </div>
+
+        <div class="form" id="setupForm">
+          <div class="field"><label>Nome do proprietário do sistema</label><input id="setupName"></div>
+          <div class="field"><label>E-mail do administrador</label><input id="setupEmail" type="email"></div>
+          <div class="field"><label>Crie sua senha de administrador</label><input id="setupPassword" type="password" placeholder="Mínimo de 10 caracteres"></div>
+          <button class="btn green" onclick="setupAdmin()">Criar administrador</button>
+        </div>
+
+        <div class="error" id="message"></div>
+        <div class="help">💬 Precisa de ajuda? <span>Fale conosco</span></div>
+        <div class="footer">© 2026 Meu Gado. Todos os direitos reservados.</div>
+        <div class="legal-links"><a href="#" onclick="openTerms();return false">Termos de Uso</a> · <a href="#" onclick="openPrivacy();return false">Política de Privacidade</a> · <a href="mailto:contatomeugado@outlook.com">Contato</a></div>
+      </div>
+    </section>
+  </div>
+  <section class="benefits" id="recursos">
+    <h2>Tudo o que você precisa para cuidar melhor do rebanho</h2>
+    <div class="benefit-grid">
+      <article class="benefit"><div class="benefit-icon">🐂</div><b>Controle do rebanho</b><p>Tenha identificação, lote e histórico completo de cada animal.</p></article>
+      <article class="benefit"><div class="benefit-icon">🛡️</div><b>Saúde em dia</b><p>Acompanhe vacinas, medicamentos e tratamentos sem esquecimento.</p></article>
+      <article class="benefit"><div class="benefit-icon">📊</div><b>Pesagem e desempenho</b><p>Visualize ganho de peso, GMD e evolução das metas.</p></article>
+      <article class="benefit"><div class="benefit-icon">📈</div><b>Mercado pecuário</b><p>Acompanhe cotações regionais e notícias confiáveis.</p></article>
+      <article class="benefit"><div class="benefit-icon">💰</div><b>Gestão financeira</b><p>Registre os gastos e entenda os custos da propriedade.</p></article>
+    </div>
+  </section>
+  <section class="steps" id="como-funciona">
+    <h2>Da anotação à decisão em poucos passos</h2>
+    <div class="step-grid">
+      <article class="step"><div class="step-number">1</div><b>Cadastre</b><p>Registre seus animais, lotes e informações da propriedade.</p></article>
+      <article class="step"><div class="step-number">2</div><b>Acompanhe</b><p>Mantenha os dados atualizados e receba os alertas importantes.</p></article>
+      <article class="step"><div class="step-number">3</div><b>Decida melhor</b><p>Use indicadores claros para tomar decisões mais seguras.</p></article>
+    </div>
+    <div id="para-quem" style="margin:32px auto 0;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);max-width:950px">
+      <b style="font-size:16px">Feito para quem vive a pecuária todos os dias</b>
+      <p style="font-size:12px;color:#d4e5df;margin:7px 0 16px">Produtores de corte, leite, cria, recria, engorda e confinamento.</p>
+      <button class="hero-cta" onclick="openAuth('register')">Criar minha conta →</button>
+    </div>
+  </section>
+</div>
+
+<script>
+function openAuth(tab='login'){
+  const modal=document.querySelector('.login-wrap');
+  if(modal) modal.classList.add('open');
+  document.body.classList.add('modal-open');
+  if(tab==='login'||tab==='register') switchTab(tab);
+}
+function closeAuth(){
+  const modal=document.querySelector('.login-wrap');
+  if(modal) modal.classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+function formatError(detail){
+  if(typeof detail==='string') return detail;
+  if(Array.isArray(detail)) return detail.map(x=>x.msg||JSON.stringify(x)).join(' | ');
+  if(detail&&typeof detail==='object') return detail.msg||JSON.stringify(detail);
+  return 'Erro inesperado.';
+}
+const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
+
+const MG_TURNSTILE_SITE_KEY='0x4AAAAAAEz18CzViJsl3lHd';
+const mgCaptcha={login:null,register:null,forgot:null};
+const mgCaptchaWidget={login:null,register:null,forgot:null};
+
+function mgTurnstileReady(){
+  return typeof window.turnstile!=='undefined';
+}
+function mgRenderCaptcha(kind){
+  if(!mgTurnstileReady()){ setTimeout(()=>mgRenderCaptcha(kind),180); return; }
+  const ids={login:'turnstileLogin',register:'turnstileRegister',forgot:'turnstileForgot'};
+  const target=document.getElementById(ids[kind]);
+  if(!target || mgCaptchaWidget[kind]!==null) return;
+  mgCaptchaWidget[kind]=window.turnstile.render(target,{
+    sitekey:MG_TURNSTILE_SITE_KEY,
+    theme:'light',
+    callback:(token)=>{mgCaptcha[kind]=token;},
+    'expired-callback':()=>{mgCaptcha[kind]=null;},
+    'error-callback':()=>{mgCaptcha[kind]=null;}
+  });
+}
+function mgRequireCaptcha(kind){
+  const token=mgCaptcha[kind];
+  if(!token) throw new Error('Conclua a verificação de segurança antes de continuar.');
+  return token;
+}
+function mgResetCaptcha(kind){
+  mgCaptcha[kind]=null;
+  if(mgTurnstileReady() && mgCaptchaWidget[kind]!==null){
+    try{window.turnstile.reset(mgCaptchaWidget[kind]);}catch(_e){}
+  }
+}
+
+async function mgGetMembership(){
+  const r=await mgSb.from('farm_members')
+    .select('farm_id,role,active')
+    .eq('user_id',(await mgSb.auth.getUser()).data.user?.id||'')
+    .eq('active',true)
+    .limit(1);
+  if(r.error) throw new Error(r.error.message);
+  return (r.data||[])[0]||null;
+}
+
+async function mgNeedsOnboarding(){
+  const {data:{user}}=await mgSb.auth.getUser();
+  if(!user) return true;
+
+  const membership=await mgGetMembership();
+  if(membership) return false;
+
+  // Compatibilidade: se existir fazenda antiga deste proprietário,
+  // o banco já deveria ter migrado o vínculo. Se não tiver, não criamos
+  // nada automaticamente; mostramos o onboarding para evitar duplicidade.
+  return true;
+}
+
+function showOnboarding(user){
+  document.querySelector('.login-wrap')?.classList.add('open');
+  document.body.classList.add('modal-open');
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('loginForm').classList.remove('active');
+  document.getElementById('registerForm').classList.remove('active');
+  document.getElementById('setupForm').classList.remove('active');
+  document.getElementById('onboardingForm').classList.remove('active');
+  document.getElementById('forgotForm').classList.remove('active');
+  document.getElementById('resetPasswordForm').classList.remove('active');
+  document.getElementById('onboardingForm').classList.add('active');
+  document.getElementById('title').textContent='Configure sua propriedade';
+  document.getElementById('subtitle').textContent='Falta só uma etapa para preparar seu painel do Meu Gado.';
+
+  const meta=user?.user_metadata||{};
+  if(!document.getElementById('onFarmName').value && meta.farm_name) document.getElementById('onFarmName').value=meta.farm_name;
+  if(!document.getElementById('onCity').value && meta.city) document.getElementById('onCity').value=meta.city;
+  if(!document.getElementById('onState').value && meta.state) document.getElementById('onState').value=meta.state;
+  setMessage('');
+}
+
+async function completeOnboarding(){
+  try{
+    setMessage('');
+    const {data:{user}}=await mgSb.auth.getUser();
+    if(!user) throw new Error('Sua sessão expirou. Entre novamente.');
+
+    const meta=user.user_metadata||{};
+    const farmName=document.getElementById('onFarmName').value.trim();
+    const city=document.getElementById('onCity').value.trim();
+    const state=document.getElementById('onState').value.trim().toUpperCase();
+    const operations=[...document.querySelectorAll('input[name="onOperation"]:checked')].map(el=>el.value);
+    const livestockMode=document.getElementById('onLivestockMode').value;
+    const areaRaw=document.getElementById('onArea').value.trim();
+
+    if(!farmName) throw new Error('Informe o nome da propriedade.');
+    if(!city||state.length!==2) throw new Error('Informe cidade e UF.');
+    if(!operations.length) throw new Error('Selecione pelo menos uma atividade da propriedade.');
+
+    const payload={
+      p_full_name:meta.full_name||'',
+      p_document:meta.document||meta.doc||'',
+      p_phone:meta.phone||'',
+      p_farm_name:farmName,
+      p_city:city,
+      p_state:state,
+      p_address:document.getElementById('onAddress').value.trim()||null,
+      p_operation:operations.length?operations.join(', '):null,
+      p_area_hectares:areaRaw?Number(areaRaw):null,
+      p_state_registration:document.getElementById('onStateRegistration').value.trim()||null,
+      p_car:document.getElementById('onCar').value.trim()||null,
+      p_livestock_mode:livestockMode||null
+    };
+
+    if(!payload.p_full_name||!payload.p_document) throw new Error('Os dados do responsável não foram encontrados. Saia e refaça o cadastro.');
+
+    const r=await mgSb.rpc('complete_first_onboarding',payload);
+    if(r.error) throw new Error(r.error.message);
+
+    setMessage('Propriedade configurada com sucesso. Abrindo seu painel...',true);
+    setTimeout(()=>{location.href='/app';},700);
+  }catch(e){setMessage(e.message)}
+}
+
+async function doLogoutFromOnboarding(){
+  await mgSb.auth.signOut();
+  location.reload();
+}
+
+async function api(path,opt={}){
+  const method=(opt.method||'GET').toUpperCase();
+  let data={}; try{data=opt.body?JSON.parse(opt.body):{}}catch{}
+  if(path==='/api/status') return {setup_required:false};
+  if(path==='/api/login'){
+    const captchaToken=mgRequireCaptcha('login');
+    const r=await mgSb.auth.signInWithPassword({
+      email:data.email,
+      password:data.password,
+      options:{captchaToken}
+    });
+    mgResetCaptcha('login');
+    if(r.error) throw new Error(r.error.message==='Invalid login credentials'?'E-mail ou senha inválidos. Se esta é sua primeira vez no site online, clique em Criar minha conta.':r.error.message);
+    const needs_onboarding=await mgNeedsOnboarding();
+    return {ok:true,role:'client',needs_onboarding,user:r.data.user};
+  }
+  if(path==='/api/register'){
+    const r=await mgSb.auth.signUp({
+      email:data.email,
+      password:data.password,
+      options:{
+        captchaToken:data.captchaToken,
+        data:{
+          full_name:data.full_name,
+          document:data.document,
+          phone:data.phone||'',
+          email:data.email
+        }
+      }
+    });
+    if(r.error) throw new Error(r.error.message);
+    if(r.data.session){
+      return {ok:true,role:'client',needs_confirmation:false,needs_onboarding:true,user:r.data.user};
+    }
+    return {ok:true,role:'client',needs_confirmation:true};
+  }
+  if(path==='/api/logout'){await mgSb.auth.signOut();return {ok:true}}
+  throw new Error('Operação indisponível nesta tela.');
+}
+function setMessage(text,ok=false){
+  const m=document.getElementById('message');
+  m.textContent=text||'';
+  m.className=ok?'error success':'error';
+}
+function switchTab(which){
+  document.getElementById('loginForm').classList.toggle('active',which==='login');
+  document.getElementById('registerForm').classList.toggle('active',which==='register');
+  document.getElementById('setupForm').classList.remove('active');
+  document.getElementById('loginTab').classList.toggle('active',which==='login');
+  document.getElementById('registerTab').classList.toggle('active',which==='register');
+  setTimeout(()=>mgRenderCaptcha(which==='register'?'register':'login'),50);
+  document.getElementById('title').textContent=which==='login'?'Bem-vindo de volta!':'Crie sua conta';
+  document.getElementById('subtitle').textContent=which==='login'
+    ?'Acesse sua conta e continue cuidando do que mais importa: seu rebanho.'
+    :'Comece agora a organizar sua fazenda e acompanhar seu rebanho.';
+  setMessage('');
+}
+async function init(){
+  try{
+    const hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
+    const searchParams=new URLSearchParams(location.search);
+    const recoveryHint=hashParams.get('type')==='recovery'||searchParams.get('recovery')==='1';
+
+    const {data:{session}}=await mgSb.auth.getSession();
+
+    if(recoveryHint&&session?.user){
+      showResetPassword();
+      return;
+    }
+
+    if(session?.user){
+      const needs=await mgNeedsOnboarding();
+      if(needs){showOnboarding(session.user);return;}
+      location.href='/app';
+      return;
+    }
+
+    const s=await api('/api/status');
+    if(s.setup_required){
+      document.getElementById('tabs').style.display='none';
+      document.getElementById('loginForm').classList.remove('active');
+      document.getElementById('registerForm').classList.remove('active');
+      document.getElementById('onboardingForm').classList.remove('active');
+      document.getElementById('setupForm').classList.add('active');
+      document.getElementById('title').textContent='Configuração do proprietário';
+      document.getElementById('subtitle').textContent='Crie a conta administrativa exclusiva do Meu Gado.';
+    }
+  }catch(e){setMessage(e.message)}
+}
+async function doLogin(){
+  try{
+    setMessage('');
+    const email=document.getElementById('loginEmail').value.trim();
+    const password=document.getElementById('loginPassword').value;
+    if(!email||!password) throw new Error('Informe e-mail e senha.');
+    const j=await api('/api/login',{method:'POST',body:JSON.stringify({email,password})});
+    if(j.needs_onboarding){showOnboarding(j.user);return;}
+    location.href=j.role==='admin'?'/admin':'/app';
+  }catch(e){setMessage(e.message)}
+}
+
+function validateStrongPassword(password){
+  if(password.length<10) return 'A senha deve ter pelo menos 10 caracteres.';
+  if(!/[a-z]/.test(password)) return 'A senha precisa ter pelo menos uma letra minúscula.';
+  if(!/[A-Z]/.test(password)) return 'A senha precisa ter pelo menos uma letra maiúscula.';
+  if(!/[0-9]/.test(password)) return 'A senha precisa ter pelo menos um número.';
+  if(!/[^A-Za-z0-9]/.test(password)) return 'A senha precisa ter pelo menos um símbolo.';
+  return '';
+}
+
+async function doRegister(){
+  try{
+    setMessage('');
+    const password=document.getElementById('regPassword').value;
+    const confirmPassword=document.getElementById('regPasswordConfirm').value;
+    const data={
+      full_name:document.getElementById('regName').value.trim(),
+      document:document.getElementById('regDoc').value.trim(),
+      email:document.getElementById('regEmail').value.trim(),
+      phone:document.getElementById('regPhone').value.trim(),
+      password
+    };
+
+    if(!data.full_name||!data.document||!data.email||!data.phone) throw new Error('Preencha nome, CPF/CNPJ, e-mail e WhatsApp.');
+    const docDigits=data.document.replace(/\D/g,'');
+    if(docDigits.length!==11&&docDigits.length!==14) throw new Error('Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos.');
+    const passwordError=validateStrongPassword(password);
+    if(passwordError) throw new Error(passwordError);
+    if(password!==confirmPassword) throw new Error('As senhas não conferem.');
+
+    const availability=await mgSb.rpc('registration_identity_available',{
+      p_email:data.email,
+      p_document:data.document
+    });
+    if(availability.error) throw new Error('Não foi possível validar os dados do cadastro. Tente novamente.');
+    if(availability.data!==true) throw new Error('Já existe uma conta cadastrada com este e-mail ou CPF/CNPJ.');
+
+    const captchaToken=mgRequireCaptcha('register');
+    data.captchaToken=captchaToken;
+    const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
+    mgResetCaptcha('register');
+    if(r.needs_confirmation){
+      setMessage('Conta criada. Confirme o e-mail recebido e depois entre para configurar sua propriedade.',true);
+      switchTab('login');
+      return;
+    }
+    if(r.needs_onboarding){showOnboarding(r.user);return;}
+    location.href='/app';
+  }catch(e){mgResetCaptcha('register');setMessage(e.message)}
+}
+async function setupAdmin(){
+  try{
+    setMessage('');
+    const fullName=document.getElementById('setupName').value.trim();
+    const email=document.getElementById('setupEmail').value.trim();
+    const password=document.getElementById('setupPassword').value;
+    if(!fullName||!email) throw new Error('Preencha nome e e-mail.');
+    const passwordError=validateStrongPassword(password);
+    if(passwordError) throw new Error(passwordError);
+    await api('/api/setup',{method:'POST',body:JSON.stringify({full_name:fullName,email,password})});
+    location.href='/admin';
+  }catch(e){setMessage(e.message)}
+}
+
+function togglePassword(id,button){
+  const input=document.getElementById(id);
+  if(!input)return;
+  const show=input.type==='password';
+  input.type=show?'text':'password';
+  button.textContent=show?'Ocultar':'Mostrar';
+}
+function enableEnterSubmit(){
+  ['loginEmail','loginPassword'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();doLogin();}
+    });
+  });
+  ['regName','regDoc','regEmail','regPhone','regPassword','regPasswordConfirm'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();doRegister();}
+    });
+  });
+
+  ['onFarmName','onCity','onState','onArea','onAddress','onStateRegistration','onCar'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();completeOnboarding();}
+    });
+  });
+
+
+  ['forgotEmail'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();sendPasswordReset();}
+    });
+  });
+
+  ['resetPassword','resetPasswordConfirm'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();saveNewPassword();}
+    });
+  });
+
+  ['setupName','setupEmail','setupPassword'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();setupAdmin();}
+    });
+  });
+}
+
+let mgRecoveryMode=false;
+
+function hideAllAuthForms(){
+  ['loginForm','registerForm','onboardingForm','setupForm','forgotForm','resetPasswordForm'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.classList.remove('active');
+  });
+}
+
+function forgotPassword(){
+  const current=document.getElementById('loginEmail')?.value?.trim()||'';
+  hideAllAuthForms();
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('forgotForm').classList.add('active');
+  setTimeout(()=>mgRenderCaptcha('forgot'),50);
+  document.getElementById('title').textContent='Esqueceu sua senha?';
+  document.getElementById('subtitle').textContent='Nós enviaremos as instruções para o seu e-mail.';
+  if(current)document.getElementById('forgotEmail').value=current;
+  setMessage('');
+}
+
+function backToLogin(){
+  hideAllAuthForms();
+  document.getElementById('tabs').style.display='grid';
+  document.getElementById('loginForm').classList.add('active');
+  setTimeout(()=>mgRenderCaptcha('login'),50);
+  document.getElementById('loginTab').classList.add('active');
+  document.getElementById('registerTab').classList.remove('active');
+  document.getElementById('title').textContent='Bem-vindo de volta!';
+  document.getElementById('subtitle').textContent='Acesse sua conta e continue cuidando do que mais importa: seu rebanho.';
+  setMessage('');
+}
+
+async function sendPasswordReset(){
+  try{
+    setMessage('');
+    const email=document.getElementById('forgotEmail').value.trim();
+    if(!email)throw new Error('Informe seu e-mail.');
+    const btn=document.getElementById('forgotSendBtn');
+    btn.disabled=true;btn.textContent='Enviando...';
+
+    const redirectTo=location.origin+location.pathname+'?recovery=1';
+    const captchaToken=mgRequireCaptcha('forgot');
+    const {error}=await mgSb.auth.resetPasswordForEmail(email,{redirectTo,captchaToken});
+    mgResetCaptcha('forgot');
+
+    btn.disabled=false;btn.textContent='Enviar link de recuperação';
+    if(error)throw error;
+
+    setMessage('Se existir uma conta com esse e-mail, enviaremos um link para criar uma nova senha.',true);
+  }catch(e){
+    const btn=document.getElementById('forgotSendBtn');
+    if(btn){btn.disabled=false;btn.textContent='Enviar link de recuperação'}
+    mgResetCaptcha('forgot');
+    setMessage(e.message||'Não foi possível enviar o e-mail de recuperação.');
+  }
+}
+
+function showResetPassword(){
+  document.querySelector('.login-wrap')?.classList.add('open');
+  document.body.classList.add('modal-open');
+  mgRecoveryMode=true;
+  hideAllAuthForms();
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('resetPasswordForm').classList.add('active');
+  document.getElementById('title').textContent='Criar nova senha';
+  document.getElementById('subtitle').textContent='Defina uma nova senha para voltar a acessar o Meu Gado.';
+  setMessage('');
+}
+
+async function saveNewPassword(){
+  try{
+    setMessage('');
+    const p1=document.getElementById('resetPassword').value;
+    const p2=document.getElementById('resetPasswordConfirm').value;
+    const passwordError=validateStrongPassword(p1);
+    if(passwordError)throw new Error(passwordError);
+    if(p1!==p2)throw new Error('As senhas não conferem.');
+
+    const btn=document.getElementById('resetPasswordBtn');
+    btn.disabled=true;btn.textContent='Salvando...';
+
+    const {error}=await mgSb.auth.updateUser({password:p1});
+
+    btn.disabled=false;btn.textContent='Salvar nova senha';
+    if(error)throw error;
+
+    setMessage('Senha alterada com sucesso. Você já pode entrar com a nova senha.',true);
+    await mgSb.auth.signOut();
+    history.replaceState({},'',location.pathname);
+    setTimeout(()=>backToLogin(),900);
+  }catch(e){
+    const btn=document.getElementById('resetPasswordBtn');
+    if(btn){btn.disabled=false;btn.textContent='Salvar nova senha'}
+    setMessage(e.message||'Não foi possível alterar a senha.');
+  }
+}
+mgSb.auth.onAuthStateChange((event,session)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    showResetPassword();
+  }
+});
+
+init();
+enableEnterSubmit();
+setTimeout(()=>mgRenderCaptcha('login'),350);
+</script>
+
+<div class="login-support-v19">
+  <span>Precisa de ajuda?</span>
+  <a target="_blank" rel="noopener" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Meu%20Gado.">Fale conosco</a>
+  <span class="support-sep">•</span>
+  <a href="mailto:contatomeugado@outlook.com">contatomeugado@outlook.com</a>
+  <span class="support-sep">•</span>
+  <strong>(35) 99965-5305</strong>
+</div>
+
+<div id="termsModal" class="legal-modal">
+  <div class="legal-card">
+    <div class="legal-head"><div><h2>Termos de Uso — Meu Gado</h2><small>Versão 1.0 • 03/09/2026</small></div><button class="legal-close" onclick="closeTerms()">Fechar</button></div>
+    <p>Estes Termos de Uso regulam o acesso e a utilização da plataforma <strong>Meu Gado</strong>, destinada ao apoio à gestão de rebanhos e propriedades rurais. Ao criar uma conta e utilizar a plataforma, o usuário declara que leu e concorda com estes Termos.</p>
+    <h3>1. Responsável pela plataforma</h3><p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, com canal oficial de contato pelo e-mail <strong>contatomeugado@outlook.com</strong>.</p>
+    <h3>2. Finalidade do Meu Gado</h3><p>A plataforma oferece ferramentas para organização e acompanhamento de informações relacionadas ao rebanho, incluindo cadastro de animais e lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios, indicadores, informações de mercado e simulações de venda.</p>
+    <h3>3. Cadastro, acesso e segurança da conta</h3><p>O usuário é responsável por fornecer informações corretas e atualizadas, manter sua senha sob sigilo e impedir o uso indevido de sua conta.</p>
+    <h3>4. Informações inseridas pelo usuário</h3><p>O usuário é responsável pela veracidade, qualidade e licitude das informações cadastradas. Os registros permanecem vinculados à conta/propriedade correspondente e são utilizados para fornecer as funcionalidades da plataforma.</p>
+    <h3>5. Lixeira e exclusão de registros</h3><p>Determinados registros excluídos podem ser enviados para a Lixeira e permanecer disponíveis para restauração. Esse recurso reduz o risco de perda acidental, mas não constitui garantia absoluta de recuperação em todas as circunstâncias.</p>
+    <h3>6. Cotações, mercado e Simulador de Venda</h3><p>Cotações, referências, indicadores, cálculos, projeções e resultados possuem caráter exclusivamente informativo e de apoio à gestão. O Meu Gado não garante preço de compra ou venda, rentabilidade, negociação, produtividade ou resultado financeiro. A decisão comercial permanece sob responsabilidade do usuário.</p>
+    <h3>7. Disponibilidade e evolução</h3><p>A plataforma poderá passar por atualizações, correções, manutenções e alterações de funcionalidades, podendo ocorrer interrupções temporárias.</p>
+    <h3>8. Uso permitido</h3><p>É proibido utilizar a plataforma para finalidade ilícita, acessar dados de terceiros sem autorização, contornar mecanismos de segurança, explorar vulnerabilidades ou interferir no funcionamento do serviço.</p>
+    <h3>9. Propriedade intelectual</h3><p>A marca, identidade visual, interface, textos, estrutura, software e demais elementos próprios do Meu Gado são protegidos pela legislação aplicável.</p>
+    <h3>10. Proteção de dados pessoais</h3><p>O tratamento de dados pessoais observará a legislação brasileira aplicável, especialmente a LGPD. Informações detalhadas serão apresentadas na Política de Privacidade. Solicitações poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+    <h3>11. Responsabilidades e limitações</h3><p>O Meu Gado é ferramenta de apoio à gestão e não substitui avaliação veterinária, zootécnica, contábil, jurídica, financeira ou comercial quando profissionalmente necessária. Direitos legalmente indisponíveis permanecem preservados.</p>
+    <h3>12. Suspensão e encerramento</h3><p>O acesso poderá ser suspenso ou encerrado em caso de violação destes Termos, fraude, risco de segurança ou determinação legal, observados os direitos aplicáveis.</p>
+    <h3>13. Alterações</h3><p>Estes Termos poderão ser atualizados para refletir mudanças legais, técnicas ou comerciais. Alterações relevantes serão comunicadas de forma adequada.</p>
+    <h3>14. Legislação aplicável</h3><p>Estes Termos são regidos pela legislação da República Federativa do Brasil, respeitadas as regras legais de competência e proteção do consumidor quando aplicáveis.</p>
+    <h3>15. Contato</h3><p>Dúvidas podem ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+  </div>
+</div>
+
+<div id="privacyModal" class="legal-modal">
+  <div class="legal-card">
+    <div class="legal-head">
+      <div>
+        <h2>Política de Privacidade — Meu Gado</h2>
+        <small>Versão 1.0 • 14/09/2026</small>
+      </div>
+      <button class="legal-close" onclick="closePrivacy()">Fechar</button>
+    </div>
+
+    <p>Esta Política de Privacidade explica como o <strong>Meu Gado</strong> trata dados pessoais relacionados ao cadastro e à utilização da plataforma, em conformidade com a legislação brasileira aplicável, especialmente a Lei nº 13.709/2018 — Lei Geral de Proteção de Dados Pessoais (LGPD).</p>
+
+    <h3>1. Responsável pelo tratamento</h3>
+    <p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, na qualidade de controlador dos dados pessoais tratados para a operação da plataforma. O canal oficial para assuntos de privacidade e proteção de dados é <strong>contatomeugado@outlook.com</strong>.</p>
+
+    <h3>2. Dados pessoais que podem ser tratados</h3>
+    <p>Conforme o uso da plataforma, poderão ser tratados dados como nome e informações de identificação do usuário, CPF ou CNPJ informado no cadastro, telefone, e-mail, cidade, estado e demais informações fornecidas pelo próprio usuário.</p>
+
+    <h3>3. Dados da propriedade e do rebanho</h3>
+    <p>O usuário poderá registrar informações relacionadas à propriedade rural, atividades desenvolvidas, animais, lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios e demais controles da atividade pecuária. Em regra, essas informações são dados da atividade rural e não dados pessoais. Entretanto, quando algum registro contiver informação capaz de identificar uma pessoa natural, essa informação será tratada de acordo com esta Política e com a LGPD.</p>
+
+    <h3>4. Dados de acesso, autenticação e segurança</h3>
+    <p>Também poderão ser tratados dados técnicos necessários ao funcionamento e à segurança do serviço, como identificadores de conta, registros de autenticação, sessões, data e horário de acessos, informações de recuperação de senha e registros necessários à prevenção de fraude, abuso ou acesso não autorizado.</p>
+
+    <h3>5. Finalidades do tratamento</h3>
+    <p>Os dados poderão ser utilizados para criar e administrar contas, autenticar usuários, vincular usuários às propriedades autorizadas, disponibilizar as funcionalidades do Meu Gado, manter a segurança da plataforma, prestar suporte, cumprir obrigações legais, prevenir fraudes, corrigir falhas e melhorar a experiência e o funcionamento do serviço.</p>
+
+    <h3>6. Bases legais</h3>
+    <p>O tratamento poderá ocorrer, conforme o caso, para execução de contrato ou de procedimentos relacionados ao uso da plataforma, cumprimento de obrigação legal ou regulatória, exercício regular de direitos, legítimo interesse do controlador e consentimento quando este for legalmente exigido.</p>
+
+    <h3>7. Compartilhamento e operadores</h3>
+    <p>Os dados poderão ser processados por fornecedores de infraestrutura, hospedagem, banco de dados, autenticação, envio de e-mails e outros serviços técnicos necessários ao funcionamento do Meu Gado. Esses fornecedores devem tratar os dados apenas para as finalidades contratadas e conforme as medidas de segurança aplicáveis.</p>
+
+    <h3>8. Transferência internacional</h3>
+    <p>Alguns fornecedores de tecnologia utilizados pela plataforma podem processar ou armazenar informações fora do Brasil. Quando isso ocorrer, o tratamento deverá observar as regras aplicáveis da LGPD sobre transferência internacional de dados e proteção adequada das informações.</p>
+
+    <h3>9. Armazenamento e retenção</h3>
+    <p>Os dados serão mantidos pelo período necessário para fornecer o serviço, cumprir obrigações legais e regulatórias, preservar direitos, prevenir fraudes e resolver disputas. Quando não houver mais fundamento legítimo para a retenção, os dados poderão ser eliminados ou anonimizados, observadas as hipóteses legais de conservação.</p>
+
+    <h3>10. Segurança</h3>
+    <p>O Meu Gado adota medidas técnicas e administrativas destinadas a reduzir riscos de acesso não autorizado, perda, alteração, destruição ou divulgação indevida de dados. Nenhum sistema é totalmente imune a incidentes, razão pela qual as medidas de segurança poderão ser continuamente revistas e aprimoradas.</p>
+
+    <h3>11. Direitos do titular</h3>
+    <p>Nos termos da LGPD, o titular poderá solicitar, quando aplicável, confirmação da existência de tratamento, acesso, correção, anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade, portabilidade, informações sobre compartilhamento, revogação do consentimento e demais direitos previstos em lei.</p>
+
+    <h3>12. Solicitações de privacidade</h3>
+    <p>Solicitações relacionadas a dados pessoais poderão ser encaminhadas para <strong>contatomeugado@outlook.com</strong>. Poderão ser solicitadas informações adicionais para confirmar a identidade do requerente e proteger a conta contra solicitações fraudulentas.</p>
+
+    <h3>13. Cookies e armazenamento local</h3>
+    <p>A plataforma poderá utilizar mecanismos técnicos do navegador, como cookies, armazenamento local e tecnologias equivalentes, para manter sessões autenticadas, preferências e informações necessárias ao funcionamento e à segurança do serviço.</p>
+
+    <h3>14. Dados de terceiros</h3>
+    <p>O usuário que inserir dados pessoais de terceiros na plataforma declara possuir fundamento legítimo para esse tratamento e se responsabiliza pela licitude das informações fornecidas.</p>
+
+    <h3>15. Crianças e adolescentes</h3>
+    <p>O Meu Gado não é direcionado especificamente a crianças. Caso o tratamento de dados de crianças ou adolescentes venha a ocorrer, deverão ser observadas as exigências legais aplicáveis e o melhor interesse do titular.</p>
+
+    <h3>16. Alterações desta Política</h3>
+    <p>Esta Política poderá ser atualizada para refletir mudanças legais, técnicas ou operacionais. Alterações relevantes poderão ser comunicadas pela própria plataforma ou pelos canais de contato disponíveis.</p>
+
+    <h3>17. Contato</h3>
+    <p>Dúvidas, solicitações ou reclamações relacionadas a esta Política e ao tratamento de dados pessoais podem ser encaminhadas para <strong>contatomeugado@outlook.com</strong>.</p>
+  </div>
+</div>
+
+<script>
+function openTerms(){document.getElementById('termsModal').classList.add('open')}
+function closeTerms(){document.getElementById('termsModal').classList.remove('open')}
+function openPrivacy(){document.getElementById('privacyModal').classList.add('open')}
+function closePrivacy(){document.getElementById('privacyModal').classList.remove('open')}
+</script>
+
+</body>
+</html>
