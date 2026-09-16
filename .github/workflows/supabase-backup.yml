@@ -1,4 +1,4 @@
-name: Backup criptografado do Supabase
+name: Backup oficial criptografado do Supabase
 
 on:
   workflow_dispatch:
@@ -11,50 +11,88 @@ permissions:
 jobs:
   backup:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
-      - name: Gerar e criptografar backup
+      - name: Gerar backup com Supabase CLI
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
         run: |
           set -euo pipefail
+
           test -n "$SUPABASE_DB_URL"
           test -n "$BACKUP_ENCRYPTION_PASSWORD"
 
-          mkdir -p backup
-          BACKUP_NAME="meu-gado-$(date -u +'%Y-%m-%dT%H-%M-%SZ').dump.enc"
+          mkdir -p backup/plain
 
-          docker run --rm \
-            -e SUPABASE_DB_URL \
-            postgres:17 \
-            sh -c 'pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-acl' \
-            | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
-                -pass env:BACKUP_ENCRYPTION_PASSWORD \
-            > "backup/$BACKUP_NAME"
+          npx --yes supabase@latest db dump \
+            --db-url "$SUPABASE_DB_URL" \
+            --file backup/plain/roles.sql \
+            --role-only
 
-          test -s "backup/$BACKUP_NAME"
-           DECRYPTED_NAME="backup/restore-test.dump"
-           
+          npx --yes supabase@latest db dump \
+            --db-url "$SUPABASE_DB_URL" \
+            --file backup/plain/schema.sql
+
+          npx --yes supabase@latest db dump \
+            --db-url "$SUPABASE_DB_URL" \
+            --file backup/plain/data.sql \
+            --use-copy \
+            --data-only
+
+          test -s backup/plain/roles.sql
+          test -s backup/plain/schema.sql
+          test -s backup/plain/data.sql
+
+          BACKUP_BASE="meu-gado-supabase-$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
+          ARCHIVE="backup/$BACKUP_BASE.tar.gz"
+          ENCRYPTED="backup/$BACKUP_BASE.tar.gz.enc"
+
+          tar -C backup/plain -czf "$ARCHIVE" \
+            roles.sql schema.sql data.sql
+
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -pass env:BACKUP_ENCRYPTION_PASSWORD \
+            -in "$ARCHIVE" \
+            -out "$ENCRYPTED"
+
+          test -s "$ENCRYPTED"
+          sha256sum "$ENCRYPTED" > "$ENCRYPTED.sha256"
+
+          rm -rf backup/plain "$ARCHIVE"
+
+      - name: Validar descriptografia e conteúdo
+        env:
+          BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          ENCRYPTED="$(find backup -maxdepth 1 -name '*.tar.gz.enc' -type f | head -n 1)"
+          test -n "$ENCRYPTED"
+
+          VALIDATION="backup/restore-validation.tar.gz"
+          CONTENTS="backup/restore-validation-contents.txt"
+
           openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
             -pass env:BACKUP_ENCRYPTION_PASSWORD \
-            -in "backup/$BACKUP_NAME" \
-            -out "$DECRYPTED_NAME"
+            -in "$ENCRYPTED" \
+            -out "$VALIDATION"
 
-          docker run --rm \
-            -v "$PWD/backup:/backup:ro" \
-            postgres:17 \
-            pg_restore --list "/backup/restore-test.dump" > /dev/null
+          tar -tzf "$VALIDATION" > "$CONTENTS"
 
-          rm -f "$DECRYPTED_NAME"
-          
-          sha256sum "backup/$BACKUP_NAME" > "backup/$BACKUP_NAME.sha256"
+          grep -Fxq "roles.sql" "$CONTENTS"
+          grep -Fxq "schema.sql" "$CONTENTS"
+          grep -Fxq "data.sql" "$CONTENTS"
+
+          rm -f "$VALIDATION" "$CONTENTS"
 
       - name: Guardar backup criptografado
         uses: actions/upload-artifact@v4
         with:
-          name: supabase-backup-${{ github.run_id }}
-          path: backup/
+          name: supabase-backup-oficial-${{ github.run_id }}
+          path: |
+            backup/*.tar.gz.enc
+            backup/*.sha256
           retention-days: 30
           if-no-files-found: error
