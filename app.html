@@ -2247,11 +2247,11 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 
 <section id="lixeira" class="view">
   <div class="page-title">
-    <div><h2>♲ Lixeira</h2><p>Registros excluídos ficam protegidos aqui. A exclusão definitiva automática está desativada enquanto validamos o backup.</p></div>
+    <div><h2>♲ Lixeira</h2><p>Restaure registros ou remova definitivamente os itens que não precisam mais ser mantidos.</p></div>
     <button class="btn secondary" onclick="loadTrash()">Atualizar</button>
   </div>
   <div class="card" style="margin-bottom:16px">
-    <div class="benefit-box"><b>Proteção contra exclusão acidental.</b> Use <b>Restaurar</b> para devolver um registro ao sistema. Por segurança, a exclusão definitiva permanece desativada.</div>
+    <div class="benefit-box"><b>Proteção contra exclusão acidental.</b> Use <b>Restaurar</b> para devolver um registro ao sistema. A opção <b>Excluir definitivamente</b> é exclusiva do proprietário e não pode ser desfeita.</div>
   </div>
   <div class="card">
     <div class="panel-title"><div><b>Itens na lixeira</b><small id="trashSummary">Carregando...</small></div></div>
@@ -3335,7 +3335,7 @@ async function loadTrash(){
   try{
     const items=await getTrashItems();
     trashSummary.textContent=items.length?`${items.length} item(ns) recuperável(is)`:'Nenhum item excluído';
-    trashRows.innerHTML=items.length?items.map(x=>`<tr><td><b>${x._type}</b></td><td>${x._name}</td><td>${trashDate(x.deleted_at)}</td><td><button class="btn secondary" onclick="restoreTrashItem('${x._table}',${x.id})">Restaurar</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">A Lixeira está vazia.</td></tr>';
+    trashRows.innerHTML=items.length?items.map(x=>`<tr><td><b>${mgAlertEscape(x._type)}</b></td><td>${mgAlertEscape(x._name)}</td><td>${trashDate(x.deleted_at)}</td><td><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn secondary" onclick="restoreTrashItem('${x._table}',${x.id})">Restaurar</button>${mgFarmRole==='owner'?`<button class="btn secondary delete-outline" onclick="permanentlyDeleteTrashItem('${x._table}',${x.id})">Excluir definitivamente</button>`:''}</div></td></tr>`).join(''):'<tr><td colspan="4" class="empty">A Lixeira está vazia.</td></tr>';
     await refreshTrashBadge();
   }catch(e){trashRows.innerHTML=`<tr><td colspan="4" class="empty">Não foi possível carregar a Lixeira: ${e.message}</td></tr>`}
 }
@@ -3349,6 +3349,21 @@ async function restoreTrashItem(table,id){
     await loadTrash();
     await Promise.all([loadAnimals(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro(),loadNutrition(),dashboard()]);
   }catch(e){alert('Não foi possível restaurar. '+(e?.message||''))}
+}
+async function permanentlyDeleteTrashItem(table,id){
+  const cfg=MG_TRASH_TABLES.find(x=>x.table===table);if(!cfg)return;
+  if(mgFarmRole!=='owner'){alert('Somente o proprietário pode excluir definitivamente.');return}
+  const extra=table==='animals'?' A remoção somente será permitida se não houver histórico relacionado protegido no banco.':'';
+  const typed=prompt(`ATENÇÃO: este registro de ${cfg.label} será excluído definitivamente.${extra}\n\nEsta ação não pode ser desfeita. Digite EXCLUIR para confirmar:`);
+  if(typed!=='EXCLUIR'){if(typed!==null)alert('Exclusão cancelada: a confirmação deve ser digitada exatamente como EXCLUIR.');return}
+  try{
+    const f=await mgGetFarm(),recordId=Number(id);
+    const result=await mgSb.from(table).delete().eq('farm_id',f.id).eq('id',recordId).not('deleted_at','is',null).select('id').maybeSingle();
+    if(result.error)mgErr(result.error);if(!result.data)throw new Error('O item não foi encontrado na Lixeira.');
+    await loadTrash();
+    await Promise.all([loadAnimals(),loadLots(),loadRecentWeighings(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro(),loadNutrition(),dashboard()]);
+    alert(`${cfg.label} excluído(a) definitivamente.`);
+  }catch(e){alert('Não foi possível excluir definitivamente. '+(e?.message||e))}
 }
 
 function show(id,btn){

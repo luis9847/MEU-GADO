@@ -1,4 +1,4 @@
-const MG_CACHE='meu-gado-oficial-modo-campo-v8';
+const MG_CACHE='meu-gado-oficial-modo-campo-v9';
 const MG_SHELL=[
   '/app.html',
   '/manifest-meu-gado.webmanifest',
