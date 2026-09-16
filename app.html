@@ -3358,8 +3358,8 @@ async function permanentlyDeleteTrashItem(table,id){
   if(typed!=='EXCLUIR'){if(typed!==null)alert('Exclusão cancelada: a confirmação deve ser digitada exatamente como EXCLUIR.');return}
   try{
     const f=await mgGetFarm(),recordId=Number(id);
-    const result=await mgSb.from(table).delete().eq('farm_id',f.id).eq('id',recordId).not('deleted_at','is',null).select('id').maybeSingle();
-    if(result.error)mgErr(result.error);if(!result.data)throw new Error('O item não foi encontrado na Lixeira.');
+    const result=await mgSb.rpc('permanently_delete_trash_item',{p_table:table,p_id:recordId});
+    if(result.error)mgErr(result.error);if(result.data!==true)throw new Error('O item não foi encontrado na Lixeira.');
     await loadTrash();
     await Promise.all([loadAnimals(),loadLots(),loadRecentWeighings(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro(),loadNutrition(),dashboard()]);
     alert(`${cfg.label} excluído(a) definitivamente.`);
