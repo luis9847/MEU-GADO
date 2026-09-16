@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-oficial-v22-modo-campo-offline">
+<meta name="mg-build" content="app-oficial-v22-4-busca-grafico-animal">
 <meta name="theme-color" content="#052f31">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1453,7 +1453,7 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 
 <main class="main"><div class="top">
   <button class="mobile-menu-btn" type="button" aria-label="Abrir menu" onclick="mgToggleMobileNav()">☰</button>
-  <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Buscar por número do animal, lote ou raça..." oninput="filterAnimals()"></div>
+  <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Buscar por número do animal, lote ou raça..." oninput="filterAnimals()" onkeydown="if(event.key==='Enter'){event.preventDefault();openGlobalSearchResult()}"></div>
   <div class="top-actions">
     <button class="notification-btn" onclick="openNotifications()">🔔 <span>Notificações</span><b id="notificationCount">0</b></button>
     <div class="top-user"><span id="userInitial">F</span><div><b id="userTop">Usuário</b><small id="farmTop">Fazenda</small></div></div>
@@ -3090,7 +3090,7 @@ async function apiOnline(path,opt={}){
    const ar=await mgSb.from('animals').select('id',{count:'exact',head:true}).eq('farm_id',f.id).eq('lot',lr.data.name).is('deleted_at',null);if(ar.error)mgErr(ar.error);if((ar.count||0)>0)throw new Error('Este lote possui animais ativos. Mova os animais para outro lote antes de enviá-lo à Lixeira.');
    let r=await mgSb.from('lots').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',lotId).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}
  }
- if(path==='/api/weighings/recent'){let w=await mgRows('weighings','*','weighing_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x]));return w.filter(x=>map[x.animal_id]).slice(0,20).map(x=>({...x,number:map[x.animal_id].number,lot:map[x.animal_id].lot}))}
+ if(path==='/api/weighings/recent'){let w=await mgRows('weighings','*','weighing_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x]));return w.filter(x=>map[x.animal_id]).sort((x,y)=>String(y.weighing_date||'').localeCompare(String(x.weighing_date||''))||Number(y.id||0)-Number(x.id||0)).slice(0,20).map(x=>({...x,number:map[x.animal_id].number,lot:map[x.animal_id].lot}))}
  if(path==='/api/weighings/history'){let w=await mgRows('weighings'),g={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(g[m]??=[]).push(Number(x.weight))}return Object.entries(g).sort().slice(-6).map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}))}
  if(path==='/api/weighings/batch'&&method==='POST'){let rows=(data.items||data.weighings||[]).map(x=>({farm_id:f.id,animal_id:Number(x.animal_id),weighing_date:data.weighing_date||x.weighing_date,weight:Number(x.weight),notes:x.notes||data.notes||''})).filter(x=>x.weight>0);let r=await mgSb.from('weighings').insert(rows);if(r.error)mgErr(r.error);return {ok:true,count:rows.length}}
  if(path==='/api/expenses'&&method==='GET'){let e=await mgRows('expenses','*','expense_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return e.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
@@ -3116,10 +3116,14 @@ async function apiOnline(path,opt={}){
  m=path.match(/^\/api\/reproduction\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('reproductive_events').update({animal_id:data.animal_id,event_date:data.event_date,event_type:data.event_type,result:data.result||null,expected_date:data.expected_date||null,notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}if(m&&method==='DELETE'){let r=await mgSb.from('reproductive_events').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
  if(path==='/api/nutrition'&&method==='GET')return mgRows('nutrition_entries','*','entry_date');
  if(path==='/api/nutrition'&&method==='POST'){
-   const payload={farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:data.total_cost,notes:data.notes||''};
+   const nutritionCost=Number(data.total_cost||0);
+   const payload={farm_id:f.id,lot_name:data.lot_name,entry_date:data.entry_date,feed_name:data.feed_name,quantity_kg:data.quantity_kg,total_cost:nutritionCost,notes:data.notes||''};
    let r=await mgSb.from('nutrition_entries').insert(payload).select('id').single();
    if(r.error)mgErr(r.error);
    const nutritionId=r.data.id;
+   /* Custo é opcional: sem valor, salva somente o manejo nutricional.
+      O gasto financeiro só é criado quando houver custo maior que zero. */
+   if(!(nutritionCost>0))return {ok:true,id:nutritionId,expense_created:false};
    const marker='[AUTO:NUTRITION:'+nutritionId+']';
    let er=await mgSb.from('expenses').insert({
      farm_id:f.id,
@@ -3127,7 +3131,7 @@ async function apiOnline(path,opt={}){
      lot:data.lot_name||'',
      category:String(data.feed_name||'Alimentação').trim()||'Alimentação',
      expense_date:data.entry_date,
-     amount:Number(data.total_cost||0),
+     amount:nutritionCost,
      description:'Alimentação · '+(data.feed_name||'Lançamento')+(data.lot_name?' · '+data.lot_name:''),
      notes:marker+(data.notes?' '+data.notes:'')
    });
@@ -3223,7 +3227,7 @@ async function mgSyncOfflineQueue(){
  const pending=await mgPendingForUser();
  if(!pending.length){await mgUpdateConnectionUi();return}
  mgOfflineSyncing=true;await mgUpdateConnectionUi();
- let sent=0;
+ let sent=0,failed=0,lastFailure='';
  try{
   for(const item of pending){
    try{
@@ -3232,13 +3236,14 @@ async function mgSyncOfflineQueue(){
    }catch(e){
     item.attempts=(item.attempts||0)+1;item.lastError=String(e?.message||e);await mgOfflinePut(MG_OFFLINE_QUEUE,item);
     if(mgIsNetworkError(e))break;
-    mgOfflineToast('Um lançamento precisa de revisão: '+item.lastError,'error');break;
+    failed++;lastFailure=item.lastError;continue;
    }
   }
   if(sent){
-   mgOfflineToast(sent+' lançamento(s) sincronizado(s) com sucesso.','online');
    try{await Promise.all([dashboard(),loadAnimals(),loadLots(),loadWeightHistory(),loadExpenses(),loadHealth(),loadRepro(),loadNutrition()])}catch(_e){}
   }
+  if(failed)mgOfflineToast(failed+' lançamento(s) precisa(m) de revisão. Os outros foram sincronizados. '+lastFailure,'error');
+  else if(sent)mgOfflineToast(sent+' lançamento(s) sincronizado(s) com sucesso.','online');
  }finally{mgOfflineSyncing=false;await mgUpdateConnectionUi()}
 }
 
@@ -3451,10 +3456,30 @@ function setAnimalFilter(cat,btn){
   renderAnimalScreen();
 }
 function filterAnimalScreen(){renderAnimalScreen()}
+let mgGlobalSearchTimer=null,mgGlobalSearchOpened='';
+function mgGlobalExactAnimal(query){
+  const needle=String(query||'').trim().replace(/^#/,'').toLowerCase();
+  if(!needle)return null;
+  const matches=animalsData.filter(a=>String(a.number||'').trim().toLowerCase()===needle);
+  return matches.length===1?matches[0]:null;
+}
+function openGlobalSearchResult(){
+  const exact=mgGlobalExactAnimal(document.getElementById('globalSearch')?.value||'');
+  if(exact){mgGlobalSearchOpened=String(exact.id);openAnimalProfile(exact.id);return}
+  show('animais');
+  document.getElementById('animalSearch')?.focus();
+}
 function filterAnimals(){
   const q=globalSearch.value||'';
   if(document.getElementById('animalSearch')) animalSearch.value=q;
+  show('animais');
   renderAnimalScreen();
+  clearTimeout(mgGlobalSearchTimer);
+  const exact=mgGlobalExactAnimal(q);
+  if(!exact){mgGlobalSearchOpened='';return}
+  const key=String(exact.id);
+  if(mgGlobalSearchOpened===key)return;
+  mgGlobalSearchTimer=setTimeout(()=>{mgGlobalSearchOpened=key;openAnimalProfile(exact.id)},550);
 }
 async function toggleExitedAnimals(){
   const p=document.getElementById('exitedPanel');
@@ -3633,7 +3658,7 @@ async function saveAnimal(){
 async function loadRecentWeighings(){
   if(!document.getElementById('weightRows'))return;
   const r=await api('/api/weighings/recent');
-  weightRows.innerHTML=r.length?r.slice(0,10).map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td><td><button class="btn secondary delete-outline" onclick="deleteWeighing(${w.id})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhuma pesagem registrada.</td></tr>';
+  weightRows.innerHTML=r.length?r.map(w=>`<tr><td><button class="animal-link" onclick="openAnimalProfile(${w.animal_id})">#${w.number}</button></td><td>${w.weighing_date}</td><td><b>${w.weight} kg</b></td><td><button class="btn secondary delete-outline" onclick="deleteWeighing(${w.id})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhuma pesagem registrada.</td></tr>';
 }
 async function savePageWeight(){
   const id=Number(pageWeightAnimal.value),weight=Number(pageWeightValue.value);
