@@ -1380,7 +1380,8 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 <style id="mg-offline-ui-v1">
 .mg-connection-bar{position:fixed;right:14px;bottom:14px;z-index:199990;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 28px);padding:9px 11px;border:1px solid #d9e5de;border-radius:12px;background:rgba(255,255,255,.97);box-shadow:0 10px 32px rgba(5,47,49,.18);font-size:11px;color:#365046;backdrop-filter:blur(8px)}
 .mg-connection-bar strong{color:#15382c}.mg-connection-dot{width:9px;height:9px;border-radius:50%;background:#d79624;box-shadow:0 0 0 3px #faefd8}.mg-connection-bar.offline .mg-connection-dot{background:#d84e45;box-shadow:0 0 0 3px #fde8e6}.mg-connection-bar.online .mg-connection-dot{background:#119447;box-shadow:0 0 0 3px #e1f4e8}.mg-connection-bar.syncing .mg-connection-dot{background:#2e6fd4;box-shadow:0 0 0 3px #e4edfb;animation:mgPulse 1s infinite}.mg-connection-bar button{border:0;border-radius:8px;background:#e8f6ed;color:#08763b;padding:7px 9px;font-size:10px;font-weight:900}.mg-connection-bar #mgSyncNowBtn:disabled{display:none}.mg-offline-toast{position:fixed;left:50%;bottom:72px;z-index:199991;transform:translate(-50%,18px);max-width:min(460px,calc(100vw - 28px));padding:11px 14px;border-radius:11px;background:#15382f;color:#fff;font-size:12px;font-weight:750;box-shadow:0 12px 35px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:.22s}.mg-offline-toast.show{opacity:1;transform:translate(-50%,0)}.mg-offline-toast.error{background:#a83d36}.mg-offline-toast.pending{background:#8a6518}@keyframes mgPulse{50%{opacity:.35}}
-@media(max-width:650px){.mg-connection-bar{left:50%;right:auto;top:76px;bottom:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 24px);justify-content:center;flex-wrap:nowrap;padding:7px 10px;border-radius:999px;white-space:nowrap}.mg-connection-bar #mgPendingText{width:auto;text-align:left}.mg-connection-bar button{padding:5px 8px}.mg-offline-toast{left:50%;top:124px;bottom:auto}}
+.mg-sync-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.mg-sync-kpi{border:1px solid #dfe8e3;border-radius:12px;padding:12px}.mg-sync-kpi small{display:block;color:#65776f}.mg-sync-kpi b{display:block;font-size:22px;margin-top:5px}.mg-sync-list{display:grid;gap:8px;max-height:360px;overflow:auto}.mg-sync-row{display:grid;grid-template-columns:1fr auto;gap:12px;border:1px solid #e0e9e4;border-radius:11px;padding:11px}.mg-sync-row small{display:block;color:#687b72;margin-top:4px}.mg-sync-status{font-size:10px;font-weight:900;border-radius:99px;padding:5px 8px;height:max-content}.mg-sync-status.pending{background:#fff3d8;color:#8a6518}.mg-sync-status.success{background:#e4f6ea;color:#087b3e}.mg-sync-status.error{background:#fde7e5;color:#a83d36}
+@media(max-width:650px){.mg-connection-bar{left:50%;right:auto;top:76px;bottom:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 24px);justify-content:center;flex-wrap:nowrap;padding:7px 10px;border-radius:999px;white-space:nowrap}.mg-connection-bar #mgPendingText{width:auto;text-align:left}.mg-connection-bar button{padding:5px 8px}.mg-offline-toast{left:50%;top:124px;bottom:auto}.mg-sync-summary{grid-template-columns:1fr}.mg-sync-row{grid-template-columns:1fr}}
 @media(max-width:760px){.weight-history-filters{grid-template-columns:1fr 1fr!important}.weight-history-filters input:first-child{grid-column:1/-1}.weigh-history{overflow-x:auto}}
 </style>
 </head>
@@ -1390,9 +1391,11 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
   <strong id="mgConnectionText">Verificando conexão…</strong>
   <span id="mgPendingText"></span>
   <button id="mgSyncNowBtn" type="button" onclick="mgSyncOfflineQueue()">Sincronizar</button>
+  <button id="mgSyncDetailsBtn" type="button" onclick="openSyncCenter()">Detalhes</button>
   <button id="mgInstallBtn" type="button" hidden>Instalar</button>
 </div>
 <div id="mgOfflineToast" class="mg-offline-toast" role="status" aria-live="polite"></div>
+<div class="modal" id="syncCenterModal"><div class="modalbox"><div class="head"><div><h3>Central de sincronização</h3><div class="sub">Acompanhe os lançamentos feitos no Modo Campo Offline</div></div><button class="btn secondary" onclick="closeModal('syncCenterModal')">Fechar</button></div><div id="syncCenterBody"></div></div></div>
 
 <div id="mgTestLoginGate" class="mg-test-login-gate">
   <div class="mg-test-login-card">
@@ -3175,15 +3178,17 @@ async function apiOnline(path,opt={}){
 const MG_OFFLINE_DB='meu-gado-campo-v1';
 const MG_OFFLINE_CACHE='responses';
 const MG_OFFLINE_QUEUE='queue';
+const MG_OFFLINE_LOG='sync_log';
 let mgOfflineSyncing=false;
 
 function mgOfflineDb(){
  return new Promise((resolve,reject)=>{
-  const req=indexedDB.open(MG_OFFLINE_DB,1);
+  const req=indexedDB.open(MG_OFFLINE_DB,2);
   req.onupgradeneeded=()=>{
    const db=req.result;
    if(!db.objectStoreNames.contains(MG_OFFLINE_CACHE))db.createObjectStore(MG_OFFLINE_CACHE);
    if(!db.objectStoreNames.contains(MG_OFFLINE_QUEUE))db.createObjectStore(MG_OFFLINE_QUEUE,{keyPath:'id'});
+   if(!db.objectStoreNames.contains(MG_OFFLINE_LOG))db.createObjectStore(MG_OFFLINE_LOG,{keyPath:'id'});
   };
   req.onsuccess=()=>resolve(req.result);
   req.onerror=()=>reject(req.error);
@@ -3223,6 +3228,7 @@ async function mgQueueMutation(path,opt){
  if(path==='/api/logout')throw new Error('Para sair da conta, conecte o aparelho à internet.');
  const item={id:mgOfflineId(),userKey:mgOfflineUserKey(),path,method:(opt.method||'POST').toUpperCase(),body:opt.body||null,createdAt:new Date().toISOString(),attempts:0};
  await mgOfflinePut(MG_OFFLINE_QUEUE,item);
+ await mgOfflinePut(MG_OFFLINE_LOG,{...item,status:'pending',updatedAt:item.createdAt});
  await mgUpdateConnectionUi();
  mgOfflineToast('Lançamento salvo no aparelho. Será sincronizado quando a internet voltar.','pending');
  return {ok:true,queued:true,offline_id:item.id};
@@ -3239,6 +3245,15 @@ async function api(path,opt={}){
 }
 
 async function mgPendingForUser(){return (await mgOfflineAll(MG_OFFLINE_QUEUE)).filter(x=>x.userKey===mgOfflineUserKey()).sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)))}
+function mgSyncItemLabel(path){if(/weighings/.test(path))return 'Pesagem';if(/nutrition/.test(path))return 'Alimentação';if(/health/.test(path))return 'Saúde';if(/reproduction/.test(path))return 'Reprodução';if(/expenses/.test(path))return 'Gasto';if(/lots/.test(path))return 'Lote';if(/animals/.test(path))return 'Animal';return 'Lançamento'}
+async function mgSyncLog(item,status,error=''){try{await mgOfflinePut(MG_OFFLINE_LOG,{...item,status,lastError:error||'',updatedAt:new Date().toISOString()})}catch(e){console.warn('Histórico de sincronização:',e)}}
+async function openSyncCenter(){
+ const pending=await mgPendingForUser();let logs=[];try{logs=(await mgOfflineAll(MG_OFFLINE_LOG)).filter(x=>x.userKey===mgOfflineUserKey())}catch(e){}
+ const merged=new Map(logs.map(x=>[x.id,x]));pending.forEach(x=>merged.set(x.id,{...x,status:'pending',updatedAt:x.createdAt}));
+ const rows=[...merged.values()].sort((a,b)=>String(b.updatedAt||b.createdAt).localeCompare(String(a.updatedAt||a.createdAt))).slice(0,30);
+ const success=rows.filter(x=>x.status==='success').length,errors=rows.filter(x=>x.status==='error').length;
+ const body=document.getElementById('syncCenterBody');body.innerHTML=`<div class="mg-sync-summary"><div class="mg-sync-kpi"><small>Pendentes</small><b>${pending.length}</b></div><div class="mg-sync-kpi"><small>Sincronizados recentes</small><b>${success}</b></div><div class="mg-sync-kpi"><small>Precisam de revisão</small><b>${errors}</b></div></div><div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn primary" onclick="mgSyncOfflineQueue().then(openSyncCenter)" ${!navigator.onLine||!pending.length?'disabled':''}>Sincronizar tudo</button></div><div class="mg-sync-list">${rows.length?rows.map(x=>`<div class="mg-sync-row"><div><b>${mgSyncItemLabel(x.path)}</b><small>${new Date(x.createdAt).toLocaleString('pt-BR')}${x.lastError?` · ${mgAlertEscape(x.lastError)}`:''}</small></div><span class="mg-sync-status ${x.status}">${x.status==='success'?'Sincronizado':x.status==='error'?'Revisar':'Pendente'}</span></div>`).join(''):'<div class="empty">Nenhum lançamento offline registrado neste aparelho.</div>'}</div>`;openModal('syncCenterModal');
+}
 function mgQueuedWeightPayloads(item){
  try{
   const data=typeof item.body==='string'?JSON.parse(item.body||'{}'):(item.body||{});
@@ -3270,12 +3285,13 @@ async function mgSyncOfflineQueue(){
     // Se a conexão caiu depois do INSERT, o registro pode já existir no banco.
     // Confere antes de reenviar para não duplicar pesagens.
     if(mgQueuedWeightPayloads(item).length&&await mgWeightMutationAlreadySaved(item)){
-      await mgOfflineDelete(MG_OFFLINE_QUEUE,item.id);sent++;continue;
+      await mgOfflineDelete(MG_OFFLINE_QUEUE,item.id);await mgSyncLog(item,'success');sent++;continue;
     }
     await apiOnline(item.path,{method:item.method,body:item.body});
-    await mgOfflineDelete(MG_OFFLINE_QUEUE,item.id);sent++;
+    await mgOfflineDelete(MG_OFFLINE_QUEUE,item.id);await mgSyncLog(item,'success');sent++;
    }catch(e){
     item.attempts=(item.attempts||0)+1;item.lastError=String(e?.message||e);await mgOfflinePut(MG_OFFLINE_QUEUE,item);
+    await mgSyncLog(item,'error',item.lastError);
     if(mgIsNetworkError(e))break;
     failed++;lastFailure=item.lastError;continue;
    }
