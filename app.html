@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-edicao-leite-busca-v2">
+<meta name="mg-build" content="app-teste-busca-contextual-v3">
 <meta name="theme-color" content="#052f31">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3396,6 +3396,7 @@ function show(id,btn){
   try{localStorage.setItem('mg_last_view',id)}catch(e){}
   document.documentElement.classList.remove('mg-route-boot');
   window.scrollTo(0,0);
+  setTimeout(()=>{if(typeof mgPrepareGlobalSearchForView==='function')mgPrepareGlobalSearchForView(id)},0);
 }
 function mgNavigate(event,id,link){
   if(event&&(event.ctrlKey||event.metaKey||event.shiftKey||event.button===1))return true;
@@ -3549,6 +3550,54 @@ function mgGlobalSearchMatches(query){
     `${a.number||''} ${a.breed||''} ${a.lot||''} ${a.category||''}`.toLowerCase().includes(q)
   ).slice(0,10);
 }
+function mgCurrentViewId(){
+  return document.querySelector('.view.active')?.id||'inicio';
+}
+function mgGlobalSearchPlaceholder(view=mgCurrentViewId()){
+  if(view==='lotes')return 'Buscar lote...';
+  if(view==='nutricao')return 'Buscar lote ou alimento...';
+  if(view==='gastos')return 'Buscar gasto, categoria ou descrição...';
+  if(view==='pesagem')return 'Buscar animal para consultar pesagens...';
+  if(view==='saude')return 'Buscar animal para consultar saúde...';
+  if(view==='repro')return 'Buscar animal para consultar reprodução...';
+  if(view==='leite')return 'Buscar animal para consultar produção...';
+  return 'Buscar por número do animal, lote ou raça...';
+}
+function mgRestoreContextRows(){
+  ['nutritionRows','expenseRows'].forEach(id=>{
+    document.querySelectorAll(`#${id} tr`).forEach(row=>row.style.display='');
+  });
+}
+function mgPrepareGlobalSearchForView(view=mgCurrentViewId()){
+  const input=document.getElementById('globalSearch');
+  if(input){input.value='';input.placeholder=mgGlobalSearchPlaceholder(view)}
+  mgRestoreContextRows();
+  mgCloseGlobalSearch();
+}
+function mgFilterTableRows(tbodyId,query,emptyLabel){
+  const rows=[...document.querySelectorAll(`#${tbodyId} tr`)];
+  const q=String(query||'').trim().toLowerCase();
+  let visible=0;
+  rows.forEach(row=>{
+    const match=!q||row.textContent.toLowerCase().includes(q);
+    row.style.display=match?'':'none';
+    if(match)visible++;
+  });
+  const root=document.getElementById('globalSearchResults');
+  if(!root)return;
+  root.innerHTML=`<div class="global-search-empty"><b>${visible}</b> ${emptyLabel}${visible===1?'':'s'} encontrado${visible===1?'':'s'} na tabela.</div>`;
+  root.classList.toggle('show',Boolean(q));
+}
+function mgGlobalLotMatches(query){
+  const q=String(query||'').trim().toLowerCase();
+  if(!q)return [];
+  return (Array.isArray(lotsData)?lotsData:[]).filter(l=>String(l.name||'').toLowerCase().includes(q)).slice(0,12);
+}
+function mgOpenGlobalLot(id){
+  mgCloseGlobalSearch();
+  const input=document.getElementById('globalSearch');if(input)input.value='';
+  openLotProfile(Number(id));
+}
 function mgCloseGlobalSearch(){
   document.getElementById('globalSearchResults')?.classList.remove('show');
 }
@@ -3563,13 +3612,29 @@ function mgGlobalSearchInput(){
   const input=document.getElementById('globalSearch'),root=document.getElementById('globalSearchResults');
   if(!input||!root)return;
   const q=input.value.trim();
+  const view=mgCurrentViewId();
+  if(view==='nutricao'){mgFilterTableRows('nutritionRows',q,'lançamento de alimentação');return}
+  if(view==='gastos'){mgFilterTableRows('expenseRows',q,'gasto');return}
   if(!q){root.innerHTML='';root.classList.remove('show');return}
+  if(view==='lotes'){
+    const lots=mgGlobalLotMatches(q);
+    root.innerHTML=lots.length?lots.map(l=>`<button type="button" class="global-search-result" onclick="mgOpenGlobalLot(${Number(l.id)})"><i>🗂️</i><span><b>${mgAlertEscape(l.name||('Lote '+l.id))}</b><small>${Number(l.animals||0)} animal(is) · ${l.active?'Ativo':'Inativo'}</small></span><em>Abrir lote ›</em></button>`).join(''):'<div class="global-search-empty">Nenhum lote encontrado.</div>';
+    root.classList.add('show');
+    return;
+  }
   const rows=mgGlobalSearchMatches(q);
   root.innerHTML=rows.length?rows.map(a=>`<button type="button" class="global-search-result" onclick="mgOpenGlobalAnimal(${Number(a.id)})"><i>🐄</i><span><b>Animal #${mgAlertEscape(a.number||a.id)}</b><small>${mgAlertEscape(a.category||'Sem categoria')} · ${mgAlertEscape(a.breed||'Raça não informada')} · ${mgAlertEscape(a.lot||'Sem lote')}</small></span><em>Abrir ficha ›</em></button>`).join(''):'<div class="global-search-empty">Nenhum animal encontrado.</div>';
   root.classList.add('show');
 }
 function openGlobalSearchResult(){
   const q=document.getElementById('globalSearch')?.value||'';
+  const view=mgCurrentViewId();
+  if(view==='lotes'){
+    const lots=mgGlobalLotMatches(q);
+    if(lots.length===1)mgOpenGlobalLot(lots[0].id);else mgGlobalSearchInput();
+    return;
+  }
+  if(view==='nutricao'||view==='gastos'){mgGlobalSearchInput();return}
   const exact=mgGlobalExactAnimal(q),rows=mgGlobalSearchMatches(q);
   const animal=exact||(rows.length===1?rows[0]:null);
   if(animal){mgOpenGlobalAnimal(animal.id);return}
@@ -7525,7 +7590,9 @@ document.addEventListener('keydown',function(e){
     const input=document.getElementById('globalSearch');
     if(!input)return;
     const mobile=document.documentElement.classList.contains('mg-mobile-device');
-    input.placeholder=mobile?'Buscar animal, lote ou raça...':'Buscar por número do animal, lote ou raça...';
+    input.placeholder=typeof mgGlobalSearchPlaceholder==='function'
+      ?mgGlobalSearchPlaceholder()
+      :(mobile?'Buscar animal, lote ou raça...':'Buscar por número do animal, lote ou raça...');
   }
   document.addEventListener('DOMContentLoaded',polishMobileHeader);
   window.addEventListener('resize',polishMobileHeader);
