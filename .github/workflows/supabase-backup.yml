@@ -2,6 +2,16 @@ name: Backup oficial criptografado do Supabase
 
 on:
   workflow_dispatch:
+    inputs:
+      restore_test:
+        description: Restaurar no projeto de teste?
+        required: true
+        default: false
+        type: boolean
+      confirm_target:
+        description: Digite o Project ID do destino para confirmar
+        required: false
+        type: string
   schedule:
     - cron: '30 3 * * *'
 
@@ -11,7 +21,7 @@ permissions:
 jobs:
   backup:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Gerar backup com Supabase CLI
@@ -87,7 +97,88 @@ jobs:
 
           rm -f "$VALIDATION" "$CONTENTS"
 
+      - name: Restaurar somente no projeto de teste
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.restore_test }}
+        env:
+          RESTORE_TEST_DB_URL: ${{ secrets.RESTORE_TEST_DB_URL }}
+          BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+          CONFIRM_TARGET: ${{ inputs.confirm_target }}
+        run: |
+          set -euo pipefail
+
+          EXPECTED_PROJECT_REF="spipjhipnmgmrgepvckn"
+
+          if [ "$CONFIRM_TARGET" != "$EXPECTED_PROJECT_REF" ]; then
+            echo "::error::Project ID de confirmação incorreto."
+            exit 1
+          fi
+
+          case "$RESTORE_TEST_DB_URL" in
+            *"postgres.$EXPECTED_PROJECT_REF:"*)
+              echo "Destino de teste confirmado."
+              ;;
+            *)
+              echo "::error::A conexão não pertence ao projeto de teste autorizado."
+              exit 1
+              ;;
+          esac
+
+          ENCRYPTED="$(find backup -maxdepth 1 -name '*.tar.gz.enc' -type f | head -n 1)"
+          test -n "$ENCRYPTED"
+
+          mkdir -p restore-test
+
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+            -pass env:BACKUP_ENCRYPTION_PASSWORD \
+            -in "$ENCRYPTED" \
+            -out restore-test/backup.tar.gz
+
+          tar -xzf restore-test/backup.tar.gz -C restore-test
+
+          test -s restore-test/roles.sql
+          test -s restore-test/schema.sql
+          test -s restore-test/data.sql
+
+          docker run --rm \
+            -v "$PWD/restore-test:/restore:ro" \
+            -e RESTORE_TEST_DB_URL \
+            postgres:17 \
+            sh -c '
+              psql \
+                --single-transaction \
+                --variable ON_ERROR_STOP=1 \
+                --file /restore/roles.sql \
+                --file /restore/schema.sql \
+                --command "SET session_replication_role = replica" \
+                --file /restore/data.sql \
+                --dbname "$RESTORE_TEST_DB_URL"
+            '
+
+          PUBLIC_TABLES="$(
+            docker run --rm \
+              -e RESTORE_TEST_DB_URL \
+              postgres:17 \
+              sh -c '
+                psql "$RESTORE_TEST_DB_URL" \
+                  --tuples-only \
+                  --no-align \
+                  --command "select count(*) from pg_tables where schemaname = '\''public'\'';"
+              '
+          )"
+
+          PUBLIC_TABLES="$(echo "$PUBLIC_TABLES" | tr -d '[:space:]')"
+
+          if [ "${PUBLIC_TABLES:-0}" -le 0 ]; then
+            echo "::error::A restauração terminou sem tabelas no schema public."
+            exit 1
+          fi
+
+          echo "Restauração validada. Tabelas públicas encontradas: $PUBLIC_TABLES"
+
+          rm -rf restore-test
+
       - name: Guardar backup criptografado
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: supabase-backup-oficial-${{ github.run_id }}
