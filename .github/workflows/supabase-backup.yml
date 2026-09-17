@@ -147,7 +147,6 @@ jobs:
               psql \
                 --single-transaction \
                 --variable ON_ERROR_STOP=1 \
-                --file /restore/roles.sql \
                 --file /restore/schema.sql \
                 --command "SET session_replication_role = replica" \
                 --file /restore/data.sql \
