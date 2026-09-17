@@ -50,7 +50,7 @@ jobs:
             --file backup/plain/data.sql \
             --use-copy \
             --data-only \
-            --exclude storage.buckets_vectors
+            --exclude storage.buckets_vectors,storage.vector_indexes
 
           test -s backup/plain/roles.sql
           test -s backup/plain/schema.sql
