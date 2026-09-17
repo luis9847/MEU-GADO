@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-teste-busca-contextual-visual-v4">
+<meta name="mg-build" content="app-teste-leite-completo-v5">
 <meta name="theme-color" content="#052f31">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4438,7 +4438,7 @@ async function mgBuildReportData(type){
     headers=['Data','Categoria','Descrição','Valor','Lote','Observação'];
     rows=data.filter(x=>reportInPeriod(x.expense_date)).map(x=>[x.expense_date,x.category,x.description||'',x.amount,x.lot||'',x.notes||'']);
   }else if(type==='leite'){
-    const q=await mgSb.from('milk_production').select('production_date,animal_id,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes,animals(number,breed)').eq('farm_id',farm.id).order('production_date',{ascending:false});
+    const q=await mgSb.from('milk_production').select('production_date,animal_id,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes,animals(number,breed)').eq('farm_id',farm.id).is('deleted_at',null).order('production_date',{ascending:false});
     if(q.error)throw q.error;
     headers=['Data','Animal','Raça','Manhã L','Tarde L','Noite L','Total L','Descarte L','Observação'];
     rows=(q.data||[]).filter(x=>reportInPeriod(x.production_date)).map(x=>{const total=Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0);return [x.production_date,x.animals?.number||x.animal_id,x.animals?.breed||'',x.morning_liters||0,x.afternoon_liters||0,x.evening_liters||0,total,x.discarded_liters||0,x.notes||''];});
@@ -6585,7 +6585,7 @@ async function loadMilkProduction(){
   const today=mgIsoToday(), firstMonth=today.slice(0,7)+'-01';
   const {data,error}=await mgSb.from('milk_production')
     .select('id,animal_id,lactation_id,production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes,animals(number,breed)')
-    .eq('farm_id',f.id).gte('production_date',firstMonth).order('production_date',{ascending:false}).limit(120);
+    .eq('farm_id',f.id).is('deleted_at',null).gte('production_date',firstMonth).order('production_date',{ascending:false}).limit(120);
   if(error)throw error;
   const rows=data||[], todayRows=rows.filter(r=>r.production_date===today);
   mgMilkProductionRows=rows;
@@ -6626,7 +6626,7 @@ async function editMilkProduction(id){
     let row=mgMilkProductionRows.find(x=>Number(x.id)===Number(id));
     const query=await mgSb.from('milk_production')
       .select('id,animal_id,lactation_id,production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes')
-      .eq('farm_id',f.id).eq('id',Number(id)).maybeSingle();
+      .eq('farm_id',f.id).eq('id',Number(id)).is('deleted_at',null).maybeSingle();
     if(query.error)throw query.error;
     if(query.data)row=query.data;
     if(!row)throw new Error('Lançamento não encontrado ou sem permissão de acesso.');
@@ -6696,7 +6696,7 @@ async function loadDairyDashboard(){
 
   const {data,error}=await mgSb.from('milk_production')
     .select('animal_id,production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,animals(number,breed)')
-    .eq('farm_id',f.id).gte('production_date',start30iso).order('production_date',{ascending:true});
+    .eq('farm_id',f.id).is('deleted_at',null).gte('production_date',start30iso).order('production_date',{ascending:true});
   if(error)throw error;
 
   const rows=data||[];
@@ -6759,6 +6759,7 @@ async function loadDairyDashboard(){
   const {data:lactRows,error:lactError}=await mgSb.from('dairy_lactations')
     .select('id,farm_id,animal_id,calving_date,lactation_start_date,dry_off_date,expected_dry_off_date,lactation_number,status,notes,animals(number,breed)')
     .eq('farm_id',f.id)
+    .is('deleted_at',null)
     .eq('status','active')
     .order('lactation_start_date',{ascending:false});
   if(lactError)throw lactError;
@@ -6884,7 +6885,8 @@ async function saveMilkProduction(){
       afternoon_liters:Number(document.getElementById('milkAfternoon').value||0),
       evening_liters:Number(document.getElementById('milkEvening').value||0),
       discarded_liters:Number(document.getElementById('milkDiscarded').value||0),
-      notes:document.getElementById('milkNotes').value.trim()||null
+      notes:document.getElementById('milkNotes').value.trim()||null,
+      deleted_at:null,deleted_by:null
     };
     if(payload.morning_liters+payload.afternoon_liters+payload.evening_liters<=0)throw new Error('Informe uma produção maior que zero.');
     let result;
@@ -7391,12 +7393,12 @@ openAnimalProfile = async function(id){
   }
 
   tasks.push(ap8SafeQuery(
-    mgSb.from('milk_production').select('production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes').eq('farm_id',f.id).eq('animal_id',id).order('production_date',{ascending:false}).limit(12),
+    mgSb.from('milk_production').select('production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('production_date',{ascending:false}).limit(12),
     []
   ).then(x=>milk=x));
 
   tasks.push(ap8SafeQuery(
-    mgSb.from('dairy_lactations').select('calving_date,lactation_start_date,dry_off_date,expected_dry_off_date,lactation_number,status,notes').eq('farm_id',f.id).eq('animal_id',id).order('lactation_start_date',{ascending:false}).limit(6),
+    mgSb.from('dairy_lactations').select('calving_date,lactation_start_date,dry_off_date,expected_dry_off_date,lactation_number,status,notes').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('lactation_start_date',{ascending:false}).limit(6),
     []
   ).then(x=>lactations=x));
 
@@ -7631,6 +7633,95 @@ if('serviceWorker' in navigator){
   await mgUpdateConnectionUi();if(navigator.onLine)setTimeout(mgSyncOfflineQueue,1800);
  });
 }else document.addEventListener('DOMContentLoaded',mgUpdateConnectionUi);
+</script>
+
+<script id="mg-dairy-complete-v5">
+// V5 — CRUD completo do leite, Lixeira e relatório mensal.
+var mgMilkSalesRowsV5=[],mgMilkExpenseRowsV5=[],mgMilkQualityRowsV5=[];
+var mgEditingMilkSaleV5=null,mgEditingMilkExpenseV5=null,mgEditingMilkQualityV5=null,mgEditingLactationV5=null;
+
+function mgDairyEscV5(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function mgDairyActionV5(editFn,deleteFn,id){return `<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" type="button" onclick="${editFn}(${id})">Editar</button><button class="btn secondary danger-outline" type="button" onclick="${deleteFn}(${id})">Excluir</button></div>`}
+function mgDairyInvalidateV5(){Object.keys(mgDairyTabLoaded).forEach(k=>mgDairyTabLoaded[k]=0)}
+async function mgDairySoftDeleteV5(table,id,label,after){
+  if(!confirm(`Mover este registro de ${label} para a Lixeira?\n\nEle poderá ser restaurado depois.`))return;
+  try{
+    const f=await mgGetFarm(),result=await mgSb.from(table).update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(id)).is('deleted_at',null).select('id').maybeSingle();
+    if(result.error)throw result.error;if(!result.data)throw new Error('Registro não encontrado ou sem permissão.');
+    mgDairyInvalidateV5();if(after)after();await Promise.all([loadDairyTab(mgDairyCurrentTab,true),refreshTrashBadge()]);
+    alert('Registro movido para a Lixeira.');
+  }catch(e){alert('Não foi possível excluir. '+(e?.message||e))}
+}
+
+function mgDairyEnhanceUiV5(){
+  const addAction=(bodyId)=>{const body=document.getElementById(bodyId),table=body?.closest('table');if(!table||table.dataset.v5)return;table.dataset.v5='1';table.querySelector('thead tr')?.insertAdjacentHTML('beforeend','<th>Ações</th>')};
+  ['lactationRows','qualityRows','milkSalesRows','milkExpenseRows'].forEach(addAction);
+  const buttons=[
+    ['#dairyTabLactations .dairy-toolbar','lactSaveBtn','Iniciar lactação','cancelLactationEditV5'],
+    ['#dairyTabQuality .dairy-toolbar','qualitySaveBtn','Salvar análise','cancelMilkQualityEditV5'],
+    ['#dairyTabFinance .dairy-two .card:first-child .dairy-toolbar','milkSaleSaveBtn','Salvar venda','cancelMilkSaleEditV5'],
+    ['#dairyTabFinance .dairy-two .card:nth-child(2) .dairy-toolbar','milkExpenseSaveBtn','Salvar custo','cancelMilkExpenseEditV5']
+  ];
+  buttons.forEach(([sel,id,text,cancel])=>{const bar=document.querySelector(sel),save=bar?.querySelector('.btn.primary');if(!bar||!save||save.id)return;save.id=id;save.textContent=text;bar.insertAdjacentHTML('beforeend',`<button id="${id}Cancel" class="btn secondary" type="button" onclick="${cancel}()" style="display:none">Cancelar edição</button>`)});
+  const lactNotes=document.getElementById('lactNotes')?.closest('.dairy-field');
+  if(lactNotes&&!document.getElementById('lactStatusV5'))lactNotes.insertAdjacentHTML('beforebegin','<div class="dairy-field"><label>Status</label><select id="lactStatusV5" onchange="mgToggleLactDryV5()"><option value="active">Em lactação</option><option value="dry">Seca</option></select></div><div class="dairy-field"><label>Data da secagem</label><input id="lactDryDateV5" type="date" disabled></div>');
+  const finance=document.getElementById('dairyTabFinance'),grid=finance?.querySelector('.dairy-grid');
+  if(finance&&grid&&!document.getElementById('milkReportV5'))grid.insertAdjacentHTML('afterend',`<div id="milkReportV5" class="card" style="margin:12px 0"><div class="head"><div><h3>Relatório mensal do leite</h3><div class="sub">Produção, descarte, vendas, custos e resultado do mês.</div></div><div class="dairy-toolbar"><input id="milkReportMonthV5" type="month" style="max-width:180px"><button class="btn secondary" type="button" onclick="loadMilkMonthlyReportV5()">Atualizar</button><button class="btn secondary" type="button" onclick="exportMilkReportCsvV5()">Baixar CSV</button><button class="btn secondary" type="button" onclick="printMilkReportV5()">Imprimir</button></div></div><div class="dairy-grid" style="margin-top:10px"><div class="dairy-kpi"><small>Produção</small><strong id="reportProducedV5">0,0 L</strong><span id="reportDiscardV5">0,0 L descartados</span></div><div class="dairy-kpi"><small>Vendido</small><strong id="reportSoldV5">0,0 L</strong><span id="reportAvgPriceV5">Preço médio: R$ 0,00</span></div><div class="dairy-kpi"><small>Receita</small><strong id="reportRevenueV5">R$ 0,00</strong><span id="reportCostsV5">Custos: R$ 0,00</span></div><div class="dairy-kpi"><small>Resultado</small><strong id="reportProfitV5">R$ 0,00</strong><span id="reportMarginV5">Margem: R$ 0,00/L</span></div></div><div style="overflow:auto;margin-top:10px"><table class="dairy-table"><thead><tr><th>Categoria de custo</th><th>Valor</th><th>% dos custos</th></tr></thead><tbody id="milkReportCategoriesV5"><tr><td colspan="3" class="dairy-empty">Selecione o mês.</td></tr></tbody></table></div></div>`);
+  const m=document.getElementById('milkReportMonthV5');if(m&&!m.value)m.value=mgIsoToday().slice(0,7);
+}
+function mgToggleLactDryV5(){const dry=document.getElementById('lactDryDateV5'),status=document.getElementById('lactStatusV5')?.value;if(dry){dry.disabled=status!=='dry';if(status!=='dry')dry.value=''}}
+
+if(!MG_TRASH_TABLES.some(x=>x.table==='milk_production'))MG_TRASH_TABLES.push(
+  {table:'milk_production',label:'Produção de leite',name:r=>(r.production_date||'')+' · '+mgFmtLiters(Number(r.morning_liters||0)+Number(r.afternoon_liters||0)+Number(r.evening_liters||0))},
+  {table:'milk_sales',label:'Venda de leite',name:r=>(r.sale_date||'')+' · '+mgFmtLiters(r.liters)},
+  {table:'milk_expenses',label:'Custo do leite',name:r=>(r.description||r.category||'Custo')+' · '+mgMilkMoney(r.amount)},
+  {table:'milk_quality_tests',label:'Análise do leite',name:r=>(r.test_date||'')+' · '+(r.sample_type==='tank'?'Tanque':'Animal')},
+  {table:'dairy_lactations',label:'Lactação',name:r=>(r.lactation_start_date||r.calving_date||'Lactação')}
+);
+
+loadDairyLactations=async function(){
+  const f=await mgGetFarm(),q=await mgSb.from('dairy_lactations').select('id,farm_id,animal_id,calving_date,lactation_start_date,dry_off_date,expected_dry_off_date,lactation_number,status,notes,animals(number,breed)').eq('farm_id',f.id).is('deleted_at',null).order('lactation_start_date',{ascending:false});
+  if(q.error)throw q.error;mgDairyLactations=q.data||[];const active=mgDairyLactations.filter(x=>x.status==='active'),dry=mgDairyLactations.filter(x=>x.status==='dry');
+  document.getElementById('dairyActiveLactations').textContent=active.length;document.getElementById('dairyDryCows').textContent=`${dry.length} secas`;
+  document.getElementById('dryAnimal').innerHTML='<option value="">Selecione</option>'+active.map(x=>`<option value="${x.id}">${mgDairyEscV5(x.animals?.number||('Animal '+x.animal_id))}</option>`).join('');
+  document.getElementById('lactationRows').innerHTML=mgDairyLactations.length?mgDairyLactations.map(x=>{const s=x.lactation_start_date?new Date(x.lactation_start_date+'T00:00:00'):null,e=x.dry_off_date?new Date(x.dry_off_date+'T00:00:00'):new Date(),days=s?Math.max(0,Math.floor((e-s)/86400000)):0;return `<tr><td><b>${mgDairyEscV5(x.animals?.number||x.animal_id)}</b></td><td>${x.calving_date||'—'}</td><td>${x.lactation_start_date||'—'}</td><td>${days}</td><td>${x.expected_dry_off_date||'—'}</td><td><span class="dairy-badge ${x.status==='active'?'':'dry'}">${x.status==='active'?'Em lactação':'Seca'}</span></td><td>${mgDairyActionV5('editLactationV5','deleteLactationV5',x.id)}</td></tr>`}).join(''):'<tr><td colspan="7" class="dairy-empty">Nenhuma lactação cadastrada.</td></tr>';
+};
+function resetLactationV5(){mgEditingLactationV5=null;['lactAnimal','lactCalvingDate','lactStartDate','lactNumber','lactExpectedDry','lactNotes','lactDryDateV5'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('lactStatusV5').value='active';mgToggleLactDryV5();document.getElementById('lactSaveBtn').textContent='Iniciar lactação';document.getElementById('lactSaveBtnCancel').style.display='none'}
+function cancelLactationEditV5(){resetLactationV5()}
+async function editLactationV5(id){const r=mgDairyLactations.find(x=>Number(x.id)===Number(id));if(!r)return;await loadDairyAnimals();mgEditingLactationV5=Number(id);document.getElementById('lactAnimal').value=r.animal_id;document.getElementById('lactCalvingDate').value=r.calving_date||'';document.getElementById('lactStartDate').value=r.lactation_start_date||'';document.getElementById('lactNumber').value=r.lactation_number||'';document.getElementById('lactExpectedDry').value=r.expected_dry_off_date||'';document.getElementById('lactNotes').value=r.notes||'';document.getElementById('lactStatusV5').value=r.status==='dry'?'dry':'active';document.getElementById('lactDryDateV5').value=r.dry_off_date||'';mgToggleLactDryV5();document.getElementById('lactSaveBtn').textContent='Salvar alterações';document.getElementById('lactSaveBtnCancel').style.display='inline-flex';document.getElementById('lactAnimal').scrollIntoView({behavior:'smooth',block:'center'})}
+function deleteLactationV5(id){return mgDairySoftDeleteV5('dairy_lactations',id,'lactação',()=>resetLactationV5())}
+startLactation=async function(){try{const f=await mgGetFarm(),animal_id=Number(document.getElementById('lactAnimal').value),calving_date=document.getElementById('lactCalvingDate').value,lactation_start_date=document.getElementById('lactStartDate').value,status=document.getElementById('lactStatusV5').value,dry_off_date=status==='dry'?(document.getElementById('lactDryDateV5').value||null):null;if(!animal_id||!calving_date||!lactation_start_date)throw new Error('Informe a vaca, parto e início da lactação.');if(status==='dry'&&!dry_off_date)throw new Error('Informe a data da secagem.');if(calving_date>lactation_start_date)throw new Error('O início da lactação não pode ser anterior ao parto.');if(dry_off_date&&dry_off_date<lactation_start_date)throw new Error('A secagem não pode ser anterior ao início.');if(status==='active'){let q=mgSb.from('dairy_lactations').select('id').eq('farm_id',f.id).eq('animal_id',animal_id).eq('status','active').is('deleted_at',null);if(mgEditingLactationV5)q=q.neq('id',mgEditingLactationV5);const a=await q.limit(1);if(a.error)throw a.error;if(a.data?.length)throw new Error('Esta vaca já possui uma lactação ativa.');}const payload={farm_id:f.id,animal_id,calving_date,lactation_start_date,lactation_number:document.getElementById('lactNumber').value?Number(document.getElementById('lactNumber').value):null,expected_dry_off_date:document.getElementById('lactExpectedDry').value||null,status,dry_off_date,notes:document.getElementById('lactNotes').value.trim()||null,updated_at:new Date().toISOString(),deleted_at:null,deleted_by:null};const q=mgEditingLactationV5?await mgSb.from('dairy_lactations').update(payload).eq('farm_id',f.id).eq('id',mgEditingLactationV5):await mgSb.from('dairy_lactations').insert(payload);if(q.error)throw q.error;const edited=!!mgEditingLactationV5;resetLactationV5();mgDairyInvalidateV5();await loadDairyTab('lactations',true);alert(edited?'Lactação atualizada.':'Lactação iniciada.')}catch(e){alert('Não foi possível salvar a lactação. '+(e?.message||e))}};
+
+loadMilkQuality=async function(){const f=await mgGetFarm(),q=await mgSb.from('milk_quality_tests').select('id,test_date,sample_type,animal_id,somatic_cell_count,bacterial_count,fat_percent,protein_percent,lactose_percent,total_solids_percent,notes,animals(number)').eq('farm_id',f.id).is('deleted_at',null).order('test_date',{ascending:false}).limit(50);if(q.error)throw q.error;mgMilkQualityRowsV5=q.data||[];document.getElementById('qualityRows').innerHTML=mgMilkQualityRowsV5.length?mgMilkQualityRowsV5.map(r=>`<tr><td>${r.test_date}</td><td>${r.sample_type==='tank'?'Tanque':('Animal '+mgDairyEscV5(r.animals?.number||r.animal_id||''))}</td><td>${r.somatic_cell_count??'—'}</td><td>${r.bacterial_count??'—'}</td><td>${r.fat_percent!=null?r.fat_percent+'%':'—'}</td><td>${r.protein_percent!=null?r.protein_percent+'%':'—'}</td><td>${mgDairyActionV5('editMilkQualityV5','deleteMilkQualityV5',r.id)}</td></tr>`).join(''):'<tr><td colspan="7" class="dairy-empty">Nenhuma análise cadastrada.</td></tr>'};
+function resetMilkQualityV5(){mgEditingMilkQualityV5=null;['qualityScc','qualityBacteria','qualityFat','qualityProtein','qualityLactose','qualitySolids','qualityNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('qualityDate').value=mgIsoToday();document.getElementById('qualityType').value='tank';document.getElementById('qualityAnimal').value='';toggleQualityAnimal();document.getElementById('qualitySaveBtn').textContent='Salvar análise';document.getElementById('qualitySaveBtnCancel').style.display='none'}
+function cancelMilkQualityEditV5(){resetMilkQualityV5()}
+async function editMilkQualityV5(id){const r=mgMilkQualityRowsV5.find(x=>Number(x.id)===Number(id));if(!r)return;await loadDairyAnimals();mgEditingMilkQualityV5=Number(id);document.getElementById('qualityDate').value=r.test_date||'';document.getElementById('qualityType').value=r.sample_type||'tank';toggleQualityAnimal();document.getElementById('qualityAnimal').value=r.animal_id||'';[['qualityScc','somatic_cell_count'],['qualityBacteria','bacterial_count'],['qualityFat','fat_percent'],['qualityProtein','protein_percent'],['qualityLactose','lactose_percent'],['qualitySolids','total_solids_percent'],['qualityNotes','notes']].forEach(([a,b])=>document.getElementById(a).value=r[b]??'');document.getElementById('qualitySaveBtn').textContent='Salvar alterações';document.getElementById('qualitySaveBtnCancel').style.display='inline-flex';document.getElementById('qualityDate').scrollIntoView({behavior:'smooth',block:'center'})}
+function deleteMilkQualityV5(id){return mgDairySoftDeleteV5('milk_quality_tests',id,'análise do leite',()=>resetMilkQualityV5())}
+saveMilkQuality=async function(){try{const f=await mgGetFarm(),type=document.getElementById('qualityType').value,animal_id=type==='animal'?Number(document.getElementById('qualityAnimal').value):null,test_date=document.getElementById('qualityDate').value;if(!test_date)throw new Error('Informe a data.');if(type==='animal'&&!animal_id)throw new Error('Selecione o animal.');const n=id=>document.getElementById(id).value?Number(document.getElementById(id).value):null,payload={farm_id:f.id,test_date,sample_type:type,animal_id,somatic_cell_count:n('qualityScc'),bacterial_count:n('qualityBacteria'),fat_percent:n('qualityFat'),protein_percent:n('qualityProtein'),lactose_percent:n('qualityLactose'),total_solids_percent:n('qualitySolids'),notes:document.getElementById('qualityNotes').value.trim()||null,deleted_at:null,deleted_by:null};const q=mgEditingMilkQualityV5?await mgSb.from('milk_quality_tests').update(payload).eq('farm_id',f.id).eq('id',mgEditingMilkQualityV5):await mgSb.from('milk_quality_tests').insert(payload);if(q.error)throw q.error;const edited=!!mgEditingMilkQualityV5;resetMilkQualityV5();await loadMilkQuality();alert(edited?'Análise atualizada.':'Análise salva.')}catch(e){alert('Não foi possível salvar a análise. '+(e?.message||e))}};
+
+deleteMilkProduction=function(id){return mgDairySoftDeleteV5('milk_production',id,'produção de leite',()=>{if(Number(mgEditingMilkProductionId)===Number(id))resetMilkProductionForm()})};
+
+function resetMilkSaleV5(){mgEditingMilkSaleV5=null;['milkSaleLiters','milkSalePrice','milkSaleBuyer','milkSaleNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('milkSaleDate').value=mgIsoToday();document.getElementById('milkSaleSaveBtn').textContent='Salvar venda';document.getElementById('milkSaleSaveBtnCancel').style.display='none'}
+function cancelMilkSaleEditV5(){resetMilkSaleV5()}
+function editMilkSaleV5(id){const r=mgMilkSalesRowsV5.find(x=>Number(x.id)===Number(id));if(!r)return;mgEditingMilkSaleV5=Number(id);document.getElementById('milkSaleDate').value=r.sale_date;document.getElementById('milkSaleLiters').value=r.liters;document.getElementById('milkSalePrice').value=r.price_per_liter;document.getElementById('milkSaleBuyer').value=r.buyer||'';document.getElementById('milkSaleNotes').value=r.notes||'';document.getElementById('milkSaleSaveBtn').textContent='Salvar alterações';document.getElementById('milkSaleSaveBtnCancel').style.display='inline-flex';document.getElementById('milkSaleDate').scrollIntoView({behavior:'smooth',block:'center'})}
+function deleteMilkSaleV5(id){return mgDairySoftDeleteV5('milk_sales',id,'venda de leite',()=>resetMilkSaleV5())}
+saveMilkSale=async function(){try{const f=await mgGetFarm(),payload={farm_id:f.id,sale_date:document.getElementById('milkSaleDate').value,liters:Number(document.getElementById('milkSaleLiters').value||0),price_per_liter:Number(document.getElementById('milkSalePrice').value||0),buyer:document.getElementById('milkSaleBuyer').value.trim()||null,notes:document.getElementById('milkSaleNotes').value.trim()||null,deleted_at:null,deleted_by:null};if(!payload.sale_date||payload.liters<=0||payload.price_per_liter<=0)throw new Error('Informe a data, litros e preço.');const q=mgEditingMilkSaleV5?await mgSb.from('milk_sales').update(payload).eq('farm_id',f.id).eq('id',mgEditingMilkSaleV5):await mgSb.from('milk_sales').insert(payload);if(q.error)throw q.error;const edited=!!mgEditingMilkSaleV5;resetMilkSaleV5();await loadMilkFinance();alert(edited?'Venda atualizada.':'Venda salva.')}catch(e){alert('Não foi possível salvar a venda. '+(e?.message||e))}};
+
+function resetMilkExpenseV5(){mgEditingMilkExpenseV5=null;['milkExpenseValue','milkExpenseDescription','milkExpenseNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('milkExpenseDate').value=mgIsoToday();document.getElementById('milkExpenseSaveBtn').textContent='Salvar custo';document.getElementById('milkExpenseSaveBtnCancel').style.display='none'}
+function cancelMilkExpenseEditV5(){resetMilkExpenseV5()}
+function editMilkExpenseV5(id){const r=mgMilkExpenseRowsV5.find(x=>Number(x.id)===Number(id));if(!r)return;mgEditingMilkExpenseV5=Number(id);document.getElementById('milkExpenseDate').value=r.expense_date;document.getElementById('milkExpenseCategory').value=r.category||'Outros';document.getElementById('milkExpenseValue').value=r.amount;document.getElementById('milkExpenseDescription').value=r.description||'';document.getElementById('milkExpenseNotes').value=r.notes||'';document.getElementById('milkExpenseSaveBtn').textContent='Salvar alterações';document.getElementById('milkExpenseSaveBtnCancel').style.display='inline-flex';document.getElementById('milkExpenseDate').scrollIntoView({behavior:'smooth',block:'center'})}
+function deleteMilkExpenseV5(id){return mgDairySoftDeleteV5('milk_expenses',id,'custo do leite',()=>resetMilkExpenseV5())}
+saveMilkExpense=async function(){try{const f=await mgGetFarm(),payload={farm_id:f.id,expense_date:document.getElementById('milkExpenseDate').value,category:document.getElementById('milkExpenseCategory').value,amount:Number(document.getElementById('milkExpenseValue').value||0),description:document.getElementById('milkExpenseDescription').value.trim()||null,notes:document.getElementById('milkExpenseNotes').value.trim()||null,deleted_at:null,deleted_by:null};if(!payload.expense_date||payload.amount<=0)throw new Error('Informe a data e o valor.');const q=mgEditingMilkExpenseV5?await mgSb.from('milk_expenses').update(payload).eq('farm_id',f.id).eq('id',mgEditingMilkExpenseV5):await mgSb.from('milk_expenses').insert(payload);if(q.error)throw q.error;const edited=!!mgEditingMilkExpenseV5;resetMilkExpenseV5();await loadMilkFinance();alert(edited?'Custo atualizado.':'Custo salvo.')}catch(e){alert('Não foi possível salvar o custo. '+(e?.message||e))}};
+
+loadMilkFinance=async function(){try{const f=await mgGetFarm(),ym=document.getElementById('milkReportMonthV5')?.value||mgIsoToday().slice(0,7),first=ym+'-01',next=new Date(Number(ym.slice(0,4)),Number(ym.slice(5,7)),1).toISOString().slice(0,10),[s,e]=await Promise.all([mgSb.from('milk_sales').select('id,sale_date,liters,price_per_liter,buyer,notes,created_at').eq('farm_id',f.id).is('deleted_at',null).order('sale_date',{ascending:false}).limit(100),mgSb.from('milk_expenses').select('id,expense_date,category,amount,description,notes,created_at').eq('farm_id',f.id).is('deleted_at',null).order('expense_date',{ascending:false}).limit(100)]);if(s.error)throw s.error;if(e.error)throw e.error;mgMilkSalesRowsV5=s.data||[];mgMilkExpenseRowsV5=e.data||[];const ms=mgMilkSalesRowsV5.filter(x=>x.sale_date>=first&&x.sale_date<next),me=mgMilkExpenseRowsV5.filter(x=>x.expense_date>=first&&x.expense_date<next),liters=ms.reduce((a,x)=>a+Number(x.liters||0),0),revenue=ms.reduce((a,x)=>a+Number(x.liters||0)*Number(x.price_per_liter||0),0),costs=me.reduce((a,x)=>a+Number(x.amount||0),0),profit=revenue-costs,set=(id,v)=>document.getElementById(id).textContent=v;set('milkRevenueMonth',mgMilkMoney(revenue));set('milkRevenueLiters',mgFmtLiters(liters)+' vendidos');set('milkAvgPrice',mgMilkMoney(liters?revenue/liters:0));set('milkCostLiter',mgMilkMoney(liters?costs/liters:0));set('milkCostMonth','Custos: '+mgMilkMoney(costs));set('milkProfitMonth',mgMilkMoney(profit));set('milkMarginLiter','Margem: '+mgMilkMoney(liters?profit/liters:0)+'/L');document.getElementById('milkSalesRows').innerHTML=mgMilkSalesRowsV5.length?mgMilkSalesRowsV5.slice(0,20).map(x=>`<tr><td>${x.sale_date}</td><td>${mgFmtLiters(x.liters)}</td><td>${mgMilkMoney(x.price_per_liter)}</td><td><b>${mgMilkMoney(Number(x.liters)*Number(x.price_per_liter))}</b></td><td>${mgDairyEscV5(x.buyer||'—')}</td><td>${mgDairyActionV5('editMilkSaleV5','deleteMilkSaleV5',x.id)}</td></tr>`).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma venda registrada.</td></tr>';document.getElementById('milkExpenseRows').innerHTML=mgMilkExpenseRowsV5.length?mgMilkExpenseRowsV5.slice(0,20).map(x=>`<tr><td>${x.expense_date}</td><td>${mgDairyEscV5(x.category||'—')}</td><td>${mgDairyEscV5(x.description||'—')}</td><td><b>${mgMilkMoney(x.amount)}</b></td><td>${mgDairyActionV5('editMilkExpenseV5','deleteMilkExpenseV5',x.id)}</td></tr>`).join(''):'<tr><td colspan="5" class="dairy-empty">Nenhum custo registrado.</td></tr>';await loadMilkMonthlyReportV5()}catch(e){console.error(e);alert('Não foi possível carregar o financeiro. '+(e?.message||e))}};
+
+var mgMilkReportDataV5=null;
+async function loadMilkMonthlyReportV5(){try{const f=await mgGetFarm(),ym=document.getElementById('milkReportMonthV5').value;if(!ym)return;const first=ym+'-01',next=new Date(Number(ym.slice(0,4)),Number(ym.slice(5,7)),1).toISOString().slice(0,10),[p,s,e]=await Promise.all([mgSb.from('milk_production').select('production_date,morning_liters,afternoon_liters,evening_liters,discarded_liters').eq('farm_id',f.id).is('deleted_at',null).gte('production_date',first).lt('production_date',next),mgSb.from('milk_sales').select('sale_date,liters,price_per_liter').eq('farm_id',f.id).is('deleted_at',null).gte('sale_date',first).lt('sale_date',next),mgSb.from('milk_expenses').select('expense_date,category,amount').eq('farm_id',f.id).is('deleted_at',null).gte('expense_date',first).lt('expense_date',next)]);if(p.error)throw p.error;if(s.error)throw s.error;if(e.error)throw e.error;const produced=(p.data||[]).reduce((a,x)=>a+Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0),0),discard=(p.data||[]).reduce((a,x)=>a+Number(x.discarded_liters||0),0),sold=(s.data||[]).reduce((a,x)=>a+Number(x.liters||0),0),revenue=(s.data||[]).reduce((a,x)=>a+Number(x.liters||0)*Number(x.price_per_liter||0),0),costs=(e.data||[]).reduce((a,x)=>a+Number(x.amount||0),0),profit=revenue-costs,categories={};(e.data||[]).forEach(x=>categories[x.category||'Outros']=(categories[x.category||'Outros']||0)+Number(x.amount||0));mgMilkReportDataV5={ym,produced,discard,sold,revenue,costs,profit,categories};document.getElementById('reportProducedV5').textContent=mgFmtLiters(produced);document.getElementById('reportDiscardV5').textContent=mgFmtLiters(discard)+' descartados';document.getElementById('reportSoldV5').textContent=mgFmtLiters(sold);document.getElementById('reportAvgPriceV5').textContent='Preço médio: '+mgMilkMoney(sold?revenue/sold:0);document.getElementById('reportRevenueV5').textContent=mgMilkMoney(revenue);document.getElementById('reportCostsV5').textContent='Custos: '+mgMilkMoney(costs);document.getElementById('reportProfitV5').textContent=mgMilkMoney(profit);document.getElementById('reportMarginV5').textContent='Margem: '+mgMilkMoney(sold?profit/sold:0)+'/L';const entries=Object.entries(categories).sort((a,b)=>b[1]-a[1]);document.getElementById('milkReportCategoriesV5').innerHTML=entries.length?entries.map(([k,v])=>`<tr><td>${mgDairyEscV5(k)}</td><td><b>${mgMilkMoney(v)}</b></td><td>${(costs?v/costs*100:0).toLocaleString('pt-BR',{maximumFractionDigits:1})}%</td></tr>`).join(''):'<tr><td colspan="3" class="dairy-empty">Nenhum custo neste mês.</td></tr>'}catch(e){alert('Não foi possível gerar o relatório. '+(e?.message||e))}}
+function exportMilkReportCsvV5(){const r=mgMilkReportDataV5;if(!r)return alert('Atualize o relatório primeiro.');const lines=[['Relatório mensal do leite',r.ym],['Produção (L)',r.produced],['Descarte (L)',r.discard],['Vendido (L)',r.sold],['Receita (R$)',r.revenue],['Custos (R$)',r.costs],['Resultado (R$)',r.profit],[],['Categoria','Valor (R$)'],...Object.entries(r.categories)];const csv='\ufeff'+lines.map(a=>a.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=`relatorio-leite-${r.ym}.csv`;a.click();URL.revokeObjectURL(url)}
+function printMilkReportV5(){const r=mgMilkReportDataV5;if(!r)return alert('Atualize o relatório primeiro.');const w=window.open('','_blank','width=900,height=700');w.document.write(`<html><head><title>Relatório do leite ${r.ym}</title><style>body{font:15px Arial;padding:30px;color:#18251d}h1{color:#087a3e}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.box{border:1px solid #ccd8d0;border-radius:10px;padding:14px}.box b{display:block;font-size:22px;margin-top:6px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{text-align:left;border-bottom:1px solid #ddd;padding:9px}</style></head><body><h1>Relatório mensal do leite</h1><p>Mês: ${r.ym.split('-').reverse().join('/')}</p><div class="grid"><div class="box">Produção<b>${mgFmtLiters(r.produced)}</b></div><div class="box">Descarte<b>${mgFmtLiters(r.discard)}</b></div><div class="box">Vendido<b>${mgFmtLiters(r.sold)}</b></div><div class="box">Receita<b>${mgMilkMoney(r.revenue)}</b></div><div class="box">Custos<b>${mgMilkMoney(r.costs)}</b></div><div class="box">Resultado<b>${mgMilkMoney(r.profit)}</b></div></div><h2>Custos por categoria</h2><table><tr><th>Categoria</th><th>Valor</th></tr>${Object.entries(r.categories).map(([k,v])=>`<tr><td>${mgDairyEscV5(k)}</td><td>${mgMilkMoney(v)}</td></tr>`).join('')}</table><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+
+const mgRestoreTrashBaseV5=restoreTrashItem;restoreTrashItem=async function(table,id){await mgRestoreTrashBaseV5(table,id);if(table.startsWith('milk_')||table==='dairy_lactations'){mgDairyInvalidateV5();if(document.getElementById('leite')?.classList.contains('active'))await loadDairyTab(mgDairyCurrentTab,true)}};
+document.addEventListener('DOMContentLoaded',()=>{mgDairyEnhanceUiV5();setTimeout(mgDairyEnhanceUiV5,700)});
 </script>
 
 </body></html>
