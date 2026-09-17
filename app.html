@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meu Gado — Painel do Cliente</title>
-<meta name="mg-build" content="app-oficial-v22-4-busca-grafico-animal">
+<meta name="mg-build" content="app-teste-edicao-leite-v1">
 <meta name="theme-color" content="#052f31">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2054,15 +2054,18 @@ body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
         <div class="dairy-field"><label>Descarte (L)</label><input id="milkDiscarded" type="number" min="0" step="0.1" value="0"></div>
         <div class="dairy-field" style="grid-column:span 2"><label>Observações</label><input id="milkNotes" placeholder="Ex.: descarte por tratamento, mastite, queda de produção..."></div>
       </div>
-      <div class="dairy-toolbar"><button class="btn primary" type="button" onclick="saveMilkProduction()">Salvar produção</button></div>
+      <div class="dairy-toolbar">
+        <button id="milkSaveBtn" class="btn primary" type="button" onclick="saveMilkProduction()">Salvar produção</button>
+        <button id="milkCancelEditBtn" class="btn secondary" type="button" onclick="cancelMilkProductionEdit()" style="display:none">Cancelar edição</button>
+      </div>
     </div>
 
     <div class="card" style="margin-top:12px">
       <div class="head"><div><h3>Produção recente</h3><div class="sub">Últimos lançamentos.</div></div></div>
       <div style="overflow:auto">
         <table class="dairy-table">
-          <thead><tr><th>Data</th><th>Animal</th><th>Manhã</th><th>Tarde</th><th>Noite</th><th>Total</th><th>Descarte</th></tr></thead>
-          <tbody id="milkProductionRows"><tr><td colspan="7" class="dairy-empty">Nenhum lançamento de leite.</td></tr></tbody>
+          <thead><tr><th>Data</th><th>Animal</th><th>Manhã</th><th>Tarde</th><th>Noite</th><th>Total</th><th>Descarte</th><th>Ações</th></tr></thead>
+          <tbody id="milkProductionRows"><tr><td colspan="8" class="dairy-empty">Nenhum lançamento de leite.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -6404,7 +6407,8 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(mgScheduleV39Permiss
 
 <script>
 // V40 — Módulo Leiteiro
-let mgDairyAnimals=[], mgDairyLactations=[];
+let mgDairyAnimals=[], mgDairyLactations=[], mgMilkProductionRows=[];
+let mgEditingMilkProductionId=null;
 let mgDairyCurrentTab='dashboard';
 let mgDairyTabLoaded={dashboard:0,production:0,lactations:0,quality:0,finance:0};
 let mgDairyTabLoading={};
@@ -6494,6 +6498,7 @@ async function loadMilkProduction(){
     .eq('farm_id',f.id).gte('production_date',firstMonth).order('production_date',{ascending:false}).limit(120);
   if(error)throw error;
   const rows=data||[], todayRows=rows.filter(r=>r.production_date===today);
+  mgMilkProductionRows=rows;
   const totalOf=r=>Number(r.morning_liters||0)+Number(r.afternoon_liters||0)+Number(r.evening_liters||0);
   const todayTotal=todayRows.reduce((s,r)=>s+totalOf(r),0);
   const cows=new Set(todayRows.map(r=>r.animal_id)).size;
@@ -6507,7 +6512,59 @@ async function loadMilkProduction(){
   document.getElementById('dairyDiscardedMonth').textContent=`${mgFmtLiters(discarded)} descartados`;
 
   const tbody=document.getElementById('milkProductionRows');
-  if(tbody)tbody.innerHTML=rows.length?rows.slice(0,30).map(r=>`<tr><td>${r.production_date}</td><td><b>${r.animals?.number||r.animal_id}</b></td><td>${mgFmtLiters(r.morning_liters)}</td><td>${mgFmtLiters(r.afternoon_liters)}</td><td>${mgFmtLiters(r.evening_liters)}</td><td><b>${mgFmtLiters(totalOf(r))}</b></td><td>${mgFmtLiters(r.discarded_liters)}</td></tr>`).join(''):'<tr><td colspan="7" class="dairy-empty">Nenhum lançamento de leite.</td></tr>';
+  if(tbody)tbody.innerHTML=rows.length?rows.slice(0,30).map(r=>`<tr><td>${r.production_date}</td><td><b>${r.animals?.number||r.animal_id}</b></td><td>${mgFmtLiters(r.morning_liters)}</td><td>${mgFmtLiters(r.afternoon_liters)}</td><td>${mgFmtLiters(r.evening_liters)}</td><td><b>${mgFmtLiters(totalOf(r))}</b></td><td>${mgFmtLiters(r.discarded_liters)}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" type="button" onclick="editMilkProduction(${r.id})">Editar</button><button class="btn secondary danger-outline" type="button" onclick="deleteMilkProduction(${r.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="8" class="dairy-empty">Nenhum lançamento de leite.</td></tr>';
+}
+
+function resetMilkProductionForm(){
+  mgEditingMilkProductionId=null;
+  const today=mgIsoToday();
+  const values={milkAnimal:'',milkDate:today,milkMorning:'0',milkAfternoon:'0',milkEvening:'0',milkDiscarded:'0',milkNotes:''};
+  Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.value=value});
+  const saveBtn=document.getElementById('milkSaveBtn');
+  const cancelBtn=document.getElementById('milkCancelEditBtn');
+  if(saveBtn)saveBtn.textContent='Salvar produção';
+  if(cancelBtn)cancelBtn.style.display='none';
+}
+
+function cancelMilkProductionEdit(){
+  resetMilkProductionForm();
+}
+
+function editMilkProduction(id){
+  const row=mgMilkProductionRows.find(x=>Number(x.id)===Number(id));
+  if(!row){alert('Lançamento não encontrado. Atualize a tela e tente novamente.');return}
+  mgEditingMilkProductionId=Number(row.id);
+  document.getElementById('milkAnimal').value=String(row.animal_id||'');
+  document.getElementById('milkDate').value=row.production_date||'';
+  document.getElementById('milkMorning').value=Number(row.morning_liters||0);
+  document.getElementById('milkAfternoon').value=Number(row.afternoon_liters||0);
+  document.getElementById('milkEvening').value=Number(row.evening_liters||0);
+  document.getElementById('milkDiscarded').value=Number(row.discarded_liters||0);
+  document.getElementById('milkNotes').value=row.notes||'';
+  const saveBtn=document.getElementById('milkSaveBtn');
+  const cancelBtn=document.getElementById('milkCancelEditBtn');
+  if(saveBtn)saveBtn.textContent='Salvar alterações';
+  if(cancelBtn)cancelBtn.style.display='inline-flex';
+  document.getElementById('milkAnimal')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function deleteMilkProduction(id){
+  const row=mgMilkProductionRows.find(x=>Number(x.id)===Number(id));
+  const animal=row?.animals?.number||row?.animal_id||'';
+  const date=row?.production_date||'';
+  if(!confirm(`Excluir definitivamente a produção do animal #${animal} em ${date}?\n\nEsta ação não poderá ser desfeita.`))return;
+  try{
+    const f=await mgGetFarm();
+    const result=await mgSb.from('milk_production').delete().eq('farm_id',f.id).eq('id',Number(id)).select('id').maybeSingle();
+    if(result.error)throw result.error;
+    if(!result.data)throw new Error('O lançamento não foi encontrado ou você não possui permissão para excluí-lo.');
+    if(Number(mgEditingMilkProductionId)===Number(id))resetMilkProductionForm();
+    mgDairyTabLoaded.dashboard=0;mgDairyTabLoaded.production=0;
+    await loadDairyTab('production',true);
+    alert('Produção excluída com sucesso.');
+  }catch(e){
+    alert('Não foi possível excluir a produção. '+(e?.message||e));
+  }
 }
 
 async function loadMilkQuality(){
@@ -6721,9 +6778,18 @@ async function saveMilkProduction(){
       notes:document.getElementById('milkNotes').value.trim()||null
     };
     if(payload.morning_liters+payload.afternoon_liters+payload.evening_liters<=0)throw new Error('Informe uma produção maior que zero.');
-    const {error}=await mgSb.from('milk_production').upsert(payload,{onConflict:'animal_id,production_date'});
-    if(error)throw error;
-    alert('Produção salva com sucesso.');
+    let result;
+    if(mgEditingMilkProductionId){
+      result=await mgSb.from('milk_production').update(payload).eq('farm_id',f.id).eq('id',mgEditingMilkProductionId).select('id').maybeSingle();
+      if(result.error)throw result.error;
+      if(!result.data)throw new Error('O lançamento não foi encontrado ou você não possui permissão para editá-lo.');
+    }else{
+      result=await mgSb.from('milk_production').upsert(payload,{onConflict:'animal_id,production_date'}).select('id').maybeSingle();
+      if(result.error)throw result.error;
+    }
+    const wasEditing=Boolean(mgEditingMilkProductionId);
+    resetMilkProductionForm();
+    alert(wasEditing?'Produção atualizada com sucesso.':'Produção salva com sucesso.');
     mgDairyTabLoaded.dashboard=0; mgDairyTabLoaded.production=0;
     await loadDairyTab('production',true);
   }catch(e){{
