@@ -3010,8 +3010,23 @@ async function mgDashboard(){
     health_event_id:x.id
   });
  }
- let overdueWeights=0,weightLoss=0;for(const a of animals){let last=a.last_weighing_date||a.entry_date; if(last){const days=Math.floor((today-new Date(last+'T00:00:00'))/86400000);if(days>=30){overdueWeights++;alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:`Última pesagem/entrada há ${days} dias.`,animal_id:a.id})}}
+ let overdueWeights=0,weightLoss=0;for(const a of animals){
   let ws=(by[a.id]||[]).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));
+  const lastWeighing=ws.at(-1)?.weighing_date||a.last_weighing_date||null;
+  const referenceDate=lastWeighing||a.entry_date||null;
+  const parsedReference=/^\d{4}-\d{2}-\d{2}$/.test(String(referenceDate||''))?new Date(`${referenceDate}T00:00:00`):null;
+  const referenceIsValid=parsedReference&&Number.isFinite(parsedReference.getTime())&&parsedReference.getFullYear()>=1900&&parsedReference<=today;
+  if(referenceIsValid){
+   const days=Math.floor((today-parsedReference)/86400000);
+   if(days>=30){
+    overdueWeights++;
+    const detail=lastWeighing?`Última pesagem há ${days} dia${days===1?'':'s'}.`:`Entrada cadastrada há ${days} dia${days===1?'':'s'}; nenhuma pesagem registrada.`;
+    alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail,animal_id:a.id});
+   }
+  }else if(!lastWeighing){
+   overdueWeights++;
+   alerts.push({type:'weight',level:'info',title:`Animal #${a.number} sem pesagem recente`,detail:'Nenhuma pesagem registrada.',animal_id:a.id});
+  }
   if(ws.length>=2){const prevW=Number(ws.at(-2).weight),lastW=Number(ws.at(-1).weight),delta=lastW-prevW;if(Number.isFinite(delta)&&delta<0){weightLoss++;alerts.push({type:'loss',level:'danger',title:`Animal #${a.number} perdeu peso`,detail:`Perda de ${Math.abs(delta).toFixed(1)} kg na última pesagem · ${prevW.toFixed(1)} → ${lastW.toFixed(1)} kg.`,animal_id:a.id,date:ws.at(-1).weighing_date})}}}
  const terminalByAnimal={};for(const x of [...r].sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)))){if(!terminalByAnimal[x.animal_id]&&['Parto','Aborto'].includes(x.event_type))terminalByAnimal[x.animal_id]=x.event_date}
  let reproDue=0;for(const x of r){if(!x.expected_date||!['Inseminação artificial','Monta natural / pasto','Prenhez confirmada','Enxertada'].includes(x.event_type))continue;const terminal=terminalByAnimal[x.animal_id];if(terminal&&terminal>=x.event_date)continue;const d=dayDiff(x.expected_date);const a=animals.find(z=>z.id===x.animal_id);if(d<0){reproDue++;alerts.push({type:'repro',level:'danger',title:`${a?'Vaca #'+a.number:'Matriz'} com parto previsto vencido`,detail:`Previsão vencida há ${Math.abs(d)} dia(s) · ${x.expected_date}. Registre o parto ou atualize a previsão.`,date:x.expected_date,animal_id:x.animal_id})}else if(d<=30){reproDue++;alerts.push({type:'repro',level:d<=7?'danger':'warning',title:`${a?'Vaca #'+a.number:'Matriz'} próxima do parto`,detail:d===0?'Parto previsto para hoje.':`Parto previsto em ${d} dia(s) · ${x.expected_date}.`,date:x.expected_date,animal_id:x.animal_id})}}
