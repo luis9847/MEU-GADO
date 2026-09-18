@@ -3375,7 +3375,7 @@ async function loadTrash(){
     trashSummary.textContent=items.length?`${items.length} item(ns) recuperável(is)`:'Nenhum item excluído';
     trashRows.innerHTML=items.length?items.map(x=>`<tr><td><b>${mgAlertEscape(x._type)}</b></td><td>${mgAlertEscape(x._name)}</td><td>${trashDate(x.deleted_at)}</td><td><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn secondary" onclick="restoreTrashItem('${x._table}',${x.id})">Restaurar</button>${mgFarmRole==='owner'?`<button class="btn secondary delete-outline" onclick="permanentlyDeleteTrashItem('${x._table}',${x.id})">Excluir definitivamente</button>`:''}</div></td></tr>`).join(''):'<tr><td colspan="4" class="empty">A Lixeira está vazia.</td></tr>';
     await refreshTrashBadge();
-  }catch(e){trashRows.innerHTML=`<tr><td colspan="4" class="empty">Não foi possível carregar a Lixeira: ${e.message}</td></tr>`}
+  }catch(e){trashRows.innerHTML=`<tr><td colspan="4" class="empty">Não foi possível carregar a Lixeira: ${mgEsc(e.message)}</td></tr>`}
 }
 async function restoreTrashItem(table,id){
   const cfg=MG_TRASH_TABLES.find(x=>x.table===table);if(!cfg)return;
@@ -3512,7 +3512,7 @@ function renderDashboardExpenses(rows){
 async function loadAnimals(){
   animalsData=await api('/api/animals');
   renderAnimalScreen();
-  const opts=animalsData.map(a=>`<option value="${a.id}">#${a.number} · ${a.category}${a.lot?' · '+a.lot:''}</option>`).join('');
+  const opts=animalsData.map(a=>`<option value="${Number(a.id)}">#${mgEsc(a.number)} · ${mgEsc(a.category)}${a.lot?' · '+mgEsc(a.lot):''}</option>`).join('');
   if(document.getElementById('eanimal')) eanimal.innerHTML='<option value="">Geral</option>'+opts;
   if(document.getElementById('hanimal')) hanimal.innerHTML='<option value="">Lote/Geral</option>'+opts;
   if(document.getElementById('ranimal')) ranimal.innerHTML=opts;
@@ -3520,7 +3520,8 @@ async function loadAnimals(){
   await loadRecentWeighings();
 }
 function animalPhotoHtml(a){
-  return a.photo_path?`<img src="${a.photo_path}" alt="Animal ${a.number}">`:`<span>♙</span>`;
+  const photo=mgSafeImageUrl(a.photo_path);
+  return photo?`<img src="${mgEsc(photo)}" alt="Animal ${mgEsc(a.number)}">`:`<span>♙</span>`;
 }
 function renderAnimalScreen(){
   if(!document.getElementById('animalListArea')) return;
@@ -3537,8 +3538,8 @@ function renderAnimalScreen(){
   animalEmpty.style.display=arr.length?'none':'flex';
   animalListArea.innerHTML=arr.length?`<div class="animal-card-list">${arr.map(a=>`<button class="animal-row-card" onclick="openAnimalProfile(${a.id})">
     <div class="animal-avatar">${animalPhotoHtml(a)}</div>
-    <div class="animal-main"><b>#${a.number}</b><small>${a.category} · ${a.breed||'Raça não informada'}</small></div>
-    <div><small>Lote</small><b>${a.lot||'Sem lote'}</b></div>
+    <div class="animal-main"><b>#${mgEsc(a.number)}</b><small>${mgEsc(a.category)} · ${mgEsc(a.breed||'Raça não informada')}</small></div>
+    <div><small>Lote</small><b>${mgEsc(a.lot||'Sem lote')}</b></div>
     <div><small>Peso atual</small><b>${a.current_weight??a.entry_weight??'-'} kg</b></div>
     <div><small>Meta</small><b>${a.target_weight??'-'} kg</b></div>
     <span>›</span>
@@ -3669,8 +3670,8 @@ async function toggleExitedAnimals(){
   if(p.style.display==='block'){p.style.display='none';return}
   const rows=await api('/api/animals/exited');
   exitedRows.innerHTML=rows.length?rows.map(a=>`<tr>
-    <td>#${a.number}</td><td>${a.category}</td><td>${a.exit_type||'-'}</td><td>${a.exit_date||'-'}</td>
-    <td>${a.exit_type==='Vendido'?money(a.exit_value||0):'-'}</td><td>${a.exit_notes||'-'}</td>
+    <td>#${mgEsc(a.number)}</td><td>${mgEsc(a.category)}</td><td>${mgEsc(a.exit_type||'-')}</td><td>${mgEsc(a.exit_date||'-')}</td>
+    <td>${a.exit_type==='Vendido'?money(a.exit_value||0):'-'}</td><td>${mgEsc(a.exit_notes||'-')}</td>
     <td>${a.exit_type==='Vendido'?`<button class="btn secondary" onclick="reactivateAnimal(${a.id})">Reativar</button>`:'—'}</td>
   </tr>`).join(''):'<tr><td colspan="7" class="empty">Nenhum animal baixado.</td></tr>';
   p.style.display='block';
@@ -3893,7 +3894,7 @@ async function savePageWeight(){
 }
 function openSingleWeight(preselect=null){
   if(!animalsData.length){alert('Cadastre um animal antes de registrar uma pesagem.');return}
-  singleAnimal.innerHTML='<option value="">Selecione...</option>'+animalsData.map(a=>`<option value="${a.id}">#${a.number} · ${a.category} · ${a.lot||'Sem lote'}</option>`).join('');
+  singleAnimal.innerHTML='<option value="">Selecione...</option>'+animalsData.map(a=>`<option value="${Number(a.id)}">#${mgEsc(a.number)} · ${mgEsc(a.category)} · ${mgEsc(a.lot||'Sem lote')}</option>`).join('');
   if(preselect) singleAnimal.value=String(preselect);
   singleDate.value=new Date().toISOString().slice(0,10);singleWeight.value='';singleNotes.value='';
   openModal('singleWeightModal');
@@ -3910,7 +3911,7 @@ function weight(id){openSingleWeight(id)}
 function weight(id){openSingleWeight(id)}
 function openBatchWeight(){
   if(!lotsData.filter(x=>x.active).length){alert('Cadastre um lote primeiro.');return}
-  batchLot.innerHTML='<option value="">Selecione um lote...</option>'+lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');
+  batchLot.innerHTML='<option value="">Selecione um lote...</option>'+lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');
   batchDate.value=new Date().toISOString().slice(0,10);
   batchAnimals.innerHTML='';
   saveBatchBtn.disabled=true;
@@ -3920,7 +3921,7 @@ function renderBatchAnimals(){
   const lot=batchLot.value;
   if(!lot){batchAnimals.innerHTML='';saveBatchBtn.disabled=true;return}
   const list=animalsData.filter(a=>(a.lot||'')===lot);
-  batchAnimals.innerHTML=list.length?list.map(a=>`<div class="batch-row"><div><b>#${a.number}</b><div class="sub">${a.category} · peso atual ${a.current_weight??a.entry_weight??'-'} kg</div></div><input data-animal="${a.id}" type="number" step=".1" placeholder="Novo peso (kg)"></div>`).join(''):'<div class="empty">Este lote não possui animais ativos.</div>';
+  batchAnimals.innerHTML=list.length?list.map(a=>`<div class="batch-row"><div><b>#${mgEsc(a.number)}</b><div class="sub">${mgEsc(a.category)} · peso atual ${a.current_weight??a.entry_weight??'-'} kg</div></div><input data-animal="${Number(a.id)}" type="number" step=".1" placeholder="Novo peso (kg)"></div>`).join(''):'<div class="empty">Este lote não possui animais ativos.</div>';
   saveBatchBtn.disabled=!list.length;
 }
 async function saveBatchWeight(){
@@ -3962,8 +3963,9 @@ async function openAnimalProfile(id){
   profileAnimalTitle.textContent=`Animal #${a.number}`;
   profileAnimalSub.textContent=`${a.category||''} · ${a.breed||''} · ${a.lot||'Sem lote'}`;
   const target=a.target_weight||0,current=a.current_weight||0,progress=target?Math.min(100,current/target*100):0;
-  const photo=a.photo_path?`<img class="profile-photo" src="${a.photo_path}" alt="Animal ${a.number}">`:`<div class="profile-photo placeholder">♙</div>`;
-  animalProfileBody.innerHTML=`<div class="profile-hero">${photo}<div><b>#${a.number}</b><span>${a.category||''} · ${a.breed||''}</span><small>${a.lot||'Sem lote'}</small></div></div>
+  const safePhoto=mgSafeImageUrl(a.photo_path);
+  const photo=safePhoto?`<img class="profile-photo" src="${mgEsc(safePhoto)}" alt="Animal ${mgEsc(a.number)}">`:`<div class="profile-photo placeholder">♙</div>`;
+  animalProfileBody.innerHTML=`<div class="profile-hero">${photo}<div><b>#${mgEsc(a.number)}</b><span>${mgEsc(a.category||'')} · ${mgEsc(a.breed||'')}</span><small>${mgEsc(a.lot||'Sem lote')}</small></div></div>
   <div class="profile-kpis">
    <div><small>Peso atual</small><b>${current||0} kg</b></div><div><small>GMD</small><b>${Number(a.gmd||0).toFixed(3)} kg/dia</b></div>
    <div><small>Meta</small><b>${target||'-'} kg</b></div><div><small>Gastos vinculados</small><b>${money(a.expenses_total||0)}</b></div>
@@ -3973,19 +3975,20 @@ async function openAnimalProfile(id){
     <button class="btn primary" onclick="closeModal('animalProfileModal');openSingleWeight(${a.id})">Nova pesagem</button>
     <button class="btn secondary" onclick="openMoveAnimal(${a.id})">Mover de lote</button>
     <button class="btn secondary danger-outline" onclick="openAnimalExit(${a.id})">Dar baixa</button>
-    <button class="btn secondary delete-outline" onclick="deleteAnimal(${a.id},'${a.number}')">Excluir animal</button>
+    <button class="btn secondary delete-outline" onclick="deleteAnimal(${Number(a.id)})">Excluir animal</button>
   </div>
   <div class="profile-grid">
    ${weightEvolutionHtml(a)}
-   <div class="card"><h4>Identificação</h4><p>Número: <b>#${a.number}</b></p><p>Categoria: <b>${a.category||'-'}</b></p><p>Sexo: <b>${animalSexFromCategory(a.category)}</b></p><p>Raça: <b>${a.breed||'-'}</b></p><p>Origem: <b>${a.origin||'-'}</b></p><p>Lote atual: <b>${a.lot||'-'}</b></p><p>Nascimento: <b>${a.birth_date||'-'}</b></p><p>Idade: <b>${ageFromBirth(a.birth_date)}</b></p></div>
-   <div class="card"><h4>Histórico de pesagens</h4>${a.weighings.length?a.weighings.slice(0,10).map(w=>`<p>${w.weighing_date}: <b>${w.weight} kg</b>${w.notes?`<small> · ${w.notes}</small>`:''}</p>`).join(''):'<p class="sub">Sem pesagens.</p>'}</div>
-   <div class="card"><h4>Saúde</h4>${a.health.length?a.health.slice(0,8).map(x=>`<p>${x.event_date}: <b>${x.event_type||'Registro'}</b>${x.product?` · ${x.product}`:''}</p>`).join(''):'<p class="sub">Sem registros sanitários.</p>'}</div>
-   <div class="card"><h4>Movimentações</h4>${a.movements.length?a.movements.slice(0,8).map(x=>`<p>${x.movement_date}: <b>${x.from_lot||'Sem lote'} → ${x.to_lot}</b></p>`).join(''):'<p class="sub">Sem movimentações.</p>'}</div>
+   <div class="card"><h4>Identificação</h4><p>Número: <b>#${mgEsc(a.number)}</b></p><p>Categoria: <b>${mgEsc(a.category||'-')}</b></p><p>Sexo: <b>${mgEsc(animalSexFromCategory(a.category))}</b></p><p>Raça: <b>${mgEsc(a.breed||'-')}</b></p><p>Origem: <b>${mgEsc(a.origin||'-')}</b></p><p>Lote atual: <b>${mgEsc(a.lot||'-')}</b></p><p>Nascimento: <b>${mgEsc(a.birth_date||'-')}</b></p><p>Idade: <b>${mgEsc(ageFromBirth(a.birth_date))}</b></p></div>
+   <div class="card"><h4>Histórico de pesagens</h4>${a.weighings.length?a.weighings.slice(0,10).map(w=>`<p>${mgEsc(w.weighing_date)}: <b>${Number(w.weight)} kg</b>${w.notes?`<small> · ${mgEsc(w.notes)}</small>`:''}</p>`).join(''):'<p class="sub">Sem pesagens.</p>'}</div>
+   <div class="card"><h4>Saúde</h4>${a.health.length?a.health.slice(0,8).map(x=>`<p>${mgEsc(x.event_date)}: <b>${mgEsc(x.event_type||'Registro')}</b>${x.product?` · ${mgEsc(x.product)}`:''}</p>`).join(''):'<p class="sub">Sem registros sanitários.</p>'}</div>
+   <div class="card"><h4>Movimentações</h4>${a.movements.length?a.movements.slice(0,8).map(x=>`<p>${mgEsc(x.movement_date)}: <b>${mgEsc(x.from_lot||'Sem lote')} → ${mgEsc(x.to_lot)}</b></p>`).join(''):'<p class="sub">Sem movimentações.</p>'}</div>
   </div>`;
   openModal('animalProfileModal');
  }catch(e){alert('Não foi possível abrir a ficha do animal: '+e.message)}
 }
 async function deleteAnimal(id,number){
+  number=number??animalsData.find(a=>Number(a.id)===Number(id))?.number??id;
   if(!confirm(`Enviar o animal #${number} para a Lixeira? Ele deixará de aparecer no rebanho, mas poderá ser restaurado.`)) return;
   try{
     await api(`/api/animals/${id}`,{method:'DELETE'});
@@ -4007,7 +4010,7 @@ async function saveAnimalExit(){
   if(document.getElementById('exitedPanel')&&exitedPanel.style.display==='block'){exitedPanel.style.display='none';await toggleExitedAnimals()}
 }
 
-function openMoveAnimal(id){selectedAnimalId=id;moveLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');moveDate.value=new Date().toISOString().slice(0,10);moveNotes.value='';openModal('moveAnimalModal')}
+function openMoveAnimal(id){selectedAnimalId=id;moveLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');moveDate.value=new Date().toISOString().slice(0,10);moveNotes.value='';openModal('moveAnimalModal')}
 async function saveMove(){await api(`/api/animals/${selectedAnimalId}/move`,{method:'POST',body:JSON.stringify({movement_date:moveDate.value,to_lot:moveLot.value,notes:moveNotes.value})});closeModal('moveAnimalModal');closeModal('animalProfileModal');await Promise.all([loadAnimals(),loadLots(),dashboard()])}
 // V56 - compatibilidade da tela Alimentação
 function mgEsc(v){
@@ -4017,6 +4020,12 @@ function mgEsc(v){
     .replaceAll('>','&gt;')
     .replaceAll('"','&quot;')
     .replaceAll("'","&#039;");
+}
+function mgSafeImageUrl(value){
+  const url=String(value||'').trim();
+  if(!url)return '';
+  if(/^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(url))return url;
+  try{const parsed=new URL(url,location.origin);return ['http:','https:'].includes(parsed.protocol)?parsed.href:''}catch{return ''}
 }
 
 async function loadNutrition(){
@@ -4176,7 +4185,7 @@ async function loadNutrition(){
  }
 }
 async function deleteNutrition(id){if(!confirm('Enviar este lançamento de nutrição para a Lixeira?'))return;try{await api(`/api/nutrition/${id}`,{method:'DELETE'});await loadNutrition();await refreshTrashBadge()}catch(e){alert(e.message)}}
-function openNutrition(){nutLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');nutDate.value=new Date().toISOString().slice(0,10);nutFeed.value='';nutQty.value='';nutCost.value='';nutNotes.value='';openModal('nutritionModal')}
+function openNutrition(){nutLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');nutDate.value=new Date().toISOString().slice(0,10);nutFeed.value='';nutQty.value='';nutCost.value='';nutNotes.value='';openModal('nutritionModal')}
 async function saveNutrition(){
  const feed=String(nutFeed.value||'').trim();
  if(!feed){alert('Informe o nome do alimento, por exemplo: Silo, Proteinado ou Ração.');nutFeed.focus();return}
@@ -4202,7 +4211,7 @@ async function openLotProfile(id){
   <div class="card"><h4>Desenvolvimento do peso médio</h4>${chart}</div>
   <div class="card" style="margin-top:10px"><h4>Animais do lote</h4>
    <table><thead><tr><th>Número</th><th>Categoria</th><th>Peso atual</th><th>Meta</th><th></th></tr></thead>
-   <tbody>${l.animals.length?l.animals.map(a=>`<tr><td><button class="animal-link" onclick="closeModal('lotProfileModal');openAnimalProfile(${a.id})">#${a.number}</button></td><td>${a.category}</td><td>${a.current_weight??a.entry_weight??'-'} kg</td><td>${a.target_weight??'-'} kg</td><td><button class="btn secondary" onclick="closeModal('lotProfileModal');openAnimalProfile(${a.id})">Abrir ficha</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum animal neste lote.</td></tr>'}</tbody></table>
+   <tbody>${l.animals.length?l.animals.map(a=>`<tr><td><button class="animal-link" onclick="closeModal('lotProfileModal');openAnimalProfile(${Number(a.id)})">#${mgEsc(a.number)}</button></td><td>${mgEsc(a.category)}</td><td>${a.current_weight??a.entry_weight??'-'} kg</td><td>${a.target_weight??'-'} kg</td><td><button class="btn secondary" onclick="closeModal('lotProfileModal');openAnimalProfile(${Number(a.id)})">Abrir ficha</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum animal neste lote.</td></tr>'}</tbody></table>
   </div>`;
   openModal('lotProfileModal');
  }catch(e){alert('Não foi possível abrir o desenvolvimento do lote: '+e.message)}
@@ -4269,20 +4278,20 @@ async function loadPerformance(force=false){
     perfBestLot.textContent=bestLot?bestLot.name:'—';
     perfBestLotGmd.textContent=bestLot?`${bestLot._avgGmd.toFixed(3)} kg/dia · ${bestLot._members.length} animais`:'Sem GMD calculado nos lotes';
 
-    perfAnimalRanking.innerHTML=withGmd.length?withGmd.slice(0,10).map((x,i)=>`<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">${i+1}</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · ${x.a.category||''}</small></div><div class="${x.gmd>=0?'rank-good':'rank-bad'}">${x.gmd>=0?'+':''}${x.gmd.toFixed(3)} kg/dia</div><div>${x.last!=null?x.last.toFixed(1)+' kg':'—'}</div></div>`).join(''):'<div class="performance-empty">Ainda não há histórico suficiente para montar o ranking. Registre pesagens em datas diferentes.</div>';
+    perfAnimalRanking.innerHTML=withGmd.length?withGmd.slice(0,10).map((x,i)=>`<div class="rank-row" onclick="openAnimalProfile(${Number(x.a.id)})" style="cursor:pointer"><div class="rank-pos">${i+1}</div><div class="rank-main"><b>Animal #${mgEsc(x.a.number)}</b><small>${mgEsc(x.a.lot||'Sem lote')} · ${mgEsc(x.a.category||'')}</small></div><div class="${x.gmd>=0?'rank-good':'rank-bad'}">${x.gmd>=0?'+':''}${x.gmd.toFixed(3)} kg/dia</div><div>${x.last!=null?x.last.toFixed(1)+' kg':'—'}</div></div>`).join(''):'<div class="performance-empty">Ainda não há histórico suficiente para montar o ranking. Registre pesagens em datas diferentes.</div>';
 
     perfLotRanking.innerHTML=lotRank.length?lotRank.map(l=>{
       const members=l._members,withTarget=members.filter(x=>x.target>0),readyLot=withTarget.filter(x=>x.last!=null&&x.last>=x.target).length;
       const meta=withTarget.length?`${Math.round(readyLot/withTarget.length*100)}%`:'—';
       const gmdText=Number.isFinite(l._avgGmd)?`${l._avgGmd.toFixed(3)} kg/dia`:'—';
       const gmdClass=Number.isFinite(l._avgGmd)?(l._avgGmd<0?'bad':l._avgGmd>0?'good':''):'';
-      return `<tr onclick="openLotProfile(${l.id})"><td><b>${l.name}</b></td><td>${members.length}</td><td>${l._avgWeight>0?l._avgWeight.toFixed(1)+' kg':'—'}</td><td class="${gmdClass}">${gmdText}</td><td>${meta}</td></tr>`
+      return `<tr onclick="openLotProfile(${Number(l.id)})"><td><b>${mgEsc(l.name)}</b></td><td>${members.length}</td><td>${l._avgWeight>0?l._avgWeight.toFixed(1)+' kg':'—'}</td><td class="${gmdClass}">${gmdText}</td><td>${meta}</td></tr>`
     }).join(''):'<tr><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr>';
 
     const attention=metrics.filter(x=>Number.isFinite(x.delta)&&x.delta<=0).sort((a,b)=>a.delta-b.delta);
     perfAttention.innerHTML=attention.length?attention.map(x=>{
       const stagnant=x.delta===0;
-      return `<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">!</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · ${stagnant?'peso estagnado':'perda na última pesagem'}</small></div><div class="${stagnant?'':'rank-bad'}">${stagnant?'Sem ganho':x.delta.toFixed(1)+' kg'}</div><div>${x.prev?.toFixed(1)||'—'} → ${x.last?.toFixed(1)||'—'} kg</div></div>`
+      return `<div class="rank-row" onclick="openAnimalProfile(${Number(x.a.id)})" style="cursor:pointer"><div class="rank-pos">!</div><div class="rank-main"><b>Animal #${mgEsc(x.a.number)}</b><small>${mgEsc(x.a.lot||'Sem lote')} · ${stagnant?'peso estagnado':'perda na última pesagem'}</small></div><div class="${stagnant?'':'rank-bad'}">${stagnant?'Sem ganho':x.delta.toFixed(1)+' kg'}</div><div>${x.prev?.toFixed(1)||'—'} → ${x.last?.toFixed(1)||'—'} kg</div></div>`
     }).join(''):'<div class="performance-empty">Nenhum animal com perda ou estagnação na última pesagem.</div>';
 
     const targets=metrics.filter(x=>x.progress!=null).sort((a,b)=>b.progress-a.progress).slice(0,8);
@@ -4297,7 +4306,7 @@ async function loadPerformance(force=false){
           forecast=`Estimativa: ${date.toLocaleDateString('pt-BR')} · ${days} dia${days===1?'':'s'}`;
         }
       }
-      return `<div style="padding:10px 0;border-bottom:1px solid #edf1f4;cursor:pointer" onclick="openAnimalProfile(${x.a.id})"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px"><b>Animal #${x.a.number}</b><span>${x.last?.toFixed(1)||'0'} / ${x.target.toFixed(1)} kg · <b>${Math.round(x.progress)}%</b></span></div><div class="perf-progress"><i style="width:${x.progress}%"></i></div><small style="display:block;margin-top:6px;color:var(--muted)">${forecast}</small></div>`
+      return `<div style="padding:10px 0;border-bottom:1px solid #edf1f4;cursor:pointer" onclick="openAnimalProfile(${Number(x.a.id)})"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px"><b>Animal #${mgEsc(x.a.number)}</b><span>${x.last?.toFixed(1)||'0'} / ${x.target.toFixed(1)} kg · <b>${Math.round(x.progress)}%</b></span></div><div class="perf-progress"><i style="width:${x.progress}%"></i></div><small style="display:block;margin-top:6px;color:var(--muted)">${mgEsc(forecast)}</small></div>`
     }).join(''):'<div class="performance-empty">Defina uma meta de peso nos animais para acompanhar o progresso.</div>';
   }catch(e){
     console.error(e);alert('Não foi possível carregar os indicadores de desempenho: '+e.message);
@@ -4343,14 +4352,14 @@ async function loadLots(){
   lotsData=await api('/api/lots');
   lotCards.innerHTML=lotsData.length?lotsData.map(x=>`<div class="card lot-card">
     <button class="lot-open" onclick="openLotProfile(${x.id})">
-      <div class="label">${x.name}</div>
+      <div class="label">${mgEsc(x.name)}</div>
       <div class="value">${x.animals||0}</div>
       <div class="foot">Peso médio ${x.avg_weight?Number(x.avg_weight).toFixed(1):'0'} kg · ${x.active?'Ativo':'Inativo'}</div>
       <div class="lot-view-hint">Ver desenvolvimento →</div>
     </button>
     <div class="lot-actions"><button class="btn secondary" onclick="editLot(${x.id})">Editar</button><button class="btn secondary" onclick="deleteLot(${x.id})">Excluir</button></div>
   </div>`).join(''):'<div class="card empty">Nenhum lote cadastrado. Clique em “Novo lote” para começar.</div>';
-  const lotOptions=lotsData.filter(x=>x.active).map(x=>`<option value="${x.name}">${x.name}</option>`).join('');
+  const lotOptions=lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');
   if(document.getElementById('batchLot')) batchLot.innerHTML=lotOptions;
   if(document.getElementById('alot')){
     const current=alot.value;
@@ -4360,7 +4369,7 @@ async function loadLots(){
   if(document.getElementById('lotCount')) lotCount.textContent=lotsData.length;
   if(document.getElementById('dashboardLots')){
     dashboardLots.innerHTML=lotsData.length?lotsData.slice(0,5).map(x=>`<tr onclick="openLotProfile(${x.id})" style="cursor:pointer">
-      <td><b>${x.name}</b></td><td>${x.animals||0}</td><td>${x.avg_weight?Number(x.avg_weight).toFixed(1)+' kg':'—'}</td>
+      <td><b>${mgEsc(x.name)}</b></td><td>${x.animals||0}</td><td>${x.avg_weight?Number(x.avg_weight).toFixed(1)+' kg':'—'}</td>
       <td>${x.avg_gmd!=null&&Number(x.avg_gmd)!==0?Number(x.avg_gmd).toFixed(3)+' kg/dia':'—'}</td>
       <td><span class="lot-status ${x.animals?'':'empty-status'}">${x.animals?'Em acompanhamento':'Sem animais'}</span></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr>';
   }
@@ -4925,7 +4934,7 @@ function renderMarketQuotes(){
   if(document.getElementById('marketAvailableHint')) marketAvailableHint.textContent=region?'cotação da praça escolhida':(uf?'regiões com preço neste estado':'regiões com preço publicado');
   if(document.getElementById('marketAvailable')) marketAvailable.textContent=rows.length;
   marketStates.innerHTML=rows.length?rows.map(x=>`<div class="market-region-card">
-    <div class="place"><div><b>${x.uf} · ${x.place}</b><span>${x.state}</span></div><span>${labels[cat]}</span></div>
+    <div class="place"><div><b>${mgEsc(x.uf)} · ${mgEsc(x.place)}</b><span>${mgEsc(x.state)}</span></div><span>${mgEsc(labels[cat])}</span></div>
     <div class="quote">${marketMoney(x[cat])}<small>/${x.unit==='kg'?'kg':'@'}</small></div>
     <div class="secondary-quote">À vista ${marketMoney(x.boi_cash)} · 30 dias ${marketMoney(x.boi_30)} · Vaca ${marketMoney(x.cow_cash)} · ${x.unit==='kg'?'R$/kg':'R$/@'} · fechamento ${marketLiveData?.physical_updated_at||marketLiveData?.updated_at||'—'}</div>
   </div>`).join(''):'<div class="performance-empty" style="grid-column:1/-1">Sem cotação disponível para esta categoria/região neste estado.</div>';
@@ -4938,9 +4947,9 @@ async function loadExpenses(){
   expenseRows.innerHTML=x.length?x.map(e=>{
     const autoNutrition=/\[AUTO:NUTRITION:\d+\]/.test(String(e.notes||''));
     return `<tr>
-      <td>${e.expense_date}</td>
-      <td>${mgNormalizeLabel(e.category)}${autoNutrition?' <span style="font-size:9px;padding:3px 6px;border-radius:999px;background:#e8f7ee;color:#08783c;font-weight:800">AUTOMÁTICO</span>':''}</td>
-      <td>${e.description||'-'}</td>
+      <td>${mgEsc(e.expense_date)}</td>
+      <td>${mgEsc(mgNormalizeLabel(e.category))}${autoNutrition?' <span style="font-size:9px;padding:3px 6px;border-radius:999px;background:#e8f7ee;color:#08783c;font-weight:800">AUTOMÁTICO</span>':''}</td>
+      <td>${mgEsc(e.description||'-')}</td>
       <td>${money(e.amount)}</td>
       <td>${autoNutrition
         ?'<span style="font-size:10px;color:var(--muted)">Gerenciado pela Alimentação</span>'
@@ -5040,8 +5049,8 @@ function renderHealth(){
 
     return `<div class="health-agenda-item">
       <span class="health-status ${agendaClass}">${agendaLabel}</span>
-      <b style="margin-top:8px">${e.event_type}${e.product?' · '+e.product:''}</b>
-      <small>${e.animal_id?`Animal #${e.animal_number||'-'}`:(e.lot||'Geral')} · ${dateBr}</small>
+      <b style="margin-top:8px">${mgEsc(e.event_type)}${e.product?' · '+mgEsc(e.product):''}</b>
+      <small>${e.animal_id?`Animal #${mgEsc(e.animal_number||'-')}`:mgEsc(e.lot||'Geral')} · ${mgEsc(dateBr)}</small>
       ${e.animal_id?`<button class="animal-link" style="margin-top:7px" onclick="openAnimalProfile(${e.animal_id})">Abrir ficha ›</button>`:''}
     </div>`;
   }).join(''):'<div class="empty" style="grid-column:1/-1">Nenhum procedimento futuro cadastrado.</div>';
@@ -5052,11 +5061,11 @@ function renderHealth(){
   healthRows.innerHTML=rows.length?rows.map(e=>{
     const s=healthDateInfo(e.next_due_date);
     return `<tr>
-      <td>${e.event_date}</td>
-      <td>${e.animal_id?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number||'-'}</button>`:(e.lot||'Geral')}</td>
-      <td><b>${e.event_type||'Registro'}</b></td>
-      <td>${e.product||'-'}</td>
-      <td>${e.next_due_date||'-'}</td>
+      <td>${mgEsc(e.event_date)}</td>
+      <td>${e.animal_id?`<button class="animal-link" onclick="openAnimalProfile(${Number(e.animal_id)})">#${mgEsc(e.animal_number||'-')}</button>`:mgEsc(e.lot||'Geral')}</td>
+      <td><b>${mgEsc(e.event_type||'Registro')}</b></td>
+      <td>${mgEsc(e.product||'-')}</td>
+      <td>${mgEsc(e.next_due_date||'-')}</td>
       <td><span class="health-status ${s.key==='none'?'done':s.key}">${s.label}</span></td>
       <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editHealth(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteHealth(${e.id})">Excluir</button></div></td>
     </tr>`;
@@ -5454,7 +5463,7 @@ async function loadRepro(){
   reproAnimals=(animals||[]).filter(reproIsFemale);
 
   // Matriz filters / modal
-  const options=reproAnimals.map(a=>`<option value="${a.id}">#${a.number} · ${a.category}${a.breed?' · '+a.breed:''}</option>`).join('');
+  const options=reproAnimals.map(a=>`<option value="${Number(a.id)}">#${mgEsc(a.number)} · ${mgEsc(a.category)}${a.breed?' · '+mgEsc(a.breed):''}</option>`).join('');
   ranimal.innerHTML=options||'<option value="">Nenhuma matriz cadastrada</option>';
   reproAnimalFilter.innerHTML='<option value="">Todas as matrizes</option>'+options;
 
@@ -5477,8 +5486,8 @@ function renderRepro(){
   reproStatusList.innerHTML=statuses.length?statuses
     .sort((a,b)=>a.animal.number.localeCompare(b.animal.number,undefined,{numeric:true}))
     .map(x=>`<div class="repro-status-row">
-      <div><b>Animal #${x.animal.number}</b><small>${x.animal.category}${x.status.expected?' · previsão '+reproDateBr(x.status.expected):''}</small></div>
-      <span class="repro-pill ${x.status.key}">${x.status.label}</span>
+      <div><b>Animal #${mgEsc(x.animal.number)}</b><small>${mgEsc(x.animal.category)}${x.status.expected?' · previsão '+mgEsc(reproDateBr(x.status.expected)):''}</small></div>
+      <span class="repro-pill ${x.status.key}">${mgEsc(x.status.label)}</span>
     </div>`).join('')
     :'<div class="empty">Nenhuma matriz cadastrada.</div>';
 
@@ -5498,7 +5507,7 @@ function renderRepro(){
 
   reproAgenda.innerHTML=agenda.length?agenda.slice(0,8).map(x=>`<div class="repro-agenda-item">
     <div class="top"><span class="repro-pill ${x.priority===0?'birth':x.kind==='Parto'?'pregnant':'waiting'}">${x.label}</span><small>${reproDateBr(x.date)}</small></div>
-    <b>Animal #${x.animal.number}</b>
+    <b>Animal #${mgEsc(x.animal.number)}</b>
     <small>${x.kind==='Parto'?'Gestação em acompanhamento':'Aguardando diagnóstico de gestação'}</small>
     <button class="animal-link" style="margin-top:7px" onclick="openAnimalProfile(${x.animal.id})">Abrir ficha ›</button>
   </div>`).join(''):'<div class="empty">Nenhum evento reprodutivo pendente.</div>';
@@ -5519,9 +5528,9 @@ function renderRepro(){
     const current=a?reproStatusForAnimal(a,reproData):null;
     return `<tr>
       <td>${reproDateBr(e.event_date)}</td>
-      <td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${e.animal_id})">#${e.animal_number}</button>`:'-'}</td>
-      <td><b>${e.event_type}</b></td>
-      <td>${e.result||'-'}</td>
+      <td>${e.animal_number?`<button class="animal-link" onclick="openAnimalProfile(${Number(e.animal_id)})">#${mgEsc(e.animal_number)}</button>`:'-'}</td>
+      <td><b>${mgEsc(e.event_type)}</b></td>
+      <td>${mgEsc(e.result||'-')}</td>
       <td>${e.expected_date?reproDateBr(e.expected_date):'-'}</td>
       <td>${current?`<span class="repro-pill ${current.key}">${current.label}</span>`:'-'}</td>
       <td><div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -5964,8 +5973,8 @@ async function loadTeam(){
      const isOwner=role==='owner';
      const editable=canManage && !(mgFarmRole==='admin'&&isOwner) && uid!==mgUser.id;
      return `<div class="team-member">
-       <div class="team-member-main"><div class="team-avatar">${mgTeamInitial(name,email)}</div><div><b>${name}</b><small>${email||job||'Conta vinculada'}</small></div></div>
-       <div><b style="font-size:10px">${job||'Sem cargo informado'}</b><small style="display:block;color:var(--muted);font-size:9px;margin-top:2px">${mgTeamRoleLabel(role)}</small></div>
+       <div class="team-member-main"><div class="team-avatar">${mgEsc(mgTeamInitial(name,email))}</div><div><b>${mgEsc(name)}</b><small>${mgEsc(email||job||'Conta vinculada')}</small></div></div>
+       <div><b style="font-size:10px">${mgEsc(job||'Sem cargo informado')}</b><small style="display:block;color:var(--muted);font-size:9px;margin-top:2px">${mgEsc(mgTeamRoleLabel(role))}</small></div>
        <span class="team-badge ${active?'':'off'}">${active?'Ativo':'Desativado'}</span>
        <select ${editable?'':'disabled'} onchange="teamChangeRole('${uid}',this.value)" style="border:1px solid var(--line);border-radius:8px;padding:7px;font-size:9px">
          ${['owner','admin','manager','employee','vet'].map(r=>`<option value="${r}" ${r===role?'selected':''} ${r==='owner'&&mgFarmRole!=='owner'?'disabled':''}>${mgTeamRoleLabel(r)}</option>`).join('')}
@@ -5981,8 +5990,8 @@ async function loadTeam(){
      const name=i.display_name||i.name||'Convite';
      const role=i.role||'member';
      return `<div class="team-member">
-       <div class="team-member-main"><div class="team-avatar">${mgTeamInitial(name,email)}</div><div><b>${name}</b><small>${email}</small></div></div>
-       <div><b style="font-size:10px">${i.job_title||i.title||'—'}</b><small style="display:block;color:var(--muted);font-size:9px">${mgTeamRoleLabel(role)}</small></div>
+       <div class="team-member-main"><div class="team-avatar">${mgEsc(mgTeamInitial(name,email))}</div><div><b>${mgEsc(name)}</b><small>${mgEsc(email)}</small></div></div>
+       <div><b style="font-size:10px">${mgEsc(i.job_title||i.title||'—')}</b><small style="display:block;color:var(--muted);font-size:9px">${mgEsc(mgTeamRoleLabel(role))}</small></div>
        <span class="team-badge pending">Pendente</span>
        <div></div>
        <div class="team-actions">${canManage&&iid?`<button class="danger" onclick="cancelTeamInvitation('${iid}')">Cancelar</button>`:''}</div>
@@ -5990,7 +5999,7 @@ async function loadTeam(){
    }).join(''):'<div class="team-empty">Nenhum convite pendente.</div>';
  }catch(e){
    document.getElementById('teamSummary').textContent='Não foi possível carregar a equipe.';
-   document.getElementById('teamList').innerHTML=`<div class="team-empty">${e.message}</div>`;
+   document.getElementById('teamList').innerHTML=`<div class="team-empty">${mgEsc(e.message)}</div>`;
  }
 }
 
@@ -6098,7 +6107,7 @@ load().catch(err=>{
  console.error(err);
  const box=document.createElement('div');
  box.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:99999;max-width:720px;width:calc(100% - 32px);background:#fff4f4;border:1px solid #e5bcbc;color:#8b2f2f;padding:14px 16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.14);font:600 12px/1.5 system-ui';
- box.innerHTML='<b>Não foi possível carregar o painel.</b><br>'+String(err?.message||err)+'<br><small>Atualize a página uma vez. Se continuar, envie uma foto desta mensagem.</small>';
+ box.innerHTML='<b>Não foi possível carregar o painel.</b><br>'+mgEsc(err?.message||err)+'<br><small>Atualize a página uma vez. Se continuar, envie uma foto desta mensagem.</small>';
  document.body.appendChild(box);
 });
 
@@ -6116,7 +6125,7 @@ function initSaleSimulator(){
 function simFillTargets(){
   const s=document.getElementById('simTarget'),type=document.getElementById('simType'); if(!s||!type)return;
   const arr=type.value==='lot'?(lotsData||[]):((animalsData||[]).filter(a=>!a.exit_type&&!a.status?.match(/vendido|morto/i)));
-  s.innerHTML='<option value="">Selecione...</option>'+arr.map(x=>`<option value="${x.id}">${type.value==='lot'?(x.name||x.nome||('Lote '+x.id)):(x.number||x.name||x.nome||('Animal '+x.id))}</option>`).join('');
+  s.innerHTML='<option value="">Selecione...</option>'+arr.map(x=>`<option value="${Number(x.id)}">${mgEsc(type.value==='lot'?(x.name||x.nome||('Lote '+x.id)):(x.number||x.name||x.nome||('Animal '+x.id)))}</option>`).join('');
   document.getElementById('simWeight').value='';
   window.simCurrentLotProfile=null;
   const count=document.getElementById('simLotCount'); if(count) count.textContent='';
@@ -7446,7 +7455,8 @@ openAnimalProfile = async function(id){
   const delta=previous&&ws[0]?Number(ws[0].weight)-Number(previous.weight):null;
   const age=ageFromBirth(a.birth_date);
   const sex=animalSexFromCategory(a.category);
-  const photo=a.photo_path?`<img class="ap8-photo" src="${ap8Esc(a.photo_path)}" alt="Animal ${ap8Esc(a.number)}">`:`<div class="ap8-photo-placeholder">🐄</div>`;
+  const safeProfilePhoto=mgSafeImageUrl(a.photo_path);
+  const photo=safeProfilePhoto?`<img class="ap8-photo" src="${ap8Esc(safeProfilePhoto)}" alt="Animal ${ap8Esc(a.number)}">`:`<div class="ap8-photo-placeholder">🐄</div>`;
   const status=(a.status||'active')==='active'?'Ativo':'Inativo';
 
   const milkTotal=milk.reduce((sum,x)=>sum+Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0),0);
