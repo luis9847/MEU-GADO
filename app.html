@@ -2243,11 +2243,11 @@ body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
       <div class="table-scroll"><table class="lot-rank-table"><thead><tr><th>Lote</th><th>Animais</th><th>Peso médio</th><th>GMD médio</th><th>Meta</th></tr></thead><tbody id="perfLotRanking"></tbody></table></div>
     </div>
     <div class="panel">
-      <div class="panel-title"><div><b>Animais que exigem atenção</b><small>Última pesagem abaixo da anterior</small></div></div>
+      <div class="panel-title"><div><b>Animais que exigem atenção</b><small>Perda ou estagnação na última pesagem</small></div></div>
       <div id="perfAttention"></div>
     </div>
     <div class="panel">
-      <div class="panel-title"><div><b>Progresso para a meta</b><small>Animais mais próximos do peso-alvo</small></div></div>
+      <div class="panel-title"><div><b>Progresso e previsão da meta</b><small>Estimativa calculada pelo GMD individual registrado</small></div></div>
       <div id="perfTargets"></div>
     </div>
   </div>
@@ -4279,11 +4279,26 @@ async function loadPerformance(force=false){
       return `<tr onclick="openLotProfile(${l.id})"><td><b>${l.name}</b></td><td>${members.length}</td><td>${l._avgWeight>0?l._avgWeight.toFixed(1)+' kg':'—'}</td><td class="${gmdClass}">${gmdText}</td><td>${meta}</td></tr>`
     }).join(''):'<tr><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr>';
 
-    const attention=metrics.filter(x=>Number.isFinite(x.delta)&&x.delta<0).sort((a,b)=>a.delta-b.delta);
-    perfAttention.innerHTML=attention.length?attention.map(x=>`<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">!</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · última pesagem</small></div><div class="rank-bad">${x.delta.toFixed(1)} kg</div><div>${x.prev?.toFixed(1)||'—'} → ${x.last?.toFixed(1)||'—'} kg</div></div>`).join(''):'<div class="performance-empty">Nenhum animal com perda na última pesagem.</div>';
+    const attention=metrics.filter(x=>Number.isFinite(x.delta)&&x.delta<=0).sort((a,b)=>a.delta-b.delta);
+    perfAttention.innerHTML=attention.length?attention.map(x=>{
+      const stagnant=x.delta===0;
+      return `<div class="rank-row" onclick="openAnimalProfile(${x.a.id})" style="cursor:pointer"><div class="rank-pos">!</div><div class="rank-main"><b>Animal #${x.a.number}</b><small>${x.a.lot||'Sem lote'} · ${stagnant?'peso estagnado':'perda na última pesagem'}</small></div><div class="${stagnant?'':'rank-bad'}">${stagnant?'Sem ganho':x.delta.toFixed(1)+' kg'}</div><div>${x.prev?.toFixed(1)||'—'} → ${x.last?.toFixed(1)||'—'} kg</div></div>`
+    }).join(''):'<div class="performance-empty">Nenhum animal com perda ou estagnação na última pesagem.</div>';
 
     const targets=metrics.filter(x=>x.progress!=null).sort((a,b)=>b.progress-a.progress).slice(0,8);
-    perfTargets.innerHTML=targets.length?targets.map(x=>`<div style="padding:10px 0;border-bottom:1px solid #edf1f4;cursor:pointer" onclick="openAnimalProfile(${x.a.id})"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px"><b>Animal #${x.a.number}</b><span>${x.last?.toFixed(1)||'0'} / ${x.target.toFixed(1)} kg · <b>${Math.round(x.progress)}%</b></span></div><div class="perf-progress"><i style="width:${x.progress}%"></i></div></div>`).join(''):'<div class="performance-empty">Defina uma meta de peso nos animais para acompanhar o progresso.</div>';
+    perfTargets.innerHTML=targets.length?targets.map(x=>{
+      let forecast='GMD insuficiente para estimar';
+      if(x.last>=x.target)forecast='Meta atingida';
+      else if(Number.isFinite(x.gmd)&&x.gmd>0){
+        const days=Math.ceil((x.target-x.last)/x.gmd);
+        if(days>3650)forecast='Previsão superior a 10 anos';
+        else{
+          const date=new Date();date.setDate(date.getDate()+days);
+          forecast=`Estimativa: ${date.toLocaleDateString('pt-BR')} · ${days} dia${days===1?'':'s'}`;
+        }
+      }
+      return `<div style="padding:10px 0;border-bottom:1px solid #edf1f4;cursor:pointer" onclick="openAnimalProfile(${x.a.id})"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px"><b>Animal #${x.a.number}</b><span>${x.last?.toFixed(1)||'0'} / ${x.target.toFixed(1)} kg · <b>${Math.round(x.progress)}%</b></span></div><div class="perf-progress"><i style="width:${x.progress}%"></i></div><small style="display:block;margin-top:6px;color:var(--muted)">${forecast}</small></div>`
+    }).join(''):'<div class="performance-empty">Defina uma meta de peso nos animais para acompanhar o progresso.</div>';
   }catch(e){
     console.error(e);alert('Não foi possível carregar os indicadores de desempenho: '+e.message);
   }finally{setPerformanceLoading(false)}
