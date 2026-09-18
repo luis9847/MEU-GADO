@@ -4291,7 +4291,7 @@ async function loadPerformance(force=false){
       if(x.last>=x.target)forecast='Meta atingida';
       else if(Number.isFinite(x.gmd)&&x.gmd>0){
         const days=Math.ceil((x.target-x.last)/x.gmd);
-        if(days>3650)forecast='Previsão superior a 10 anos';
+        if(days>3650)forecast='GMD muito baixo — revise as pesagens';
         else{
           const date=new Date();date.setDate(date.getDate()+days);
           forecast=`Estimativa: ${date.toLocaleDateString('pt-BR')} · ${days} dia${days===1?'':'s'}`;
