@@ -575,7 +575,12 @@ async function api(path,opt={}){
         }
       }
     });
-    if(r.error) throw new Error(r.error.message);
+    if(r.error){
+      const code=r.error.code||'';
+      if(code==='captcha_failed') throw new Error('Conclua novamente a verificação de segurança.');
+      if(code==='over_request_rate_limit'||code==='over_email_send_rate_limit') throw new Error('Aguarde alguns minutos antes de tentar novamente.');
+      throw new Error('Não foi possível concluir o cadastro. Confira os dados ou, se já possui uma conta, entre ou recupere sua senha.');
+    }
     if(r.data.session){
       return {ok:true,role:'client',needs_confirmation:false,needs_onboarding:true,user:r.data.user};
     }
@@ -675,19 +680,12 @@ async function doRegister(){
     if(passwordError) throw new Error(passwordError);
     if(password!==confirmPassword) throw new Error('As senhas não conferem.');
 
-    const availability=await mgSb.rpc('registration_identity_available',{
-      p_email:data.email,
-      p_document:data.document
-    });
-    if(availability.error) throw new Error('Não foi possível validar os dados do cadastro. Tente novamente.');
-    if(availability.data!==true) throw new Error('Já existe uma conta cadastrada com este e-mail ou CPF/CNPJ.');
-
     const captchaToken=mgRequireCaptcha('register');
     data.captchaToken=captchaToken;
     const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
     mgResetCaptcha('register');
     if(r.needs_confirmation){
-      setMessage('Conta criada. Confirme o e-mail recebido e depois entre para configurar sua propriedade.',true);
+      setMessage('Confira sua caixa de entrada para continuar. Se você já possui uma conta, entre ou use a recuperação de senha.',true);
       switchTab('login');
       return;
     }
