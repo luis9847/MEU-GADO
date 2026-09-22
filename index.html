@@ -282,11 +282,8 @@ body.modal-open{overflow:hidden}
           <div class="field"><label>Confirme sua senha</label><div class="password-wrap"><input id="regPasswordConfirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"><button type="button" class="show-pass" onclick="togglePassword('regPasswordConfirm',this)">Mostrar</button></div></div>
           <div class="captcha-wrap"><div id="turnstileRegister"></div></div>
           <div class="captcha-note">Verificação de segurança contra cadastros automatizados.</div>
+          <label class="legal-consent" style="display:flex;gap:8px;align-items:flex-start;text-align:left"><input id="legalAcceptance" type="checkbox" style="margin-top:2px"> <span>Li e concordo com os <a href="#" onclick="openTerms();return false">Termos de Uso</a> e com a <a href="#" onclick="openPrivacy();return false">Política de Privacidade</a>.</span></label>
           <button class="btn green" onclick="doRegister()">Criar minha conta</button>
-          <div class="legal-consent">Ao criar sua conta, você declara que leu e concorda com os
-            <a href="#" onclick="openTerms();return false">Termos de Uso</a> e com a
-            <a href="#" onclick="openPrivacy();return false">Política de Privacidade</a>.
-          </div>
         </div>
 
         <div class="form" id="onboardingForm">
@@ -591,7 +588,11 @@ async function api(path,opt={}){
           full_name:data.full_name,
           document:data.document,
           phone:data.phone||'',
-          email:data.email
+          email:data.email,
+          legal_accepted:String(data.legalAccepted===true),
+          legal_terms_version:data.legalTermsVersion||'',
+          legal_privacy_version:data.legalPrivacyVersion||'',
+          legal_accepted_at:data.legalAcceptedAt||''
         }
       }
     });
@@ -695,6 +696,7 @@ async function doRegister(){
     };
 
     if(!data.full_name||!data.document||!data.email||!data.phone) throw new Error('Preencha nome, CPF/CNPJ, e-mail e WhatsApp.');
+    if(!document.getElementById('legalAcceptance').checked) throw new Error('Leia e aceite os Termos de Uso e a Política de Privacidade para criar sua conta.');
     const docDigits=data.document.replace(/\D/g,'');
     if(docDigits.length!==11&&docDigits.length!==14) throw new Error('Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos.');
     const passwordError=validateStrongPassword(password);
@@ -703,6 +705,10 @@ async function doRegister(){
 
     const captchaToken=mgRequireCaptcha('register');
     data.captchaToken=captchaToken;
+    data.legalAccepted=true;
+    data.legalTermsVersion='1.1';
+    data.legalPrivacyVersion='1.1';
+    data.legalAcceptedAt=new Date().toISOString();
     const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
     mgResetCaptcha('register');
     if(r.needs_confirmation){
@@ -898,7 +904,7 @@ setTimeout(()=>mgRenderCaptcha('login'),350);
 
 <div id="termsModal" class="legal-modal">
   <div class="legal-card">
-    <div class="legal-head"><div><h2>Termos de Uso — Meu Gado</h2><small>Versão 1.0 • 03/09/2026</small></div><button class="legal-close" onclick="closeTerms()">Fechar</button></div>
+    <div class="legal-head"><div><h2>Termos de Uso — Meu Gado</h2><small>Versão 1.1 • 22/09/2026</small></div><button class="legal-close" onclick="closeTerms()">Fechar</button></div>
     <p>Estes Termos de Uso regulam o acesso e a utilização da plataforma <strong>Meu Gado</strong>, destinada ao apoio à gestão de rebanhos e propriedades rurais. Ao criar uma conta e utilizar a plataforma, o usuário declara que leu e concorda com estes Termos.</p>
     <h3>1. Responsável pela plataforma</h3><p>O Meu Gado é atualmente disponibilizado sob responsabilidade de <strong>Luís Felipe Pimenta Cardoso</strong>, pessoa física, com canal oficial de contato pelo e-mail <strong>contatomeugado@outlook.com</strong>.</p>
     <h3>2. Finalidade do Meu Gado</h3><p>A plataforma oferece ferramentas para organização e acompanhamento de informações relacionadas ao rebanho, incluindo cadastro de animais e lotes, pesagens, saúde, reprodução, nutrição, gastos, relatórios, indicadores, informações de mercado e simulações de venda.</p>
@@ -923,7 +929,7 @@ setTimeout(()=>mgRenderCaptcha('login'),350);
     <div class="legal-head">
       <div>
         <h2>Política de Privacidade — Meu Gado</h2>
-        <small>Versão 1.0 • 14/09/2026</small>
+        <small>Versão 1.1 • 22/09/2026</small>
       </div>
       <button class="legal-close" onclick="closePrivacy()">Fechar</button>
     </div>

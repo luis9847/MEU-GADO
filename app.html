@@ -143,7 +143,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 .delete-outline{color:#b3261e!important;border-color:#e0b8b4!important}
 .delete-outline:hover{background:#fff4f3!important}
 
-.profile-required-note{font-size:10px;color:#a14836;background:#fff7f4;border:1px solid #f1d8d1;border-radius:7px;padding:9px 11px;margin-bottom:12px}
+.profile-required-note{font-size:10px;color:#a14836;background:#fff7f4;border:1px solid #f1d8d1;border-radius:7px;padding:9px 11px;margin-bottom:12px}.optional{font-size:9px;font-weight:700;color:#91a098;margin-left:4px}
 
 /* V3.1 — formulário de gastos */
 .expense-modern-modal{width:min(540px,96vw);padding:18px 20px}
@@ -2442,9 +2442,9 @@ body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
   <div id="marketNews" class="market-news-grid"></div>
 </section>
 <section id="perfil" class="view">
-  <div class="head"><div><h2>Meus dados</h2><div class="sub">Preencha todos os dados obrigatórios da propriedade</div></div><button class="btn primary" onclick="saveProfile()">Salvar</button></div>
+  <div class="head"><div><h2>Meus dados</h2><div class="sub">Mantenha os dados necessários para a sua conta atualizados</div></div><button class="btn primary" onclick="saveProfile()">Salvar</button></div>
   <div class="card">
-    <div class="profile-required-note">Todos os campos abaixo são obrigatórios.</div>
+    <div class="profile-required-note">Os campos com * são necessários para o funcionamento da conta.</div>
     <div class="form">
       <label>Seu nome / nome de exibição *<input id="pownername" required placeholder="Nome que aparecerá no painel"></label>
       <label>Nome da propriedade *<input id="pname" required></label>
@@ -2454,8 +2454,8 @@ body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
       <label>Cidade *<input id="pcity" required></label>
       <label>UF *<input id="pstate" maxlength="2" required placeholder="MG"></label>
       <label>Operação *<select id="poperation" required><option>Confinamento</option><option>Cria</option><option>Recria</option><option>Engorda</option><option>Ciclo completo</option></select></label>
-      <label class="full">Endereço *<input id="paddress" required></label>
-      <label class="full">Observações *<textarea id="pnotes" required></textarea></label>
+      <label class="full">Endereço <span class="optional">(opcional)</span><input id="paddress"></label>
+      <label class="full">Observações <span class="optional">(opcional)</span><textarea id="pnotes"></textarea></label>
     </div>
   </div>
 </section>
@@ -6099,7 +6099,7 @@ async function saveProfile(){
   };
   const labels=[
     ['Seu nome / nome de exibição',displayName],['Nome da propriedade',data.name],['CPF/CNPJ',data.doc],['Telefone',data.phone],['E-mail',data.email],
-    ['Cidade',data.city],['UF',data.state],['Endereço',data.address],['Operação',data.operation],['Observações',data.notes]
+    ['Cidade',data.city],['UF',data.state],['Operação',data.operation]
   ];
   const missing=labels.filter(x=>!x[1]).map(x=>x[0]);
   if(missing.length){alert('Preencha todos os campos obrigatórios: '+missing.join(', '));return}
@@ -6347,7 +6347,7 @@ if(typeof _mgOriginalShow==='function'){
     <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
       <div>
         <h2 style="margin-bottom:4px">Termos de Uso — Meu Gado</h2>
-        <div class="muted">Versão 1.0 • 03/09/2026</div>
+        <div class="muted">Versão 1.1 • 22/09/2026</div>
       </div>
       <button class="btn secondary" onclick="closeTermsOfUse()">Fechar</button>
     </div>
@@ -6392,7 +6392,7 @@ if(typeof _mgOriginalShow==='function'){
     <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
       <div>
         <h2 style="margin-bottom:4px">Política de Privacidade — Meu Gado</h2>
-        <div class="muted">Versão 1.0 • 08/09/2026</div>
+        <div class="muted">Versão 1.1 • 22/09/2026</div>
       </div>
       <button class="btn secondary" onclick="closePrivacyPolicy()">Fechar</button>
     </div>
