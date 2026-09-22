@@ -2871,7 +2871,24 @@ const MG_BRAZIL_STATES=[
 ];
 let animalsData=[]; let lotsData=[]; let expensesData=[]; let weightHistoryData=[]; let weightChartMonths=3; let editingLotId=null; let editingExpenseId=null; let editingAnimalId=null; let selectedAnimalId=null; let quickLotForAnimal=false; let animalCategoryFilter='Todos'; let pendingAnimalPhoto=''; let marketQuotes=[]; let marketCalfQuotes=[];
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
+const MG_AUTH_MODE_KEY='mg-auth-storage-mode';
+function mgAuthStorageMode(){
+  return sessionStorage.getItem(MG_AUTH_MODE_KEY)==='session'?'session':'persistent';
+}
+const mgAuthStorage={
+  getItem(key){return mgAuthStorageMode()==='session'?sessionStorage.getItem(key):localStorage.getItem(key)},
+  setItem(key,value){
+    if(mgAuthStorageMode()==='session'){
+      sessionStorage.setItem(key,value);
+      localStorage.removeItem(key);
+    }else{
+      localStorage.setItem(key,value);
+      sessionStorage.removeItem(key);
+    }
+  },
+  removeItem(key){sessionStorage.removeItem(key);localStorage.removeItem(key)}
+};
+const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY,{auth:{storage:mgAuthStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let mgFarm=null,mgUser=null,mgFarmRole='owner',mgInvitationsClaimed=false;
 let marketLiveData=null;
 function mgErr(e){throw new Error(e?.message||String(e||'Erro'))}
@@ -3189,7 +3206,7 @@ async function apiOnline(path,opt={}){
    if(!live||live.error)throw new Error(live?.error||'A fonte de mercado não retornou dados.');
    return live;
  }
- if(path==='/api/logout'&&method==='POST'){await mgSb.auth.signOut();return {ok:true}}
+ if(path==='/api/logout'&&method==='POST'){await mgSb.auth.signOut({scope:'local'});return {ok:true}}
  throw new Error('Função ainda não disponível na versão online: '+path);
 }
 

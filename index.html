@@ -419,7 +419,27 @@ function formatError(detail){
   if(detail&&typeof detail==='object') return detail.msg||JSON.stringify(detail);
   return 'Erro inesperado.';
 }
-const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY);
+const MG_AUTH_MODE_KEY='mg-auth-storage-mode';
+function mgAuthStorageMode(){
+  return sessionStorage.getItem(MG_AUTH_MODE_KEY)==='session'?'session':'persistent';
+}
+const mgAuthStorage={
+  getItem(key){return mgAuthStorageMode()==='session'?sessionStorage.getItem(key):localStorage.getItem(key)},
+  setItem(key,value){
+    if(mgAuthStorageMode()==='session'){
+      sessionStorage.setItem(key,value);
+      localStorage.removeItem(key);
+    }else{
+      localStorage.setItem(key,value);
+      sessionStorage.removeItem(key);
+    }
+  },
+  removeItem(key){sessionStorage.removeItem(key);localStorage.removeItem(key)}
+};
+function mgSetAuthPersistence(remember){
+  sessionStorage.setItem(MG_AUTH_MODE_KEY,remember?'persistent':'session');
+}
+const mgSb=supabase.createClient(window.MG_SB_URL,window.MG_SB_KEY,{auth:{storage:mgAuthStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 
 const MG_TURNSTILE_SITE_KEY='0x4AAAAAAEz18CzViJsl3lHd';
 const mgCaptcha={login:null,register:null,forgot:null};
@@ -541,7 +561,7 @@ async function completeOnboarding(){
 }
 
 async function doLogoutFromOnboarding(){
-  await mgSb.auth.signOut();
+  await mgSb.auth.signOut({scope:'local'});
   location.reload();
 }
 
@@ -586,7 +606,7 @@ async function api(path,opt={}){
     }
     return {ok:true,role:'client',needs_confirmation:true};
   }
-  if(path==='/api/logout'){await mgSb.auth.signOut();return {ok:true}}
+  if(path==='/api/logout'){await mgSb.auth.signOut({scope:'local'});return {ok:true}}
   throw new Error('Operação indisponível nesta tela.');
 }
 function setMessage(text,ok=false){
@@ -645,6 +665,7 @@ async function doLogin(){
     const email=document.getElementById('loginEmail').value.trim();
     const password=document.getElementById('loginPassword').value;
     if(!email||!password) throw new Error('Informe e-mail e senha.');
+    mgSetAuthPersistence(document.getElementById('rememberMe')?.checked!==false);
     const j=await api('/api/login',{method:'POST',body:JSON.stringify({email,password})});
     if(j.needs_onboarding){showOnboarding(j.user);return;}
     location.href=j.role==='admin'?'/admin':'/app';
@@ -846,7 +867,7 @@ async function saveNewPassword(){
     if(error)throw error;
 
     setMessage('Senha alterada com sucesso. Você já pode entrar com a nova senha.',true);
-    await mgSb.auth.signOut();
+    await mgSb.auth.signOut({scope:'global'});
     history.replaceState({},'',location.pathname);
     setTimeout(()=>backToLogin(),900);
   }catch(e){
