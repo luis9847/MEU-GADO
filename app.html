@@ -4833,13 +4833,13 @@ async function loadMarket(){
   if(document.getElementById('marketUpdated')) marketUpdated.textContent=d.updated_at||'—';
   if(document.getElementById('marketBasis')) marketBasis.textContent=d.basis||'Mercado físico';
   if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(d.source||'—');
-  if(document.getElementById('marketSourceLink')&&d.source_url) marketSourceLink.href=d.source_url;
+  if(document.getElementById('marketSourceLink')&&d.source_url) marketSourceLink.href=mgSafeExternalUrl(d.source_url);
   const status=document.getElementById('marketLiveStatus');
   if(status){
     const fetched=d.fetched_at||d.generated_at;
     const when=fetched?new Date(fetched).toLocaleString('pt-BR'):'—';
     status.innerHTML=d.warning
-      ? `⚠ ${d.warning} · <b>Última consulta ao mercado:</b> ${when}`
+      ? `⚠ ${mgEsc(d.warning)} · <b>Última consulta ao mercado:</b> ${when}`
       : `Fonte consultada automaticamente · <b>Última consulta:</b> ${when}`;
   }
   if(document.getElementById('marketEsalq')) marketEsalq.textContent=d.esalq?marketMoney(d.esalq.price)+'/@':'—';
@@ -4852,7 +4852,7 @@ async function loadMarket(){
   if(document.getElementById('marketNews')){
     const news=d.news||[];
     marketNews.innerHTML=news.length
-      ? news.map(n=>`<a class="market-news-card" target="_blank" rel="noopener" href="${n.url}"><b>${n.title}</b><span>${n.date?`${n.date} · `:''}${n.source||'Notícias Agrícolas'} ↗</span></a>`).join('')
+      ? news.map(n=>`<a class="market-news-card" target="_blank" rel="noopener" href="${mgEsc(mgSafeExternalUrl(n.url))}"><b>${mgEsc(n.title)}</b><span>${n.date?`${mgEsc(n.date)} · `:''}${mgEsc(n.source||'Notícias Agrícolas')} ↗</span></a>`).join('')
       : '<div class="performance-empty" style="grid-column:1/-1">Nenhuma notícia recente foi retornada pela fonte nesta consulta.</div>';
   }
   renderDashboardMarket(d);
@@ -4885,7 +4885,7 @@ function updateMarketRegions(){
     el.disabled=true;
   }else{
     el.disabled=false;
-    el.innerHTML='<option value="">Todas as regiões/praças</option>'+places.map(p=>`<option value="${p}">${p}</option>`).join('');
+    el.innerHTML='<option value="">Todas as regiões/praças</option>'+places.map(p=>`<option value="${mgEsc(p)}">${mgEsc(p)}</option>`).join('');
   }
 }
 function renderMarketQuotes(){
@@ -4913,13 +4913,13 @@ function renderMarketQuotes(){
     if(document.getElementById('marketUpdated')) marketUpdated.textContent=selectedQuote?.date||marketLiveData?.updated_at||'—';
     if(document.getElementById('marketBasis')) marketBasis.textContent='Reposição bovina · cotação estadual';
     if(document.getElementById('marketSource')) marketSource.textContent='Fonte: '+(selectedQuote?.source||marketLiveData?.source||'—');
-    if(document.getElementById('marketSourceLink')&&selectedQuote?.source_url) marketSourceLink.href=selectedQuote.source_url;
+    if(document.getElementById('marketSourceLink')&&selectedQuote?.source_url) marketSourceLink.href=mgSafeExternalUrl(selectedQuote.source_url);
     marketStates.innerHTML=rows.length?rows.map(x=>{
       const q=x[cat];
       return `<div class="market-region-card">
-        <div class="place"><div><b>${x.uf} · ${x.state}</b><span>Cotação estadual</span></div><span>${labels[cat]}</span></div>
+        <div class="place"><div><b>${mgEsc(x.uf)} · ${mgEsc(x.state)}</b><span>Cotação estadual</span></div><span>${mgEsc(labels[cat])}</span></div>
         <div class="quote">${marketMoney(q.head)}<small>/cabeça</small></div>
-        <div class="secondary-quote">${marketMoney(q.kg)}/kg · fechamento ${q.date||'—'}</div>
+        <div class="secondary-quote">${marketMoney(q.kg)}/kg · fechamento ${mgEsc(q.date||'—')}</div>
       </div>`;
     }).join(''):'<div class="performance-empty" style="grid-column:1/-1">Sem valor publicado para esta categoria neste estado na fonte utilizada.</div>';
     return;
@@ -4936,7 +4936,7 @@ function renderMarketQuotes(){
   marketStates.innerHTML=rows.length?rows.map(x=>`<div class="market-region-card">
     <div class="place"><div><b>${mgEsc(x.uf)} · ${mgEsc(x.place)}</b><span>${mgEsc(x.state)}</span></div><span>${mgEsc(labels[cat])}</span></div>
     <div class="quote">${marketMoney(x[cat])}<small>/${x.unit==='kg'?'kg':'@'}</small></div>
-    <div class="secondary-quote">À vista ${marketMoney(x.boi_cash)} · 30 dias ${marketMoney(x.boi_30)} · Vaca ${marketMoney(x.cow_cash)} · ${x.unit==='kg'?'R$/kg':'R$/@'} · fechamento ${marketLiveData?.physical_updated_at||marketLiveData?.updated_at||'—'}</div>
+    <div class="secondary-quote">À vista ${marketMoney(x.boi_cash)} · 30 dias ${marketMoney(x.boi_30)} · Vaca ${marketMoney(x.cow_cash)} · ${x.unit==='kg'?'R$/kg':'R$/@'} · fechamento ${mgEsc(marketLiveData?.physical_updated_at||marketLiveData?.updated_at||'—')}</div>
   </div>`).join(''):'<div class="performance-empty" style="grid-column:1/-1">Sem cotação disponível para esta categoria/região neste estado.</div>';
 }
 
@@ -5181,7 +5181,7 @@ async function renderHealthLegalRules(){
     });
     box.innerHTML=eligible.length?eligible.map(a=>`<div class="health-agenda-item" style="border-color:#f0c36a;background:#fffaf0">
       <span class="health-status upcoming">Obrigatória nacional</span>
-      <b style="margin-top:8px">Brucelose · animal #${a.number}</b>
+      <b style="margin-top:8px">Brucelose · animal #${mgEsc(a.number)}</b>
       <small>Fêmea com ${mgMonthsBetween(a.birth_date)} mês(es), dentro da faixa obrigatória de 3 a 8 meses e sem registro de vacinação no sistema.</small>
       <button class="animal-link" style="margin-top:7px" onclick="openNewHealthForBrucellosis(${a.id})">Registrar vacinação ›</button>
     </div>`).join(''):'';
@@ -5506,7 +5506,7 @@ function renderRepro(){
   agenda.sort((a,b)=>a.priority-b.priority||String(a.date).localeCompare(String(b.date)));
 
   reproAgenda.innerHTML=agenda.length?agenda.slice(0,8).map(x=>`<div class="repro-agenda-item">
-    <div class="top"><span class="repro-pill ${x.priority===0?'birth':x.kind==='Parto'?'pregnant':'waiting'}">${x.label}</span><small>${reproDateBr(x.date)}</small></div>
+    <div class="top"><span class="repro-pill ${x.priority===0?'birth':x.kind==='Parto'?'pregnant':'waiting'}">${mgEsc(x.label)}</span><small>${reproDateBr(x.date)}</small></div>
     <b>Animal #${mgEsc(x.animal.number)}</b>
     <small>${x.kind==='Parto'?'Gestação em acompanhamento':'Aguardando diagnóstico de gestação'}</small>
     <button class="animal-link" style="margin-top:7px" onclick="openAnimalProfile(${x.animal.id})">Abrir ficha ›</button>
@@ -6174,7 +6174,7 @@ function simFillRegions(doRender=true){
   }else{
     s.disabled=false;
     const rows=(marketQuotes||[]).filter(x=>x.uf===uf&&x.unit!=='kg');
-    s.innerHTML=rows.length?rows.map(x=>`<option value="${x.place}">${x.place}</option>`).join(''):'<option value="">Sem praça em R$/@</option>';
+    s.innerHTML=rows.length?rows.map(x=>`<option value="${mgEsc(x.place)}">${mgEsc(x.place)}</option>`).join(''):'<option value="">Sem praça em R$/@</option>';
   }
   if(doRender) renderSaleSimulation();
 }
@@ -6292,7 +6292,7 @@ function renderSaleSimulation(){
   if(isReplacement){
     const updated=rq?.date||marketLiveData?.updated_at||'—';
     r.innerHTML=`<div style="display:grid;gap:10px">
-      <div class="performance-row"><div><b>Cotação estadual de reposição</b><small>${uf} · ${document.getElementById('simCategory')?.selectedOptions?.[0]?.text||''} · fechamento ${updated}</small></div><strong>${simBRL(market)}/cabeça</strong></div>
+      <div class="performance-row"><div><b>Cotação estadual de reposição</b><small>${mgEsc(uf)} · ${mgEsc(document.getElementById('simCategory')?.selectedOptions?.[0]?.text||'')} · fechamento ${mgEsc(updated)}</small></div><strong>${simBRL(market)}/cabeça</strong></div>
       ${buyer?`<div class="performance-row"><div><b>Oferta do comprador</b><small>${buyer>=market?'acima':'abaixo'} da referência em ${simBRL(Math.abs(buyer-market))}/cabeça</small></div><strong>${simBRL(buyer)}/cabeça</strong></div>`:''}
       <div class="performance-row"><div><b>Quantidade</b><small>Animais considerados na simulação</small></div><strong>${headCount} cabeça${headCount===1?'':'s'}</strong></div>
       <div style="padding:16px;border-radius:10px;background:#eef8f1"><span class="label">VALOR BRUTO ESTIMADO</span><div style="font-size:30px;font-weight:900;color:var(--green);margin-top:5px">${simBRL(gross)}</div><small>${headCount} × ${simBRL(price)} por cabeça.</small></div>
@@ -6300,7 +6300,7 @@ function renderSaleSimulation(){
   }else{
     const updated=marketLiveData?.physical_updated_at||marketLiveData?.updated_at||'—';
     r.innerHTML=`<div style="display:grid;gap:10px">
-      <div class="performance-row"><div><b>Preço de mercado</b><small>${uf} · ${region} · fechamento ${updated}</small></div><strong>${simBRL(market)}/@</strong></div>
+      <div class="performance-row"><div><b>Preço de mercado</b><small>${mgEsc(uf)} · ${mgEsc(region)} · fechamento ${mgEsc(updated)}</small></div><strong>${simBRL(market)}/@</strong></div>
       ${buyer?`<div class="performance-row"><div><b>Oferta do comprador</b><small>${buyer>=market?'acima':'abaixo'} da referência em ${simBRL(Math.abs(buyer-market))}/@</small></div><strong>${simBRL(buyer)}/@</strong></div>`:''}
       <div class="performance-row"><div><b>Carcaça estimada</b><small>${weight.toLocaleString('pt-BR')} kg × ${yieldPct.toLocaleString('pt-BR')}%</small></div><strong>${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg</strong></div>
       <div class="performance-row"><div><b>Arrobas estimadas</b><small>${carcass.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg ÷ 15</small></div><strong>${arrobas.toLocaleString('pt-BR',{maximumFractionDigits:2})} @</strong></div>
@@ -6590,7 +6590,7 @@ async function loadDairyAnimals(){
     const c=String(a.category||'').toLowerCase();
     return c.includes('vaca')||c.includes('novilha')||c.includes('fêmea')||c.includes('femea')||!c;
   });
-  const opts='<option value="">Selecione</option>'+mgDairyAnimals.map(a=>`<option value="${a.id}">${mgDairyAnimalLabel(a)}</option>`).join('');
+  const opts='<option value="">Selecione</option>'+mgDairyAnimals.map(a=>`<option value="${a.id}">${mgEsc(mgDairyAnimalLabel(a))}</option>`).join('');
   ['milkAnimal','lactAnimal','qualityAnimal'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
 }
 
@@ -6608,14 +6608,14 @@ async function loadDairyLactations(){
   const d=document.getElementById('dairyDryCows'); if(d)d.textContent=`${dry.length} secas`;
 
   const drySel=document.getElementById('dryAnimal');
-  if(drySel)drySel.innerHTML='<option value="">Selecione</option>'+active.map(x=>`<option value="${x.id}">${x.animals?.number||('Animal '+x.animal_id)}</option>`).join('');
+  if(drySel)drySel.innerHTML='<option value="">Selecione</option>'+active.map(x=>`<option value="${x.id}">${mgEsc(x.animals?.number||('Animal '+x.animal_id))}</option>`).join('');
 
   const tbody=document.getElementById('lactationRows');
   if(tbody)tbody.innerHTML=mgDairyLactations.length?mgDairyLactations.map(x=>{
     const start=x.lactation_start_date?new Date(x.lactation_start_date+'T00:00:00'):null;
     const end=x.dry_off_date?new Date(x.dry_off_date+'T00:00:00'):new Date();
     const days=start?Math.max(0,Math.floor((end-start)/86400000)):0;
-    return `<tr><td><b>${x.animals?.number||x.animal_id}</b></td><td>${x.calving_date||'—'}</td><td>${x.lactation_start_date||'—'}</td><td>${days}</td><td>${x.expected_dry_off_date||'—'}</td><td><span class="dairy-badge ${x.status==='active'?'':'dry'}">${x.status==='active'?'Em lactação':(x.status==='dry'?'Seca':'Encerrada')}</span></td></tr>`;
+    return `<tr><td><b>${mgEsc(x.animals?.number||x.animal_id)}</b></td><td>${x.calving_date||'—'}</td><td>${x.lactation_start_date||'—'}</td><td>${days}</td><td>${x.expected_dry_off_date||'—'}</td><td><span class="dairy-badge ${x.status==='active'?'':'dry'}">${x.status==='active'?'Em lactação':(x.status==='dry'?'Seca':'Encerrada')}</span></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma lactação cadastrada.</td></tr>';
 }
 
@@ -6641,7 +6641,7 @@ async function loadMilkProduction(){
   document.getElementById('dairyDiscardedMonth').textContent=`${mgFmtLiters(discarded)} descartados`;
 
   const tbody=document.getElementById('milkProductionRows');
-  if(tbody)tbody.innerHTML=rows.length?rows.slice(0,30).map(r=>`<tr><td>${r.production_date}</td><td><b>${r.animals?.number||r.animal_id}</b></td><td>${mgFmtLiters(r.morning_liters)}</td><td>${mgFmtLiters(r.afternoon_liters)}</td><td>${mgFmtLiters(r.evening_liters)}</td><td><b>${mgFmtLiters(totalOf(r))}</b></td><td>${mgFmtLiters(r.discarded_liters)}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" type="button" onclick="editMilkProduction(${r.id})">Editar</button><button class="btn secondary danger-outline" type="button" onclick="deleteMilkProduction(${r.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="8" class="dairy-empty">Nenhum lançamento de leite.</td></tr>';
+  if(tbody)tbody.innerHTML=rows.length?rows.slice(0,30).map(r=>`<tr><td>${r.production_date}</td><td><b>${mgEsc(r.animals?.number||r.animal_id)}</b></td><td>${mgFmtLiters(r.morning_liters)}</td><td>${mgFmtLiters(r.afternoon_liters)}</td><td>${mgFmtLiters(r.evening_liters)}</td><td><b>${mgFmtLiters(totalOf(r))}</b></td><td>${mgFmtLiters(r.discarded_liters)}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" type="button" onclick="editMilkProduction(${r.id})">Editar</button><button class="btn secondary danger-outline" type="button" onclick="deleteMilkProduction(${r.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="8" class="dairy-empty">Nenhum lançamento de leite.</td></tr>';
 }
 
 function resetMilkProductionForm(){
@@ -6722,7 +6722,7 @@ async function loadMilkQuality(){
     .eq('farm_id',f.id).order('test_date',{ascending:false}).limit(30);
   if(error)throw error;
   const rows=data||[], tbody=document.getElementById('qualityRows');
-  if(tbody)tbody.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.test_date}</td><td>${r.sample_type==='tank'?'Tanque':('Animal '+(r.animals?.number||r.animal_id||''))}</td><td>${r.somatic_cell_count??'—'}</td><td>${r.bacterial_count??'—'}</td><td>${r.fat_percent!=null?r.fat_percent+'%':'—'}</td><td>${r.protein_percent!=null?r.protein_percent+'%':'—'}</td></tr>`).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma análise cadastrada.</td></tr>';
+  if(tbody)tbody.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.test_date}</td><td>${mgEsc(r.sample_type==='tank'?'Tanque':('Animal '+(r.animals?.number||r.animal_id||'')))}</td><td>${r.somatic_cell_count??'—'}</td><td>${r.bacterial_count??'—'}</td><td>${r.fat_percent!=null?r.fat_percent+'%':'—'}</td><td>${r.protein_percent!=null?r.protein_percent+'%':'—'}</td></tr>`).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma análise cadastrada.</td></tr>';
 }
 
 
@@ -6788,7 +6788,7 @@ async function loadDairyDashboard(){
   });
   const ranking=Object.values(rank).sort((a,b)=>b.liters-a.liters);
   const rt=document.getElementById('dairyRankingRows');
-  if(rt)rt.innerHTML=ranking.length?ranking.map((r,i)=>`<tr><td><b>${i+1}º</b></td><td><b>#${r.number}</b>${r.breed?`<br><small>${r.breed}</small>`:''}</td><td><b>${mgFmtLiters(r.liters)}</b></td><td>${r.days.size}</td><td>${mgFmtLiters(r.days.size?r.liters/r.days.size:0)}</td></tr>`).join(''):'<tr><td colspan="5" class="dairy-empty">Sem produção registrada.</td></tr>';
+  if(rt)rt.innerHTML=ranking.length?ranking.map((r,i)=>`<tr><td><b>${i+1}º</b></td><td><b>#${mgEsc(r.number)}</b>${r.breed?`<br><small>${mgEsc(r.breed)}</small>`:''}</td><td><b>${mgFmtLiters(r.liters)}</b></td><td>${r.days.size}</td><td>${mgFmtLiters(r.days.size?r.liters/r.days.size:0)}</td></tr>`).join(''):'<tr><td colspan="5" class="dairy-empty">Sem produção registrada.</td></tr>';
 
   const monthTotal=monthRows.reduce((s,r)=>s+total(r),0);
   const monthDiscard=monthRows.reduce((s,r)=>s+Number(r.discarded_liters||0),0);
@@ -6818,7 +6818,7 @@ async function loadDairyDashboard(){
       const diff=Math.ceil((new Date(x.expected_dry_off_date+'T00:00:00')-new Date())/86400000);
       if(diff<=15)situation='Secagem próxima';
     }
-    return `<tr><td><b>#${x.animals?.number||x.animal_id}</b></td><td>${x.lactation_start_date||'—'}</td><td>${days} dias</td><td>${x.expected_dry_off_date||'—'}</td><td>${mgFmtLiters(prod)}</td><td><span class="dairy-badge">${situation}</span></td></tr>`;
+    return `<tr><td><b>#${mgEsc(x.animals?.number||x.animal_id)}</b></td><td>${x.lactation_start_date||'—'}</td><td>${days} dias</td><td>${x.expected_dry_off_date||'—'}</td><td>${mgFmtLiters(prod)}</td><td><span class="dairy-badge">${situation}</span></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="dairy-empty">Nenhuma lactação ativa.</td></tr>';
 
   // Alerts: dry-off + production drop
@@ -6844,7 +6844,7 @@ async function loadDairyDashboard(){
   });
 
   const al=document.getElementById('dairyAlerts');
-  if(al)al.innerHTML=alerts.length?alerts.slice(0,8).map(a=>`<div class="dairy-alert"><div class="ico">${a.ico}</div><div><b>${a.title}</b><small>${a.text}</small></div></div>`).join(''):'<div class="dairy-alert ok"><div class="ico">✓</div><div><b>Nenhum alerta leiteiro</b><small>Os registros atuais não indicam atenção imediata.</small></div></div>';
+  if(al)al.innerHTML=alerts.length?alerts.slice(0,8).map(a=>`<div class="dairy-alert"><div class="ico">${mgEsc(a.ico)}</div><div><b>${mgEsc(a.title)}</b><small>${mgEsc(a.text)}</small></div></div>`).join(''):'<div class="dairy-alert ok"><div class="ico">✓</div><div><b>Nenhum alerta leiteiro</b><small>Os registros atuais não indicam atenção imediata.</small></div></div>';
 }
 
 async function loadDairyTab(tab,force=false){
@@ -7242,7 +7242,7 @@ function renderLotsV2(){
     const animals=Number(x.animals||0), weight=Number(x.avg_weight||0), gmd=Number(x.avg_gmd||0), ready=Number(x.ready||0);
     const pct=animals?Math.round(ready/animals*100):0;
     return `<div class="card lot-card"><button class="lot-open" onclick="openLotProfile(${x.id})">
-      <div class="lot-v2-head"><div><div class="lot-v2-name">${x.name}</div><div class="lot-v2-note">${x.notes||'Sem observações'}</div></div><span class="lot-v2-status ${x.active?'':'inactive'}">${x.active?'Ativo':'Inativo'}</span></div>
+      <div class="lot-v2-head"><div><div class="lot-v2-name">${mgEsc(x.name)}</div><div class="lot-v2-note">${mgEsc(x.notes||'Sem observações')}</div></div><span class="lot-v2-status ${x.active?'':'inactive'}">${x.active?'Ativo':'Inativo'}</span></div>
       <div class="lot-v2-metrics"><div><small>Animais</small><b>${animals}</b></div><div><small>Peso médio</small><b>${animals&&weight?weight.toFixed(1)+' kg':'—'}</b></div><div><small>GMD médio</small><b>${Number.isFinite(gmd)&&gmd!==0?gmd.toFixed(3)+' kg/dia':'—'}</b></div></div>
       <div class="lot-v2-progress"><div class="lot-v2-progress-head"><span>Animais na meta</span><b>${ready}/${animals} · ${pct}%</b></div><div class="lot-v2-progress-track"><i style="width:${pct}%"></i></div></div>
       <div class="lot-v2-open"><span>Ver desenvolvimento do lote</span><span>→</span></div></button>
@@ -7356,7 +7356,7 @@ async function mgEnsureDairyAnimalOptions(){
   });
   if(females.length){
     const opts='<option value="">Selecione</option>'+females.map(a=>
-      `<option value="${a.id}">#${a.number} · ${a.category||'Fêmea'}${a.breed?' · '+a.breed:''}</option>`
+      `<option value="${a.id}">#${mgEsc(a.number)} · ${mgEsc(a.category||'Fêmea')}${mgEsc(a.breed?' · '+a.breed:'')}</option>`
     ).join('');
     ['milkAnimal','lactAnimal','qualityAnimal'].forEach(id=>{
       const el=document.getElementById(id); if(el)el.innerHTML=opts;
@@ -7391,7 +7391,7 @@ function ap8ProfileGmd(a){
   return Number.isFinite(g)?g:null;
 }
 function ap8Event(icon,title,sub,date){
-  return `<div class="ap8-event"><i>${icon}</i><div><b>${title}</b><small>${sub||''}</small></div><time>${ap8Date(date)}</time></div>`;
+  return `<div class="ap8-event"><i>${ap8Esc(icon)}</i><div><b>${ap8Esc(title)}</b><small>${ap8Esc(sub||'')}</small></div><time>${ap8Esc(ap8Date(date))}</time></div>`;
 }
 async function ap8SafeQuery(builder,fallback=[]){
   try{
@@ -7532,7 +7532,7 @@ openAnimalProfile = async function(id){
         <h4>Filiação e crias</h4>
         <div class="ap8-row"><span>Mãe</span><b>${mother?`#${ap8Esc(mother.number)} · ${ap8Esc(mother.breed||mother.category||'')}`:'Não informada'}</b></div>
         <div class="ap8-row"><span>Crias cadastradas</span><b>${offspring.length}</b></div>
-        ${offspring.length?`<div class="ap8-list" style="margin-top:7px">${offspring.slice(0,6).map(c=>ap8Event('🐮',`#${ap8Esc(c.number)} · ${ap8Esc(c.category||'')}`,ap8Esc(c.breed||''),c.birth_date)).join('')}</div>`:'<div class="ap8-empty">Nenhuma cria vinculada.</div>'}
+        ${offspring.length?`<div class="ap8-list" style="margin-top:7px">${offspring.slice(0,6).map(c=>ap8Event('🐮',`#${(c.number)} · ${(c.category||'')}`,(c.breed||''),c.birth_date)).join('')}</div>`:'<div class="ap8-empty">Nenhuma cria vinculada.</div>'}
       </div>
 
       <div class="ap8-card ap8-wide">
@@ -7547,18 +7547,18 @@ openAnimalProfile = async function(id){
 
       <div class="ap8-card">
         <h4>Saúde</h4>
-        ${(a.health||[]).length?`<div class="ap8-list">${a.health.slice(0,8).map(x=>ap8Event('💉',ap8Esc(x.event_type||'Registro'),`${ap8Esc(x.product||'')}${x.next_due_date?` · próxima ${ap8Date(x.next_due_date)}`:''}`,x.event_date)).join('')}</div>`:'<div class="ap8-empty">Sem registros sanitários.</div>'}
+        ${(a.health||[]).length?`<div class="ap8-list">${a.health.slice(0,8).map(x=>ap8Event('💉',(x.event_type||'Registro'),`${(x.product||'')}${x.next_due_date?` · próxima ${ap8Date(x.next_due_date)}`:''}`,x.event_date)).join('')}</div>`:'<div class="ap8-empty">Sem registros sanitários.</div>'}
       </div>
 
       <div class="ap8-card">
         <h4>Reprodução</h4>
-        ${(a.reproduction||[]).length?`<div class="ap8-list">${a.reproduction.slice(0,8).map(x=>ap8Event('❤️',ap8Esc(x.event_type||'Evento'),`${ap8Esc(x.result||'')}${x.expected_date?` · previsão ${ap8Date(x.expected_date)}`:''}`,x.event_date)).join('')}</div>`:'<div class="ap8-empty">Sem registros reprodutivos.</div>'}
+        ${(a.reproduction||[]).length?`<div class="ap8-list">${a.reproduction.slice(0,8).map(x=>ap8Event('❤️',(x.event_type||'Evento'),`${(x.result||'')}${x.expected_date?` · previsão ${ap8Date(x.expected_date)}`:''}`,x.event_date)).join('')}</div>`:'<div class="ap8-empty">Sem registros reprodutivos.</div>'}
       </div>
 
       <div class="ap8-card">
         <h4>Alimentação do lote</h4>
         <div class="ap8-section-sub">Lançamentos compartilhados pelo lote atual ${ap8Esc(a.lot||'')}.</div>
-        ${nutrition.length?`<div class="ap8-list">${nutrition.map(x=>ap8Event('🌾',ap8Esc(x.feed_name||'Alimentação'),`${Number(x.quantity_kg||0).toFixed(1)} kg · ${money(x.total_cost||0)}`,x.entry_date)).join('')}</div>`:'<div class="ap8-empty">Sem alimentação recente para este lote.</div>'}
+        ${nutrition.length?`<div class="ap8-list">${nutrition.map(x=>ap8Event('🌾',(x.feed_name||'Alimentação'),`${Number(x.quantity_kg||0).toFixed(1)} kg · ${money(x.total_cost||0)}`,x.entry_date)).join('')}</div>`:'<div class="ap8-empty">Sem alimentação recente para este lote.</div>'}
       </div>
 
       <div class="ap8-card">
@@ -7572,7 +7572,7 @@ openAnimalProfile = async function(id){
 
       <div class="ap8-card">
         <h4>Gastos vinculados</h4>
-        ${(a.expenses||[]).length?`<div class="ap8-list">${a.expenses.slice(0,7).map(x=>ap8Event('💰',ap8Esc(x.category||'Gasto'),`${money(x.amount||0)}${x.description?` · ${ap8Esc(x.description)}`:''}`,x.expense_date)).join('')}</div>`:'<div class="ap8-empty">Sem gastos individuais vinculados.</div>'}
+        ${(a.expenses||[]).length?`<div class="ap8-list">${a.expenses.slice(0,7).map(x=>ap8Event('💰',(x.category||'Gasto'),`${money(x.amount||0)}${x.description?` · ${(x.description)}`:''}`,x.expense_date)).join('')}</div>`:'<div class="ap8-empty">Sem gastos individuais vinculados.</div>'}
       </div>
 
       <div class="ap8-card ap8-timeline">
