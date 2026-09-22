@@ -54,8 +54,48 @@ function adminCaptchaFailed(){adminCaptchaToken=null;captchaStatus.textContent='
 function adminCaptchaReady(){try{adminCaptchaWidget=window.turnstile.render(captchaBox,{sitekey:'0x4AAAAAAEz18CzViJsl3lHd',theme:'light',callback:token=>{adminCaptchaToken=token;captchaStatus.textContent='Verificação concluída.'},'expired-callback':()=>{adminCaptchaToken=null;captchaStatus.textContent='Verificação expirada. Conclua a verificação novamente.'},'error-callback':adminCaptchaFailed});captchaStatus.textContent='Conclua a verificação de segurança.'}catch(error){adminCaptchaFailed()}}
 function resetAdminCaptcha(){adminCaptchaToken=null;if(window.turnstile&&adminCaptchaWidget!==null){try{window.turnstile.reset(adminCaptchaWidget);captchaStatus.textContent='Conclua a verificação de segurança.'}catch(error){adminCaptchaFailed()}}}
 async function login(){if(adminLoginBusy)return;const mail=email.value.trim(),pass=password.value;loginMsg.textContent='';if(!mail||!pass){loginMsg.textContent='Informe e-mail e senha.';return}if(!adminCaptchaToken){loginMsg.textContent='Conclua a verificação de segurança antes de entrar.';return}adminLoginBusy=true;loginBtn.disabled=true;loginBtn.textContent='Entrando...';try{const {error}=await sb.auth.signInWithPassword({email:mail,password:pass,options:{captchaToken:adminCaptchaToken}});if(error){loginMsg.textContent=error.message==='Invalid login credentials'?'E-mail ou senha inválidos.':/captcha/i.test(error.message)?'Verificação de segurança recusada. Conclua novamente e tente entrar.':error.message;return}await enterApp()}catch(error){loginMsg.textContent='Não foi possível entrar. Verifique sua conexão e tente novamente.'}finally{resetAdminCaptcha();adminLoginBusy=false;loginBtn.disabled=false;loginBtn.textContent='Entrar como administrador'}}
-async function safeQuery(table,select='*'){const r=await sb.from(table).select(select);if(r.error){console.warn('Consulta indisponível:',table,r.error.message);return []}return r.data||[]}
-async function loadData(){toast('Atualizando painel...');const results=await Promise.all([sb.from('farms').select('*').order('created_at',{ascending:false}),safeQuery('animals','id,farm_id,status,created_at,deleted_at'),safeQuery('lots','id,farm_id,created_at,deleted_at'),safeQuery('expenses','id,farm_id,amount,expense_date,created_at,deleted_at'),safeQuery('farm_members','id,farm_id,active,role,created_at'),safeQuery('weighings','id,farm_id,weighing_date,created_at,deleted_at'),safeQuery('health_events','id,farm_id,event_date,created_at,deleted_at'),safeQuery('reproductive_events','id,farm_id,event_date,created_at,deleted_at')]);if(results[0].error){alert('Erro ao carregar clientes: '+results[0].error.message);return}farms=results[0].data||[];[animals,lots,expenses,members,weighings,health,reproduction]=results.slice(1);renderAll();toast('Painel atualizado')}
+let loadingAdminData=false,hasLoadedAdminData=false;
+const dataStatus=document.createElement('div');dataStatus.className='security-box hidden';dataStatus.setAttribute('role','status');dataStatus.style.marginBottom='16px';
+const dataStatusText=document.createElement('span'),retryDataBtn=document.createElement('button');retryDataBtn.className='btn secondary';retryDataBtn.textContent='Tentar novamente';retryDataBtn.onclick=()=>loadData();dataStatus.append(dataStatusText,retryDataBtn);document.querySelector('.content').prepend(dataStatus);
+async function safeQuery(table,select='*'){
+ const rows=[],pageSize=500;
+ for(let offset=0;;){
+  let query=sb.from(table).select(select);
+  if(table==='farm_members')query=query.order('farm_id').order('user_id');
+  else if(table==='farms')query=query.order('created_at',{ascending:false}).order('id');
+  else query=query.order('id');
+  const {data,error}=await query.range(offset,offset+pageSize-1);
+  if(error)throw new Error('Falha ao consultar '+table+': '+error.message);
+  const page=data||[];rows.push(...page);
+  if(page.length===0)return rows;
+  offset+=page.length;
+ }
+}
+async function loadData(){
+ if(loadingAdminData)return;
+ loadingAdminData=true;retryDataBtn.disabled=true;dataStatus.classList.remove('hidden');dataStatusText.textContent='Atualizando dados… ';
+ if(!hasLoadedAdminData)document.querySelectorAll('.view').forEach(el=>el.style.visibility='hidden');
+ try{
+  const results=await Promise.all([
+   safeQuery('farms'),
+   safeQuery('animals','id,farm_id,status,created_at,deleted_at'),
+   safeQuery('lots','id,farm_id,created_at,deleted_at'),
+   safeQuery('expenses','id,farm_id,amount,expense_date,created_at,deleted_at'),
+   safeQuery('farm_members','farm_id,user_id,active,role,created_at'),
+   safeQuery('weighings','id,farm_id,weighing_date,created_at,deleted_at'),
+   safeQuery('health_events','id,farm_id,event_date,created_at,deleted_at'),
+   safeQuery('reproductive_events','id,farm_id,event_date,created_at,deleted_at')
+  ]);
+  [farms,animals,lots,expenses,members,weighings,health,reproduction]=results;
+  renderAll();hasLoadedAdminData=true;document.querySelectorAll('.view').forEach(el=>el.style.visibility='');
+  if(currentDetailId!==null)showDetail(currentDetailId);
+  dataStatus.classList.add('hidden');toast('Painel atualizado');
+ }catch(error){
+  console.warn('Falha ao atualizar painel:',error.message);
+  dataStatusText.textContent=hasLoadedAdminData?'Não foi possível atualizar os indicadores. Os valores exibidos são da última consulta concluída. ':'Não foi possível carregar os indicadores. Tente novamente. ';
+  toast('Não foi possível atualizar os dados');
+ }finally{loadingAdminData=false;retryDataBtn.disabled=false}
+}
 const alive=x=>!x.deleted_at;
 function statsFor(id){const same=x=>Number(x.farm_id)===Number(id)&&alive(x),fa=animals.filter(same),fl=lots.filter(same),fe=expenses.filter(same),fm=members.filter(x=>Number(x.farm_id)===Number(id)&&x.active!==false);return{animals:fa.length,active:fa.filter(x=>['active','ativo',''].includes(String(x.status||'').toLowerCase())).length,lots:fl.length,expenses:fe.reduce((s,x)=>s+Number(x.amount||0),0),members:fm.length,weighings:weighings.filter(same).length,health:health.filter(same).length,repro:reproduction.filter(same).length}}
 function renderAll(){renderKpis();renderGrowth();renderAttention();renderRecent();fillFilters();renderClients()}
