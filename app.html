@@ -77,6 +77,7 @@ html,body{background:var(--bg);color:var(--text);font-size:13px}
 .metric-top{display:flex;justify-content:space-between;align-items:center}.metric-top span{font-size:9px;font-weight:700}.metric-top i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#e8f7ed;color:#118f44;display:grid;place-items:center;font-size:11px}
 .metric-card strong{display:block;font-size:21px;margin-top:8px;letter-spacing:-.035em}.metric-card small{display:block;font-size:8px;color:var(--muted);margin-top:5px}
 .onboarding-card{margin-top:10px;background:#fff;border:1px solid #d8ebdf;border-radius:7px;padding:11px;display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:8px;align-items:stretch}.onboarding-card>div{padding:7px}.onboarding-card>div b{display:block;font-size:12px}.onboarding-card>div small{display:block;font-size:8px;color:var(--muted);margin-top:5px}.onboarding-card button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px;display:flex;gap:8px;text-align:left}.onboarding-card button i{font-style:normal;width:22px;height:22px;border-radius:50%;background:#e5f7eb;color:#0d9445;display:grid;place-items:center;font-size:9px;font-weight:850}.onboarding-card button b{font-size:9px}.onboarding-card button small{display:block;font-size:7px;color:var(--muted);margin-top:2px}
+.welcome-onboarding{z-index:250;padding:20px}.welcome-onboarding-box{width:min(760px,96vw);background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 24px 70px rgba(2,39,34,.32)}.welcome-onboarding-hero{padding:30px 34px;background:linear-gradient(135deg,#063b31,#119447);color:#fff}.welcome-onboarding-hero .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#d6f6df}.welcome-onboarding-hero h2{font-size:30px;line-height:1.1;margin:13px 0 9px}.welcome-onboarding-hero p{margin:0;max-width:540px;font-size:15px;line-height:1.55;color:#e7f7ed}.welcome-onboarding-body{padding:26px 34px 30px}.welcome-onboarding-body>p{margin:0 0 16px;font-size:14px;color:var(--muted)}.welcome-onboarding-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.welcome-onboarding-actions button{border:1px solid #d8e9dd;background:#fff;border-radius:14px;padding:17px;text-align:left;cursor:pointer;display:flex;gap:13px;align-items:flex-start;transition:.18s}.welcome-onboarding-actions button:hover{transform:translateY(-2px);border-color:#72bc8d;box-shadow:0 9px 20px rgba(16,120,57,.12)}.welcome-onboarding-actions .welcome-action-main{grid-column:1/-1;background:#f1faf4;border-color:#a9dabb}.welcome-action-icon{width:39px;height:39px;flex:0 0 39px;border-radius:12px;display:grid;place-items:center;background:#e1f5e8;color:#087d37;font-size:20px;font-weight:900}.welcome-onboarding-actions b{display:block;font-size:15px;margin:2px 0 5px}.welcome-onboarding-actions small{display:block;color:var(--muted);font-size:12px;line-height:1.45}.welcome-later{display:block;border:0;background:transparent;color:#607184;text-decoration:underline;margin:18px auto 0;cursor:pointer;font-size:13px}@media(max-width:600px){.welcome-onboarding{padding:12px}.welcome-onboarding-hero{padding:25px 22px}.welcome-onboarding-hero h2{font-size:25px}.welcome-onboarding-body{padding:22px}.welcome-onboarding-actions{grid-template-columns:1fr}.welcome-onboarding-actions .welcome-action-main{grid-column:auto}}
 .dash-row{display:grid;gap:10px;margin-top:10px}.dash-main-row{grid-template-columns:1.25fr .8fr 1.25fr}.dash-data-row{grid-template-columns:1.25fr .8fr 1fr}.dash-bottom-row{grid-template-columns:1.7fr .8fr}
 .panel{background:#fff;border:1px solid var(--line);border-radius:7px;padding:12px 13px;min-width:0}.panel-title{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}.panel-title b{font-size:11px}.panel-title small{display:block;font-size:8px;color:var(--muted);margin-top:2px}.text-link{border:0;background:none;color:#138d45;font-size:8px;cursor:pointer}
 .dashboard-alert{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid #edf1ef}.dashboard-alert:last-child{border-bottom:0}.dashboard-alert .alert-icon{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;font-size:10px}.alert-icon.orange{background:#fff2df;color:#e68e14}.alert-icon.blue{background:#e8f1ff;color:#3c78d9}.alert-icon.green{background:#e7f7ec;color:#139847}.alert-icon.purple{background:#f0eaff;color:#7e58cf}.dashboard-alert b{display:block;font-size:8.5px}.dashboard-alert small{display:block;font-size:7.5px;color:var(--muted);margin-top:2px}.dashboard-alert em{font-style:normal;border-radius:4px;background:#eef8f1;color:#118e44;font-size:8px;padding:3px 6px}
@@ -1398,6 +1399,24 @@ body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
   <button id="mgInstallBtn" type="button" hidden>Instalar</button>
 </div>
 <div id="mgOfflineToast" class="mg-offline-toast" role="status" aria-live="polite"></div>
+<div class="modal welcome-onboarding" id="welcomeOnboardingModal" role="dialog" aria-modal="true" aria-labelledby="welcomeOnboardingTitle">
+  <div class="welcome-onboarding-box">
+    <div class="welcome-onboarding-hero">
+      <span class="eyebrow">● Bem-vindo ao Meu Gado</span>
+      <h2 id="welcomeOnboardingTitle">Vamos cadastrar seu primeiro animal?</h2>
+      <p>Em poucos minutos, você começa a registrar o rebanho e acompanha peso, saúde, gastos e resultados da fazenda.</p>
+    </div>
+    <div class="welcome-onboarding-body">
+      <p>Escolha por onde deseja começar:</p>
+      <div class="welcome-onboarding-actions">
+        <button class="welcome-action-main" onclick="startWelcomeOnboarding('animal')"><span class="welcome-action-icon">＋</span><span><b>Cadastrar meu primeiro animal</b><small>Informe o número, categoria, peso e os dados básicos.</small></span></button>
+        <button onclick="startWelcomeOnboarding('lot')"><span class="welcome-action-icon">▱</span><span><b>Criar um lote</b><small>Organize os animais por grupo ou local.</small></span></button>
+        <button onclick="startWelcomeOnboarding('tour')"><span class="welcome-action-icon">→</span><span><b>Conhecer o painel</b><small>Veja onde ficam as principais informações.</small></span></button>
+      </div>
+      <button class="welcome-later" onclick="closeWelcomeOnboarding()">Fazer isso mais tarde</button>
+    </div>
+  </div>
+</div>
 <div class="modal" id="syncCenterModal"><div class="modalbox"><div class="head"><div><h3>Central de sincronização</h3><div class="sub">Acompanhe os lançamentos feitos no Modo Campo Offline</div></div><button class="btn secondary" onclick="closeModal('syncCenterModal')">Fechar</button></div><div id="syncCenterBody"></div></div></div>
 
 <div id="mgTestLoginGate" class="mg-test-login-gate">
@@ -3449,6 +3468,31 @@ function restoreLastView(){
 }
 function openModal(id){document.getElementById(id).classList.add('show');const t=new Date().toISOString().slice(0,10);['adate','edate','hdate','rdate'].forEach(x=>{const e=document.getElementById(x);if(e&&!e.value)e.value=t});if(id==='reproModal')updateReproPrediction()}
 function closeModal(id){document.getElementById(id).classList.remove('show')}
+function closeWelcomeOnboarding(){
+  const modal=document.getElementById('welcomeOnboardingModal');
+  if(modal) modal.classList.remove('show');
+}
+function startWelcomeOnboarding(action){
+  closeWelcomeOnboarding();
+  if(action==='animal'){openNewAnimal();return}
+  if(action==='lot'){openLot();return}
+  show('inicio');
+}
+function updateWelcomeOnboarding(total){
+  const firstStepsEl=document.getElementById('firstSteps');
+  const welcomeModal=document.getElementById('welcomeOnboardingModal');
+  if(firstStepsEl) firstStepsEl.style.display='none';
+  if(!welcomeModal) return;
+  if(total>0){
+    welcomeModal.classList.remove('show');
+    window.mgWelcomeOnboardingShown=false;
+    return;
+  }
+  if(!window.mgWelcomeOnboardingShown){
+    welcomeModal.classList.add('show');
+    window.mgWelcomeOnboardingShown=true;
+  }
+}
 async function load(){
  const me=await api('/api/me');
  refreshTrashBadge();
@@ -3500,8 +3544,7 @@ async function dashboard(){
   if(document.getElementById('dashTodayReady')) dashTodayReady.textContent=d.ready||0;
   renderDashboardComposition(d.categories||{},Number(d.total||0));
   await mgRefreshNotificationCount(d.alerts||[]);
-  const firstStepsEl=document.getElementById('firstSteps');
-  if(firstStepsEl) firstStepsEl.style.display=d.total===0?'grid':'none';
+  updateWelcomeOnboarding(Number(d.total||0));
   if(document.getElementById('financePeriod')){
     const prev=Number(d.expenses_prev_month||0),cur=Number(d.expenses_month||0);
     financePeriod.textContent=prev>0?`${cur>=prev?'↑':'↓'} ${Math.abs((cur-prev)/prev*100).toFixed(0)}% vs. mês anterior`:'Mês atual';
