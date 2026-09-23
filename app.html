@@ -3500,7 +3500,8 @@ async function dashboard(){
   if(document.getElementById('dashTodayReady')) dashTodayReady.textContent=d.ready||0;
   renderDashboardComposition(d.categories||{},Number(d.total||0));
   await mgRefreshNotificationCount(d.alerts||[]);
-  if(document.getElementById('firstSteps')) firstSteps.style.display=d.total===0?'grid':'none';
+  const firstStepsEl=document.getElementById('firstSteps');
+  if(firstStepsEl) firstStepsEl.style.display=d.total===0?'grid':'none';
   if(document.getElementById('financePeriod')){
     const prev=Number(d.expenses_prev_month||0),cur=Number(d.expenses_month||0);
     financePeriod.textContent=prev>0?`${cur>=prev?'↑':'↓'} ${Math.abs((cur-prev)/prev*100).toFixed(0)}% vs. mês anterior`:'Mês atual';
