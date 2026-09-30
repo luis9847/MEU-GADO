@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Meu Gado">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest-meu-gado.webmanifest">
 <link rel="apple-touch-icon" href="/meu-gado-logo.png">
 <style>
@@ -1389,6 +1390,71 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
 </style>
 </head>
+<style id="mg-v30-redesign">
+/* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */
+:root{--green:#0f7a3d;--green2:#0b6231;--green-dark:#0b6231;--dark:#052f31;--nav:#052f31;--nav2:#04292b;--bg:#f3f7f5;--card:#fff;--line:#dbe6e2;--text:#0e2a26;--muted:#5a726c;--soft:#eaf3ef;--mg-gold:#e0b73a;--mg-act:#128040}
+html body{font-family:Figtree,Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+html body h1,html body h2,html body h3,html body .metric-card strong,html body .brand b,html body .dairy-kpi b{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;letter-spacing:-.02em}
+html body :focus-visible{outline:3px solid var(--mg-gold);outline-offset:2px}
+/* menu lateral */
+html body .side{background:linear-gradient(180deg,#052f31,#04292b);box-shadow:none}
+html body .brand b{font-size:19px;font-weight:800;color:#fff}
+html body .brand small{font-size:11px;color:#9dc1b8}
+html body .nav-title{font-size:11px;letter-spacing:.06em;color:#7fa39b;margin:18px 10px 6px;text-transform:none}
+html body .nav a{display:flex;align-items:center;gap:0;border-radius:10px;padding:10px 12px;color:#cfe3dd;font-size:14px;font-weight:500}
+html body .nav a:hover{background:rgba(255,255,255,.07)}
+html body .nav a.active{background:var(--mg-act);color:#fff;font-weight:600;box-shadow:none}
+html body .side-link,html body .mydata-btn{border-radius:10px}
+html body .farm-profile{border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+html body .nav a .mgi{margin-right:12px;vertical-align:middle}
+.mgi{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(min-width:1201px){html body .layout{grid-template-columns:236px minmax(0,1fr)}}
+/* topo */
+html body .top{height:64px;background:rgba(243,247,245,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+html body .search{display:flex;align-items:center;gap:8px}
+html body .search input{border-radius:12px;border:1px solid var(--line);background:#fff}
+html body .notification-btn{border-radius:12px;border:1px solid var(--line);background:#fff;display:inline-flex;align-items:center;gap:8px;font-weight:600}
+html body .notification-btn b{background:var(--mg-gold);color:#2a2100;border-radius:10px}
+html body .top-user span,html body #farmInitial{background:var(--mg-act);color:#fff}
+html body .content{padding:22px 28px 56px}
+/* títulos */
+html body .page-title h2,html body .content .head h2{font-size:28px;font-weight:800}
+html body .head h3{font-size:16px;font-weight:700}
+html body .dash-welcome{border-radius:16px;background:linear-gradient(105deg,#0b5d31,#128040 65%,#2f9a58)}
+html body .dash-welcome h1{font-size:30px;font-weight:800}
+/* cartões */
+html body .card,html body .panel,html body .metric-card,html body .report-card,html body .dash-today,html body .today-item,html body .release-card,html body .help-card,html body .team-role-card,html body .market-kpi{border-radius:14px;border:1px solid var(--line);box-shadow:none;background:#fff}
+html body .metric-card:hover{transform:none;box-shadow:0 8px 22px rgba(5,47,49,.08)}
+html body .metric-card strong{font-size:26px!important;font-weight:800}
+html body .dash-section-head b,html body .panel-title b{font-size:15px}
+/* botões */
+html body .btn{border-radius:10px;font-weight:600;padding:9px 16px}
+html body .primary{background:var(--green);border:1px solid var(--green);color:#fff}
+html body .wide-primary,html body .btn.wide-primary{background:var(--green);border-color:var(--green);color:#fff}
+html body .primary:hover,html body .wide-primary:hover{background:var(--green2)}
+html body .secondary{background:#fff;border:1px solid var(--line);color:var(--text)}
+html body .secondary:hover{border-color:var(--green)}
+html body .filter-pill{border-radius:20px;border:1px solid var(--line);background:#fff;padding:7px 14px;font-weight:500}
+html body .filter-pill.active{background:#052f31;border-color:#052f31;color:#fff}
+/* formulários */
+html body .content input:not([type=checkbox]):not([type=radio]):not([type=file]),html body .modalbox input:not([type=checkbox]):not([type=radio]):not([type=file]),html body .content select,html body .modalbox select,html body .content textarea,html body .modalbox textarea{border:1px solid #cfdcd7;border-radius:10px;background:#fff;min-height:42px;padding:9px 12px}
+html body .content input:focus,html body .modalbox input:focus,html body .content select:focus,html body .modalbox select:focus,html body .content textarea:focus,html body .modalbox textarea:focus{border-color:var(--mg-act);box-shadow:0 0 0 3px rgba(18,128,64,.15);outline:0}
+html body .content label,html body .modalbox label{font-size:13px!important;font-weight:600;color:#25423c}
+/* tabelas */
+html body .content th{font-size:12px!important;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;border-bottom:1px solid var(--line)}
+html body .content td{font-size:13.5px!important;border-bottom:1px solid #edf3f0}
+html body .content tbody tr:hover td{background:#f7fbf9}
+/* leitura: textos um pouco maiores */
+html body .content p,html body .content .sub,html body .content .foot{font-size:13.5px!important}
+html body .content small{font-size:12px!important}
+html body .content .btn{font-size:13.5px!important}
+/* janelas */
+html body .modal{background:rgba(5,47,49,.55);backdrop-filter:blur(3px)}
+html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+@media(max-width:650px){html body .content{padding:14px 14px 48px}html body .page-title h2,html body .content .head h2{font-size:23px}html body .dash-welcome h1{font-size:24px}}
+@media(prefers-reduced-motion:reduce){html body *{transition:none!important;animation:none!important}}
+</style>
+
 <body data-build="modo-campo-offline-v1-oficial">
 <div id="mgConnectionBar" class="mg-connection-bar" role="status" aria-live="polite">
   <span id="mgConnectionDot" class="mg-connection-dot"></span>
@@ -3167,7 +3233,7 @@ async function apiOnline(path,opt={}){
    let r=await mgSb.from('lots').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',lotId).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}
  }
  if(path==='/api/weighings/recent'){let w=await mgRows('weighings','*','weighing_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x]));return w.filter(x=>map[x.animal_id]).sort((x,y)=>String(y.weighing_date||'').localeCompare(String(x.weighing_date||''))||Number(y.id||0)-Number(x.id||0)).map(x=>({...x,number:map[x.animal_id].number,lot:map[x.animal_id].lot}))}
- if(path==='/api/weighings/history'){let w=await mgRows('weighings'),g={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(g[m]??=[]).push(Number(x.weight))}return Object.entries(g).sort().slice(-6).map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}))}
+ if(path==='/api/weighings/history'){/* v30: peso médio dos animais ATIVOS, usando a última pesagem de cada um até o fim de cada mês (mesma lógica do card 'Peso médio'); weighings = nº de animais na média */let [w,a]=await Promise.all([mgRows('weighings'),mgAnimals(true)]);const active=new Set(a.map(x=>x.id));const rows=w.filter(x=>active.has(x.animal_id)&&Number(x.weight)>0&&x.weighing_date).sort((x,y)=>String(x.weighing_date).localeCompare(String(y.weighing_date)));const months=[...new Set(rows.map(x=>String(x.weighing_date).slice(0,7)))].sort().slice(-6);return months.map(month=>{const last={};for(const x of rows){if(String(x.weighing_date).slice(0,7)<=month)last[x.animal_id]=Number(x.weight)}const v=Object.values(last);return {month,avg_weight:v.reduce((t,n)=>t+n,0)/v.length,weighings:v.length,by_animal:last}})}
  if(path==='/api/weighings/batch'&&method==='POST'){let rows=(data.items||data.weighings||[]).map(x=>({farm_id:f.id,animal_id:Number(x.animal_id),weighing_date:data.weighing_date||x.weighing_date,weight:Number(x.weight),notes:x.notes||data.notes||''})).filter(x=>x.weight>0);let r=await mgSb.from('weighings').insert(rows).select('id');if(r.error)mgErr(r.error);if((r.data||[]).length!==rows.length)throw new Error('Nem todas as pesagens do lote foram confirmadas pelo banco de dados.');return {ok:true,count:r.data.length,ids:r.data.map(x=>x.id)}}
  if(path==='/api/expenses'&&method==='GET'){let e=await mgRows('expenses','*','expense_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return e.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/expenses'&&method==='POST'){let text=(data.category+' '+data.description+' '+(data.notes||'')).toLowerCase();if(/(compra|aquisi).*(gado|animal|boi|vaca|bezer)/.test(text))throw new Error('Compra de gado não deve ser lançada no módulo Gastos');let r=await mgSb.from('expenses').insert({farm_id:f.id,animal_id:data.animal_id||null,lot:data.lot||'',category:mgNormalizeLabel(data.category||'OUTROS'),expense_date:data.expense_date,amount:data.amount,description:data.description,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
@@ -4400,10 +4466,10 @@ function renderWeightChart(){
   const pts=vals.map(point),line=pts.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' '),area=`${line} L ${pts.at(-1).x.toFixed(1)} ${(T+plotH).toFixed(1)} L ${pts[0].x.toFixed(1)} ${(T+plotH).toFixed(1)} Z`;
   const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const grids=[0,.5,1].map(f=>{const y=T+plotH*f,v=max-range*f;return `<line class="weight-grid-line" x1="${L}" y1="${y}" x2="${W-R}" y2="${y}"/><text class="weight-axis-label" x="4" y="${y+4}">${v.toFixed(0)} kg</text>`;}).join('');
-  const marks=pts.map((p,i)=>{const parts=String(data[i].month||'').split('-'),label=months[Number(parts[1])-1]||data[i].month;return `<circle class="weight-point" cx="${p.x}" cy="${p.y}" r="5"/><text class="weight-point-value" x="${p.x}" y="${p.y-12}">${p.v.toFixed(0)} kg</text><text class="weight-month" x="${p.x}" y="${H-7}">${label}</text>`;}).join('');
+  const marks=pts.map((p,i)=>{const parts=String(data[i].month||'').split('-'),label=months[Number(parts[1])-1]||data[i].month;return `<circle class="weight-point" cx="${p.x}" cy="${p.y}" r="5"/><text class="weight-point-value" x="${p.x}" y="${p.y-12}">${p.v.toFixed(0)} kg</text><text class="weight-month" x="${p.x}" y="${H-7}">${label}${Number(data[i].weighings)?' · '+Number(data[i].weighings)+(Number(data[i].weighings)===1?' animal':' animais'):''}</text>`;}).join('');
   root.innerHTML=`<svg class="weight-chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução do peso médio"><defs><linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#23a95b" stop-opacity=".28"/><stop offset="100%" stop-color="#23a95b" stop-opacity=".02"/></linearGradient></defs>${grids}<path class="weight-area" d="${area}"/><path class="weight-line" d="${line}"/>${marks}</svg>`;
   const delta=vals.at(-1)-vals[0],pct=vals[0]?delta/vals[0]*100:0;
-  if(summary){summary.style.display='flex';summary.innerHTML=`<span>Período exibido: <b>${data.length} registro${data.length===1?'':'s'}</b></span><span>Variação: <b class="${delta>=0?'up':'down'}">${delta>=0?'▲':'▼'} ${Math.abs(delta).toFixed(1)} kg (${Math.abs(pct).toFixed(1)}%)</b></span>`;}
+  const mgFmt=(d,p)=>`<b class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(1)} kg (${Math.abs(p).toFixed(1)}%)</b>`;const fa=data[0].by_animal||{},la=data.at(-1).by_animal||{},common=Object.keys(la).filter(id=>id in fa),nF=Object.keys(fa).length,nL=Object.keys(la).length,sameGroup=data.length<2||!data[0].by_animal||(common.length===nF&&common.length===nL);let varHtml;if(sameGroup)varHtml=`<span>Variação: ${mgFmt(delta,pct)}</span>`;else if(common.length){const a0=common.reduce((t,id)=>t+Number(fa[id]),0)/common.length,a1=common.reduce((t,id)=>t+Number(la[id]),0)/common.length,d=a1-a0;varHtml=`<span>Variação nos mesmos ${common.length} animais: ${mgFmt(d,a0?d/a0*100:0)}</span><span>Animais na média: <b>${nF} → ${nL}</b> · o grupo mudou</span>`}else varHtml=`<span>Variação: <b>não comparável</b> (nenhum animal pesado nos dois períodos)</span><span>Animais na média: <b>${nF} → ${nL}</b></span>`;if(summary){summary.style.display='flex';summary.innerHTML=`<span>Período exibido: <b>${data.length} registro${data.length===1?'':'s'}</b></span>${varHtml}`;}
 }
 async function loadWeightHistory(){
   weightHistoryData=await api('/api/weighings/history');
@@ -7823,6 +7889,21 @@ function printMilkReportV5(){const r=mgMilkReportDataV5;if(!r)return alert('Atua
 
 const mgRestoreTrashBaseV5=restoreTrashItem;restoreTrashItem=async function(table,id){await mgRestoreTrashBaseV5(table,id);if(table.startsWith('milk_')||table==='dairy_lactations'){mgDairyInvalidateV5();if(document.getElementById('leite')?.classList.contains('active'))await loadDairyTab(mgDairyCurrentTab,true)}};
 document.addEventListener('DOMContentLoaded',()=>{mgDairyEnhanceUiV5();setTimeout(mgDairyEnhanceUiV5,700)});
+</script>
+
+<script id="mg-v30-icons">
+/* Meu Gado v30 — troca os emojis do menu por ícones vetoriais (apenas visual) */
+(function(){
+var P={inicio:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',animais:'M5 9L3 5M19 9l2-4M6 9h12l1 6a7 7 0 0 1-14 0zM9.5 14h.01M14.5 14h.01',lotes:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',pesagem:'M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z',nutricao:'M4 21h16M6 21V10l6-6 6 6v11M10 21v-5h4v5',saude:'M12 5v14M5 12h14',repro:'M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z',leite:'M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z',desempenho:'M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6',gastos:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v10M15 9.5c-1-1-5-1.5-5 .8 0 2.5 5 1.4 5 3.9 0 2-4 2-5.2.6',relatorios:'M6 3h9l4 4v14H6zM15 3v4h4M9 13h6M9 17h6',mercado:'M3 17l6-6 4 4 8-8M15 7h6v6',saleSimulator:'M6 3h12v18H6zM9 7h6M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01',sino:'M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4',busca:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4'};
+function ico(d){var ns='http://www.w3.org/2000/svg',s=document.createElementNS(ns,'svg'),p=document.createElementNS(ns,'path');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','mgi');s.setAttribute('aria-hidden','true');p.setAttribute('d',d);s.appendChild(p);return s}
+function put(el,d){if(!el||!d||el.querySelector('.mgi'))return;var n=el.firstChild;if(n&&n.nodeType===3)el.removeChild(n);el.insertBefore(ico(d),el.firstChild)}
+function run(){
+  document.querySelectorAll('.nav a[data-v]').forEach(function(a){put(a,P[a.getAttribute('data-v')])});
+  put(document.querySelector('.notification-btn'),P.sino);
+  put(document.querySelector('.top .search > span'),P.busca);
+}
+run();document.addEventListener('DOMContentLoaded',run);
+})();
 </script>
 
 </body></html>
