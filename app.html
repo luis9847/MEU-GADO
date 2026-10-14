@@ -7994,7 +7994,7 @@ run();document.addEventListener('DOMContentLoaded',run);
     if(action==='weight'&&typeof openSingleWeight==='function')return openSingleWeight();
     if(action==='health'&&typeof openNewHealth==='function')return openNewHealth();
     if(action==='expense'&&typeof openNewExpense==='function')return openNewExpense();
-    if(action==='install'&&window.mgInstallPrompt){window.mgInstallPrompt.prompt();window.mgInstallPrompt.userChoice.then(()=>{window.mgInstallPrompt=null;const x=document.getElementById('mgMobileInstallAction');if(x)x.hidden=true})}
+    if(action==='install'&&mgInstallPrompt){mgInstallPrompt.prompt();mgInstallPrompt.userChoice.then(()=>{mgInstallPrompt=null;const x=document.getElementById('mgMobileInstallAction');if(x)x.hidden=true})}
   };
   window.addEventListener('beforeinstallprompt',()=>{const install=document.getElementById('mgMobileInstallAction');if(install)install.hidden=false});
   window.addEventListener('appinstalled',()=>{const install=document.getElementById('mgMobileInstallAction');if(install)install.hidden=true});
