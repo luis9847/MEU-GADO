@@ -1039,7 +1039,10 @@ html.mg-mobile-device .modal:not(#animalProfileModal)>.modalbox{
   window.addEventListener('orientationchange',detectMobile);
 })();
 
-const MG_TEST_TURNSTILE_SITE_KEY='0x4AAAAAAEz18CzViJsl3lHd';
+const MG_USING_PREVIEW_TURNSTILE=/(^|\.)vercel\.app$/i.test(location.hostname);
+const MG_TEST_TURNSTILE_SITE_KEY=MG_USING_PREVIEW_TURNSTILE
+  ?'1x00000000000000000000AA'
+  :'0x4AAAAAAEz18CzViJsl3lHd';
 let mgTestLoginPromise=null;
 let mgTestLoginResolve=null;
 let mgTestTurnstileWidget=null;
