@@ -7939,4 +7939,67 @@ run();document.addEventListener('DOMContentLoaded',run);
 })();
 </script>
 
+
+<style id="mg-mobile-app-experience-v1">
+.mg-mobile-quick{display:none}
+@media(max-width:760px){
+  html.mg-mobile-device .mg-connection-bar.mg-connection-hidden{opacity:0!important;pointer-events:none!important;transition:opacity .28s ease}
+  html.mg-mobile-device .mg-connection-bar{transition:opacity .22s ease}
+  html.mg-mobile-device .mg-mobile-quick{position:fixed;right:15px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:300;display:block}
+  html.mg-mobile-device .mg-mobile-quick-fab{width:56px;height:56px;border:0;border-radius:50%;background:#0d8a43;color:#fff;box-shadow:0 10px 24px rgba(4,91,45,.32);font-size:31px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform .18s ease,background .18s ease}
+  html.mg-mobile-device .mg-mobile-quick-fab:active{transform:scale(.94)}
+  html.mg-mobile-device .mg-mobile-quick.open .mg-mobile-quick-fab{background:#063d2e;transform:rotate(45deg)}
+  html.mg-mobile-device .mg-mobile-quick-menu{position:absolute;right:0;bottom:65px;width:212px;padding:8px;border:1px solid #d9e9de;border-radius:16px;background:rgba(255,255,255,.98);box-shadow:0 16px 38px rgba(5,47,49,.2);display:none}
+  html.mg-mobile-device .mg-mobile-quick.open .mg-mobile-quick-menu{display:grid;gap:4px}
+  html.mg-mobile-device .mg-mobile-quick-menu button{width:100%;border:0;background:transparent;border-radius:10px;padding:12px 11px;color:#173b2e;text-align:left;font-size:13px;font-weight:800;cursor:pointer}
+  html.mg-mobile-device .mg-mobile-quick-menu button:hover,html.mg-mobile-device .mg-mobile-quick-menu button:active{background:#eaf6ee;color:#087a3b}
+  html.mg-mobile-device .mg-mobile-quick-menu i{font-style:normal;display:inline-block;width:27px;font-size:17px;text-align:center;margin-right:7px}
+  html.mg-mobile-device .modal input:not([type="checkbox"]):not([type="radio"]),html.mg-mobile-device .modal select,html.mg-mobile-device .modal textarea,html.mg-mobile-device .content input:not([type="checkbox"]):not([type="radio"]),html.mg-mobile-device .content select,html.mg-mobile-device .content textarea{min-height:46px!important;font-size:16px!important;border-radius:10px!important}
+  html.mg-mobile-device .modal textarea,html.mg-mobile-device .content textarea{min-height:98px!important}
+}
+</style>
+<div class="mg-mobile-quick" id="mgMobileQuick">
+  <div class="mg-mobile-quick-menu" aria-label="Cadastros rápidos">
+    <button type="button" onclick="mgMobileQuickAction('animal')"><i>＋</i>Cadastrar animal</button>
+    <button type="button" onclick="mgMobileQuickAction('weight')"><i>⚖</i>Registrar pesagem</button>
+    <button type="button" onclick="mgMobileQuickAction('health')"><i>✚</i>Registrar saúde</button>
+    <button type="button" onclick="mgMobileQuickAction('expense')"><i>$</i>Novo gasto</button>
+    <button type="button" id="mgMobileInstallAction" hidden onclick="mgMobileQuickAction('install')"><i>⇩</i>Instalar aplicativo</button>
+  </div>
+  <button class="mg-mobile-quick-fab" type="button" aria-label="Abrir cadastros rápidos" aria-expanded="false" onclick="mgToggleMobileQuick(this)">+</button>
+</div>
+<script id="mg-mobile-app-experience-v1-js">
+(function(){
+  let hideTimer=null;
+  function isMobile(){return document.documentElement.classList.contains('mg-mobile-device')}
+  function scheduleConnectionBar(){
+    const bar=document.getElementById('mgConnectionBar');
+    if(!bar||!isMobile())return;
+    const needsAttention=bar.classList.contains('offline')||bar.classList.contains('syncing')||!!document.getElementById('mgPendingText')?.textContent.trim();
+    clearTimeout(hideTimer);bar.classList.remove('mg-connection-hidden');
+    if(!needsAttention)hideTimer=setTimeout(()=>bar.classList.add('mg-connection-hidden'),2600);
+  }
+  const originalUpdateConnectionUi=window.mgUpdateConnectionUi;
+  if(typeof originalUpdateConnectionUi==='function'){
+    window.mgUpdateConnectionUi=async function(){const result=await originalUpdateConnectionUi.apply(this,arguments);scheduleConnectionBar();return result};
+  }
+  window.addEventListener('online',()=>setTimeout(scheduleConnectionBar,120));
+  window.addEventListener('offline',()=>setTimeout(scheduleConnectionBar,120));
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(scheduleConnectionBar,900));
+  window.mgToggleMobileQuick=function(button){const box=document.getElementById('mgMobileQuick');if(!box)return;const open=box.classList.toggle('open');if(button)button.setAttribute('aria-expanded',String(open))};
+  window.mgCloseMobileQuick=function(){const box=document.getElementById('mgMobileQuick');if(!box)return;box.classList.remove('open');box.querySelector('.mg-mobile-quick-fab')?.setAttribute('aria-expanded','false')};
+  window.mgMobileQuickAction=function(action){
+    mgCloseMobileQuick();
+    if(action==='animal'&&typeof openNewAnimal==='function')return openNewAnimal();
+    if(action==='weight'&&typeof openSingleWeight==='function')return openSingleWeight();
+    if(action==='health'&&typeof openNewHealth==='function')return openNewHealth();
+    if(action==='expense'&&typeof openNewExpense==='function')return openNewExpense();
+    if(action==='install'&&window.mgInstallPrompt){window.mgInstallPrompt.prompt();window.mgInstallPrompt.userChoice.then(()=>{window.mgInstallPrompt=null;const x=document.getElementById('mgMobileInstallAction');if(x)x.hidden=true})}
+  };
+  window.addEventListener('beforeinstallprompt',()=>{const install=document.getElementById('mgMobileInstallAction');if(install)install.hidden=false});
+  window.addEventListener('appinstalled',()=>{const install=document.getElementById('mgMobileInstallAction');if(install)install.hidden=true});
+  document.addEventListener('click',function(e){const quick=document.getElementById('mgMobileQuick');if(quick&&!quick.contains(e.target))mgCloseMobileQuick()});
+  document.addEventListener('focusin',function(e){if(e.target.matches('input[type="number"]'))e.target.inputMode='decimal'});
+})();
+</script>
 </body></html>
