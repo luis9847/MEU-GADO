@@ -4933,6 +4933,83 @@ window.onload=()=>{
 <\/script>
 
 
+
+<style id="mg-device-tools-v2">
+.mg-install-help{position:fixed;inset:0;z-index:700;background:rgba(3,29,32,.62);display:flex;align-items:center;justify-content:center;padding:18px}
+.mg-install-help-card{width:min(430px,100%);border-radius:18px;background:#fff;color:#143529;padding:22px;box-shadow:0 22px 54px rgba(0,0,0,.25)}
+.mg-install-help-card h3{margin:0 0 8px;font-size:19px}.mg-install-help-card p{margin:0 0 14px;color:#64746d;font-size:13px;line-height:1.5}
+.mg-install-help-steps{margin:0;padding-left:20px;color:#244237;font-size:13px;line-height:1.7}.mg-install-help-card button{margin-top:18px;width:100%;border:0;border-radius:10px;background:#0d8a43;color:#fff;padding:12px;font-weight:800;cursor:pointer}
+.mg-device-alert-toggle{display:inline-flex;align-items:center;gap:7px;margin:10px 0 0;border:1px solid #bcdcc6;background:#f0faf3;color:#087a3b;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:800;cursor:pointer}
+.mg-device-alert-toggle.off{border-color:#e2c9a3;background:#fff8ed;color:#8d6516}
+</style>
+<script id="mg-device-tools-v2-js">
+(function(){
+  const mgAlertStore='mg_browser_alert_keys_v1';
+  const mgReadKeys=()=>{try{return new Set(JSON.parse(localStorage.getItem(mgAlertStore)||'[]'))}catch(_){return new Set()}};
+  const mgSaveKeys=s=>localStorage.setItem(mgAlertStore,JSON.stringify([...s].slice(-180)));
+  const mgAlertKey=a=>String(a?.id||[a?.type,a?.animal_id,a?.health_event_id,a?.date,a?.title].join(':'));
+
+  window.mgCloseInstallHelp=function(){document.getElementById('mgInstallHelp')?.remove()};
+  window.mgOpenInstallHelp=function(){
+    if(document.getElementById('mgInstallHelp'))return;
+    const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
+    const browser=isIos?'No Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.':'No menu do navegador, escolha “Instalar aplicativo” ou “Adicionar à tela inicial”.';
+    const el=document.createElement('div');el.id='mgInstallHelp';el.className='mg-install-help';
+    el.innerHTML='<div class="mg-install-help-card" role="dialog" aria-modal="true" aria-labelledby="mgInstallHelpTitle"><h3 id="mgInstallHelpTitle">Instale o Meu Gado</h3><p>Use o sistema como aplicativo, com ícone na tela inicial e acesso mais rápido no campo.</p><ol class="mg-install-help-steps"><li>'+browser+'</li><li>Confirme a instalação.</li><li>Abra pelo novo ícone “Meu Gado”.</li></ol><button type="button" onclick="mgCloseInstallHelp()">Entendi</button></div>';
+    el.addEventListener('click',e=>{if(e.target===el)mgCloseInstallHelp()});document.body.appendChild(el);
+  };
+
+  const quickBase=window.mgMobileQuickAction;
+  window.mgMobileQuickAction=function(action){
+    if(action==='install' && !mgInstallPrompt){mgCloseMobileQuick();return mgOpenInstallHelp();}
+    return quickBase?.(action);
+  };
+  const prepareInstall=()=>{
+    const install=document.getElementById('mgMobileInstallAction');
+    if(install){install.hidden=false;install.innerHTML='<i>⇩</i>Instalar aplicativo';}
+  };
+  document.addEventListener('DOMContentLoaded',prepareInstall);setTimeout(prepareInstall,700);
+
+  function alertButton(){
+    const host=document.getElementById('notificationsBody');
+    if(!host||document.getElementById('mgDeviceAlertToggle'))return;
+    const supported='Notification' in window;
+    const granted=supported&&Notification.permission==='granted';
+    const b=document.createElement('button');b.type='button';b.id='mgDeviceAlertToggle';b.className='mg-device-alert-toggle'+(granted?'':' off');
+    b.textContent=granted?'🔔 Avisos neste aparelho ativados':'🔔 Ativar avisos neste aparelho';
+    b.onclick=window.mgEnableDeviceAlerts;host.prepend(b);
+  }
+  window.mgEnableDeviceAlerts=async function(){
+    if(!('Notification' in window)){alert('Este navegador não oferece avisos do sistema. Use a Central de Notificações do Meu Gado.');return;}
+    const result=await Notification.requestPermission();
+    if(result==='granted'){alert('Avisos ativados neste aparelho. Você receberá alertas enquanto o Meu Gado estiver aberto.');}
+    else alert('A permissão não foi concedida. Você pode ativá-la nas configurações do navegador.');
+    const b=document.getElementById('mgDeviceAlertToggle');if(b){const ok=result==='granted';b.className='mg-device-alert-toggle'+(ok?'':' off');b.textContent=ok?'🔔 Avisos neste aparelho ativados':'🔔 Ativar avisos neste aparelho';}
+  };
+  const openBase=window.openNotifications;
+  if(typeof openBase==='function'){
+    window.openNotifications=async function(){const out=await openBase.apply(this,arguments);alertButton();return out};
+  }
+
+  async function checkDeviceAlerts(){
+    if(!('Notification' in window)||Notification.permission!=='granted'||document.visibilityState!=='visible')return;
+    try{
+      const data=await api('/api/dashboard'),alerts=Array.isArray(data?.alerts)?data.alerts:[];
+      const seen=mgReadKeys();
+      alerts.filter(a=>['danger','warning'].includes(String(a.level))).slice(0,3).forEach(a=>{
+        const k=mgAlertKey(a);if(seen.has(k))return;
+        new Notification('Meu Gado · '+String(a.title||'Alerta da fazenda'),{body:String(a.detail||'Abra o Meu Gado para ver os detalhes.'),icon:'/meu-gado-logo.png',tag:k});
+        seen.add(k);
+      });
+      mgSaveKeys(seen);
+    }catch(_e){}
+  }
+  window.addEventListener('load',()=>setTimeout(checkDeviceAlerts,3500));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkDeviceAlerts()});
+  setInterval(checkDeviceAlerts,300000);
+})();
+</script>
+
 </body>
 </html>`);
 
