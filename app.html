@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Meu Gado — Painel do Cliente</title>
 <meta name="mg-build" content="app-teste-leite-completo-v5">
 <meta name="theme-color" content="#052f31">
@@ -1039,7 +1039,10 @@ html.mg-mobile-device .modal:not(#animalProfileModal)>.modalbox{
   window.addEventListener('orientationchange',detectMobile);
 })();
 
-const MG_TEST_TURNSTILE_SITE_KEY='0x4AAAAAAEz18CzViJsl3lHd';
+const MG_USING_PREVIEW_TURNSTILE=/(^|\.)vercel\.app$/i.test(location.hostname);
+const MG_TEST_TURNSTILE_SITE_KEY=MG_USING_PREVIEW_TURNSTILE
+  ?'1x00000000000000000000AA'
+  :'0x4AAAAAAEz18CzViJsl3lHd';
 let mgTestLoginPromise=null;
 let mgTestLoginResolve=null;
 let mgTestTurnstileWidget=null;
@@ -1453,6 +1456,28 @@ html body .modal{background:rgba(5,47,49,.55);backdrop-filter:blur(3px)}
 html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 @media(max-width:650px){html body .content{padding:14px 14px 48px}html body .page-title h2,html body .content .head h2{font-size:23px}html body .dash-welcome h1{font-size:24px}}
 @media(prefers-reduced-motion:reduce){html body *{transition:none!important;animation:none!important}}
+
+/* Navegação principal do aplicativo no celular */
+.mg-mobile-tabs{display:none}
+@media(max-width:760px){
+  html.mg-mobile-device .content{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}
+  html.mg-mobile-device .mg-mobile-tabs{
+    position:fixed;left:0;right:0;bottom:0;z-index:280;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.97);border-top:1px solid #dbe6e2;
+    box-shadow:0 -10px 26px rgba(5,47,49,.10);backdrop-filter:blur(12px);
+  }
+  html.mg-mobile-device .mg-mobile-tabs button{
+    min-height:51px;border:0;border-radius:10px;background:transparent;color:#60756d;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-size:10px;font-weight:750;cursor:pointer;
+  }
+  html.mg-mobile-device .mg-mobile-tabs button i{font-style:normal;font-size:18px;line-height:1}
+  html.mg-mobile-device .mg-mobile-tabs button.active{background:#e9f6ed;color:#0b7b3d;font-weight:900}
+  html.mg-mobile-device .mg-mobile-tabs button:focus-visible{outline:3px solid #86ce9d;outline-offset:2px}
+  html.mg-mobile-device .mg-connection-bar{bottom:calc(76px + env(safe-area-inset-bottom))}
+}
 </style>
 
 <body data-build="modo-campo-offline-v1-oficial">
@@ -1551,6 +1576,13 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <div class="top-user"><span id="userInitial">F</span><div><b id="userTop">Usuário</b><small id="farmTop">Fazenda</small></div></div>
   </div>
 </div><div class="content">
+
+<nav class="mg-mobile-tabs" aria-label="Navegação principal">
+  <button class="active" type="button" data-mobile-v="inicio" onclick="return mgNavigate(event,'inicio',this)"><i>⌂</i><span>Início</span></button>
+  <button type="button" data-mobile-v="animais" onclick="return mgNavigate(event,'animais',this)"><i>🐄</i><span>Animais</span></button>
+  <button type="button" data-mobile-v="pesagem" onclick="return mgNavigate(event,'pesagem',this)"><i>⚖</i><span>Pesagem</span></button>
+  <button type="button" aria-label="Abrir mais opções" onclick="mgToggleMobileNav()"><i>☰</i><span>Mais</span></button>
+</nav>
 
 <section id="inicio" class="view active">
   <div class="dash-welcome">
@@ -3511,6 +3543,7 @@ function show(id,btn){
   if(!document.getElementById(id)) id='inicio';
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
   document.querySelectorAll('.nav [data-v],.side-link[data-v]').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
+  document.querySelectorAll('[data-mobile-v]').forEach(b=>b.classList.toggle('active',b.dataset.mobileV===id));
   try{localStorage.setItem('mg_last_view',id)}catch(e){}
   document.documentElement.classList.remove('mg-route-boot');
   window.scrollTo(0,0);
