@@ -1,0 +1,6 @@
+# Arquivos locais e credenciais
+node_modules/
+android/
+google-services.json
+*.keystore
+*.jks
