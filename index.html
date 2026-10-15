@@ -305,13 +305,8 @@ body.modal-open{overflow:hidden}
           <div class="field"><label>Nome da propriedade</label><input id="onFarmName" placeholder="Ex.: Fazenda Boa Vista"></div>
           <div class="row"><div class="field"><label>Cidade</label><input id="onCity" placeholder="Cidade"></div><div class="field"><label>UF</label><input id="onState" maxlength="2" placeholder="MG"></div></div>
 
-          <div class="field"><label>Tipo de pecuária</label>
-            <select id="onLivestockMode">
-              <option value="beef">Pecuária de corte</option>
-              <option value="dairy">Pecuária de leite</option>
-              <option value="mixed">Mista</option>
-            </select>
-          </div>
+          <input id="onLivestockMode" type="hidden" value="beef">
+          <div class="field"><label>Tipo de pecuária</label><input value="Pecuária de corte" readonly></div>
 
           <div class="field">
             <label>Atividades da propriedade <span class="optional">(marque uma ou mais)</span></label>
@@ -320,7 +315,6 @@ body.modal-open{overflow:hidden}
               <label class="activity-option"><input type="checkbox" name="onOperation" value="Recria"> Recria</label>
               <label class="activity-option"><input type="checkbox" name="onOperation" value="Engorda"> Engorda</label>
               <label class="activity-option"><input type="checkbox" name="onOperation" value="Confinamento"> Confinamento</label>
-              <label class="activity-option"><input type="checkbox" name="onOperation" value="Leite"> Leite</label>
               <label class="activity-option"><input type="checkbox" name="onOperation" value="Ciclo completo"> Ciclo completo</label>
               <label class="activity-option"><input type="checkbox" name="onOperation" value="Outra"> Outra</label>
             </div>
@@ -387,7 +381,7 @@ body.modal-open{overflow:hidden}
     <div class="device-stage"><div class="device-laptop"><img id="deviceDashboardShot" alt="Painel Meu Gado em computador"></div><div class="device-mobile"><b>Resumo da fazenda</b><span>Animais<strong>28</strong></span><span>Peso médio<strong>193,8 kg</strong></span><span>GMD médio<strong>0,032 kg/dia</strong></span></div></div>
   </section>
   <section class="modules-showcase" id="modulos"><span class="section-kicker">Funcionalidades</span><h2 class="section-title">Tudo o que a propriedade precisa, organizado por módulo.</h2><p class="section-lead">Escolha uma área para conhecer os recursos disponíveis no Meu Gado.</p><div class="module-layout"><div class="module-tabs"><button class="module-tab active" onclick="showLandingModule('rebanho',this)">🐂 Rebanho</button><button class="module-tab" onclick="showLandingModule('manejo',this)">⚖️ Manejo</button><button class="module-tab" onclick="showLandingModule('gestao',this)">📊 Gestão</button><button class="module-tab" onclick="showLandingModule('mercado',this)">📈 Mercado</button></div><div><article class="module-panel active" data-module="rebanho"><h3>Conheça cada animal</h3><ul><li>Cadastro e identificação</li><li>Organização por lotes</li><li>Ficha individual completa</li><li>Filiação e crias</li><li>Movimentações e baixas</li><li>Histórico centralizado</li></ul></article><article class="module-panel" data-module="manejo"><h3>Acompanhe a rotina do campo</h3><ul><li>Pesagens e evolução</li><li>Saúde e vacinação</li><li>Reprodução</li><li>Alimentação por lote</li><li>Metas de peso</li><li>Alertas importantes</li></ul></article><article class="module-panel" data-module="gestao"><h3>Transforme registros em decisões</h3><ul><li>Dashboard da propriedade</li><li>Desempenho do rebanho</li><li>Gastos por categoria</li><li>Relatórios gerenciais</li><li>Custo por cabeça</li><li>Indicadores e gráficos</li></ul></article><article class="module-panel" data-module="mercado"><h3>Acompanhe o setor pecuário</h3><ul><li>Cotação do boi gordo</li><li>Valores de reposição</li><li>Notícias do setor</li><li>Referências regionais</li><li>Simulador de venda</li><li>Fontes identificadas</li></ul></article></div></div></section>
-  <section class="audience-section" id="para-quem"><span class="section-kicker">Feito para o produtor</span><h2 class="section-title">Um sistema que acompanha diferentes realidades.</h2><div class="audience-grid"><article class="audience-card"><i>🐂</i><b>Pecuária de corte</b></article><article class="audience-card"><i>🥛</i><b>Pecuária leiteira</b></article><article class="audience-card"><i>🐄</i><b>Cria e recria</b></article><article class="audience-card"><i>🌾</i><b>Engorda</b></article><article class="audience-card"><i>⚖️</i><b>Confinamento</b></article></div></section>
+  <section class="audience-section" id="para-quem"><span class="section-kicker">Feito para o produtor</span><h2 class="section-title">Gestão pensada para a pecuária de corte.</h2><div class="audience-grid"><article class="audience-card"><i>🐂</i><b>Cria e recria</b></article><article class="audience-card"><i>🐃</i><b>Engorda</b></article><article class="audience-card"><i>⚖️</i><b>Confinamento</b></article><article class="audience-card"><i>📈</i><b>Ciclo completo</b></article></div></section>
   <section class="access-section"><div class="access-card"><small>MEU GADO COM VOCÊ</small><strong>Acompanhe a fazenda pelo celular.</strong><p>O painel é responsivo e pode ser acessado pelo navegador do celular para consultar animais, registrar manejos e acompanhar os indicadores da propriedade.</p></div><div class="access-list"><div><b>Interface responsiva</b><span>Telas adaptadas para computador, tablet e celular.</span></div><div><b>Dados protegidos</b><span>Cada propriedade acessa somente as próprias informações.</span></div><div><b>Atualização centralizada</b><span>Os registros ficam disponíveis para a equipe autorizada.</span></div><div><b>Modo offline em desenvolvimento</b><span>Estamos preparando uma solução própria para registrar dados em áreas sem sinal e sincronizar depois.</span></div></div></section>
   <section class="steps" id="como-funciona">
     <h2>Da anotação à decisão em poucos passos</h2>
@@ -398,7 +392,7 @@ body.modal-open{overflow:hidden}
     </div>
     <div style="margin:32px auto 0;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);max-width:950px">
       <b style="font-size:16px">Feito para quem vive a pecuária todos os dias</b>
-      <p style="font-size:12px;color:#d4e5df;margin:7px 0 16px">Produtores de corte, leite, cria, recria, engorda e confinamento.</p>
+      <p style="font-size:12px;color:#d4e5df;margin:7px 0 16px">Para produtores de corte, cria, recria, engorda, confinamento e ciclo completo.</p>
       <button class="hero-cta" onclick="openAuth('register')">Criar minha conta →</button>
     </div>
   </section>
