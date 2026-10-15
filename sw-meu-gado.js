@@ -1,11 +1,12 @@
 // Altere a versão a cada publicação do painel. Assim, quem instalou o Meu
 // Gado recebe a interface e os scripts novos em vez de permanecer em cache
 // com uma versão anterior.
-const MG_CACHE='meu-gado-oficial-modo-campo-v13-corte';
+const MG_CACHE='meu-gado-oficial-modo-campo-v14-corte';
 const MG_SHELL=[
   '/app.html',
   '/manifest-meu-gado.webmanifest',
-  '/meu-gado-logo.png'
+  '/meu-gado-logo.png',
+  '/supabase.js'
 ];
 
 self.addEventListener('install',event=>{
@@ -34,7 +35,7 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  if(url.origin===self.location.origin || url.hostname==='cdn.jsdelivr.net'){
+  if(url.origin===self.location.origin){
     event.respondWith(
       caches.match(request).then(cached=>cached||fetch(request).then(response=>{
         if(response&&response.ok){const copy=response.clone();caches.open(MG_CACHE).then(cache=>cache.put(request,copy))}
