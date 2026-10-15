@@ -2522,6 +2522,10 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <button onclick="downloadReport('gastos')">Baixar CSV</button>
       <button class="pdf" onclick="downloadReportPDF('gastos')">Baixar PDF</button>
     </div></div>
+    <div class="report-card"><i>🎯</i><b>Animais prontos para venda</b><p>Animais que já atingiram a meta de peso, com lote, peso atual e evolução para negociação.</p><div class="report-actions">
+      <button onclick="downloadReport('prontos_venda')">Baixar CSV</button>
+      <button class="pdf" onclick="downloadReportPDF('prontos_venda')">Baixar PDF</button>
+    </div></div>
   </div>
 </section>
 <section id="mercado" class="view">
@@ -2635,6 +2639,11 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 
 <section id="saleSimulator" class="view">
   <div class="page-title"><div><h1>Simulador de Venda</h1><p>Estime o valor de venda usando o peso do rebanho e a última cotação disponível no Mercado Pecuário.</p></div></div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="head"><div><h3>Animais prontos para negociação</h3><div class="sub">Acompanhe os animais que já atingiram a meta de peso e leve-os diretamente para a simulação de venda.</div></div><button class="btn secondary" type="button" onclick="downloadReportPDF('prontos_venda')">Gerar relatório</button></div>
+    <div id="readyAnimalsForSale" class="empty">Carregando animais elegíveis...</div>
+  </div>
 
   <div class="card" style="margin-bottom:12px">
     <div class="head"><div><h3>1. O que você deseja simular?</h3><div class="sub">Escolha um animal ou um lote cadastrado.</div></div></div>
@@ -2876,10 +2885,6 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
               <option>Angus</option>
               <option>Senepol</option>
               <option>Brahman</option>
-              <option>Girolando</option>
-              <option>Gir</option>
-              <option>Holandês</option>
-              <option>Jersey</option>
               <option>Tabapuã</option>
               <option>Guzerá</option>
               <option>Brangus</option>
@@ -3673,6 +3678,7 @@ async function loadAnimals(){
   if(document.getElementById('ranimal')) ranimal.innerHTML=opts;
   if(document.getElementById('pageWeightAnimal')) pageWeightAnimal.innerHTML='<option value="">Selecione...</option>'+opts;
   await loadRecentWeighings();
+  renderReadyAnimalsForSale();
 }
 function animalPhotoHtml(a){
   const photo=mgSafeImageUrl(a.photo_path);
@@ -4590,7 +4596,7 @@ function reportInPeriod(date){
 
 const MG_REPORT_TITLES={
  rebanho:'Rebanho completo',pesagens:'Pesagens',saude:'Saúde',reproducao:'Reprodução',
- crias:'Crias',baixas:'Baixas',alimentacao:'Alimentação',gastos:'Gastos',leite:'Produção de leite'
+ crias:'Crias',baixas:'Baixas',alimentacao:'Alimentação',gastos:'Gastos',prontos_venda:'Animais prontos para venda',leite:'Produção de leite'
 };
 
 async function mgBuildReportData(type){
@@ -4631,6 +4637,18 @@ async function mgBuildReportData(type){
     const data=await api('/api/expenses');
     headers=['Data','Categoria','Descrição','Valor','Lote','Observação'];
     rows=data.filter(x=>reportInPeriod(x.expense_date)).map(x=>[x.expense_date,x.category,x.description||'',x.amount,x.lot||'',x.notes||'']);
+  }else if(type==='prontos_venda'){
+    const data=await api('/api/animals');
+    headers=['Número','Categoria','Raça','Lote','Peso atual','Meta de peso','Acima da meta','GMD médio'];
+    rows=data.filter(x=>{
+      const current=Number(x.current_weight||x.weight||x.last_weight||x.entry_weight||0);
+      const target=Number(x.target_weight||0);
+      return target>0&&current>=target;
+    }).map(x=>{
+      const current=Number(x.current_weight||x.weight||x.last_weight||x.entry_weight||0);
+      const target=Number(x.target_weight||0);
+      return [x.number,x.category||'',x.breed||'',x.lot||'',current,target,current-target,Number(x.gmd||0)];
+    });
   }else if(type==='leite'){
     const q=await mgSb.from('milk_production').select('production_date,animal_id,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes,animals(number,breed)').eq('farm_id',farm.id).is('deleted_at',null).order('production_date',{ascending:false});
     if(q.error)throw q.error;
@@ -6276,7 +6294,39 @@ function initSaleSimulator(){
   uf.innerHTML=Object.entries(simStates).map(([k,v])=>`<option value="${k}">${k} · ${v}</option>`).join('');
   const preferred=(window.farm?.state||window.currentFarm?.state||'MG').toUpperCase();
   if(simStates[preferred]) uf.value=preferred;
-  simFillTargets(); simFillRegions(); renderSaleSimulation();
+  simFillTargets(); simFillRegions(); renderSaleSimulation(); renderReadyAnimalsForSale();
+}
+function mgSaleCurrentWeight(animal){
+  return Number(animal?.current_weight||animal?.weight||animal?.last_weight||animal?.entry_weight||0);
+}
+function renderReadyAnimalsForSale(){
+  const root=document.getElementById('readyAnimalsForSale');
+  if(!root)return;
+  const ready=(animalsData||[])
+    .filter(a=>!a.exit_type&&String(a.status||'active').toLowerCase()==='active')
+    .map(a=>({...a,current:mgSaleCurrentWeight(a),target:Number(a.target_weight||0)}))
+    .filter(a=>a.target>0&&a.current>=a.target)
+    .sort((a,b)=>(b.current-b.target)-(a.current-a.target));
+  if(!ready.length){
+    root.innerHTML='<div class="empty-state"><div class="empty-icon">🎯</div><b>Nenhum animal atingiu a meta ainda</b><span>Defina a meta de peso na ficha do animal. Quando ela for alcançada, o animal aparecerá aqui para apoiar a negociação.</span></div>';
+    return;
+  }
+  root.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">'+ready.map(a=>{
+    const surplus=a.current-a.target;
+    return `<article style="border:1px solid #cde7d5;border-radius:12px;padding:12px;background:#fbfffc"><div style="display:flex;justify-content:space-between;gap:8px"><b>#${mgEsc(a.number)}</b><span class="status">Pronto</span></div><div class="sub" style="margin:6px 0">${mgEsc(a.category||'Animal')} · ${mgEsc(a.lot||'Sem lote')}</div><div style="font-size:18px;font-weight:900;color:var(--green)">${a.current.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg</div><div class="sub">Meta ${a.target.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg · +${surplus.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg acima</div><button class="btn primary" style="width:100%;margin-top:10px" type="button" onclick="simulateReadyAnimal(${Number(a.id)})">Simular venda</button></article>`;
+  }).join('')+'</div>';
+}
+function simulateReadyAnimal(id){
+  const animal=(animalsData||[]).find(a=>Number(a.id)===Number(id));
+  if(!animal)return;
+  const type=document.getElementById('simType');
+  const target=document.getElementById('simTarget');
+  if(!type||!target)return;
+  type.value='animal';
+  simFillTargets();
+  target.value=String(id);
+  simTargetChanged();
+  document.querySelector('#saleSimulator .page-title')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function simFillTargets(){
   const s=document.getElementById('simTarget'),type=document.getElementById('simType'); if(!s||!type)return;
@@ -7626,10 +7676,6 @@ openAnimalProfile = async function(id){
   (a.health||[]).forEach(x=>timeline.push({date:x.event_date,html:ap8Event('💉',x.event_type||'Saúde',`${x.product||''}${x.notes?` · ${x.notes}`:''}`,x.event_date)}));
   (a.reproduction||[]).forEach(x=>timeline.push({date:x.event_date,html:ap8Event('❤️',x.event_type||'Reprodução',`${x.result||''}${x.notes?` · ${x.notes}`:''}`,x.event_date)}));
   (a.expenses||[]).forEach(x=>timeline.push({date:x.expense_date,html:ap8Event('💰',x.category||'Gasto',`${x.description||''} · ${money(x.amount||0)}`,x.expense_date)}));
-  milk.slice(0,8).forEach(x=>{
-    const total=Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0);
-    timeline.push({date:x.production_date,html:ap8Event('🥛',`Produção de leite · ${total.toFixed(1)} L`,x.notes||'Produção diária',x.production_date)});
-  });
   timeline.sort((x,y)=>String(y.date||'').localeCompare(String(x.date||'')));
 
   animalProfileBody.innerHTML=`
@@ -7715,15 +7761,6 @@ openAnimalProfile = async function(id){
         <h4>Alimentação do lote</h4>
         <div class="ap8-section-sub">Lançamentos compartilhados pelo lote atual ${ap8Esc(a.lot||'')}.</div>
         ${nutrition.length?`<div class="ap8-list">${nutrition.map(x=>ap8Event('🌾',(x.feed_name||'Alimentação'),`${Number(x.quantity_kg||0).toFixed(1)} kg · ${money(x.total_cost||0)}`,x.entry_date)).join('')}</div>`:'<div class="ap8-empty">Sem alimentação recente para este lote.</div>'}
-      </div>
-
-      <div class="ap8-card">
-        <h4>Produção de leite</h4>
-        ${milk.length?`
-          <div class="ap8-row"><span>Produção nos ${milk.length} lançamentos</span><b>${milkTotal.toFixed(1)} L</b></div>
-          <div class="ap8-row"><span>Último lançamento</span><b>${lastMilk?ap8Date(lastMilk.production_date):'—'}</b></div>
-          <div class="ap8-row"><span>Lactação</span><b>${currentLact?`${currentLact.status==='active'?'Em lactação':'Encerrada'}${currentLact.lactation_number?' · nº '+currentLact.lactation_number:''}`:'—'}</b></div>
-        `:'<div class="ap8-empty">Sem produção de leite vinculada.</div>'}
       </div>
 
       <div class="ap8-card">
