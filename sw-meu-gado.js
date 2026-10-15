@@ -1,7 +1,7 @@
 // Altere a versão a cada publicação do painel. Assim, quem instalou o Meu
 // Gado recebe a interface e os scripts novos em vez de permanecer em cache
 // com uma versão anterior.
-const MG_CACHE='meu-gado-oficial-modo-campo-v14-corte';
+const MG_CACHE='meu-gado-oficial-modo-campo-v15-corte';
 const MG_SHELL=[
   '/app.html',
   '/manifest-meu-gado.webmanifest',

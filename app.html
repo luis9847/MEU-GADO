@@ -866,11 +866,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 html.mg-route-boot .view.active{display:none!important}
 </style>
 <script>
-window.addEventListener('error',function(event){
-  document.documentElement.setAttribute('data-mg-startup-error',event.message||'erro desconhecido');
-});
-</script>
-<script>
 (function(){
   try{
     var v=localStorage.getItem('mg_last_view');
