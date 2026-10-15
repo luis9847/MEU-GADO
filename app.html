@@ -1542,7 +1542,6 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <a href="#nutricao" data-v="nutricao" onclick="return mgNavigate(event,'nutricao',this)">🌾 <span>Alimentação</span></a>
     <a href="#saude" data-v="saude" onclick="return mgNavigate(event,'saude',this)">💉 <span>Saúde</span></a>
     <a href="#repro" data-v="repro" onclick="return mgNavigate(event,'repro',this)">♡ <span>Reprodução</span></a>
-    <a href="#leite" data-v="leite" id="navLeite" onclick="return mgNavigate(event,'leite',this)">🥛 <span>Leite</span></a>
     <div class="nav-title" data-feature="performance-menu">Gestão</div>
     <a href="#desempenho" id="navDesempenho" data-v="desempenho" onclick="return mgNavigate(event,'desempenho',this)">📈 <span>Desempenho</span></a>
     <div class="nav-title employee-hidden" id="navFinanceTitle">Financeiro</div>
@@ -2511,10 +2510,6 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <button onclick="downloadReport('gastos')">Baixar CSV</button>
       <button class="pdf" onclick="downloadReportPDF('gastos')">Baixar PDF</button>
     </div></div>
-    <div class="report-card"><i>🥛</i><b>Produção de leite</b><p>Produção diária por vaca, ordenhas, total e descarte.</p><div class="report-actions">
-      <button onclick="downloadReport('leite')">Baixar CSV</button>
-      <button class="pdf" onclick="downloadReportPDF('leite')">Baixar PDF</button>
-    </div></div>
   </div>
 </section>
 <section id="mercado" class="view">
@@ -2709,11 +2704,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 
     <div class="two-cols">
       <label>Sexo<input id="asex" value="Macho" readonly></label>
-      <label>Aptidão<select id="aaptitude">
-        <option value="Corte">Corte</option>
-        <option value="Leite">Leite</option>
-        <option value="Dupla aptidão">Dupla aptidão</option>
-      </select></label>
+      <label>Atividade<input id="aaptitude" value="Pecuária de corte" readonly></label>
     </div>
 
     <label>Raça <small>opcional</small>
@@ -2738,20 +2729,11 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
           <option value="Simbrasil" data-apt="Corte">Simbrasil</option>
           <option value="Indubrasil" data-apt="Corte">Indubrasil</option>
         </optgroup>
-        <optgroup label="Leite">
-          <option value="Holandesa" data-apt="Leite">Holandesa</option>
-          <option value="Girolando" data-apt="Leite">Girolando</option>
-          <option value="Gir Leiteiro" data-apt="Leite">Gir Leiteiro</option>
-          <option value="Jersey" data-apt="Leite">Jersey</option>
-          <option value="Pardo-Suíça" data-apt="Leite">Pardo-Suíça</option>
-          <option value="Ayrshire" data-apt="Leite">Ayrshire</option>
-          <option value="Guernsey" data-apt="Leite">Guernsey</option>
-        </optgroup>
-        <optgroup label="Dupla aptidão">
-          <option value="Guzerá" data-apt="Dupla aptidão">Guzerá</option>
-          <option value="Sindi" data-apt="Dupla aptidão">Sindi</option>
-          <option value="Simental" data-apt="Dupla aptidão">Simental</option>
-          <option value="Caracu" data-apt="Dupla aptidão">Caracu</option>
+        <optgroup label="Outras raças de corte">
+          <option value="Guzerá" data-apt="Corte">Guzerá</option>
+          <option value="Sindi" data-apt="Corte">Sindi</option>
+          <option value="Simental" data-apt="Corte">Simental</option>
+          <option value="Caracu" data-apt="Corte">Caracu</option>
         </optgroup>
         <optgroup label="Cruzamentos / outros">
           <option value="Mestiço/Cruzado" data-apt="">Mestiço/Cruzado</option>
@@ -3539,6 +3521,7 @@ async function permanentlyDeleteTrashItem(table,id){
 }
 
 function show(id,btn){
+  if(id==='leite') id='inicio';
  if(!mgRoleCanOpen(id,btn))return;
   if(!document.getElementById(id)) id='inicio';
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
