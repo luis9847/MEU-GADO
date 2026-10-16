@@ -1,5 +1,5 @@
 {
-  "appId": "br.com.sistemameugado.app",
+  "appId": "br.com.sistemameugado",
   "appName": "Meu Gado",
   "webDir": "www",
   "server": {
@@ -8,14 +8,5 @@
     "allowNavigation": [
       "www.sistemameugado.com.br"
     ]
-  },
-  "plugins": {
-    "PushNotifications": {
-      "presentationOptions": [
-        "badge",
-        "sound",
-        "alert"
-      ]
-    }
   }
 }
