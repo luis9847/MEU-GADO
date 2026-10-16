@@ -39,9 +39,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Preparar Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Instalar dependências
         working-directory: android-app
         run: npm install --no-audit --no-fund
