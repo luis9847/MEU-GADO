@@ -69,6 +69,21 @@ jobs:
         working-directory: android-app
         run: npx cap sync android
 
+      - name: Atualizar código da versão para novo envio
+        working-directory: android-app
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path("android/app/build.gradle")
+          content = path.read_text()
+          content, count = re.subn(r"(?m)^(\s*versionCode\s+)\d+", r"\g<1>2", content)
+          if count != 1:
+              raise SystemExit("versionCode não encontrado exatamente uma vez")
+          path.write_text(content)
+          PY
+          grep 'versionCode 2' android/app/build.gradle
+
       - name: Instalar gerador de ícones
         run: python -m pip install Pillow
 
