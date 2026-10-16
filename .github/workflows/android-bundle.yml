@@ -55,7 +55,7 @@ jobs:
           import re
           path = Path("android/variables.gradle")
           original = path.read_text()
-          updated, count = re.subn(r"(?m)^(\\s*minSdkVersion\\s*=\\s*)\\d+", r"\\g<1>24", original)
+          updated, count = re.subn(r"(?m)^(\s*minSdkVersion\s*=\s*)\d+", r"\g<1>24", original)
           if count != 1:
               raise SystemExit("minSdkVersion não encontrado exatamente uma vez")
           path.write_text(updated)
