@@ -45,20 +45,25 @@ jobs:
         working-directory: android-app
         run: npx cap add android
 
-      - name: Definir Android mínimo exigido pela Proteção Automática
+      - name: Definir versões Android exigidas pelo Google Play
         working-directory: android-app
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
           path = Path("android/variables.gradle")
-          original = path.read_text()
-          updated, count = re.subn(r"(?m)^(\s*minSdkVersion\s*=\s*)\d+", r"\g<1>24", original)
-          if count != 1:
-              raise SystemExit("minSdkVersion não encontrado exatamente uma vez")
-          path.write_text(updated)
+          content = path.read_text()
+          for field, value in (("minSdkVersion", 24), ("compileSdkVersion", 36), ("targetSdkVersion", 36)):
+              content, count = re.subn(
+                  rf"(?m)^(\s*{field}\s*=\s*)\d+",
+                  lambda match: match.group(1) + str(value),
+                  content,
+              )
+              if count != 1:
+                  raise SystemExit(f"{field} não encontrado exatamente uma vez")
+          path.write_text(content)
           PY
-          grep 'minSdkVersion = 24' android/variables.gradle
+          grep -E '(minSdkVersion|compileSdkVersion|targetSdkVersion) =' android/variables.gradle
 
       - name: Sincronizar projeto Android
         working-directory: android-app
