@@ -47,6 +47,21 @@ jobs:
         working-directory: android-app
         run: npx cap add android
 
+      - name: Definir Android mínimo exigido pela Proteção Automática
+        working-directory: android-app
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path("android/variables.gradle")
+          original = path.read_text()
+          updated, count = re.subn(r"(?m)^(\\s*minSdkVersion\\s*=\\s*)\\d+", r"\\g<1>24", original)
+          if count != 1:
+              raise SystemExit("minSdkVersion não encontrado exatamente uma vez")
+          path.write_text(updated)
+          PY
+          grep 'minSdkVersion = 24' android/variables.gradle
+
       - name: Instalar configuração do Firebase
         working-directory: android-app
         shell: bash
