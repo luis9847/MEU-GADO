@@ -17,8 +17,6 @@ jobs:
   build:
     name: Compilar pacote Android
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
@@ -61,13 +59,6 @@ jobs:
           path.write_text(updated)
           PY
           grep 'minSdkVersion = 24' android/variables.gradle
-
-      - name: Instalar configuração do Firebase
-        working-directory: android-app
-        shell: bash
-        run: |
-          test -n "$GOOGLE_SERVICES_JSON"
-          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
 
       - name: Sincronizar projeto Android
         working-directory: android-app
