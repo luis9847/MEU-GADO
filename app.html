@@ -1404,6 +1404,7 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 @media(max-width:760px){.weight-history-filters{grid-template-columns:1fr 1fr!important}.weight-history-filters input:first-child{grid-column:1/-1}.weigh-history{overflow-x:auto}}
 body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
 </style>
+<link rel="stylesheet" href="/feeding-planner.css?v=1">
 </head>
 <style id="mg-v30-redesign">
 /* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */
@@ -1551,6 +1552,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <a href="#animais" data-v="animais" onclick="return mgNavigate(event,'animais',this)">🐄 <span>Animais</span></a>
     <a href="#lotes" data-v="lotes" onclick="return mgNavigate(event,'lotes',this)">🗂️ <span>Lotes</span></a>
     <a href="#pesagem" data-v="pesagem" onclick="return mgNavigate(event,'pesagem',this)">⚖️ <span>Pesagem</span></a>
+    <a id="navPlanejamento" href="#planejamento" data-v="planejamento" onclick="return mgNavigate(event,'planejamento',this)">🌱 <span>Planejamento alimentar</span></a>
     <a href="#nutricao" data-v="nutricao" onclick="return mgNavigate(event,'nutricao',this)">🌾 <span>Alimentação</span></a>
     <a href="#saude" data-v="saude" onclick="return mgNavigate(event,'saude',this)">💉 <span>Saúde</span></a>
     <a href="#repro" data-v="repro" onclick="return mgNavigate(event,'repro',this)">♡ <span>Reprodução</span></a>
@@ -2038,6 +2040,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   </div>
 </section>
 
+<section id="planejamento" class="view"></section>
 <section id="nutricao" class="view">
   <div class="page-title action-title">
     <div><h2>🌾 Alimentação</h2><p>Controle o consumo e o custo da alimentação do rebanho por lote.</p></div>
@@ -8041,4 +8044,6 @@ run();document.addEventListener('DOMContentLoaded',run);
   document.addEventListener('focusin',function(e){if(e.target.matches('input[type="number"]'))e.target.inputMode='decimal'});
 })();
 </script>
+<script src="/feeding-planner-core.js?v=1"></script>
+<script src="/feeding-planner.js?v=1"></script>
 </body></html>
