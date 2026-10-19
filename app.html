@@ -1573,7 +1573,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <button class="mydata-btn" onclick="show('perfil')">Meus dados</button>
     <button class="side-link" type="button" onclick="location.href='/exclusao-de-conta'">▤ <span>Excluir minha conta</span></button>
     <button class="mydata-btn" id="teamAccessBtn" onclick="openTeamAccess()">Equipe e acessos</button>
-    <button id="newsNavBtn" class="side-link news-link" onclick="openNews()">✦ <span>Novidades</span><b id="newsNewBadge" class="news-new">NOVO</b></button>
+    <button id="newsNavBtn" class="side-link news-link" onclick="openNews()">✦ <span>Novidades</span><b id="newsNewBadge" class="news-new hidden">NOVO</b></button>
     <button class="side-link" data-v="ajuda" onclick="show('ajuda',this)">? <span>Ajuda</span></button>
     <button class="side-link" onclick="showTermsOfUse()">▤ <span>Termos de Uso</span></button>
     <button class="side-link" data-v="lixeira" onclick="show('lixeira',this);loadTrash()">♲ <span>Lixeira</span><b id="trashCountBadge" class="news-new hidden">0</b></button>
@@ -2403,76 +2403,8 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   </div>
 </section>
 
-<section id="novidades" class="view">
-  <div class="news-hero">
-    <div><div class="release-tag" style="background:rgba(255,255,255,.15);color:#fff">Meu Gado evoluindo com você</div><h2>✨ O que há de novo</h2><p>Acompanhe as melhorias liberadas no Meu Gado, entenda como elas ajudam no dia a dia da fazenda e veja como usar cada novidade.</p></div>
-    <div class="news-hero-mark">🐂</div>
-  </div>
-  <div class="release-list">
-
-    <article class="release-card">
-      <div class="release-head">
-        <div>
-          <span class="release-tag">Nova atualização</span>
-          <h3>💬 Central de Ajuda e Fale Conosco</h3>
-          <p>Agora o Meu Gado conta com uma área completa de suporte para facilitar o atendimento aos clientes.</p>
-        </div>
-        <div class="release-date">03/09/2026 · Versão 1.4</div>
-      </div>
-      <div class="release-body">
-        <div class="benefit-box"><b>Suporte mais fácil e acessível.</b> O cliente pode encontrar dúvidas frequentes, acessar atalhos úteis e falar diretamente com o suporte do Meu Gado.</div>
-        <div class="release-points">
-          <div class="release-point"><b>💬 WhatsApp</b>Contato direto com o suporte pelo número (35) 99965-5305.</div>
-          <div class="release-point"><b>✉ E-mail</b>Canal de atendimento pelo endereço contatomeugado@outlook.com.</div>
-          <div class="release-point"><b>❓ Dúvidas frequentes</b>Respostas rápidas para as principais rotinas do sistema.</div>
-          <div class="release-point"><b>ℹ Sobre nós</b>Nova página institucional explicando como o Meu Gado começou e seu propósito.</div>
-        </div>
-        <div class="how-title">Como usar</div>
-        <div class="how-steps">
-          <div class="how-step"><div>Abra <b>Ajuda</b> no menu lateral.</div></div>
-          <div class="how-step"><div>Escolha uma dúvida frequente ou um atalho para o módulo desejado.</div></div>
-          <div class="how-step"><div>Se precisar, clique em <b>Falar pelo WhatsApp</b> para entrar em contato com o suporte.</div></div>
-        </div>
-        </div>
-    </article>
-
-
-    <article class="release-card">
-      <div class="release-head"><div><span class="release-tag">Nova atualização</span><h3>🧮 Simulador de Venda</h3><p>Simule o valor de venda de animais e lotes usando as cotações automáticas do Mercado Pecuário.</p></div><div class="release-date">03/09/2026 · Versão 1.3</div></div>
-      <div class="release-body">
-        <div class="benefit-box"><b>Planeje a venda antes de negociar.</b> Selecione um animal ou lote, confira a cotação de referência e estime o valor bruto da negociação.</div>
-        <div class="release-points">
-          <div class="release-point"><b>🐂 Animal ou lote</b>O peso é carregado a partir dos dados cadastrados no Meu Gado.</div>
-          <div class="release-point"><b>⚖ Venda por arroba</b>Boi gordo e vaca gorda usam peso vivo, rendimento de carcaça e cotação por praça.</div>
-          <div class="release-point"><b>🐄 Reposição por cabeça</b>Bezerro, bezerra, garrote, boi magro, novilha e vaca boiadeira usam cotação estadual por cabeça.</div>
-          <div class="release-point"><b>💰 Compare propostas</b>Informe a oferta do comprador e compare com a referência automática de mercado.</div>
-        </div>
-        <div class="how-title">Como usar</div>
-        <div class="how-steps">
-          <div class="how-step"><div>Abra <b>Simulador de Venda</b> no menu lateral.</div></div>
-          <div class="how-step"><div>Escolha <b>Animal ou Lote</b> e a categoria da negociação.</div></div>
-          <div class="how-step"><div>Confira a cotação e o <b>valor bruto estimado</b> antes de negociar.</div></div>
-        </div>
-        </div>
-    </article>
-
-    <article class="release-card">
-      <div class="release-head"><div><span class="release-tag">Nova atualização</span><h3>📈 Indicadores de Desempenho</h3><p>Transforme pesagens, metas e lotes em informações para tomar decisões melhores.</p></div><div class="release-date">03/09/2026 · Versão 1.1</div></div>
-      <div class="release-body">
-        <div class="benefit-box"><b>Como isso ajuda você?</b> Em vez de olhar animal por animal, o Meu Gado reúne os principais números em um só lugar para mostrar quem está evoluindo melhor, quais lotes se destacam e quais animais precisam de atenção.</div>
-        <div class="release-points"><div class="release-point"><b>🏆 Ranking dos animais</b>Veja quais animais apresentam o melhor GMD.</div><div class="release-point"><b>🐂 Desempenho por lote</b>Compare peso médio, GMD e metas entre lotes.</div><div class="release-point"><b>⚠ Animais que exigem atenção</b>Identifique rapidamente perda de peso na última pesagem.</div><div class="release-point"><b>🎯 Progresso para a meta</b>Acompanhe quanto falta para cada animal chegar ao peso-alvo.</div></div>
-        <div class="how-title">Como usar</div><div class="how-steps"><div class="how-step"><div>Abra <b>Gestão → Desempenho</b> no menu lateral.</div></div><div class="how-step"><div>Confira o ranking, lote destaque e animais que exigem atenção.</div></div><div class="how-step"><div>Registre novas pesagens normalmente. Os indicadores serão recalculados com os novos dados.</div></div></div>
-        </div>
-    </article>
-    <article class="release-card release-old">
-      <div class="release-head"><div><span class="release-tag">Atualização anterior</span><h3>🔔 Central de Alertas Inteligentes</h3><p>Informações importantes do rebanho reunidas para você agir na hora certa.</p></div><div class="release-date">02/09/2026 · Versão 1.0.2</div></div>
-      <div class="release-body"><div class="benefit-box"><b>O benefício:</b> o sistema ajuda a lembrar situações que merecem atenção sem apagar o histórico dos animais.</div><div class="release-points"><div class="release-point"><b>⚖ Peso</b>Perda de peso e animal há mais de 30 dias sem pesagem.</div><div class="release-point"><b>🎯 Meta</b>Aviso quando o peso-alvo é alcançado.</div><div class="release-point"><b>♡ Reprodução</b>Parto próximo ou previsão vencida.</div><div class="release-point"><b>✚ Saúde</b>Vacinas e eventos sanitários próximos ou atrasados.</div></div><div class="how-title">Como usar</div><div class="how-steps"><div class="how-step"><div>Clique em <b>Notificações</b> no topo do sistema.</div></div><div class="how-step"><div>Veja as pendências e clique em <b>Abrir ficha do animal</b> quando disponível.</div></div><div class="how-step"><div>Registre a nova informação; o alerta é atualizado, mas o histórico permanece salvo.</div></div></div></div>
-    </article>
-    <article class="release-card release-old">
-      <div class="release-head"><div><span class="release-tag">Atualização anterior</span><h3>⚖ Evolução de peso e histórico mais completo</h3><p>A ficha do animal ficou mais útil para acompanhar ganho ou perda de peso ao longo do tempo.</p></div><div class="release-date">02/09/2026 · Versão 1.0.1</div></div>
-      <div class="release-body"><div class="release-points"><div class="release-point"><b>📉 Ganho ou perda</b>O gráfico mostra a evolução entre as pesagens.</div><div class="release-point"><b>💉 Saúde</b>Registros podem ser editados ou excluídos pelo cliente.</div><div class="release-point"><b>🐄 Reprodução</b>Previsão automática de parto e histórico editável.</div><div class="release-point"><b>🗂 Histórico seguro</b>Nenhum registro desaparece automaticamente.</div></div></div>
-    </article>
-  </div>
+<section id="novidades" class="view" aria-label="Novidades">
+  <div class="release-list"></div>
 </section>
 
 <section id="relatorios" class="view">
@@ -3468,14 +3400,15 @@ async function mgSyncOfflineQueue(){
  }finally{mgOfflineSyncing=false;await mgUpdateConnectionUi()}
 }
 
-const MG_NEWS_VERSION='2026-09-03-ajuda-v19-3';
+const MG_NEWS_VERSION='';
 function refreshNewsBadge(){
   const b=document.getElementById('newsNewBadge');if(!b)return;
-  b.classList.toggle('hidden',localStorage.getItem('mg_news_seen')===MG_NEWS_VERSION);
+  const hasNews=!!MG_NEWS_VERSION&&!!document.querySelector('#novidades .release-card');
+  b.classList.toggle('hidden',!hasNews||localStorage.getItem('mg_news_seen')===MG_NEWS_VERSION);
 }
 function openNews(){
   show('novidades');
-  localStorage.setItem('mg_news_seen',MG_NEWS_VERSION);
+  if(MG_NEWS_VERSION)localStorage.setItem('mg_news_seen',MG_NEWS_VERSION);
   refreshNewsBadge();
 }
 
