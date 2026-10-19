@@ -1,7 +1,7 @@
 // Altere a versão a cada publicação do painel. Assim, quem instalou o Meu
 // Gado recebe a interface e os scripts novos em vez de permanecer em cache
 // com uma versão anterior.
-const MG_CACHE='meu-gado-oficial-modo-campo-v19-novidades-vazias';
+const MG_CACHE='meu-gado-oficial-modo-campo-v20-cursor-padrao';
 const MG_SHELL=[
   '/app.html',
   '/feeding-planner.css?v=1',

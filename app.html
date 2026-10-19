@@ -1405,6 +1405,22 @@ html.mg-mobile-device #animalProfileModal .ap8-actions{
 body:has(#syncCenterModal.show) .mg-connection-bar{display:none}
 </style>
 <link rel="stylesheet" href="/feeding-planner.css?v=1">
+<style id="mg-interactive-cursors">
+/* Cursor consistente para controles de ação em todas as telas. */
+button, a[href], [role="button"], [role="link"], [role="tab"],
+[onclick], summary, select, option, label[for],
+input[type="button"], input[type="submit"], input[type="reset"],
+input[type="checkbox"], input[type="radio"], input[type="file"],
+input[type="range"], input[type="color"], input[type="date"],
+input[type="datetime-local"], input[type="month"], input[type="week"],
+input[type="time"] { cursor: pointer !important; }
+input:not([type]), input[type="text"], input[type="email"],
+input[type="password"], input[type="search"], input[type="tel"],
+input[type="url"], input[type="number"], textarea,
+[contenteditable="true"] { cursor: text !important; }
+button:disabled, input:disabled, select:disabled, textarea:disabled,
+[aria-disabled="true"] { cursor: not-allowed !important; }
+</style>
 </head>
 <style id="mg-v30-redesign">
 /* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */

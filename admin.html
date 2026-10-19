@@ -25,6 +25,22 @@
 @media(max-width:700px){.topbar{padding:14px 16px}.topbar h1{font-size:19px}.top-user>div:first-child{display:none}.content{padding:14px}.page-intro,.toolbar{align-items:stretch;flex-direction:column}.kpis{grid-template-columns:1fr 1fr;gap:10px}.card{padding:15px}.kpi strong{font-size:28px}.search{min-width:0;width:100%}.filters{display:grid;grid-template-columns:1fr 1fr}.filters select{width:100%;min-width:0}.detail-grid,.mini-kpis{grid-template-columns:1fr 1fr}.modalbody{padding:14px}}
 @media(max-width:480px){.layout{grid-template-columns:1fr}.sidebar{position:fixed;z-index:50;bottom:0;top:auto;width:100%;height:66px;padding:7px 9px;display:flex;flex-direction:row;align-items:center}.brand,.side-bottom{display:none}.nav{margin:0;display:flex;width:100%;gap:5px}.nav button{text-align:center;padding:10px 5px;font-size:16px}.main{padding-bottom:66px}.kpis{grid-template-columns:1fr}.detail-grid,.mini-kpis,.filters{grid-template-columns:1fr}.topbar{position:static}.chart{height:190px}}
 </style>
+<style id="mg-interactive-cursors">
+/* Cursor consistente para controles de ação em todas as telas. */
+button, a[href], [role="button"], [role="link"], [role="tab"],
+[onclick], summary, select, option, label[for],
+input[type="button"], input[type="submit"], input[type="reset"],
+input[type="checkbox"], input[type="radio"], input[type="file"],
+input[type="range"], input[type="color"], input[type="date"],
+input[type="datetime-local"], input[type="month"], input[type="week"],
+input[type="time"] { cursor: pointer !important; }
+input:not([type]), input[type="text"], input[type="email"],
+input[type="password"], input[type="search"], input[type="tel"],
+input[type="url"], input[type="number"], textarea,
+[contenteditable="true"] { cursor: text !important; }
+button:disabled, input:disabled, select:disabled, textarea:disabled,
+[aria-disabled="true"] { cursor: not-allowed !important; }
+</style>
 </head>
 <body>
 <section id="loginPage" class="login-page"><div class="login-card"><div id="adminCredentials"><div class="login-logo"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><small>Painel Administrativo</small></div></div><div class="field"><label>E-mail do administrador</label><input id="email" type="email" autocomplete="username" placeholder="seu@email.com"></div><div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha"></div><button class="btn primary full" id="loginBtn">Entrar como administrador</button><div class="msg" id="loginMsg"></div></div><div id="mfaLoginPanel" class="hidden"><div class="login-logo"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Verificação em duas etapas</b><small>Proteção do painel administrativo</small></div></div><p style="font-size:14px;line-height:1.45;margin:8px 0 16px">Abra seu aplicativo autenticador e informe o código de 6 dígitos.</p><div class="field"><label>Código de verificação</label><input id="mfaLoginCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></div><button class="btn primary full" id="mfaLoginBtn">Verificar e entrar</button><button class="btn secondary full" id="mfaBackBtn" style="margin-top:10px">Voltar</button><div class="msg" id="mfaLoginMsg"></div></div></div></section>
