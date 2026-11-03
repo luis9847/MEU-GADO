@@ -1421,6 +1421,38 @@ input[type="url"], input[type="number"], textarea,
 button:disabled, input:disabled, select:disabled, textarea:disabled,
 [aria-disabled="true"] { cursor: not-allowed !important; }
 </style>
+
+<style id="mg-single-weight-viewport-fix">
+/* Keep the weighing form above mobile navigation and within the visible viewport. */
+#singleWeightModal{z-index:1500}
+#singleWeightModal>.modalbox{
+  display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  max-height:90vh;max-height:90dvh;
+}
+#singleWeightModal .modal-head-clean{flex-shrink:0}
+#singleWeightModal .modal-weigh-card{
+  min-height:0;overflow-y:auto;overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#singleWeightModal .single-weight-footer{
+  flex-shrink:0;padding-top:12px;border-top:1px solid var(--line);background:#fff;
+}
+html.mg-mobile-device #singleWeightModal{
+  top:var(--mg-weight-viewport-top,0px)!important;bottom:auto!important;
+  height:var(--mg-weight-viewport-height,100dvh)!important;
+  padding:8px!important;align-items:flex-end!important;
+}
+html.mg-mobile-device #singleWeightModal>.modalbox{
+  width:100%!important;max-width:560px!important;
+  max-height:calc(var(--mg-weight-viewport-height,100dvh) - 16px)!important;
+  padding:15px 12px max(12px,env(safe-area-inset-bottom))!important;
+  border-radius:18px!important;
+}
+html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-quick,
+html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
+  visibility:hidden;pointer-events:none;
+}
+</style>
 </head>
 <style id="mg-v30-redesign">
 /* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */
@@ -2891,8 +2923,8 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <label>Data<input id="singleDate" type="date"></label>
     <label>Peso atual (kg)<input id="singleWeight" type="number" step=".1" placeholder="Ex.: 465"></label>
     <label>Observação <small>opcional</small><input id="singleNotes"></label>
-    <button class="wide-primary" onclick="saveSingleWeight()">Salvar pesagem</button>
   </div>
+  <div class="single-weight-footer"><button class="wide-primary" onclick="saveSingleWeight()">Salvar pesagem</button></div>
 </div></div>
 
 <div class="modal" id="batchWeightModal"><div class="modalbox batch-modal">
@@ -8003,5 +8035,37 @@ run();document.addEventListener('DOMContentLoaded',run);
 </script>
 <script src="/feeding-planner-core.js?v=1"></script>
 <script src="/feeding-planner.js?v=1"></script>
+
+<script id="mg-single-weight-viewport-fix-js">
+(function(){
+  const modal=document.getElementById('singleWeightModal');
+  if(!modal)return;
+  let frame=null;
+  function updateViewport(){
+    frame=null;
+    if(!modal.classList.contains('show'))return;
+    const viewport=window.visualViewport;
+    modal.style.setProperty('--mg-weight-viewport-height',(viewport?viewport.height:window.innerHeight)+'px');
+    modal.style.setProperty('--mg-weight-viewport-top',(viewport?viewport.offsetTop:0)+'px');
+  }
+  function scheduleViewport(){
+    if(frame===null)frame=requestAnimationFrame(updateViewport);
+  }
+  new MutationObserver(function(){
+    if(modal.classList.contains('show'))scheduleViewport();
+    else{
+      if(frame!==null){cancelAnimationFrame(frame);frame=null;}
+      modal.style.removeProperty('--mg-weight-viewport-height');
+      modal.style.removeProperty('--mg-weight-viewport-top');
+    }
+  }).observe(modal,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',scheduleViewport);
+  window.addEventListener('orientationchange',scheduleViewport);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',scheduleViewport);
+    window.visualViewport.addEventListener('scroll',scheduleViewport);
+  }
+})();
+</script>
 </body></html>
 
