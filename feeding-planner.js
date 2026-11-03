@@ -15,9 +15,10 @@
  <div id="fpStatus" role="status" aria-live="polite"></div><div class="fp-tabs" role="tablist" aria-label="Planejamento alimentar"><button class="btn secondary" role="tab" id="fpTabPlans" aria-selected="true" aria-controls="fpPlans" data-fp="plans">Planos por lote</button><button class="btn secondary" role="tab" id="fpTabFoods" aria-selected="false" aria-controls="fpFoods" data-fp="foods">Meus alimentos</button></div>
  <div id="fpEditor"></div><div id="fpPlans" role="tabpanel" aria-labelledby="fpTabPlans"></div><div id="fpFoods" role="tabpanel" aria-labelledby="fpTabFoods" hidden></div>`;
  function status(message,error=false){el('fpStatus').className=message?'fp-note'+(error?' fp-error':''):'';el('fpStatus').textContent=message;}
- function canWrite(){if(!writable())throw new Error('Somente o proprietário e os gerentes podem gerenciar planos e custos.');if(state.offline||!navigator.onLine)throw new Error('Conecte-se à internet para salvar. A consulta dos dados já carregados continua disponível offline.');}
+ function canWrite(){if(!mgHasPlanFeature('planning')||!MGPlansCore.writable(mgPlanState,mgPlanNow()))throw new Error('Seu plano não permite alterar o planejamento. Contate o suporte.');if(!writable())throw new Error('Somente o proprietário e os gerentes podem gerenciar planos e custos.');if(state.offline||!navigator.onLine)throw new Error('Conecte-se à internet para salvar. A consulta dos dados já carregados continua disponível offline.');}
  function tab(name){state.tab=name;el('fpPlans').hidden=name!=='plans';el('fpFoods').hidden=name!=='foods';el('fpNewPlan').hidden=name!=='plans';el('fpNewFood').hidden=name!=='foods';el('fpTabPlans').setAttribute('aria-selected',name==='plans');el('fpTabFoods').setAttribute('aria-selected',name==='foods');el('fpEditor').innerHTML='';}
  async function load(){
+  if(!mgHasPlanFeature('planning'))return;
   if(state.loading)return;
   state.loading=true;status('Carregando alimentos e planos…');
   try{
@@ -126,7 +127,7 @@
   if(!['fpFoodForm','fpPlanForm'].includes(e.target.id))return;e.preventDefault();if(state.busy)return;state.busy=true;const form=e.target;form.querySelectorAll('button').forEach(b=>b.disabled=true);
   try{if(form.id==='fpFoodForm')await saveFood();else await savePlan();}catch(err){status(err.message||String(err),true);el('fpStatus').scrollIntoView({behavior:'smooth'});}finally{state.busy=false;form.querySelectorAll('button').forEach(b=>b.disabled=false);}
  });
- const previousShow=show;show=function(id,button){if(id==='planejamento'&&!writable()){status('Seu perfil não possui acesso ao planejamento alimentar.',true);alert('Esta área está disponível para o proprietário e os gerentes.');return;}const r=previousShow(id,button);if(id==='planejamento')load();return r;};
+ const previousShow=show;show=function(id,button){if(id==='planejamento'&&!mgPlanCanOpen(id))return false;if(id==='planejamento'&&!writable()){status('Seu perfil não possui acesso ao planejamento alimentar.',true);alert('Esta área está disponível para o proprietário e os gerentes.');return;}const r=previousShow(id,button);if(id==='planejamento')load();return r;};
  window.addEventListener('online',()=>{if(root.classList.contains('active')&&!el('fpEditor').innerHTML)load();});
  // restoreLastView may have run before this deferred module.
  if(root.classList.contains('active'))load();

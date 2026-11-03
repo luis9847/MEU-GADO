@@ -11,11 +11,12 @@ const project=path.resolve(__dirname,'..');
  await page.goto('http://127.0.0.1:8766/app.html',{waitUntil:'domcontentloaded'});
  await page.waitForTimeout(1800);
  await page.evaluate(()=>{
+  mgPlanState={farm_id:90001,plan:'complete',status:'trial',expires_at:null,features:{core:true,expenses:true,planning:true,performance:true,reports:true}};
   mgFarmRole='owner';mgFarm={id:90001,name:'Fazenda de teste'};mgUser={id:'fixture-owner'};document.documentElement.dataset.mgRole='owner';
   document.getElementById('mgTestLoginGate').remove();document.documentElement.classList.remove('mg-route-boot');
   const lots=[{id:100,name:'Lote teste',active:true}],animals=Array.from({length:10},(_,i)=>({id:i+1,lot:'Lote teste',status:'active',current_weight:400,last_weighing_date:'2026-10-17'}));lotsData=lots;animalsData=animals;
   window.__plannerStore={feed_ingredients:[],feeding_plans:[]};
-  mgGetFarm=async()=>mgFarm;
+  mgGetFarm=async()=>mgFarm;mgSb.rpc=async name=>({data:name==='get_farm_plan'?{...mgPlanState,server_now:new Date().toISOString()}:null,error:null});
   api=async p=>p==='/api/lots'?lots:p==='/api/animals'?animals:[];
   mgSb.from=table=>{
    let operation='select',payload,filters=[];

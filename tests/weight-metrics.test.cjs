@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'..','app.html'),'utf8');
 function between(start,end){const a=html.indexOf(start);assert.ok(a>=0,start);const b=html.indexOf(end,a+start.length);assert.ok(b>a,end);return html.slice(a,b)}
 const core=between('// BEGIN MG_WEIGHT_METRICS','// END MG_WEIGHT_METRICS');
-function context(extra={}){const c=vm.createContext({console,...extra});vm.runInContext(core,c);return c}
+function context(extra={}){const c=vm.createContext({console,mgRefreshPlan:async()=>{},mgPlanCheckRequest:async()=>{},mgHasPlanFeature:()=>true,...extra});vm.runInContext(core,c);return c}
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-10,`${a} != ${b}`);
 const w=(id,date,weight,extra={})=>({id,animal_id:1,weighing_date:date,weight,...extra});
 const animal={id:1,number:'060',status:'active',lot:'Engorda',category:'Boi',entry_date:'2026-09-27',entry_weight:450,target_weight:600};

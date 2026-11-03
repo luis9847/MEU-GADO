@@ -9,6 +9,8 @@ select set_config('test.fp_food1',gen_random_uuid()::text,true),set_config('test
 insert into public.feed_ingredients(id,farm_id,name,kind,price_kg,dry_matter_pct) values
 (current_setting('test.fp_food1')::uuid,current_setting('test.fp_farm1')::bigint,'TEST-'||current_setting('test.fp_food1'),'volumoso',0.30,35),
 (current_setting('test.fp_food2')::uuid,current_setting('test.fp_farm2')::bigint,'TEST-'||current_setting('test.fp_food2'),'concentrado',2,90);
+-- Isolated lot avoids overlapping with real long-running feeding plans.
+with fixture_lot as (insert into public.lots(farm_id,name,active) values(current_setting('test.fp_farm1')::bigint,'TEST-LOT-'||current_setting('test.fp_plan'),true) returning id) select set_config('test.fp_lot1',id::text,true) from fixture_lot;
 select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.fp_user1'),'role','authenticated')::text,true);
 set local role authenticated;
 do $$

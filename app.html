@@ -1453,6 +1453,9 @@ html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
   visibility:hidden;pointer-events:none;
 }
 </style>
+<link rel="stylesheet" href="/plans.css?v=1">
+<script src="/plans-core.js?v=1"></script>
+<script src="/plans-app.js?v=1"></script>
 </head>
 <style id="mg-v30-redesign">
 /* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */
@@ -3017,6 +3020,13 @@ async function mgSession(){
 async function mgGetFarm(){
  await mgSession();
  if(mgFarm)return mgFarm;
+ if(!navigator.onLine){
+  const cached=await mgReadCachedResponse('/api/me');
+  if(!cached?.farm)throw new Error('Conecte-se uma vez para carregar sua fazenda neste aparelho.');
+  mgFarm=cached.farm;
+  await mgRefreshPlan(mgFarm);
+  return mgFarm;
+ }
 
  // Nova arquitetura: primeiro procura a propriedade pelo vínculo em farm_members.
  let member=await mgSb.from('farm_members')
@@ -3059,6 +3069,7 @@ async function mgGetFarm(){
 
  if(!r.data){throw new Error('Sua conta está autenticada, mas nenhuma propriedade ativa pôde ser carregada. Entre em contato com o suporte do Meu Gado.')}
  mgFarm=r.data;
+ await mgRefreshPlan(mgFarm);
  document.documentElement.dataset.mgRole=mgFarmRole;
  setTimeout(()=>{
    if(typeof mgApplyDairyVisibility==='function'){
@@ -3067,7 +3078,7 @@ async function mgGetFarm(){
  },0);
  return mgFarm
 }
-async function mgRows(table,select='*',order=null){const f=await mgGetFarm();let q=mgSb.from(table).select(select).eq('farm_id',f.id).is('deleted_at',null);if(order)q=q.order(order,{ascending:false});const r=await q;if(r.error)mgErr(r.error);return r.data||[]}
+async function mgRows(table,select='*',order=null){const f=await mgGetFarm();if(table==='expenses'&&!mgHasPlanFeature('expenses'))return [];let q=mgSb.from(table).select(select).eq('farm_id',f.id).is('deleted_at',null);if(order)q=q.order(order,{ascending:false});const r=await q;if(r.error)mgErr(r.error);return r.data||[]}
 function mgBody(opt){try{return opt.body?JSON.parse(opt.body):{}}catch{return {}}}
 function mgDays(a,b){if(!a||!b)return 0;return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000)}
 // BEGIN MG_WEIGHT_METRICS: shared by dashboard, lots, profile and performance.
@@ -3208,6 +3219,9 @@ async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from
 async function mgLotProfile(id){let f=await mgGetFarm();let lr=await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(lr.error)mgErr(lr.error);let l=lr.data;if(!l)throw new Error('Lote não encontrado');let aa=(await mgAnimals(true)).filter(a=>a.lot===l.name),ids=aa.map(a=>a.id),ww=await mgRows('weighings');let w=ww.filter(x=>ids.includes(x.animal_id)),byMonth={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(byMonth[m]??=[]).push(Number(x.weight))}let hist=Object.entries(byMonth).sort().map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}));let vals=aa.map(a=>a.current_weight).filter(Number.isFinite),g=aa.map(a=>a.gmd).filter(Number.isFinite);return {...l,animals_count:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total_weight:vals.reduce((a,b)=>a+b,0),avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:null,ready:aa.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)).length,history:hist,animals:aa}}
 async function apiOnline(path,opt={}){
  const method=(opt.method||'GET').toUpperCase(),data=mgBody(opt),f=await mgGetFarm();
+ await mgRefreshPlan(f);
+ if(method!=='GET'&&path!=='/api/logout'&&!MGPlansCore.writable(mgPlanState,mgPlanNow()))throw new Error('Seu acesso precisa ser liberado ou renovado. Seus dados estão preservados.');
+ if(method!=='GET'&&/^\/api\/expenses(?:\/|$)/.test(path)&&!mgHasPlanFeature('expenses'))throw new Error('O controle de gastos faz parte do plano Completo.');
  if(path==='/api/me')return {user:{id:mgUser.id,email:mgUser.email,role:'client',full_name:mgUser.user_metadata?.full_name||mgUser.email.split('@')[0]},farm:f};
  if(path==='/api/profile'&&method==='GET')return f;
  if(path==='/api/profile'&&method==='PUT'){let r=await mgSb.from('farms').update(data).eq('id',f.id).select().single();if(r.error)mgErr(r.error);mgFarm=r.data;return {ok:true}}
@@ -3313,14 +3327,15 @@ async function apiOnline(path,opt={}){
  if(path==='/api/weighings/batch'&&method==='POST'){let rows=(data.items||data.weighings||[]).map(x=>({farm_id:f.id,animal_id:Number(x.animal_id),weighing_date:data.weighing_date||x.weighing_date,weight:Number(x.weight),notes:x.notes||data.notes||''})).filter(x=>x.weight>0);let r=await mgSb.from('weighings').insert(rows).select('id');if(r.error)mgErr(r.error);if((r.data||[]).length!==rows.length)throw new Error('Nem todas as pesagens do lote foram confirmadas pelo banco de dados.');return {ok:true,count:r.data.length,ids:r.data.map(x=>x.id)}}
  if(path==='/api/expenses'&&method==='GET'){let e=await mgRows('expenses','*','expense_date'),a=await mgAnimals(true),map=Object.fromEntries(a.map(x=>[x.id,x.number]));return e.map(x=>({...x,animal_number:map[x.animal_id]||null}))}
  if(path==='/api/expenses'&&method==='POST'){let text=(data.category+' '+data.description+' '+(data.notes||'')).toLowerCase();if(/(compra|aquisi).*(gado|animal|boi|vaca|bezer)/.test(text))throw new Error('Compra de gado não deve ser lançada no módulo Gastos');let r=await mgSb.from('expenses').insert({farm_id:f.id,animal_id:data.animal_id||null,lot:data.lot||'',category:mgNormalizeLabel(data.category||'OUTROS'),expense_date:data.expense_date,amount:data.amount,description:data.description,notes:data.notes||''});if(r.error)mgErr(r.error);return {ok:true}}
- m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){if(data.category)data.category=mgNormalizeLabel(data.category);let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1]));if(r.error)mgErr(r.error);return {ok:true}}
- if(m&&method==='DELETE'){let r=await mgSb.from('expenses').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
+ m=path.match(/^\/api\/expenses\/(\d+)$/);if(m&&method==='PUT'){if(data.category)data.category=mgNormalizeLabel(data.category);let r=await mgSb.from('expenses').update(data).eq('farm_id',f.id).eq('id',Number(m[1])).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('O gasto não pôde ser alterado. Atualize o acesso e tente novamente.');return {ok:true}}
+ if(m&&method==='DELETE'){let r=await mgSb.from('expenses').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('O gasto não pôde ser excluído. Atualize o acesso e tente novamente.');return {ok:true}}
  m=path.match(/^\/api\/weighings\/(\d+)$/);if(m&&method==='PUT'){let r=await mgSb.from('weighings').update({weighing_date:data.weighing_date,weight:Number(data.weight),notes:data.notes||''}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null).select('id').maybeSingle();if(r.error)mgErr(r.error);if(!r.data)throw new Error('Pesagem não encontrada.');return {ok:true,id:r.data.id}}
  if(m&&method==='DELETE'){let r=await mgSb.from('weighings').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',Number(m[1])).is('deleted_at',null);if(r.error)mgErr(r.error);return {ok:true}}
  m=path.match(/^\/api\/nutrition\/(\d+)$/);if(m&&method==='DELETE'){
    const nutritionId=Number(m[1]);
    let r=await mgSb.from('nutrition_entries').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',nutritionId).is('deleted_at',null);
    if(r.error)mgErr(r.error);
+   if(!mgHasPlanFeature('expenses'))return {ok:true};
    const marker='[AUTO:NUTRITION:'+nutritionId+']';
    let er=await mgSb.from('expenses').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id})
      .eq('farm_id',f.id).ilike('notes','%'+marker+'%').is('deleted_at',null);
@@ -3341,25 +3356,7 @@ async function apiOnline(path,opt={}){
    let r=await mgSb.from('nutrition_entries').insert(payload).select('id').single();
    if(r.error)mgErr(r.error);
    const nutritionId=r.data.id;
-   /* Custo é opcional: sem valor, salva somente o manejo nutricional.
-      O gasto financeiro só é criado quando houver custo maior que zero. */
-   if(!(nutritionCost>0))return {ok:true,id:nutritionId,expense_created:false};
-   const marker='[AUTO:NUTRITION:'+nutritionId+']';
-   let er=await mgSb.from('expenses').insert({
-     farm_id:f.id,
-     animal_id:null,
-     lot:data.lot_name||'',
-     category:normalizedFeed,
-     expense_date:data.entry_date,
-     amount:nutritionCost,
-     description:'Alimentação · '+(data.feed_name||'Lançamento')+(data.lot_name?' · '+data.lot_name:''),
-     notes:marker+(data.notes?' '+data.notes:'')
-   });
-   if(er.error){
-     await mgSb.from('nutrition_entries').update({deleted_at:new Date().toISOString(),deleted_by:mgUser.id}).eq('farm_id',f.id).eq('id',nutritionId);
-     mgErr(er.error);
-   }
-   return {ok:true,id:nutritionId}
+   return {ok:true,id:nutritionId,expense_created:false};
  }
  if(path==='/api/market/arroba'){
    const {data:live,error:liveErr}=await mgSb.functions.invoke('market-live');
@@ -3434,6 +3431,7 @@ async function mgQueueMutation(path,opt){
  return {ok:true,queued:true,offline_id:item.id};
 }
 async function api(path,opt={}){
+ await mgPlanCheckRequest(path,opt);
  const method=(opt.method||'GET').toUpperCase();
  if(method==='GET'){
   if(!navigator.onLine)return mgReadCachedResponse(path);
@@ -3584,6 +3582,7 @@ async function permanentlyDeleteTrashItem(table,id){
 }
 
 function show(id,btn){
+  if(!mgPlanCanOpen(id))return false;
   if(id==='leite') id='inicio';
  if(!mgRoleCanOpen(id,btn))return;
   if(!document.getElementById(id)) id='inicio';
@@ -3598,7 +3597,7 @@ function show(id,btn){
 function mgNavigate(event,id,link){
   if(event&&(event.ctrlKey||event.metaKey||event.shiftKey||event.button===1))return true;
   if(event)event.preventDefault();
-  show(id,link);
+  if(show(id,link)===false)return false;
   if(id==='desempenho')loadPerformance(false);
   if(location.hash!=='#'+id)history.pushState(null,'','#'+id);
   mgCloseMobileNav();
@@ -3611,7 +3610,7 @@ function restoreLastView(){
   if(!document.getElementById(id)) id='inicio';
   show(id);
 }
-function openModal(id){document.getElementById(id).classList.add('show');const t=new Date().toISOString().slice(0,10);['adate','edate','hdate','rdate'].forEach(x=>{const e=document.getElementById(x);if(e&&!e.value)e.value=t});if(id==='reproModal')updateReproPrediction()}
+function openModal(id){if(id==='expenseModal'&&!mgHasPlanFeature('expenses'))return mgPlanExplain('O controle de gastos faz parte do plano Completo.');document.getElementById(id).classList.add('show');const t=new Date().toISOString().slice(0,10);['adate','edate','hdate','rdate'].forEach(x=>{const e=document.getElementById(x);if(e&&!e.value)e.value=t});if(id==='reproModal')updateReproPrediction()}
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 function closeWelcomeOnboarding(){
   const modal=document.getElementById('welcomeOnboardingModal');
@@ -4380,9 +4379,10 @@ async function loadNutrition(){
    }).join('')
    :'<tr><td colspan="9" class="empty">Nenhum lançamento no mês.</td></tr>';
  }
+ mgRenderPlan();
 }
 async function deleteNutrition(id){if(!confirm('Enviar este lançamento de nutrição para a Lixeira?'))return;try{await api(`/api/nutrition/${id}`,{method:'DELETE'});await loadNutrition();await refreshTrashBadge()}catch(e){alert(e.message)}}
-function openNutrition(){nutLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');nutDate.value=new Date().toISOString().slice(0,10);nutFeed.value='';nutQty.value='';nutCost.value='';nutNotes.value='';openModal('nutritionModal')}
+function openNutrition(){mgRenderPlan();nutLot.innerHTML=lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');nutDate.value=new Date().toISOString().slice(0,10);nutFeed.value='';nutQty.value='';nutCost.value='';nutNotes.value='';openModal('nutritionModal')}
 async function saveNutrition(){
  const feed=String(nutFeed.value||'').trim();
  if(!feed){alert('Informe o nome do alimento, por exemplo: Silo, Proteinado ou Ração.');nutFeed.focus();return}
@@ -4427,6 +4427,7 @@ function setPerformanceLoading(on){
   if(document.getElementById('perfTargets'))perfTargets.innerHTML=msg;
 }
 async function loadPerformance(force=false){
+ if(!mgHasPlanFeature('performance'))return;
   const root=document.getElementById('desempenho');if(!root)return;
   setPerformanceLoading(true);
   try{
@@ -4724,6 +4725,7 @@ function mgPdfFormatCell(header,value){
 }
 
 async function downloadReportPDF(type){
+  if(!mgHasPlanFeature('reports'))return mgPlanExplain('Relatórios e exportações fazem parte do plano Completo.');
  try{
   const {headers,rows,farm}=await mgBuildReportData(type);
   if(!rows.length){
@@ -4991,6 +4993,7 @@ window.onload=()=>{
  }
 }
 async function downloadReport(type){
+  if(!mgHasPlanFeature('reports'))return mgPlanExplain('Relatórios e exportações fazem parte do plano Completo.');
  try{
   const {headers,rows}=await mgBuildReportData(type);
   if(!rows.length){alert('Não há dados para este relatório no período selecionado.');return;}
@@ -7698,7 +7701,7 @@ openAnimalProfile = async function(id){
       <div class="ap8-kpi"><small>GMD</small><b>${gmd!=null?gmd.toFixed(3)+' kg/dia':'—'}</b><span>Primeira à última referência</span></div>
       <div class="ap8-kpi"><small>Meta</small><b>${target?target.toFixed(0)+' kg':'—'}</b><span>${target?progress.toFixed(0)+'% atingido':'Não definida'}</span></div>
       <div class="ap8-kpi"><small>Última variação</small><b class="${delta!=null&&delta<0?'ap8-status-down':'ap8-status-up'}">${delta!=null?(delta>0?'+':'')+delta.toFixed(1)+' kg':'—'}</b><span>Vs. pesagem anterior</span></div>
-      <div class="ap8-kpi"><small>Gastos vinculados</small><b>${money(a.expenses_total||0)}</b><span>${(a.expenses||[]).length} registro(s)</span></div>
+      <div class="ap8-kpi ${mgHasPlanFeature('expenses')?'':'mg-plan-hidden'}"><small>Gastos vinculados</small><b>${money(a.expenses_total||0)}</b><span>${(a.expenses||[]).length} registro(s)</span></div>
     </div>
 
     <div class="ap8-progress-card">
@@ -7761,7 +7764,7 @@ openAnimalProfile = async function(id){
         ${nutrition.length?`<div class="ap8-list">${nutrition.map(x=>ap8Event('🌾',(x.feed_name||'Alimentação'),`${Number(x.quantity_kg||0).toFixed(1)} kg · ${money(x.total_cost||0)}`,x.entry_date)).join('')}</div>`:'<div class="ap8-empty">Sem alimentação recente para este lote.</div>'}
       </div>
 
-      <div class="ap8-card">
+      <div class="ap8-card ${mgHasPlanFeature('expenses')?'':'mg-plan-hidden'}">
         <h4>Gastos vinculados</h4>
         ${(a.expenses||[]).length?`<div class="ap8-list">${a.expenses.slice(0,7).map(x=>ap8Event('💰',(x.category||'Gasto'),`${money(x.amount||0)}${x.description?` · ${(x.description)}`:''}`,x.expense_date)).join('')}</div>`:'<div class="ap8-empty">Sem gastos individuais vinculados.</div>'}
       </div>
@@ -8034,7 +8037,7 @@ run();document.addEventListener('DOMContentLoaded',run);
 })();
 </script>
 <script src="/feeding-planner-core.js?v=1"></script>
-<script src="/feeding-planner.js?v=1"></script>
+<script src="/feeding-planner.js?v=2"></script>
 
 <script id="mg-single-weight-viewport-fix-js">
 (function(){
