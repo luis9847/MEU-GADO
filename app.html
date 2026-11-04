@@ -1460,6 +1460,9 @@ html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
 <link rel="stylesheet" href="/animal-breeding.css?v=1">
 <script src="/animal-breeding.js?v=2"></script>
 <script src="/animal-breeding-ui.js?v=2"></script>
+<script src="/animal-reports.js?v=1"></script>
+<script src="/animal-reports-ui.js?v=1"></script>
+<link rel="stylesheet" href="/animal-reports.css?v=1">
 </head>
 <style id="mg-v30-redesign">
 /* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */
@@ -2467,7 +2470,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   <div class="page-title">
     <div>
       <h2>Relatórios</h2>
-      <p>Exporte os principais dados da fazenda em CSV, compatível com Excel e Planilhas Google.</p>
+      <p>Exporte os dados da fazenda em CSV, compatível com Excel e Planilhas Google, ou em PDF para consulta e impressão.</p>
     </div>
   </div>
 
@@ -2481,8 +2484,19 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <button class="btn secondary" type="button" onclick="clearReportPeriod()">Limpar período</button>
   </div>
 
+  <div class="mg-report-filters"><h3>Filtrar animais</h3><p>Escolha os filtros e clique em Baixar CSV ou Baixar PDF no relatório desejado.</p><div class="mg-report-filter-grid">
+  <label>Atividade<select id="reportActivity"><option value="">Todas as atividades</option><option value="cria">Cria</option><option value="recria">Recria</option><option value="engorda">Engorda</option><option value="genetica">Genética</option><option value="__not_informed__">Não informada</option></select></label>
+  <label>Raça<select id="reportBreed"><option value="">Todas as raças</option></select></label>
+  <label>Lote<select id="reportLot"><option value="">Todos os lotes</option></select></label>
+  <label>Categoria<select id="reportCategory"><option value="">Todas as categorias</option></select></label></div>
+  <div class="mg-report-filter-actions"><button class="btn secondary" type="button" onclick="mgClearAnimalReportFilters()">Limpar filtros de animais</button><button class="btn secondary" type="button" onclick="mgInitReportFilters()">Atualizar filtros</button><span id="reportFiltersStatus" role="status"></span></div>
+  <details><summary>Como os filtros são aplicados</summary><p>Atividade, raça, lote e categoria consideram o cadastro atual do animal. Em saúde, registros gerais ou por lote não atendem filtros de atividade, raça ou categoria. Alimentação e gastos usam apenas o filtro de lote. Nos descendentes, os filtros selecionam o pai ou a mãe e o período considera o nascimento do descendente. Rebanho, registros na associação, filiação e prontos para venda mostram a posição atual, sem filtro de período.</p></details></div>
   <div class="report-grid">
-    <div class="report-card"><i>🐄</i><b>Rebanho completo</b><p>Animais ativos, categoria, raça, nascimento, lote, peso e vínculo materno.</p><div class="report-actions">
+    <div class="report-card"><i>▤</i><b>Registros na associação</b><p>Animais ativos com associação, série, RGN, RGD e categoria do registro informados pelo criador.</p><div class="report-actions"><button onclick="downloadReport('registrados')">Baixar CSV</button><button class="pdf" onclick="downloadReportPDF('registrados')">Baixar PDF</button></div></div>
+    <div class="report-card"><i>♧</i><b>Filiação</b><p>Pai e mãe dos animais ativos, com referências da fazenda ou externas.</p><div class="report-actions"><button onclick="downloadReport('filiacao')">Baixar CSV</button><button class="pdf" onclick="downloadReportPDF('filiacao')">Baixar PDF</button></div></div>
+    <div class="report-card"><i>🐮</i><b>Descendentes</b><p>Uma linha por vínculo de pai ou mãe e descendente cadastrado, incluindo animais baixados. Filtros sobre o ascendente; período pelo nascimento do descendente.</p><div class="report-actions"><button onclick="downloadReport('descendentes')">Baixar CSV</button><button class="pdf" onclick="downloadReportPDF('descendentes')">Baixar PDF</button></div></div>
+
+    <div class="report-card"><i>🐄</i><b>Rebanho completo</b><p>Animais ativos com nome, atividade, classificação reprodutiva, peso, lote e filiação.</p><div class="report-actions">
       <button onclick="downloadReport('rebanho')">Baixar CSV</button>
       <button class="pdf" onclick="downloadReportPDF('rebanho')">Baixar PDF</button>
     </div></div>
@@ -2498,7 +2512,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <button onclick="downloadReport('reproducao')">Baixar CSV</button>
       <button class="pdf" onclick="downloadReportPDF('reproducao')">Baixar PDF</button>
     </div></div>
-    <div class="report-card"><i>🐮</i><b>Crias</b><p>Bezerros e bezerras ativos, nascimento, raça, peso e mãe vinculada.</p><div class="report-actions">
+    <div class="report-card"><i>🐮</i><b>Crias</b><p>Bezerros e bezerras ativos, com nome, atividade, nascimento, peso e filiação.</p><div class="report-actions">
       <button onclick="downloadReport('crias')">Baixar CSV</button>
       <button class="pdf" onclick="downloadReportPDF('crias')">Baixar PDF</button>
     </div></div>
@@ -3236,6 +3250,15 @@ async function mgLotList(){
 }
 async function mgAnimalProfile(id){let f=await mgGetFarm();let a=await mgSb.from('animals').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(a.error)mgErr(a.error);if(!a.data)throw new Error('Animal não encontrado');let [w,h,r,e]=await Promise.all([mgSb.from('weighings').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('weighing_date',{ascending:false}),mgSb.from('health_events').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('event_date',{ascending:false}),mgSb.from('reproductive_events').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('event_date',{ascending:false}),mgSb.from('expenses').select('*').eq('farm_id',f.id).eq('animal_id',id).is('deleted_at',null).order('expense_date',{ascending:false})]);for(const q of [w,h,r,e])if(q.error)mgErr(q.error);let ws=w.data||[],metrics=mgWeightMetrics(a.data,ws),gmd=metrics.gmd;return {...a.data,photo_path:a.data.photo_path||a.data.photo_url||'',weighings:ws,health:h.data||[],reproduction:r.data||[],expenses:e.data||[],movements:[],current_weight:metrics.currentWeight,expenses_total:(e.data||[]).reduce((s,x)=>s+Number(x.amount||0),0),gmd}}
 async function mgLotProfile(id){let f=await mgGetFarm();let lr=await mgSb.from('lots').select('*').eq('farm_id',f.id).eq('id',id).is('deleted_at',null).maybeSingle();if(lr.error)mgErr(lr.error);let l=lr.data;if(!l)throw new Error('Lote não encontrado');let aa=(await mgAnimals(true)).filter(a=>a.lot===l.name),ids=aa.map(a=>a.id),ww=await mgRows('weighings');let w=ww.filter(x=>ids.includes(x.animal_id)),byMonth={};for(const x of w){let m=String(x.weighing_date).slice(0,7);(byMonth[m]??=[]).push(Number(x.weight))}let hist=Object.entries(byMonth).sort().map(([month,v])=>({month,avg_weight:v.reduce((a,b)=>a+b,0)/v.length,weighings:v.length}));let vals=aa.map(a=>a.current_weight).filter(Number.isFinite),g=aa.map(a=>a.gmd).filter(Number.isFinite);return {...l,animals_count:aa.length,avg_weight:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total_weight:vals.reduce((a,b)=>a+b,0),avg_gmd:g.length?g.reduce((a,b)=>a+b,0)/g.length:null,ready:aa.filter(a=>a.target_weight&&Number(a.current_weight)>=Number(a.target_weight)).length,history:hist,animals:aa}}
+async function mgReportRows(table,select='*',includeDeleted=false){
+ const farm=await mgGetFarm(),rows=[];
+ for(let offset=0;;offset+=1000){
+  let query=mgSb.from(table).select(select).eq('farm_id',farm.id).order('id');
+  if(!includeDeleted)query=query.is('deleted_at',null);
+  const result=await query.range(offset,offset+999);if(result.error)mgErr(result.error);
+  rows.push(...(result.data||[]));if((result.data||[]).length<1000)break;
+ }return rows;
+}
 async function apiOnline(path,opt={}){
  const method=(opt.method||'GET').toUpperCase(),data=mgBody(opt),f=await mgGetFarm();
  await mgRefreshPlan(f);
@@ -3245,6 +3268,12 @@ async function apiOnline(path,opt={}){
  if(path==='/api/profile'&&method==='GET')return f;
  if(path==='/api/profile'&&method==='PUT'){let r=await mgSb.from('farms').update(data).eq('id',f.id).select().single();if(r.error)mgErr(r.error);mgFarm=r.data;return {ok:true}}
  if(path==='/api/dashboard')return mgDashboard();
+ if(path==='/api/animals/report-context'&&method==='GET')return mgReportRows('animals','id,number,name,category,breed,production_purpose,reproductive_role,male_condition,registry_association,registry_series,registry_birth,registry_definitive,registry_category,birth_date,origin,entry_date,entry_weight,target_weight,lot,status,exit_type,exit_date,exit_value,exit_notes,father_id,mother_id,father_external_name,father_external_registry,mother_external_name,mother_external_registry,deleted_at',true);
+ const reportTables={weighings:'weighings',health:'health_events',reproduction:'reproductive_events',nutrition:'nutrition_entries',expenses:'expenses',milk:'milk_production'};
+ if(method==='GET'&&path.startsWith('/api/reports/')){
+  if(!mgHasPlanFeature('reports'))throw new Error('Relatórios e exportações fazem parte do plano Completo.');
+  const key=path.slice('/api/reports/'.length);if(!Object.prototype.hasOwnProperty.call(reportTables,key))throw new Error('Relatório não reconhecido.');return mgReportRows(reportTables[key]);
+ }
  if(path==='/api/animals/parents'&&method==='GET'){
   const rows=[];for(let offset=0;;offset+=1000){
    const result=await mgSb.from('animals').select('id,number,name,category,status').eq('farm_id',f.id).is('deleted_at',null).order('id').range(offset,offset+999);
@@ -3613,6 +3642,7 @@ async function permanentlyDeleteTrashItem(table,id){
 function show(id,btn){
   if(!mgPlanCanOpen(id))return false;
   if(id==='leite') id='inicio';
+  if(id==='relatorios'&&typeof mgInitReportFilters==='function')mgInitReportFilters();
  if(!mgRoleCanOpen(id,btn))return;
   if(!document.getElementById(id)) id='inicio';
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
@@ -4673,68 +4703,21 @@ function reportInPeriod(date){
 }
 
 const MG_REPORT_TITLES={
- rebanho:'Rebanho completo',pesagens:'Pesagens',saude:'Saúde',reproducao:'Reprodução',
+ rebanho:'Rebanho completo',registrados:'Registros na associação',filiacao:'Filiação',descendentes:'Descendentes',pesagens:'Pesagens',saude:'Saúde',reproducao:'Reprodução',
  crias:'Crias',baixas:'Baixas',alimentacao:'Alimentação',gastos:'Gastos',prontos_venda:'Animais prontos para venda',leite:'Produção de leite'
 };
 
 async function mgBuildReportData(type){
-  let rows=[],headers=[];
-  const farm=await mgGetFarm();
-
-  if(type==='rebanho'){
-    const data=await api('/api/animals');
-    const byId=Object.fromEntries(data.map(x=>[x.id,x]));
-    headers=['Número','Categoria','Raça','Nascimento','Origem','Entrada','Peso entrada','Meta','Lote','Mãe'];
-    rows=data.map(x=>[x.number,x.category,x.breed||'',x.birth_date||'',x.origin||'',x.entry_date||'',x.entry_weight||'',x.target_weight||'',x.lot||'',x.mother_id?(byId[x.mother_id]?.number||x.mother_id):'']);
-  }else if(type==='pesagens'){
-    const data=await mgRows('weighings','*','weighing_date'), animals=await api('/api/animals');
-    const map=Object.fromEntries(animals.map(x=>[x.id,x]));
-    headers=['Data','Animal','Categoria','Peso','Lote','Observação'];
-    rows=data.filter(x=>reportInPeriod(x.weighing_date)).map(x=>{const a=map[x.animal_id]||{};return [x.weighing_date,a.number||x.animal_id,a.category||'',x.weight,a.lot||'',x.notes||''];});
-  }else if(type==='saude'){
-    const data=await api('/api/health');
-    headers=['Data','Animal/Lote','Tipo','Produto','Próxima dose','Observação'];
-    rows=data.filter(x=>reportInPeriod(x.event_date)).map(x=>[x.event_date,x.animal_number?('#'+x.animal_number):(x.lot||'Geral'),x.event_type,x.product||'',x.next_due_date||'',x.notes||'']);
-  }else if(type==='reproducao'){
-    const data=await api('/api/reproduction');
-    headers=['Data','Animal','Evento','Resultado','Data prevista','Observação'];
-    rows=data.filter(x=>reportInPeriod(x.event_date)).map(x=>[x.event_date,x.animal_number||'',x.event_type,x.result||'',x.expected_date||'',x.notes||'']);
-  }else if(type==='crias'){
-    const data=await api('/api/animals'), byId=Object.fromEntries(data.map(x=>[x.id,x]));
-    headers=['Número','Sexo/Categoria','Raça','Nascimento','Peso ao nascer/entrada','Lote','Mãe'];
-    rows=data.filter(x=>['Bezerro','Bezerra'].includes(x.category)).filter(x=>reportInPeriod(x.birth_date||x.entry_date)).map(x=>[x.number,x.category,x.breed||'',x.birth_date||'',x.entry_weight||'',x.lot||'',x.mother_id?(byId[x.mother_id]?.number||x.mother_id):'']);
-  }else if(type==='baixas'){
-    const data=await api('/api/animals/exited');
-    headers=['Número','Categoria','Raça','Tipo da baixa','Data','Valor','Observação'];
-    rows=data.filter(x=>reportInPeriod(x.exit_date)).map(x=>[x.number,x.category,x.breed||'',x.exit_type||'',x.exit_date||'',x.exit_value||'',x.exit_notes||'']);
-  }else if(type==='alimentacao'){
-    const data=await api('/api/nutrition');
-    headers=['Data','Lote','Alimento','Quantidade kg','Custo total','Custo/kg','Observação'];
-    rows=data.filter(x=>reportInPeriod(x.entry_date)).map(x=>{const q=Number(x.quantity_kg||0),c=Number(x.total_cost||0);return [x.entry_date,x.lot_name||'',x.feed_name||'',q,c,q?c/q:0,x.notes||''];});
-  }else if(type==='gastos'){
-    const data=await api('/api/expenses');
-    headers=['Data','Categoria','Descrição','Valor','Lote','Observação'];
-    rows=data.filter(x=>reportInPeriod(x.expense_date)).map(x=>[x.expense_date,x.category,x.description||'',x.amount,x.lot||'',x.notes||'']);
-  }else if(type==='prontos_venda'){
-    const data=await api('/api/animals');
-    headers=['Número','Categoria','Raça','Lote','Peso atual','Meta de peso','Acima da meta','GMD médio'];
-    rows=data.filter(x=>{
-      const current=Number(x.current_weight||x.weight||x.last_weight||x.entry_weight||0);
-      const target=Number(x.target_weight||0);
-      return target>0&&current>=target;
-    }).map(x=>{
-      const current=Number(x.current_weight||x.weight||x.last_weight||x.entry_weight||0);
-      const target=Number(x.target_weight||0);
-      return [x.number,x.category||'',x.breed||'',x.lot||'',current,target,current-target,Number.isFinite(x.gmd)?x.gmd:''];
-    });
-  }else if(type==='leite'){
-    const q=await mgSb.from('milk_production').select('production_date,animal_id,morning_liters,afternoon_liters,evening_liters,discarded_liters,notes,animals(number,breed)').eq('farm_id',farm.id).is('deleted_at',null).order('production_date',{ascending:false});
-    if(q.error)throw q.error;
-    headers=['Data','Animal','Raça','Manhã L','Tarde L','Noite L','Total L','Descarte L','Observação'];
-    rows=(q.data||[]).filter(x=>reportInPeriod(x.production_date)).map(x=>{const total=Number(x.morning_liters||0)+Number(x.afternoon_liters||0)+Number(x.evening_liters||0);return [x.production_date,x.animals?.number||x.animal_id,x.animals?.breed||'',x.morning_liters||0,x.afternoon_liters||0,x.evening_liters||0,total,x.discarded_liters||0,x.notes||''];});
-  }else throw new Error('Relatório não reconhecido.');
-
-  return {headers,rows,farm};
+ const farm=await mgGetFarm(),filters=mgReportFilters();MGAnimalReports.validate(filters);
+ let animals=[],events=[];
+ if(!['alimentacao','gastos'].includes(type))animals=await api('/api/animals/report-context');
+ const paths={pesagens:'weighings',saude:'health',reproducao:'reproduction',alimentacao:'nutrition',gastos:'expenses',leite:'milk'};
+ if(paths[type])events=await api('/api/reports/'+paths[type]);
+ if(['rebanho','prontos_venda'].includes(type)){
+  const weighings=await api('/api/reports/weighings'),byAnimal={};for(const row of weighings)(byAnimal[row.animal_id]??=[]).push(row);
+  animals=animals.map(a=>{const metrics=mgWeightMetrics(a,byAnimal[a.id]||[]);return {...a,current_weight:metrics.currentWeight,gmd:metrics.gmd};});
+ }
+ return {...MGAnimalReports.build(type,{animals,events,filters}),farm,filters};
 }
 
 function mgPdfFormatDate(v){
@@ -4770,10 +4753,14 @@ function mgPdfFormatCell(header,value){
 
 async function downloadReportPDF(type){
   if(!mgHasPlanFeature('reports'))return mgPlanExplain('Relatórios e exportações fazem parte do plano Completo.');
+ let w;
  try{
-  const {headers,rows,farm}=await mgBuildReportData(type);
+  w=window.open('','_blank');if(!w)throw new Error('O navegador bloqueou a janela do PDF. Permita pop-ups para este site.');
+  w.document.write('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Preparando relatório</title><body><p>Preparando relatório…</p></body></html>');w.document.close();
+  const {headers,rows,farm,filters}=await mgBuildReportData(type);
   if(!rows.length){
-    alert('Não há dados para este relatório no período selecionado.');
+    w.close();
+    alert('Não há dados para este relatório com os filtros e o período selecionados.');
     return;
   }
 
@@ -4782,26 +4769,30 @@ async function downloadReportPDF(type){
   }[m]));
 
   const {start,end}=reportPeriod();
-  const period=start||end
+  const period=['rebanho','registrados','filiacao','prontos_venda'].includes(type)?'Posição atual do cadastro':start||end
     ? `${start?mgPdfFormatDate(start):'Início'} até ${end?mgPdfFormatDate(end):'Hoje'}`
     : 'Todos os registros';
 
   const farmName=esc(farm?.name||farm?.farm_name||'Minha Fazenda');
+  let logoSource=new URL('/meu-gado-logo.png',location.origin).href;
+  const logoImage=document.querySelector('.brand img');
+  if(logoImage?.complete&&logoImage.naturalWidth){
+    try{const canvas=document.createElement('canvas');canvas.width=logoImage.naturalWidth;canvas.height=logoImage.naturalHeight;canvas.getContext('2d').drawImage(logoImage,0,0);logoSource=canvas.toDataURL('image/png');}catch(_e){}
+  }
+  const logoUrl=esc(logoSource);
   const title=esc(MG_REPORT_TITLES[type]||type);
   const generated=new Date().toLocaleString('pt-BR');
-  const colCount=headers.length;
-  const fontSize=colCount>=9?'8.2px':colCount>=7?'8.8px':'9.4px';
+  const fontSize='10px';
 
-  const body=rows.map((r,idx)=>{
-    const cells=r.map((v,i)=>`<td>${esc(mgPdfFormatCell(headers[i],v))}</td>`).join('');
-    return `<tr>${cells}</tr>`;
+  const groups=MGAnimalReports.columnGroups(headers);
+  const tables=groups.map((indices,part)=>{
+   const head='<tr>'+indices.map(i=>`<th>${esc(headers[i])}</th>`).join('')+'</tr>';
+   const body=rows.map(row=>'<tr>'+indices.map(i=>`<td>${esc(mgPdfFormatCell(headers[i],row[i]))}</td>`).join('')+'</tr>').join('');
+   return `<section class="report-part">${groups.length>1?`<h2>${title} · Parte ${part+1} de ${groups.length}</h2>`:''}<table><thead>${head}</thead><tbody>${body}</tbody></table></section>`;
   }).join('');
 
-  const head='<tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr>';
-
-  const w=window.open('','_blank');
-  if(!w)throw new Error('O navegador bloqueou a janela do PDF. Permita pop-ups para este site.');
-
+  if(w.closed)throw new Error('A janela do relatório foi fechada. Gere o PDF novamente.');
+  w.document.open();
   w.document.write(`<!doctype html>
 <html>
 <head>
@@ -4920,7 +4911,7 @@ async function downloadReportPDF(type){
     width:100%;
     border-collapse:separate;
     border-spacing:0;
-    table-layout:auto;
+    table-layout:fixed;
     border:1px solid #d9e5de;
     border-radius:8px;
     overflow:hidden;
@@ -4937,7 +4928,7 @@ async function downloadReportPDF(type){
     font-size:7.5px;
     letter-spacing:.035em;
     font-weight:800;
-    white-space:nowrap;
+    white-space:normal;
   }
 
   th,td{
@@ -4971,6 +4962,7 @@ async function downloadReportPDF(type){
 
   .footer b{color:#2f5a43}
 
+  .report-part{margin-bottom:18px}.report-part+.report-part{break-before:page}.report-part h2{font-size:15px;color:#173e2b;margin:10px 0}.filter-summary{font-size:10px;line-height:1.6;margin:10px 0}th,td{overflow-wrap:anywhere}
   @media print{
     body{background:#fff}
   }
@@ -4980,7 +4972,7 @@ async function downloadReportPDF(type){
 <div class="page">
   <div class="brandbar">
     <div class="brand-left">
-      <img class="logo" src="/meu-gado-logo.png" alt="Meu Gado">
+      <img class="logo" src="${logoUrl}" alt="Meu Gado">
       <div>
         <div class="brand-name">MEU GADO</div>
         <h1>${title}</h1>
@@ -5007,10 +4999,8 @@ async function downloadReportPDF(type){
     </div>
   </div>
 
-  <table>
-    <thead>${head}</thead>
-    <tbody>${body}</tbody>
-  </table>
+  <p class="filter-summary">${esc(MGAnimalReports.filterSummary(type,filters))}</p>
+  ${tables}
 
   <div class="footer">
     <span><b>Meu Gado</b> · Controle profissional do rebanho</span>
@@ -5032,6 +5022,7 @@ window.onload=()=>{
   w.document.close();
 
  }catch(e){
+  if(w&&!w.closed)w.close();
   console.error('PDF:',e);
   alert('Não foi possível gerar o PDF. '+(e?.message||e));
  }
@@ -5040,8 +5031,8 @@ async function downloadReport(type){
   if(!mgHasPlanFeature('reports'))return mgPlanExplain('Relatórios e exportações fazem parte do plano Completo.');
  try{
   const {headers,rows}=await mgBuildReportData(type);
-  if(!rows.length){alert('Não há dados para este relatório no período selecionado.');return;}
-  const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';
+  if(!rows.length){alert('Não há dados para este relatório com os filtros e o período selecionados.');return;}
+  const esc=MGAnimalReports.csvCell;
   const csv='\ufeff'+[headers,...rows].map(r=>r.map(esc).join(';')).join('\n');
   const b=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');
@@ -8126,6 +8117,6 @@ run();document.addEventListener('DOMContentLoaded',run);
   }
 })();
 </script>
-<script src="/billing-client.js?v=3"></script>
+<script src="/billing-client.js?v=4"></script>
 </body></html>
 

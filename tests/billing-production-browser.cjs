@@ -30,7 +30,7 @@ const root=path.resolve(__dirname,'..');
  await page.getByRole('button',{name:'Consultar pagamento'}).click();await page.waitForFunction(()=>document.getElementById('mgBillingMessage').textContent.includes('atualizados'));assert.match(await page.locator('#mgBillingContracts').innerText(),/A liberação depende/);
  paid=true;await page.getByRole('button',{name:'Consultar pagamento'}).click();await page.waitForFunction(()=>document.getElementById('mgBillingContracts').textContent.includes('Período pago até'));
  await page.locator('.mg-billing-comparison summary').click();
- assert.equal(await page.locator('.mg-billing-table tbody tr').count(),10);
+ assert.equal(await page.locator('.mg-billing-table tbody tr').count(),12);
  assert.equal(await page.locator('.mg-billing-table tbody tr').filter({hasText:'Controle de gastos'}).locator('td').first().innerText(),'Não incluído');
  for(const width of [1365,390]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.getElementById('mgBillingDialog').getBoundingClientRect().width<=innerWidth));await page.screenshot({path:'/tmp/mg-production-billing-'+width+'.png'});}
  const expiry=contract.paid_until;await page.getByRole('button',{name:'Cancelar renovação',exact:true}).click();await page.waitForFunction(()=>document.getElementById('mgBillingContracts').textContent.includes('Renovação cancelada'));assert.equal(contract.paid_until,expiry);assert.equal(await page.locator('#mgBillingBuy').isDisabled(),true);
