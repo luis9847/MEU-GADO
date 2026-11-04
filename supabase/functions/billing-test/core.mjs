@@ -6,6 +6,18 @@ export function selection(plan,period){
  return {amount:PRICES[plan][period],frequency:period==='annual'?12:1};
 }
 export function testAccount(user){return !!user&&user.site_id==='MLB'&&Array.isArray(user.tags)&&user.tags.includes('test_user');}
+// A seller token sees another user's public profile; tags and email may be omitted.
+// Missing private fields are not a failed identity check. The provider's created
+// subscription must still bind the requested buyer ID before its checkout is exposed.
+export function resolveBuyerEmail(buyer,input,expectedId,sellerId){
+ if(!buyer||buyer.site_id!=='MLB'||String(buyer.id)!==expectedId||String(buyer.id)===sellerId||(Array.isArray(buyer.tags)&&!buyer.tags.includes('test_user')))throw new SafeError('Use uma conta COMPRADORA brasileira de teste, diferente da vendedora.');
+ const entered=String(input||'').trim().toLowerCase(),known=String(buyer.email||'').trim().toLowerCase();
+ if(known&&entered&&known!==entered)throw new SafeError('O e-mail informado não corresponde à conta compradora de teste.');
+ const email=known||entered;
+ if(!email)throw new SafeError('O Mercado Pago ocultou o e-mail desta conta. Preencha o e-mail exato do perfil da conta COMPRADORA de teste no campo abaixo do User ID.');
+ if(email.length>254||! /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@testuser\.com$/i.test(email))throw new SafeError('Informe o e-mail da conta de teste terminado em @testuser.com. Não use seu e-mail pessoal.');
+ return email;
+}
 export function numericId(value){if(!/^\d{5,20}$/.test(String(value||'')))throw new SafeError('Informe o User ID da conta compradora de teste.');return String(value);}
 export function uuid(value){if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value||''))throw new SafeError('Identificador de teste inválido.');return value;}
 export function checkoutUrl(value,id){
@@ -94,7 +106,7 @@ export function createHandler(env,fetcher=fetch){
    if(action==='create'){
     const id=uuid(body.request_id),plan=body.plan,period=body.billing_period,p=selection(plan,period),buyerId=numericId(body.buyer_id);
     const account=await seller(),buyer=await mp('/users/'+buyerId);
-    if(!testAccount(buyer)||!buyer.email||String(buyer.id)!==buyerId||String(account.id)===buyerId)throw new SafeError('Use uma conta COMPRADORA brasileira de teste, diferente da vendedora.');
+    const payerEmail=resolveBuyerEmail(buyer,body.buyer_email,buyerId,String(account.id));
     const token=crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-','');
     const reserved=await db('rpc/billing_test_reserve',{method:'POST',body:JSON.stringify({p_id:id,p_actor:user.id,p_plan:plan,p_period:period,p_buyer:buyerId,p_seller:String(account.id),p_notify_hash:await sha(token)})});
     const row=reserved.row;
@@ -104,8 +116,13 @@ export function createHandler(env,fetcher=fetch){
      throw new SafeError('Este teste já foi enviado. Consulte o histórico antes de iniciar outro para evitar duplicidade.',409);
     }
     try{
-     const s=await mp('/preapproval',{method:'POST',body:JSON.stringify({reason:'[TESTE] Meu Gado '+(plan==='essential'?'Essencial':'Completo')+' '+(period==='annual'?'anual':'mensal'),external_reference:'mg-test:'+id,payer_email:buyer.email,auto_recurring:{frequency:p.frequency,frequency_type:'months',transaction_amount:p.amount,currency_id:'BRL'},back_url:'https://www.sistemameugado.com.br/admin?billing_test='+id,status:'pending',notification_url:base+'/functions/v1/billing-test/notify?checkout='+id+'&token='+token})});
+     const s=await mp('/preapproval',{method:'POST',body:JSON.stringify({reason:'[TESTE] Meu Gado '+(plan==='essential'?'Essencial':'Completo')+' '+(period==='annual'?'anual':'mensal'),external_reference:'mg-test:'+id,payer_email:payerEmail,auto_recurring:{frequency:p.frequency,frequency_type:'months',transaction_amount:p.amount,currency_id:'BRL'},back_url:'https://www.sistemameugado.com.br/admin?billing_test='+id,status:'pending',notification_url:base+'/functions/v1/billing-test/notify?checkout='+id+'&token='+token})});
      if(!/^[a-zA-Z0-9_-]{10,80}$/.test(s.id||''))throw new SafeError('Identificador inesperado do Mercado Pago.',502);
+     // Verify the email resolved to the exact requested buyer, not just any test account.
+     try{validateSubscription(s,{...row,provider_id:String(s.id)});}catch(error){
+      await mp('/preapproval/'+encodeURIComponent(s.id),{method:'PUT',body:JSON.stringify({status:'cancelled'})}).catch(()=>{});
+      throw new SafeError('O Mercado Pago não vinculou o e-mail ao User ID informado. Confira o e-mail exato da conta compradora de teste. Nenhum checkout foi liberado.',502);
+     }
      const link=checkoutUrl(s.init_point,s.id);
      const saved=await patch(id,{provider_id:String(s.id),checkout_url:link,status:s.status||'pending'});
      return reply({checkout:publicRow(saved)},201);

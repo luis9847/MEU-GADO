@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHandler,selection,testAccount,checkoutUrl,validateSubscription,paymentSummary,publicRow,constantEqual} from '../supabase/functions/billing-test/core.mjs';
+import {createHandler,selection,testAccount,checkoutUrl,validateSubscription,paymentSummary,publicRow,constantEqual,resolveBuyerEmail} from '../supabase/functions/billing-test/core.mjs';
 import fs from 'node:fs';
 const id='11111111-1111-4111-8111-111111111111',provider='provider1234567890';
 function fixture(options={}){
@@ -28,11 +28,11 @@ function fixture(options={}){
   if(u.hostname==='api.mercadopago.com'){
    assert.equal(opt.headers.Authorization,'Bearer secret-test-token');
    if(u.pathname==='/users/me')return json({id:'11111',site_id:'MLB',tags:options.realSeller?[]:['test_user']});
-   if(u.pathname==='/users/22222')return json({id:'22222',site_id:'MLB',tags:options.realBuyer?[]:['test_user'],email:'buyer@testuser.com'});
+   if(u.pathname==='/users/22222')return json(options.publicBuyer?{id:'22222',site_id:'MLB',user_type:'normal',nickname:'TESTUSER12345'}:{id:'22222',site_id:'MLB',tags:options.realBuyer?[]:['test_user'],email:'buyer@testuser.com'});
    if(u.pathname==='/preapproval'&&opt.method==='POST'){
     callback=body.notification_url;
     if(options.providerFailure)return json({message:'contains secret-test-token'},500);
-    return json({id:provider,status:'pending',init_point:'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_id='+provider});
+    return json({...sub([...rows.values()][0]),payer_id:options.otherBuyer?'99999':'22222',status:'pending',init_point:'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_id='+provider});
    }
    if(u.pathname==='/preapproval/'+provider)return json(sub([...rows.values()][0]));
    if(u.pathname==='/authorized_payments/search')return json({results:options.noPayment?[]:[{preapproval_id:provider,currency_id:'BRL',transaction_amount:[...rows.values()][0].amount,payment:{id:'33333'},date_created:'2026-11-04'}]});
@@ -57,3 +57,19 @@ test('the confirmed test payment is fetched server side and checked for amount a
 test('webhook requires a per-checkout secret and ignores forged payload data',async()=>{const f=fixture({noPayment:true});await f.create();let r=await f.handle(new Request('https://supabase.test/functions/v1/billing-test/notify?checkout='+id+'&token='+'0'.repeat(64),{method:'POST'}));assert.equal(r.status,401);r=await f.handle(new Request(f.callback,{method:'POST',body:JSON.stringify({status:'approved',amount:1})}));assert.equal(r.status,200);assert.deepEqual(f.rows.get(id).payments,[]);});
 test('cancel calls provider without changing a real farm or deleting history',async()=>{const f=fixture();await f.create();const r=await f.request('cancel',{id});assert.equal(r.status,200);assert.equal(f.rows.get(id).status,'cancelled');assert.equal(f.calls.some(x=>x.opt.method==='PUT'&&JSON.parse(x.opt.body).status==='cancelled'),true);});
 test('links, references and account metadata fail closed on substitution',()=>{assert.equal(testAccount({site_id:'MLB',tags:['test_user']}),true);assert.equal(testAccount({site_id:'MLB',tags:[]}),false);assert.throws(()=>checkoutUrl('https://www.mercadopago.com.br.evil.test/subscriptions/checkout?preapproval_id=x','x'));assert.throws(()=>validateSubscription({},{}));assert.throws(()=>paymentSummary({},{},{}));assert.equal(constantEqual('aa','aa'),true);assert.equal(constantEqual('aa','bb'),false);assert.equal(publicRow({id,notify_hash:'hidden'}).notify_hash,undefined);});
+
+test('public buyer profiles omit email and tags: ask for exact test email rather than refusing valid ID',async()=>{
+ const f=fixture({publicBuyer:true});let r=await f.create();assert.equal(r.status,400);assert.match(r.data.error,/ocultou o e-mail/);assert.equal(f.rows.size,0);
+ r=await f.create({buyer_email:'buyer@testuser.com'});assert.equal(r.status,201);assert.equal(JSON.stringify(r.data).includes('buyer@testuser.com'),false);
+});
+test('real emails, foreign users, same-account buyer, and explicit non-test tags remain denied',()=>{
+ const publicBuyer={id:'22222',site_id:'MLB'};
+ assert.throws(()=>resolveBuyerEmail(publicBuyer,'real@gmail.com','22222','11111'));
+ assert.throws(()=>resolveBuyerEmail({...publicBuyer,site_id:'MLA'},'buyer@testuser.com','22222','11111'));
+ assert.throws(()=>resolveBuyerEmail(publicBuyer,'buyer@testuser.com','22222','22222'));
+ assert.throws(()=>resolveBuyerEmail({...publicBuyer,tags:[]},'buyer@testuser.com','22222','11111'));
+});
+test('an email resolving to a different buyer is rejected before exposing any checkout link',async()=>{
+ const f=fixture({publicBuyer:true,otherBuyer:true});const r=await f.create({buyer_email:'buyer@testuser.com'});assert.equal(r.status,502);assert.equal(r.data.checkout,undefined);
+ assert.ok(f.calls.some(x=>x.opt.method==='PUT'&&JSON.parse(x.opt.body).status==='cancelled'));
+});
