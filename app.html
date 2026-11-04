@@ -1458,8 +1458,8 @@ html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
 <script src="/plans-app.js?v=3"></script>
 <link rel="stylesheet" href="/billing.css?v=2">
 <link rel="stylesheet" href="/animal-breeding.css?v=1">
-<script src="/animal-breeding.js?v=1"></script>
-<script src="/animal-breeding-ui.js?v=1"></script>
+<script src="/animal-breeding.js?v=2"></script>
+<script src="/animal-breeding-ui.js?v=2"></script>
 </head>
 <style id="mg-v30-redesign">
 /* Meu Gado v30 — redesenho visual (somente aparência; nenhuma lógica alterada) */
@@ -2725,7 +2725,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 
     <div class="two-cols">
       <label>Sexo<input id="asex" value="Macho" readonly></label>
-      <label>Atividade<input id="aaptitude" value="Pecuária de corte" readonly></label>
+      <label>Atividade <small>opcional</small><select id="aaptitude"><option value="">Não informada</option><option value="cria">Cria</option><option value="recria">Recria</option><option value="engorda">Engorda</option><option value="genetica">Genética</option></select></label>
     </div>
 
     <label>Raça <small>opcional</small>
@@ -3942,17 +3942,17 @@ function syncAnimalCategorySex(){
 }
 function syncAnimalBreedAptitude(){
   const breed=document.getElementById('abreed');
-  const apt=document.getElementById('aaptitude');
+
   const cross=document.getElementById('acrossWrap');
   if(!breed)return;
-  const opt=breed.options[breed.selectedIndex];
-  const suggested=opt?.dataset?.apt||'';
-  if(apt&&suggested) apt.value=suggested;
+
+
+
   if(cross) cross.style.display=['Mestiço/Cruzado','Outra raça'].includes(breed.value)?'grid':'none';
 }
 function animalExtraMeta(){
   const sex=document.getElementById('asex')?.value||'';
-  const aptitude=document.getElementById('aaptitude')?.value||'';
+  const aptitude=MGAnimalBreeding.purposes[document.getElementById('aaptitude')?.value]||'';
   const dam=document.getElementById('adamBreed')?.value?.trim()||'';
   const sire=document.getElementById('asireBreed')?.value?.trim()||'';
   return {sex,aptitude,dam,sire};
@@ -3961,7 +3961,7 @@ function appendAnimalMetaToNotes(notes){
   const m=animalExtraMeta();
   const parts=[];
   if(m.sex)parts.push(`Sexo: ${m.sex}`);
-  if(m.aptitude)parts.push(`Aptidão: ${m.aptitude}`);
+  if(m.aptitude)parts.push(`Atividade: ${m.aptitude}`);
   if(m.dam)parts.push(`Raça da mãe: ${m.dam}`);
   if(m.sire)parts.push(`Raça do pai: ${m.sire}`);
   const meta=parts.length?`[Cadastro Meu Gado] ${parts.join(' | ')}`:'';
@@ -4005,7 +4005,7 @@ async function openNewAnimal(){
     if(birth) birth.value='';
     if(breed) breed.value='Nelore';
     const cat=document.getElementById('acat'); if(cat) cat.value='Boi';
-    const apt=document.getElementById('aaptitude'); if(apt) apt.value='Pecuária de corte';
+    document.getElementById('aaptitude').value='';
     const dam=document.getElementById('adamBreed'); if(dam) dam.value='';
     const sire=document.getElementById('asireBreed'); if(sire) sire.value='';
     syncAnimalCategorySex(); syncAnimalBreedAptitude();
@@ -7772,6 +7772,7 @@ openAnimalProfile = async function(id){
         <div class="ap8-row"><span>Nome</span><b>${ap8Esc(a.name||'Não informado')}</b></div>
         <div class="ap8-row"><span>Número</span><b>#${ap8Esc(a.number)}</b></div>
         <div class="ap8-row"><span>Categoria</span><b>${ap8Esc(a.category||'—')}</b></div>
+        <div class="ap8-row"><span>Atividade</span><b>${ap8Esc(MGAnimalBreeding.purposes[a.production_purpose]||'Não informada')}</b></div>
         <div class="ap8-row"><span>Função reprodutiva</span><b>${ap8Esc(MGAnimalBreeding.roles[a.reproductive_role]||'Não informada')}</b></div>
         ${a.male_condition?`<div class="ap8-row"><span>Condição do macho</span><b>${ap8Esc(MGAnimalBreeding.conditions[a.male_condition]||'Não informada')}</b></div>`:''}
         <div class="ap8-row"><span>Sexo</span><b>${ap8Esc(sex||'—')}</b></div>

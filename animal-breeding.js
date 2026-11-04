@@ -3,6 +3,7 @@
  'use strict';
  const textFields={registry_association:80,registry_series:30,registry_birth:40,registry_definitive:40,registry_category:40,father_external_name:120,father_external_registry:80,mother_external_name:120,mother_external_registry:80};
  const roles={reprodutor:'Reprodutor',rufiao:'Rufião',matriz:'Matriz',doadora:'Doadora',receptora:'Receptora'};
+ const purposes={cria:'Cria',recria:'Recria',engorda:'Engorda',genetica:'Genética'};
  const conditions={inteiro:'Inteiro',castrado:'Castrado'};
  const female=category=>['Vaca','Novilha','Bezerra'].includes(category);
  function patch(data){
@@ -15,7 +16,8 @@
    const value=data[key];if(value==null||value==='')out[key]=null;
    else{if(!['number','string'].includes(typeof value))throw Error('Selecione um ascendente válido.');const id=Number(value);if(!Number.isSafeInteger(id)||id<=0)throw Error('Selecione um ascendente válido.');out[key]=id;}
   }
-  for(const [key,values] of [['reproductive_role',roles],['male_condition',conditions]])if(has(key)){
+  for(const [key,values] of [['reproductive_role',roles],['male_condition',conditions],['production_purpose',purposes]])if(has(key)){
+   if(data[key]!=null&&typeof data[key]!=='string')throw Error('Selecione uma opção válida de classificação ou atividade.');
    const value=data[key]||null;if(value&&!Object.prototype.hasOwnProperty.call(values,value))throw Error('Selecione uma classificação reprodutiva válida.');out[key]=value;
   }
   return out;
@@ -27,7 +29,7 @@
   if(role&&((['matriz','doadora','receptora'].includes(role))!==isFemale))throw Error('A função reprodutiva deve corresponder ao sexo do animal.');
   if(condition==='castrado'&&(animal.category==='Touro'||['reprodutor','rufiao'].includes(role)))throw Error('Um macho castrado não pode ser classificado como touro, reprodutor ou rufião.');
  }
- function search(animal){return [animal.registry_association,animal.registry_series,animal.registry_birth,animal.registry_definitive].filter(Boolean).join(' ');}
- const api={textFields,roles,conditions,female,patch,validateClassification,search};
+ function search(animal){return [purposes[animal.production_purpose],animal.registry_association,animal.registry_series,animal.registry_birth,animal.registry_definitive].filter(Boolean).join(' ');}
+ const api={textFields,roles,conditions,purposes,female,patch,validateClassification,search};
  if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MGAnimalBreeding=api;
 })(typeof window==='undefined'?globalThis:window);

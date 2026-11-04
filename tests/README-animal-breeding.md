@@ -10,9 +10,13 @@ Banco: FK composta (fazenda/animal) nos pais; RLS e autorização comercial exis
 
 Validação:
 
-- `node --test tests/animal-breeding.test.cjs tests/plans.test.cjs tests/weight-metrics.test.cjs`: 29 testes.
+- `node --test tests/animal-breeding.test.cjs tests/plans.test.cjs tests/weight-metrics.test.cjs`: 30 testes.
 - `CHROMIUM_PATH=/path/to/chromium node tests/animal-name-browser.cjs`: formulários e rotas CRUD do app com transporte simulado, dados opcionais, edição, busca por registro, filiação, descendentes, dados antigos, celular e fila/replay offline. Sem contas ou dados de produção.
 - `tests/animal-breeding-rls.sql`: fixtures em transação com rollback no banco real, persistência, limpeza, limites, categoria/sexo/função, castração, ascendentes externos sem aumentar o rebanho, filiação histórica, autorreferência, ciclos e isolamento entre fazendas.
 - Advisor de segurança: sem aumento dos avisos existentes após criar a função privada invocadora.
 
 O cache do Modo Campo foi atualizado para incluir os três novos arquivos.
+
+## Atividade do animal
+
+O campo Atividade é selecionado pelo criador: Cria, Recria, Engorda ou Genética, com opção Não informada. A coluna `production_purpose` é opcional e validada no banco. A raça não altera a atividade; cadastros anteriores ficam sem classificação até edição explícita. O valor aparece na ficha e participa da busca. Payloads antigos que omitem a coluna preservam o valor salvo.

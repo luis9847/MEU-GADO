@@ -29,24 +29,24 @@ const root=path.resolve(__dirname,'..');
   });
   await page.evaluate(()=>openNewAnimal());
   assert.equal(await page.locator('#mgAnimalRegistration').getAttribute('open'),null);
-  await page.locator('#acat').selectOption('Touro');
+  await page.locator('#acat').selectOption('Touro');await page.locator('#aaptitude').selectOption('genetica');await page.locator('#abreed').selectOption('Angus');assert.equal(await page.locator('#aaptitude').inputValue(),'genetica');
   await page.locator('#mgAnimalClassification summary').click();await page.locator('#amaleCondition').selectOption('inteiro');await page.locator('#areproRole').selectOption('reprodutor');
   await page.locator('#mgAnimalRegistration summary').click();await page.locator('#aregAssociation').fill('ABCZ');await page.locator('#aregSeries').fill('MG');await page.locator('#aregBirth').fill('001');await page.locator('#aregDefinitive').fill('002');await page.locator('#aregCategory').fill('PO');
   await page.locator('#mgAnimalParentage summary').click();await page.locator('#afatherSource').selectOption('external');await page.locator('#afatherName').fill('Touro da Central');await page.locator('#afatherRegistry').fill('CENT 100');
   await page.locator('#anum').fill('125');await page.locator('#aname').fill('  Bela Vista FIV  ');await page.locator('#animalSaveBtn').click();
   await page.waitForFunction(()=>window.fixtureAnimals.length===1);
   assert.deepEqual(await page.evaluate(()=>({number:fixtureAnimals[0].number,name:fixtureAnimals[0].name})),{number:'125',name:'Bela Vista FIV'});
-  assert.equal(await page.evaluate(()=>fixtureAnimals[0].registry_birth),'001');assert.equal(await page.evaluate(()=>fixtureAnimals[0].father_external_name),'Touro da Central');assert.equal(await page.evaluate(()=>mgGlobalSearchMatches('001')[0]?.id),1);
+  assert.equal(await page.evaluate(()=>fixtureAnimals[0].registry_birth),'001');assert.equal(await page.evaluate(()=>fixtureAnimals[0].production_purpose),'genetica');assert.equal(await page.evaluate(()=>fixtureAnimals[0].father_external_name),'Touro da Central');assert.equal(await page.evaluate(()=>mgGlobalSearchMatches('001')[0]?.id),1);
   await page.locator('#animalSearch').fill('bela vista');assert.equal(await page.locator('.animal-row-card').count(),1);assert.match(await page.locator('.animal-row-card').innerText(),/125 · Bela Vista FIV/);
   assert.equal(await page.evaluate(()=>mgGlobalSearchMatches('Bela Vista')[0]?.id),1);
   assert.match(await page.locator('#ranimal').innerText(),/Bela Vista FIV/);
   await page.locator('.animal-row-card').click();await page.locator('#animalProfileModal').waitFor({state:'visible'});assert.match(await page.locator('#profileAnimalTitle').innerText(),/Bela Vista FIV/);assert.match(await page.locator('.ap8-card').filter({hasText:'Identificação'}).innerText(),/Nome\s+Bela Vista FIV/);
-  await page.getByRole('button',{name:'Editar animal'}).click();assert.equal(await page.locator('#aname').inputValue(),'Bela Vista FIV');
+  await page.getByRole('button',{name:'Editar animal'}).click();assert.equal(await page.locator('#aname').inputValue(),'Bela Vista FIV');assert.equal(await page.locator('#aaptitude').inputValue(),'genetica');await page.locator('#aaptitude').selectOption('recria');
   await page.locator('#aname').fill('<img src=x onerror=alert(1)>');await page.locator('#animalSaveBtn').click();
   await page.locator('#animalSearch').fill('onerror');await page.locator('.animal-row-card').click();assert.equal(await page.locator('.ap8-title img').count(),0);assert.match(await page.locator('#profileAnimalTitle').innerText(),/<img/);
   await page.evaluate(()=>openEditAnimal(1));await page.locator('#aname').fill('Bela Vista FIV');await page.locator('#animalSaveBtn').click();
   // Older clients and queued edits that omit the new field must preserve its value.
-  await page.evaluate(()=>apiOnline('/api/animals/1',{method:'PUT',body:JSON.stringify({number:'125',category:'Boi'})}));assert.equal(await page.evaluate(()=>fixtureAnimals[0].name),'Bela Vista FIV');
+  await page.evaluate(()=>apiOnline('/api/animals/1',{method:'PUT',body:JSON.stringify({number:'125',category:'Boi'})}));assert.equal(await page.evaluate(()=>fixtureAnimals[0].name),'Bela Vista FIV');assert.equal(await page.evaluate(()=>fixtureAnimals[0].production_purpose),'recria');
   for(const width of [1365,390]){await page.setViewportSize({width,height:900});await page.evaluate(width=>{Object.defineProperty(navigator,'maxTouchPoints',{value:width===390?1:0,configurable:true});window.dispatchEvent(new Event('resize'));},width);await page.waitForTimeout(300);await page.evaluate(()=>openEditAnimal(1));await page.locator('#aname').scrollIntoViewIfNeeded();assert.ok(await page.locator('#aname').evaluate(el=>el.getBoundingClientRect().right<=innerWidth));await page.screenshot({path:'/tmp/mg-animal-name-'+width+'.png'});await page.evaluate(()=>closeModal('animalModal'));}
   await page.evaluate(()=>openNewAnimal());assert.equal(await page.locator('#aname').inputValue(),'');await page.locator('#anum').fill('126');await page.locator('#animalSaveBtn').click();await page.waitForFunction(()=>fixtureAnimals.length===2);assert.equal(await page.evaluate(()=>fixtureAnimals[1].name),null);
   // The actual offline queue keeps the complete payload for later replay.

@@ -19,6 +19,12 @@ do $$ declare f bigint:=current_setting('test.breeding.farm')::bigint; dad bigin
  insert into public.animals(farm_id,number,category,status,father_id,mother_id) values(f,'SON','Touro','active',dad,mom) returning id into son;
  if not exists(select 1 from public.animals where id=son and father_id=dad and mother_id=mom) then raise exception 'Parent links did not persist';end if;
  if (select registry_birth from public.animals where id=dad) is distinct from '001' then raise exception 'Registry did not persist';end if;
+ update public.animals set production_purpose='genetica' where id=dad;
+ if (select production_purpose from public.animals where id=dad) is distinct from 'genetica' then raise exception 'Activity did not persist';end if;
+ update public.animals set production_purpose='recria' where id=dad;
+ begin update public.animals set production_purpose='invalid' where id=dad;raise exception 'Invalid activity permitted';exception when check_violation then null;end;
+ update public.animals set production_purpose=null where id=dad;
+
  select count(*) into before_count from public.animals where farm_id=f;
  update public.animals set father_external_name='Central Externa',father_external_registry='CENT 77' where id=dad;
  if (select count(*) from public.animals where farm_id=f)<>before_count then raise exception 'External ancestor increased herd';end if;

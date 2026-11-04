@@ -1,5 +1,5 @@
 /* Optional animal form sections, backed by server-validated animal columns. */
-const mgBreedingIds={registry_association:'aregAssociation',registry_series:'aregSeries',registry_birth:'aregBirth',registry_definitive:'aregDefinitive',registry_category:'aregCategory',reproductive_role:'areproRole',male_condition:'amaleCondition',father_id:'afatherId',mother_id:'amotherId',father_external_name:'afatherName',father_external_registry:'afatherRegistry',mother_external_name:'amotherName',mother_external_registry:'amotherRegistry'};
+const mgBreedingIds={production_purpose:'aaptitude',registry_association:'aregAssociation',registry_series:'aregSeries',registry_birth:'aregBirth',registry_definitive:'aregDefinitive',registry_category:'aregCategory',reproductive_role:'areproRole',male_condition:'amaleCondition',father_id:'afatherId',mother_id:'amotherId',father_external_name:'afatherName',father_external_registry:'afatherRegistry',mother_external_name:'amotherName',mother_external_registry:'amotherRegistry'};
 function mgParentSourceChange(parent){
  const mode=document.getElementById('a'+parent+'Source').value;
  document.getElementById('a'+parent+'Herd').hidden=mode!=='herd';

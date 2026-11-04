@@ -12,3 +12,5 @@ test('sex and castration agree with reproductive roles',()=>{
  assert.doesNotThrow(()=>C.validateClassification({category:'Boi',male_condition:'castrado'}));assert.throws(()=>C.validateClassification({category:null,reproductive_role:'reprodutor'}));
 });
 test('registry identifiers become searchable without creating animals',()=>assert.equal(C.search({registry_series:'MG',registry_birth:'001',registry_definitive:'002'}),'MG 001 002'));
+
+test('production activity is optional, validated and independent from breed',()=>{for(const production_purpose of ['cria','recria','engorda','genetica'])assert.equal(C.patch({production_purpose,breed:'Nelore'}).production_purpose,production_purpose);assert.equal(C.patch({production_purpose:''}).production_purpose,null);assert.throws(()=>C.patch({production_purpose:'leite'}));assert.throws(()=>C.patch({production_purpose:false}));assert.match(C.search({production_purpose:'genetica'}),/Genética/);});
