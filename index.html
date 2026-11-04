@@ -241,6 +241,7 @@ button:disabled, input:disabled, select:disabled, textarea:disabled,
 </style>
 <link rel="stylesheet" href="/landing-plans.css?v=1">
 <script src="/plans-core.js?v=1"></script>
+<link rel="stylesheet" href="/billing.css?v=1">
 </head>
 <body>
 <div class="page">
@@ -406,10 +407,10 @@ button:disabled, input:disabled, select:disabled, textarea:disabled,
     <div class="pricing-period" role="group" aria-label="Período da assinatura"><button type="button" data-pricing-period="monthly" aria-pressed="true">Mensal</button><button type="button" data-pricing-period="annual" aria-pressed="false">Anual</button></div>
     <p class="pricing-per-farm">Valores por fazenda. Escolha entre assinatura mensal ou anual.</p><p class="pricing-sr-only" id="pricingAnnouncement" role="status" aria-live="polite"></p>
     <div class="pricing-cards">
-      <article class="pricing-card" data-pricing-plan="essential" aria-labelledby="essentialTitle"><span class="pricing-category">Até 150 animais ativos</span><h3 id="essentialTitle">Essencial</h3><p class="pricing-audience">Para organizar o rebanho e registrar os manejos do dia a dia.</p><p class="pricing-price"><strong data-plan-price>R$ 90</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 900/ano, equivalente a R$ 75/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li>Cadastro e ficha dos animais</li><li>Lotes, pesagens e evolução do peso</li><li>Saúde e reprodução</li><li>Registro de alimentação</li><li>Modo Campo nos registros compatíveis</li><li>Suporte para dúvidas de uso</li></ul><a class="pricing-cta" data-plan-contact href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Quero%20contratar%20o%20plano%20Essencial%20do%20Meu%20Gado%2C%20na%20op%C3%A7%C3%A3o%20mensal%2C%20por%20R%24%2090%20por%20m%C3%AAs%2C%20para%20uma%20fazenda.%20Como%20posso%20finalizar%20a%20contrata%C3%A7%C3%A3o%3F" target="_blank" rel="noopener noreferrer">Solicitar contratação →</a></article>
-      <article class="pricing-card complete" data-pricing-plan="complete" aria-labelledby="completeTitle"><span class="pricing-category">Todos os recursos do sistema</span><h3 id="completeTitle">Completo</h3><p class="pricing-audience">Para rebanhos acima de 150 cabeças ou quem deseja uma gestão mais completa.</p><p class="pricing-price"><strong data-plan-price>R$ 130</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 1.440/ano, equivalente a R$ 120/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li><b>Todos os recursos do Essencial</b></li><li>Controle de gastos</li><li>Planejamento alimentar e custos</li><li>Painel de desempenho</li><li>Relatórios e exportações disponíveis</li><li>Também disponível para rebanhos menores</li></ul><a class="pricing-cta" data-plan-contact href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Quero%20contratar%20o%20plano%20Completo%20do%20Meu%20Gado%2C%20na%20op%C3%A7%C3%A3o%20mensal%2C%20por%20R%24%20130%20por%20m%C3%AAs%2C%20para%20uma%20fazenda.%20Como%20posso%20finalizar%20a%20contrata%C3%A7%C3%A3o%3F" target="_blank" rel="noopener noreferrer">Solicitar contratação →</a></article>
+      <article class="pricing-card" data-pricing-plan="essential" aria-labelledby="essentialTitle"><span class="pricing-category">Até 150 animais ativos</span><h3 id="essentialTitle">Essencial</h3><p class="pricing-audience">Para organizar o rebanho e registrar os manejos do dia a dia.</p><p class="pricing-price"><strong data-plan-price>R$ 90</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 900/ano, equivalente a R$ 75/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li>Cadastro e ficha dos animais</li><li>Lotes, pesagens e evolução do peso</li><li>Saúde e reprodução</li><li>Registro de alimentação</li><li>Modo Campo nos registros compatíveis</li><li>Suporte para dúvidas de uso</li></ul><a class="pricing-cta" data-plan-contact href="/app?billing_plan=essential&amp;billing_period=monthly">Escolher plano →</a></article>
+      <article class="pricing-card complete" data-pricing-plan="complete" aria-labelledby="completeTitle"><span class="pricing-category">Todos os recursos do sistema</span><h3 id="completeTitle">Completo</h3><p class="pricing-audience">Para rebanhos acima de 150 cabeças ou quem deseja uma gestão mais completa.</p><p class="pricing-price"><strong data-plan-price>R$ 130</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 1.440/ano, equivalente a R$ 120/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li><b>Todos os recursos do Essencial</b></li><li>Controle de gastos</li><li>Planejamento alimentar e custos</li><li>Painel de desempenho</li><li>Relatórios e exportações disponíveis</li><li>Também disponível para rebanhos menores</li></ul><a class="pricing-cta" data-plan-contact href="/app?billing_plan=complete&amp;billing_period=monthly">Escolher plano →</a></article>
     </div>
-    <p class="pricing-contact-note">A contratação é feita pelo WhatsApp com a equipe Meu Gado. A ativação é realizada após a confirmação da contratação. Não há pagamento nesta página.</p>
+    <p class="pricing-contact-note">Escolha seu plano e acesse sua conta. A contratação automática está em preparação; o pagamento online será disponibilizado após sua ativação.</p>
     <div class="pricing-comparison"><h3>Compare o que cada plano oferece</h3><div class="pricing-table-wrap" role="region" aria-label="Comparação dos recursos dos planos Essencial e Completo" tabindex="0"><table class="pricing-table"><thead><tr><th scope="col">Recursos por fazenda</th><th scope="col">Essencial</th><th scope="col">Completo</th></tr></thead><tbody><tr><th scope="row">Cadastro e ficha dos animais</th><td>Incluído</td><td>Incluído</td></tr>
 <tr><th scope="row">Lotes, pesagens e evolução do peso</th><td>Incluído</td><td>Incluído</td></tr>
 <tr><th scope="row">Saúde e reprodução</th><td>Incluído</td><td>Incluído</td></tr>
@@ -673,6 +674,8 @@ function switchTab(which){
 }
 async function init(){
   try{
+    const legalPage=new URLSearchParams(location.search).get("legal");
+    if(["terms","privacy"].includes(legalPage)){setTimeout(()=>legalPage==="terms"?openTerms():openPrivacy(),100);return;}
     const hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
     const searchParams=new URLSearchParams(location.search);
     const recoveryHint=hashParams.get('type')==='recovery'||searchParams.get('recovery')==='1';
@@ -1039,6 +1042,6 @@ function openPrivacy(){document.getElementById('privacyModal').classList.add('op
 function closePrivacy(){document.getElementById('privacyModal').classList.remove('open')}
 </script>
 
-<script src="/landing-plans.js?v=1"></script>
+<script src="/landing-plans.js?v=2"></script>
 </body>
 </html>

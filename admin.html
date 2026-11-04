@@ -44,6 +44,7 @@ button:disabled, input:disabled, select:disabled, textarea:disabled,
 <link rel="stylesheet" href="/plans.css?v=1">
 <link rel="stylesheet" href="/billing-test.css?v=2">
 <script src="/plans-core.js?v=1"></script>
+<link rel="stylesheet" href="/billing.css?v=1">
 </head>
 <body>
 <section id="loginPage" class="login-page"><div class="login-card"><div id="adminCredentials"><div class="login-logo"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Meu Gado</b><small>Painel Administrativo</small></div></div><div class="field"><label>E-mail do administrador</label><input id="email" type="email" autocomplete="username" placeholder="seu@email.com"></div><div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha"></div><button class="btn primary full" id="loginBtn">Entrar como administrador</button><div class="msg" id="loginMsg"></div></div><div id="mfaLoginPanel" class="hidden"><div class="login-logo"><img src="/meu-gado-logo.png" alt="Meu Gado"><div><b>Verificação em duas etapas</b><small>Proteção do painel administrativo</small></div></div><p style="font-size:14px;line-height:1.45;margin:8px 0 16px">Abra seu aplicativo autenticador e informe o código de 6 dígitos.</p><div class="field"><label>Código de verificação</label><input id="mfaLoginCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></div><button class="btn primary full" id="mfaLoginBtn">Verificar e entrar</button><button class="btn secondary full" id="mfaBackBtn" style="margin-top:10px">Voltar</button><div class="msg" id="mfaLoginMsg"></div></div></div></section>
@@ -186,4 +187,5 @@ loginBtn.onclick=login;password.onkeydown=email.onkeydown=e=>{if(e.key==='Enter'
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=adminCaptchaReady&amp;render=explicit" async defer onerror="adminCaptchaFailed()"></script>
 <script src="/plans-admin.js?v=1"></script>
 <script src="/billing-test-admin.js?v=3"></script>
+<script src="/billing-admin.js?v=1"></script>
 </body></html>

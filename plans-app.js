@@ -59,7 +59,7 @@ function mgRenderPlan(){
  const message=document.createElement('span');
  message.textContent=s?`${plan?.name||'Plano'} · ${core.label(s,mgPlanNow())}${s.expires_at?' · Até '+new Date(s.expires_at).toLocaleDateString('pt-BR'):''}${s.plan==='essential'?' · Até 150 animais ativos':''}${!writable?' · Cadastros indisponíveis; dados preservados.':''}`:'Não foi possível validar seu plano. Conecte-se e tente novamente.';
  const retry=document.createElement('button');retry.className='btn secondary';retry.textContent='Atualizar acesso';retry.onclick=async()=>{retry.disabled=true;try{await mgRefreshPlan(mgFarm,true);}catch(e){mgPlanExplain(e.message);}finally{retry.disabled=false;}};
- banner.append(message,retry);banner.classList.toggle('mg-plan-warning',!writable);
+ const manage=document.createElement('button');manage.className='btn secondary';manage.textContent='Meu plano';manage.onclick=()=>window.mgOpenBilling?.();banner.append(message,manage,retry);banner.classList.toggle('mg-plan-warning',!writable);
  document.documentElement.dataset.mgPlan=s?.plan||'unknown';
  for(const nav of document.querySelectorAll('[data-v],[data-mobile-v]')){
   const feature=core.views[nav.dataset.v||nav.dataset.mobileV];if(!feature)continue;
