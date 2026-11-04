@@ -42,7 +42,10 @@ const root=path.resolve(__dirname,'..');
  // The public CTA opens signup on both screen sizes.
  await page.goto('http://127.0.0.1:8770/index.html',{waitUntil:'load'});
  for(const width of [1365,390]){
-  await page.setViewportSize({width,height:900});await page.locator('.header-actions .primary').click();
+  await page.setViewportSize({width,height:900});
+  const buttonStyles=await page.locator('[data-plan-contact]').evaluateAll(buttons=>buttons.map(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {background:s.backgroundColor,color:s.color,height:r.height,font:s.font,padding:s.padding,border:s.borderRadius};}));
+  assert.deepEqual(buttonStyles[0],buttonStyles[1],'public signup buttons must have identical styles and heights');
+  await page.locator('.header-actions .primary').click();
   assert.equal(await page.locator('#registerForm').evaluate(el=>el.classList.contains('active')),true);
   assert.equal(await page.locator('.header-actions .primary').innerText(),'Cadastre-se');
   await page.evaluate(()=>closeAuth());
