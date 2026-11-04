@@ -1894,7 +1894,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 <section id="animais" class="view">
   <div class="page-title"><div><h2>Animais</h2><p>Cadastro e acompanhamento individual do rebanho</p></div></div>
   <div class="animal-toolbar">
-    <div class="animal-search"><span>⌕</span><input id="animalSearch" placeholder="Pesquisar número do animal..." oninput="filterAnimalScreen()"></div>
+    <div class="animal-search"><span>⌕</span><input id="animalSearch" placeholder="Pesquisar nome ou número do animal..." oninput="filterAnimalScreen()"></div>
     <div class="animal-filters">
       <button class="filter-pill active" data-cat="Todos" onclick="setAnimalFilter('Todos',this)">Todos</button>
       <button class="filter-pill" data-cat="Boi" onclick="setAnimalFilter('Boi',this)">Bois</button>
@@ -2716,6 +2716,8 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       </select></label>
     </div>
 
+    <label>Nome do bovino <small>opcional</small><input id="aname" maxlength="120" placeholder="Nome registrado ou nome usado na fazenda" autocomplete="off"></label>
+
     <div class="two-cols">
       <label>Sexo<input id="asex" value="Macho" readonly></label>
       <label>Atividade<input id="aaptitude" value="Pecuária de corte" readonly></label>
@@ -3252,6 +3254,7 @@ async function apiOnline(path,opt={}){
   let row={
     farm_id:f.id,
     number:animalNumber,
+    name:mgAnimalName(data.name),
     category:data.category,
     breed:data.breed||'',
     birth_date:data.birth_date||null,
@@ -3299,6 +3302,7 @@ async function apiOnline(path,opt={}){
   const dup=await mgSb.from('animals').select('id').eq('farm_id',f.id).eq('number',animalNumber).neq('id',animalId).maybeSingle();
   if(dup.error)mgErr(dup.error);if(dup.data)throw new Error(`Já existe outro animal cadastrado com o número ${animalNumber}.`);
   const row={number:animalNumber,category:data.category,breed:data.breed||'',birth_date:data.birth_date||null,origin:data.origin||'',entry_date:data.entry_date||null,entry_weight:data.entry_weight||null,target_weight:data.target_weight||null,lot:data.lot||'',notes:data.notes||''};
+  if(Object.prototype.hasOwnProperty.call(data,'name'))row.name=mgAnimalName(data.name);
   if(data.photo_data)Object.assign(row,{photo_path:data.photo_data,photo_url:data.photo_data});
   const r=await mgSb.from('animals').update(row).eq('farm_id',f.id).eq('id',animalId).is('deleted_at',null).select('id').maybeSingle();
   if(r.error)mgErr(r.error);if(!r.data)throw new Error('Animal não encontrado.');return {ok:true};
@@ -3718,7 +3722,7 @@ function renderDashboardExpenses(rows){
 async function loadAnimals(){
   animalsData=await api('/api/animals');
   renderAnimalScreen();
-  const opts=animalsData.map(a=>`<option value="${Number(a.id)}">#${mgEsc(a.number)} · ${mgEsc(a.category)}${a.lot?' · '+mgEsc(a.lot):''}</option>`).join('');
+  const opts=animalsData.map(a=>`<option value="${Number(a.id)}">${mgEsc(mgAnimalLabel(a))} · ${mgEsc(a.category)}${a.lot?' · '+mgEsc(a.lot):''}</option>`).join('');
   if(document.getElementById('eanimal')) eanimal.innerHTML='<option value="">Geral</option>'+opts;
   if(document.getElementById('hanimal')) hanimal.innerHTML='<option value="">Lote/Geral</option>'+opts;
   if(document.getElementById('ranimal')) ranimal.innerHTML=opts;
@@ -3726,6 +3730,15 @@ async function loadAnimals(){
   await loadRecentWeighings();
   renderReadyAnimalsForSale();
 }
+// A name complements the farm's unique animal number; it is not a registry certificate.
+function mgAnimalName(value){
+ if(value==null)return null;
+ if(typeof value!=='string')throw new Error('Informe um nome válido para o bovino.');
+ const name=value.trim();
+ if(Array.from(name).length>120)throw new Error('O nome do bovino deve ter no máximo 120 caracteres.');
+ return name||null;
+}
+function mgAnimalLabel(animal){return '#'+String(animal.number??animal.id??'')+(animal.name?' · '+animal.name:'');}
 function animalPhotoHtml(a){
   const photo=mgSafeImageUrl(a.photo_path);
   return photo?`<img src="${mgEsc(photo)}" alt="Animal ${mgEsc(a.number)}">`:`<span>♙</span>`;
@@ -3738,14 +3751,14 @@ function renderAnimalScreen(){
       animalCategoryFilter==='Todos' ||
       (animalCategoryFilter==='Crias' && ['Bezerro','Bezerra'].includes(a.category)) ||
       a.category===animalCategoryFilter;
-    const qok=!q||`${a.number} ${a.breed||''} ${a.lot||''}`.toLowerCase().includes(q);
+    const qok=!q||`${a.number} ${a.name||''} ${a.breed||''} ${a.lot||''}`.toLowerCase().includes(q);
     return catok&&qok;
   });
   animalCountLabel.textContent=`${arr.length} animal(is)`;
   animalEmpty.style.display=arr.length?'none':'flex';
   animalListArea.innerHTML=arr.length?`<div class="animal-card-list">${arr.map(a=>`<button class="animal-row-card" onclick="openAnimalProfile(${a.id})">
     <div class="animal-avatar">${animalPhotoHtml(a)}</div>
-    <div class="animal-main"><b>#${mgEsc(a.number)}</b><small>${mgEsc(a.category)} · ${mgEsc(a.breed||'Raça não informada')}</small></div>
+    <div class="animal-main"><b>${mgEsc(mgAnimalLabel(a))}</b><small>${mgEsc(a.category)} · ${mgEsc(a.breed||'Raça não informada')}</small></div>
     <div><small>Lote</small><b>${mgEsc(a.lot||'Sem lote')}</b></div>
     <div><small>Peso atual</small><b>${a.current_weight??a.entry_weight??'-'} kg</b></div>
     <div><small>Meta</small><b>${a.target_weight??'-'} kg</b></div>
@@ -3771,7 +3784,7 @@ function mgGlobalSearchMatches(query){
   const q=String(query||'').trim().replace(/^#/,'').toLowerCase();
   if(!q)return [];
   return (Array.isArray(animalsData)?animalsData:[]).filter(a=>
-    `${a.number||''} ${a.breed||''} ${a.lot||''} ${a.category||''}`.toLowerCase().includes(q)
+    `${a.number||''} ${a.name||''} ${a.breed||''} ${a.lot||''} ${a.category||''}`.toLowerCase().includes(q)
   ).slice(0,10);
 }
 function mgCurrentViewId(){
@@ -3785,7 +3798,7 @@ function mgGlobalSearchPlaceholder(view=mgCurrentViewId()){
   if(view==='saude')return 'Buscar animal para consultar saúde...';
   if(view==='repro')return 'Buscar animal para consultar reprodução...';
   if(view==='leite')return 'Buscar animal para consultar produção...';
-  return 'Buscar por número do animal, lote ou raça...';
+  return 'Buscar por nome, número do animal, lote ou raça...';
 }
 function mgRestoreContextRows(){
   ['nutritionRows','expenseRows'].forEach(id=>{
@@ -3847,7 +3860,7 @@ function mgGlobalSearchInput(){
     return;
   }
   const rows=mgGlobalSearchMatches(q);
-  root.innerHTML=rows.length?rows.map(a=>`<button type="button" class="global-search-result" onclick="mgOpenGlobalAnimal(${Number(a.id)})"><i>🐄</i><span><b>Animal #${mgAlertEscape(a.number||a.id)}</b><small>${mgAlertEscape(a.category||'Sem categoria')} · ${mgAlertEscape(a.breed||'Raça não informada')} · ${mgAlertEscape(a.lot||'Sem lote')}</small></span><em>Abrir ficha ›</em></button>`).join(''):'<div class="global-search-empty">Nenhum animal encontrado.</div>';
+  root.innerHTML=rows.length?rows.map(a=>`<button type="button" class="global-search-result" onclick="mgOpenGlobalAnimal(${Number(a.id)})"><i>🐄</i><span><b>${mgAlertEscape(mgAnimalLabel(a))}</b><small>${mgAlertEscape(a.category||'Sem categoria')} · ${mgAlertEscape(a.breed||'Raça não informada')} · ${mgAlertEscape(a.lot||'Sem lote')}</small></span><em>Abrir ficha ›</em></button>`).join(''):'<div class="global-search-empty">Nenhum animal encontrado.</div>';
   root.classList.add('show');
 }
 function openGlobalSearchResult(){
@@ -3963,6 +3976,7 @@ async function openNewAnimal(){
     if(photo) photo.value='';
     if(preview) preview.innerHTML='▣<small>Foto</small>';
     if(number) number.value='';
+    document.getElementById('aname').value='';
     if(birth) birth.value='';
     if(breed) breed.value='Nelore';
     const cat=document.getElementById('acat'); if(cat) cat.value='Boi';
@@ -3992,6 +4006,7 @@ async function openEditAnimal(id){
   try{
     const a=await api(`/api/animals/${id}/profile`);await loadLots();
     editingAnimalId=Number(id);pendingAnimalPhoto='';
+    document.getElementById('aname').value=a.name||'';
     anum.value=a.number||'';acat.value=a.category||'Boi';abreed.value=a.breed||'Nelore';abirth.value=a.birth_date||'';
     aweight.value=a.entry_weight??'';atarget.value=a.target_weight??'';anotes.value=animalNotesWithoutMeta(a.notes);alot.value=a.lot||'';
     const origin=document.querySelector(`input[name="aoriginRadio"][value="${CSS.escape(a.origin||'Nascido na propriedade')}"]`);if(origin)origin.checked=true;
@@ -4014,7 +4029,7 @@ async function saveAnimal(){
   if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Salvando...';}
   try{
     const payload={
-      category:el('acat')?.value||'Boi',number,ear_tag:'',breed:el('abreed')?.value||'',birth_date:el('abirth')?.value||null,
+      category:el('acat')?.value||'Boi',number,name:mgAnimalName(el('aname')?.value),ear_tag:'',breed:el('abreed')?.value||'',birth_date:el('abirth')?.value||null,
       origin,entry_date:confined?el('adate')?.value:null,entry_weight:el('aweight')?.value?Number(el('aweight').value):null,
       target_weight:el('atarget')?.value?Number(el('atarget').value):null,lot:el('alot')?.value||'',purchase_value:0,
       notes:appendAnimalMetaToNotes(el('anotes')?.value||''),
@@ -4101,7 +4116,7 @@ async function savePageWeight(){
 }
 function openSingleWeight(preselect=null){
   if(!animalsData.length){alert('Cadastre um animal antes de registrar uma pesagem.');return}
-  singleAnimal.innerHTML='<option value="">Selecione...</option>'+animalsData.map(a=>`<option value="${Number(a.id)}">#${mgEsc(a.number)} · ${mgEsc(a.category)} · ${mgEsc(a.lot||'Sem lote')}</option>`).join('');
+  singleAnimal.innerHTML='<option value="">Selecione...</option>'+animalsData.map(a=>`<option value="${Number(a.id)}">${mgEsc(mgAnimalLabel(a))} · ${mgEsc(a.category)} · ${mgEsc(a.lot||'Sem lote')}</option>`).join('');
   if(preselect) singleAnimal.value=String(preselect);
   singleDate.value=new Date().toISOString().slice(0,10);singleWeight.value='';singleNotes.value='';
   openModal('singleWeightModal');
@@ -4128,7 +4143,7 @@ function renderBatchAnimals(){
   const lot=batchLot.value;
   if(!lot){batchAnimals.innerHTML='';saveBatchBtn.disabled=true;return}
   const list=animalsData.filter(a=>(a.lot||'')===lot);
-  batchAnimals.innerHTML=list.length?list.map(a=>`<div class="batch-row"><div><b>#${mgEsc(a.number)}</b><div class="sub">${mgEsc(a.category)} · peso atual ${a.current_weight??a.entry_weight??'-'} kg</div></div><input data-animal="${Number(a.id)}" type="number" step=".1" placeholder="Novo peso (kg)"></div>`).join(''):'<div class="empty">Este lote não possui animais ativos.</div>';
+  batchAnimals.innerHTML=list.length?list.map(a=>`<div class="batch-row"><div><b>${mgEsc(mgAnimalLabel(a))}</b><div class="sub">${mgEsc(a.category)} · peso atual ${a.current_weight??a.entry_weight??'-'} kg</div></div><input data-animal="${Number(a.id)}" type="number" step=".1" placeholder="Novo peso (kg)"></div>`).join(''):'<div class="empty">Este lote não possui animais ativos.</div>';
   saveBatchBtn.disabled=!list.length;
 }
 async function saveBatchWeight(){
@@ -4166,12 +4181,12 @@ async function openAnimalProfile(id){
  try{
   selectedAnimalId=id;
   const a=await api(`/api/animals/${id}/profile`);
-  profileAnimalTitle.textContent=`Animal #${a.number}`;
+  profileAnimalTitle.textContent=a.name?mgAnimalLabel(a):`Animal #${a.number}`;
   profileAnimalSub.textContent=`${a.category||''} · ${a.breed||''} · ${a.lot||'Sem lote'}`;
   const target=a.target_weight||0,current=a.current_weight||0,progress=target?Math.min(100,current/target*100):0;
   const safePhoto=mgSafeImageUrl(a.photo_path);
   const photo=safePhoto?`<img class="profile-photo" src="${mgEsc(safePhoto)}" alt="Animal ${mgEsc(a.number)}">`:`<div class="profile-photo placeholder">♙</div>`;
-  animalProfileBody.innerHTML=`<div class="profile-hero">${photo}<div><b>#${mgEsc(a.number)}</b><span>${mgEsc(a.category||'')} · ${mgEsc(a.breed||'')}</span><small>${mgEsc(a.lot||'Sem lote')}</small></div></div>
+  animalProfileBody.innerHTML=`<div class="profile-hero">${photo}<div><b>${mgEsc(mgAnimalLabel(a))}</b><span>${mgEsc(a.category||'')} · ${mgEsc(a.breed||'')}</span><small>${mgEsc(a.lot||'Sem lote')}</small></div></div>
   <div class="profile-kpis">
    <div><small>Peso atual</small><b>${current||0} kg</b></div><div><small>GMD</small><b>${Number.isFinite(mgWeightMetrics(a,a.weighings).gmd)?mgWeightMetrics(a,a.weighings).gmd.toFixed(3)+' kg/dia':'—'}</b></div>
    <div><small>Meta</small><b>${target||'-'} kg</b></div><div><small>Gastos vinculados</small><b>${money(a.expenses_total||0)}</b></div>
@@ -4185,7 +4200,7 @@ async function openAnimalProfile(id){
   </div>
   <div class="profile-grid">
    ${weightEvolutionHtml(a)}
-   <div class="card"><h4>Identificação</h4><p>Número: <b>#${mgEsc(a.number)}</b></p><p>Categoria: <b>${mgEsc(a.category||'-')}</b></p><p>Sexo: <b>${mgEsc(animalSexFromCategory(a.category))}</b></p><p>Raça: <b>${mgEsc(a.breed||'-')}</b></p><p>Origem: <b>${mgEsc(a.origin||'-')}</b></p><p>Lote atual: <b>${mgEsc(a.lot||'-')}</b></p><p>Nascimento: <b>${mgEsc(a.birth_date||'-')}</b></p><p>Idade: <b>${mgEsc(ageFromBirth(a.birth_date))}</b></p></div>
+   <div class="card"><h4>Identificação</h4><p>Nome: <b>${mgEsc(a.name||'Não informado')}</b></p><p>Número: <b>#${mgEsc(a.number)}</b></p><p>Categoria: <b>${mgEsc(a.category||'-')}</b></p><p>Sexo: <b>${mgEsc(animalSexFromCategory(a.category))}</b></p><p>Raça: <b>${mgEsc(a.breed||'-')}</b></p><p>Origem: <b>${mgEsc(a.origin||'-')}</b></p><p>Lote atual: <b>${mgEsc(a.lot||'-')}</b></p><p>Nascimento: <b>${mgEsc(a.birth_date||'-')}</b></p><p>Idade: <b>${mgEsc(ageFromBirth(a.birth_date))}</b></p></div>
    <div class="card"><h4>Histórico de pesagens</h4>${a.weighings.length?a.weighings.slice(0,10).map(w=>`<p>${mgEsc(w.weighing_date)}: <b>${Number(w.weight)} kg</b>${w.notes?`<small> · ${mgEsc(w.notes)}</small>`:''}</p>`).join(''):'<p class="sub">Sem pesagens.</p>'}</div>
    <div class="card"><h4>Saúde</h4>${a.health.length?a.health.slice(0,8).map(x=>`<p>${mgEsc(x.event_date)}: <b>${mgEsc(x.event_type||'Registro')}</b>${x.product?` · ${mgEsc(x.product)}`:''}</p>`).join(''):'<p class="sub">Sem registros sanitários.</p>'}</div>
    <div class="card"><h4>Movimentações</h4>${a.movements.length?a.movements.slice(0,8).map(x=>`<p>${mgEsc(x.movement_date)}: <b>${mgEsc(x.from_lot||'Sem lote')} → ${mgEsc(x.to_lot)}</b></p>`).join(''):'<p class="sub">Sem movimentações.</p>'}</div>
@@ -5674,7 +5689,7 @@ async function loadRepro(){
   reproAnimals=(animals||[]).filter(reproIsFemale);
 
   // Matriz filters / modal
-  const options=reproAnimals.map(a=>`<option value="${Number(a.id)}">#${mgEsc(a.number)} · ${mgEsc(a.category)}${a.breed?' · '+mgEsc(a.breed):''}</option>`).join('');
+  const options=reproAnimals.map(a=>`<option value="${Number(a.id)}">${mgEsc(mgAnimalLabel(a))} · ${mgEsc(a.category)}${a.breed?' · '+mgEsc(a.breed):''}</option>`).join('');
   ranimal.innerHTML=options||'<option value="">Nenhuma matriz cadastrada</option>';
   reproAnimalFilter.innerHTML='<option value="">Todas as matrizes</option>'+options;
 
@@ -6350,7 +6365,7 @@ function renderReadyAnimalsForSale(){
   }
   root.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">'+ready.map(a=>{
     const surplus=a.current-a.target;
-    return `<article style="border:1px solid #cde7d5;border-radius:12px;padding:12px;background:#fbfffc"><div style="display:flex;justify-content:space-between;gap:8px"><b>#${mgEsc(a.number)}</b><span class="status">Pronto</span></div><div class="sub" style="margin:6px 0">${mgEsc(a.category||'Animal')} · ${mgEsc(a.lot||'Sem lote')}</div><div style="font-size:18px;font-weight:900;color:var(--green)">${a.current.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg</div><div class="sub">Meta ${a.target.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg · +${surplus.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg acima</div><button class="btn primary" style="width:100%;margin-top:10px" type="button" onclick="simulateReadyAnimal(${Number(a.id)})">Simular venda</button></article>`;
+    return `<article style="border:1px solid #cde7d5;border-radius:12px;padding:12px;background:#fbfffc"><div style="display:flex;justify-content:space-between;gap:8px"><b>${mgEsc(mgAnimalLabel(a))}</b><span class="status">Pronto</span></div><div class="sub" style="margin:6px 0">${mgEsc(a.category||'Animal')} · ${mgEsc(a.lot||'Sem lote')}</div><div style="font-size:18px;font-weight:900;color:var(--green)">${a.current.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg</div><div class="sub">Meta ${a.target.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg · +${surplus.toLocaleString('pt-BR',{maximumFractionDigits:1})} kg acima</div><button class="btn primary" style="width:100%;margin-top:10px" type="button" onclick="simulateReadyAnimal(${Number(a.id)})">Simular venda</button></article>`;
   }).join('')+'</div>';
 }
 function simulateReadyAnimal(id){
@@ -7623,12 +7638,12 @@ openAnimalProfile = async function(id){
 
   if(a.mother_id){
     tasks.push(ap8SafeQuery(
-      mgSb.from('animals').select('id,number,category,breed').eq('farm_id',f.id).eq('id',a.mother_id).maybeSingle(),
+      mgSb.from('animals').select('id,number,name,category,breed').eq('farm_id',f.id).eq('id',a.mother_id).maybeSingle(),
       null
     ).then(x=>mother=x));
   }
   tasks.push(ap8SafeQuery(
-    mgSb.from('animals').select('id,number,category,breed,birth_date').eq('farm_id',f.id).eq('mother_id',id).is('deleted_at',null).order('birth_date',{ascending:false}),
+    mgSb.from('animals').select('id,number,name,category,breed,birth_date').eq('farm_id',f.id).eq('mother_id',id).is('deleted_at',null).order('birth_date',{ascending:false}),
     []
   ).then(x=>offspring=x));
 
@@ -7651,7 +7666,7 @@ openAnimalProfile = async function(id){
 
   await Promise.all(tasks);
 
-  profileAnimalTitle.textContent=`Ficha do animal #${a.number}`;
+  profileAnimalTitle.textContent=a.name?mgAnimalLabel(a):`Ficha do animal #${a.number}`;
   profileAnimalSub.textContent=`Visão completa do histórico e desempenho`;
 
   const target=Number(a.target_weight||0);
@@ -7685,7 +7700,7 @@ openAnimalProfile = async function(id){
     <div class="ap8-hero">
       ${photo}
       <div class="ap8-title">
-        <b>Animal #${ap8Esc(a.number)}</b>
+        <b>${ap8Esc(mgAnimalLabel(a))}</b>
         <span>${ap8Esc(a.category||'Sem categoria')} · ${ap8Esc(a.breed||'Raça não informada')}</span>
         <div class="ap8-chips">
           <span class="ap8-chip green">${status}</span>
@@ -7722,6 +7737,7 @@ openAnimalProfile = async function(id){
     <div class="ap8-grid">
       <div class="ap8-card">
         <h4>Identificação</h4>
+        <div class="ap8-row"><span>Nome</span><b>${ap8Esc(a.name||'Não informado')}</b></div>
         <div class="ap8-row"><span>Número</span><b>#${ap8Esc(a.number)}</b></div>
         <div class="ap8-row"><span>Categoria</span><b>${ap8Esc(a.category||'—')}</b></div>
         <div class="ap8-row"><span>Sexo</span><b>${ap8Esc(sex||'—')}</b></div>
@@ -7734,9 +7750,9 @@ openAnimalProfile = async function(id){
 
       <div class="ap8-card">
         <h4>Filiação e crias</h4>
-        <div class="ap8-row"><span>Mãe</span><b>${mother?`#${ap8Esc(mother.number)} · ${ap8Esc(mother.breed||mother.category||'')}`:'Não informada'}</b></div>
+        <div class="ap8-row"><span>Mãe</span><b>${mother?`${ap8Esc(mgAnimalLabel(mother))} · ${ap8Esc(mother.breed||mother.category||'')}`:'Não informada'}</b></div>
         <div class="ap8-row"><span>Crias cadastradas</span><b>${offspring.length}</b></div>
-        ${offspring.length?`<div class="ap8-list" style="margin-top:7px">${offspring.slice(0,6).map(c=>ap8Event('🐮',`#${(c.number)} · ${(c.category||'')}`,(c.breed||''),c.birth_date)).join('')}</div>`:'<div class="ap8-empty">Nenhuma cria vinculada.</div>'}
+        ${offspring.length?`<div class="ap8-list" style="margin-top:7px">${offspring.slice(0,6).map(c=>ap8Event('🐮',`${mgAnimalLabel(c)} · ${(c.category||'')}`,(c.breed||''),c.birth_date)).join('')}</div>`:'<div class="ap8-empty">Nenhuma cria vinculada.</div>'}
       </div>
 
       <div class="ap8-card ap8-wide">
@@ -7980,6 +7996,9 @@ run();document.addEventListener('DOMContentLoaded',run);
 @media(max-width:760px){
   html.mg-mobile-device .mg-connection-bar.mg-connection-hidden{opacity:0!important;pointer-events:none!important;transition:opacity .28s ease}
   html.mg-mobile-device .mg-connection-bar{transition:opacity .22s ease}
+  html.mg-mobile-device body:has(#animalModal.show) .mg-mobile-tabs,
+  html.mg-mobile-device body:has(#animalModal.show) .mg-mobile-quick,
+  html.mg-mobile-device body:has(#animalModal.show) .mg-connection-bar{display:none!important}
   html.mg-mobile-device .mg-mobile-quick{position:fixed;right:15px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:300;display:block}
   html.mg-mobile-device .mg-mobile-quick-fab{width:56px;height:56px;border:0;border-radius:50%;background:#0d8a43;color:#fff;box-shadow:0 10px 24px rgba(4,91,45,.32);font-size:31px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform .18s ease,background .18s ease}
   html.mg-mobile-device .mg-mobile-quick-fab:active{transform:scale(.94)}
