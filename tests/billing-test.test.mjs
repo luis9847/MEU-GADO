@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHandler,selection,testAccount,checkoutUrl,validateSubscription,paymentSummary,publicRow,constantEqual,resolveBuyerEmail} from '../supabase/functions/billing-test/core.mjs';
+import {createHandler,selection,testAccount,checkoutUrl,validateSubscription,paymentSummary,publicRow,constantEqual,resolveBuyerEmail,referencePaymentSummary} from '../supabase/functions/billing-test/core.mjs';
 import fs from 'node:fs';
 const id='11111111-1111-4111-8111-111111111111',provider='provider1234567890';
 function fixture(options={}){
@@ -35,6 +35,7 @@ function fixture(options={}){
     return json({...sub([...rows.values()][0]),payer_id:options.otherBuyer?'99999':'22222',status:'pending',init_point:'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_id='+provider});
    }
    if(u.pathname==='/preapproval/'+provider)return json(sub([...rows.values()][0]));
+   if(u.pathname==='/v1/payments/search')return json({results:options.initialPayment?[{id:'44444',collector_id:'11111',payer:{id:'22222'},live_mode:true,currency_id:'BRL',transaction_amount:[...rows.values()][0].amount,status:'approved',external_reference:'mg-test:'+id}]:[]});
    if(u.pathname==='/authorized_payments/search')return json({results:options.noPayment?[]:[{preapproval_id:provider,currency_id:'BRL',transaction_amount:[...rows.values()][0].amount,payment:{id:'33333'},date_created:'2026-11-04'}]});
    if(u.pathname==='/v1/payments/33333')return json({id:'33333',collector_id:'11111',payer:{id:'22222'},live_mode:!!options.livePayment,currency_id:'BRL',transaction_amount:options.wrongAmount?1:[...rows.values()][0].amount,status:'approved'});
   }
@@ -53,7 +54,7 @@ test('checkout creation uses server price and pending state, never browser amoun
 test('the same attempt reuses its checkout and does not create another subscription',async()=>{const f=fixture();await f.create();await f.create();assert.equal(f.calls.filter(x=>new URL(x.url).pathname==='/preapproval').length,1);assert.equal((await f.create({plan:'complete'})).status,409);});
 test('uncertain provider responses retain attempt and hide provider error bodies',async()=>{const f=fixture({providerFailure:true});const r=await f.create();assert.equal(r.status,502);assert.equal(JSON.stringify(r).includes('secret-test-token'),false);assert.equal(f.rows.get(id).status,'creation_unknown');assert.equal((await f.create()).status,409);});
 test('redirect or authorization without an approved invoice is not payment confirmation',async()=>{const f=fixture({noPayment:true});await f.create();const r=await f.request('refresh',{id});assert.equal(r.data.checkout.status,'authorized');assert.deepEqual(r.data.checkout.payments,[]);assert.equal(f.calls.some(x=>x.url.includes('farm_subscriptions')),false);});
-test('the confirmed test payment is fetched server side and checked for amount and test mode',async()=>{const f=fixture();await f.create();const r=await f.request('refresh',{id});assert.equal(r.status,200);assert.equal(r.data.checkout.payments[0].status,'approved');for(const opts of [{wrongAmount:true},{livePayment:true}]){const fail=fixture(opts);await fail.create();assert.equal((await fail.request('refresh',{id})).status,502);assert.deepEqual(fail.rows.get(id).payments,[]);}});
+test('the confirmed test payment is fetched server side and checked for amount and test mode',async()=>{const f=fixture();await f.create();const r=await f.request('refresh',{id});assert.equal(r.status,200);assert.equal(r.data.checkout.payments[0].status,'approved');for(const opts of [{wrongAmount:true}]){const fail=fixture(opts);await fail.create();assert.equal((await fail.request('refresh',{id})).status,502);assert.deepEqual(fail.rows.get(id).payments,[]);}});
 test('webhook requires a per-checkout secret and ignores forged payload data',async()=>{const f=fixture({noPayment:true});await f.create();let r=await f.handle(new Request('https://supabase.test/functions/v1/billing-test/notify?checkout='+id+'&token='+'0'.repeat(64),{method:'POST'}));assert.equal(r.status,401);r=await f.handle(new Request(f.callback,{method:'POST',body:JSON.stringify({status:'approved',amount:1})}));assert.equal(r.status,200);assert.deepEqual(f.rows.get(id).payments,[]);});
 test('cancel calls provider without changing a real farm or deleting history',async()=>{const f=fixture();await f.create();const r=await f.request('cancel',{id});assert.equal(r.status,200);assert.equal(f.rows.get(id).status,'cancelled');assert.equal(f.calls.some(x=>x.opt.method==='PUT'&&JSON.parse(x.opt.body).status==='cancelled'),true);});
 test('links, references and account metadata fail closed on substitution',()=>{assert.equal(testAccount({site_id:'MLB',tags:['test_user']}),true);assert.equal(testAccount({site_id:'MLB',tags:[]}),false);assert.throws(()=>checkoutUrl('https://www.mercadopago.com.br.evil.test/subscriptions/checkout?preapproval_id=x','x'));assert.throws(()=>validateSubscription({},{}));assert.throws(()=>paymentSummary({},{},{}));assert.equal(constantEqual('aa','aa'),true);assert.equal(constantEqual('aa','bb'),false);assert.equal(publicRow({id,notify_hash:'hidden'}).notify_hash,undefined);});
@@ -72,4 +73,14 @@ test('real emails, foreign users, same-account buyer, and explicit non-test tags
 test('an email resolving to a different buyer is rejected before exposing any checkout link',async()=>{
  const f=fixture({publicBuyer:true,otherBuyer:true});const r=await f.create({buyer_email:'buyer@testuser.com'});assert.equal(r.status,502);assert.equal(r.data.checkout,undefined);
  assert.ok(f.calls.some(x=>x.opt.method==='PUT'&&JSON.parse(x.opt.body).status==='cancelled'));
+});
+
+test('subscription sandbox live_mode=true is accepted only with the separately verified test seller',()=>{
+ const row={id,provider_id:provider,seller_id:'11111',buyer_id:'22222',amount:90};const p={id:'33333',collector_id:'11111',payer:{id:'22222'},live_mode:true,currency_id:'BRL',transaction_amount:90,status:'approved',external_reference:'mg-test:'+id};
+ assert.throws(()=>referencePaymentSummary(p,row));assert.equal(referencePaymentSummary(p,row,true).status,'approved');
+ for(const wrong of [{collector_id:'99999'},{payer:{id:'99999'}},{external_reference:'unrelated'},{transaction_amount:1}])assert.throws(()=>referencePaymentSummary({...p,...wrong},row,true));
+});
+test('approved initial payment and cancelled subscription remain separate, and invoice endpoint omits unsupported paging',async()=>{
+ const f=fixture({noPayment:true,initialPayment:true,subscriptionStatus:'cancelled'});await f.create();const r=await f.request('refresh',{id});assert.equal(r.status,200);assert.equal(r.data.checkout.status,'cancelled');assert.equal(r.data.checkout.payments[0].status,'approved');assert.equal(r.data.checkout.payments[0].source,'reference');
+ const query=new URL(f.calls.find(x=>x.url.includes('/authorized_payments/search')).url);assert.equal(query.searchParams.has('limit'),false);assert.equal(query.searchParams.has('offset'),false);
 });

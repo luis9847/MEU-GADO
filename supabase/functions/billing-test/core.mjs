@@ -30,9 +30,19 @@ export function validateSubscription(s,row){
  if(String(s.id)!==row.provider_id||String(s.collector_id)!==row.seller_id||String(s.payer_id)!==row.buyer_id||s.external_reference!=='mg-test:'+row.id||r?.currency_id!=='BRL'||Number(r.transaction_amount)!==p.amount||r.frequency_type!=='months'||Number(r.frequency)!==p.frequency)throw new SafeError('A assinatura retornada não corresponde a este teste.',502);
  return s;
 }
-export function paymentSummary(payment,invoice,row){
- if(String(invoice.preapproval_id)!==row.provider_id||String(invoice.payment?.id)!==String(payment.id)||String(payment.collector_id)!==row.seller_id||String(payment.payer?.id)!==row.buyer_id||payment.live_mode!==false||payment.currency_id!=='BRL'||Number(payment.transaction_amount)!==row.amount||Number(invoice.transaction_amount)!==row.amount||invoice.currency_id!=='BRL')throw new SafeError('O pagamento não corresponde ao teste esperado.',502);
+function verifiedPayment(payment,row,verifiedTestSeller){
+ // Subscriptions created with a test seller may report live_mode=true. The
+ // authenticated seller's test_user tag, not that flag alone, identifies this sandbox.
+ if(String(payment.collector_id)!==row.seller_id||String(payment.payer?.id)!==row.buyer_id||(payment.live_mode!==false&&!verifiedTestSeller)||typeof payment.live_mode!=='boolean'||payment.currency_id!=='BRL'||Number(payment.transaction_amount)!==row.amount)throw new SafeError('O pagamento não corresponde ao teste esperado.',502);
  return {id:String(payment.id),status:String(payment.status),date:payment.date_approved||payment.date_created||null,amount:Number(payment.transaction_amount)};
+}
+export function paymentSummary(payment,invoice,row,verifiedTestSeller=false){
+ if(String(invoice.preapproval_id)!==row.provider_id||String(invoice.payment?.id)!==String(payment.id)||Number(invoice.transaction_amount)!==row.amount||invoice.currency_id!=='BRL')throw new SafeError('A fatura não corresponde ao teste esperado.',502);
+ return {...verifiedPayment(payment,row,verifiedTestSeller),source:'invoice'};
+}
+export function referencePaymentSummary(payment,row,verifiedTestSeller=false){
+ if(payment.external_reference!=='mg-test:'+row.id)throw new SafeError('A referência do pagamento não corresponde ao teste.',502);
+ return {...verifiedPayment(payment,row,verifiedTestSeller),source:'reference'};
 }
 export async function sha(value){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),x=>x.toString(16).padStart(2,'0')).join('');}
 export function constantEqual(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;}
@@ -74,9 +84,17 @@ export function createHandler(env,fetcher=fetch){
   if(!claimed)return row;
   const account=await seller();if(String(account.id)!==row.seller_id)throw new SafeError('A chave de teste foi alterada para outro vendedor.',409);
   const s=validateSubscription(await mp('/preapproval/'+encodeURIComponent(row.provider_id)),row);
-  const data=await mp('/authorized_payments/search?preapproval_id='+encodeURIComponent(row.provider_id)+'&limit=20&offset=0');
+  const data=await mp('/authorized_payments/search?preapproval_id='+encodeURIComponent(row.provider_id));
   const invoices=(data.results||[]).filter(x=>x.payment?.id).sort((a,b)=>String(b.date_created).localeCompare(String(a.date_created))).slice(0,5);
-  const payments=await Promise.all(invoices.map(async invoice=>paymentSummary(await mp('/v1/payments/'+numericId(invoice.payment.id)),invoice,row)));
+  const verifiedTestSeller=testAccount(account)&&String(account.id)===row.seller_id;
+  const payments=await Promise.all(invoices.map(async invoice=>paymentSummary(await mp('/v1/payments/'+numericId(invoice.payment.id)),invoice,row,verifiedTestSeller)));
+  // An initial checkout payment can exist before the recurring invoice is linked.
+  // Show this observation separately; it never means the subscription is authorized.
+  const initial=await mp('/v1/payments/search?external_reference='+encodeURIComponent('mg-test:'+row.id)+'&limit=20');
+  for(const candidate of initial.results||[]){
+   if(payments.some(p=>p.id===String(candidate.id)))continue;
+   payments.push(referencePaymentSummary(candidate,row,verifiedTestSeller));
+  }
   return patch(row.id,{status:s.status,payments,checked_at:new Date().toISOString()});
  }
  return async function handle(req){
