@@ -37,7 +37,7 @@ const root=path.resolve(__dirname,'..');
  enabled=false;await page.locator('#mgBillingClose').click();await page.evaluate(()=>window.mgOpenBilling());assert.match(await page.locator('#mgBillingAvailability').innerText(),/em preparação/);
  await page.goto('http://127.0.0.1:8770/admin.html',{waitUntil:'load'});await page.evaluate(async()=>{sb.auth.getSession=async()=>({data:{session:{access_token:'fixture'}}});sb.from=()=>{const q={select(){return q},order(){return q},range(){return q},then(a,b){return Promise.resolve({data:[],error:null}).then(a,b)}};return q;};document.getElementById('loginPage').classList.add('hidden');document.getElementById('app').classList.remove('hidden');await loadData();openView('plans');});
  await page.locator('#billingProductionCheck').click();await page.waitForFunction(()=>document.getElementById('billingProductionState').textContent.includes('MP_ACCESS_TOKEN_PROD'));assert.equal(await page.locator('#billingProductionEnable').isDisabled(),true);await page.locator('#billingProductionList').click();await page.getByRole('button',{name:'Concluir conferência'}).click();await page.waitForFunction(()=>document.getElementById('billingProductionState').textContent.includes('Conferência concluída'));assert.ok(requests.some(x=>x.action==='admin-resolve'));
- await page.goto('http://127.0.0.1:8770/index.html',{waitUntil:'load'});assert.equal(await page.locator('#planos table').count(),0); const help=page.locator('#planos .pricing-whatsapp');assert.equal(await help.getAttribute('target'),'_blank');assert.equal(new URL(await help.getAttribute('href')).pathname,'/5535999655305');assert.match(await page.locator('#planos .pricing-help').innerText(),/dúvida/);await page.locator('[data-pricing-period=annual]').click();assert.match(await page.locator('[data-pricing-plan=complete] [data-plan-contact]').getAttribute('href'),/billing_plan=complete&billing_period=annual/);assert.equal(await page.locator('[data-pricing-plan=complete] [data-plan-contact]').getAttribute('target'),null);
+ await page.goto('http://127.0.0.1:8770/index.html',{waitUntil:'load'});assert.equal(await page.locator('#planos table').count(),0); const help=page.locator('#planos .pricing-whatsapp');assert.equal(await help.getAttribute('target'),'_blank');assert.equal(new URL(await help.getAttribute('href')).pathname,'/5535999655305');assert.match(await page.locator('#planos .pricing-help').innerText(),/dúvida/);await page.locator('[data-pricing-period=annual]').click();assert.match(await page.locator('[data-pricing-plan=complete] [data-plan-price]').innerText(),/1.440/);assert.equal(await page.locator('[data-pricing-plan=complete] [data-plan-contact]').innerText(),'Cadastre-se');
  await page.goto('http://127.0.0.1:8770/index.html?legal=terms',{waitUntil:'load'});await page.waitForTimeout(500);assert.ok(await page.getByRole('heading',{name:'Termos de Uso — Meu Gado'}).isVisible());
  // The public CTA opens signup on both screen sizes.
  await page.goto('http://127.0.0.1:8770/index.html',{waitUntil:'load'});
@@ -46,6 +46,12 @@ const root=path.resolve(__dirname,'..');
   assert.equal(await page.locator('#registerForm').evaluate(el=>el.classList.contains('active')),true);
   assert.equal(await page.locator('.header-actions .primary').innerText(),'Cadastre-se');
   await page.evaluate(()=>closeAuth());
+  for(const plan of ['essential','complete']){
+   const button=page.locator(`[data-pricing-plan=${plan}] [data-plan-contact]`);
+   await button.click();assert.equal(await page.locator('#registerForm').evaluate(el=>el.classList.contains('active')),true);
+   assert.match(page.url(),/index.html$/);assert.equal(await page.evaluate(()=>sessionStorage.getItem('mg-billing-choice')),null);
+   await page.evaluate(()=>closeAuth());
+  }
  }
  // The actual server-snapshot event opens the chooser after farm registration.
  enabled=true;contract=null;paid=false;

@@ -239,7 +239,7 @@ input[type="url"], input[type="number"], textarea,
 button:disabled, input:disabled, select:disabled, textarea:disabled,
 [aria-disabled="true"] { cursor: not-allowed !important; }
 </style>
-<link rel="stylesheet" href="/landing-plans.css?v=2">
+<link rel="stylesheet" href="/landing-plans.css?v=3">
 <script src="/plans-core.js?v=1"></script>
 <link rel="stylesheet" href="/billing.css?v=2">
 </head>
@@ -407,10 +407,10 @@ button:disabled, input:disabled, select:disabled, textarea:disabled,
     <div class="pricing-period" role="group" aria-label="Período da assinatura"><button type="button" data-pricing-period="monthly" aria-pressed="true">Mensal</button><button type="button" data-pricing-period="annual" aria-pressed="false">Anual</button></div>
     <p class="pricing-per-farm">Valores por fazenda. Escolha entre assinatura mensal ou anual.</p><p class="pricing-sr-only" id="pricingAnnouncement" role="status" aria-live="polite"></p>
     <div class="pricing-cards">
-      <article class="pricing-card" data-pricing-plan="essential" aria-labelledby="essentialTitle"><span class="pricing-category">Até 150 animais ativos</span><h3 id="essentialTitle">Essencial</h3><p class="pricing-audience">Para organizar o rebanho e registrar os manejos do dia a dia.</p><p class="pricing-price"><strong data-plan-price>R$ 90</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 900/ano, equivalente a R$ 75/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li>Cadastro e ficha dos animais</li><li>Lotes, pesagens e evolução do peso</li><li>Saúde e reprodução</li><li>Registro de alimentação</li><li>Modo Campo nos registros compatíveis</li><li>Suporte para dúvidas de uso</li></ul><a class="pricing-cta" data-plan-contact href="/app?billing_plan=essential&amp;billing_period=monthly">Escolher plano →</a></article>
-      <article class="pricing-card complete" data-pricing-plan="complete" aria-labelledby="completeTitle"><span class="pricing-category">Todos os recursos do sistema</span><h3 id="completeTitle">Completo</h3><p class="pricing-audience">Para rebanhos acima de 150 cabeças ou quem deseja uma gestão mais completa.</p><p class="pricing-price"><strong data-plan-price>R$ 130</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 1.440/ano, equivalente a R$ 120/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li><b>Todos os recursos do Essencial</b></li><li>Controle de gastos</li><li>Planejamento alimentar e custos</li><li>Painel de desempenho</li><li>Relatórios e exportações disponíveis</li><li>Também disponível para rebanhos menores</li></ul><a class="pricing-cta" data-plan-contact href="/app?billing_plan=complete&amp;billing_period=monthly">Escolher plano →</a></article>
+      <article class="pricing-card" data-pricing-plan="essential" aria-labelledby="essentialTitle"><span class="pricing-category">Até 150 animais ativos</span><h3 id="essentialTitle">Essencial</h3><p class="pricing-audience">Para organizar o rebanho e registrar os manejos do dia a dia.</p><p class="pricing-price"><strong data-plan-price>R$ 90</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 900/ano, equivalente a R$ 75/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li>Cadastro e ficha dos animais</li><li>Lotes, pesagens e evolução do peso</li><li>Saúde e reprodução</li><li>Registro de alimentação</li><li>Modo Campo nos registros compatíveis</li><li>Suporte para dúvidas de uso</li></ul><button class="pricing-cta" data-plan-contact type="button" onclick="openAuth('register')">Cadastre-se</button></article>
+      <article class="pricing-card complete" data-pricing-plan="complete" aria-labelledby="completeTitle"><span class="pricing-category">Todos os recursos do sistema</span><h3 id="completeTitle">Completo</h3><p class="pricing-audience">Para rebanhos acima de 150 cabeças ou quem deseja uma gestão mais completa.</p><p class="pricing-price"><strong data-plan-price>R$ 130</strong><span data-plan-period>/mês</span></p><p class="pricing-alternative" data-plan-alternative>Ou R$ 1.440/ano, equivalente a R$ 120/mês.</p><div class="pricing-divider"></div><ul class="pricing-features"><li><b>Todos os recursos do Essencial</b></li><li>Controle de gastos</li><li>Planejamento alimentar e custos</li><li>Painel de desempenho</li><li>Relatórios e exportações disponíveis</li><li>Também disponível para rebanhos menores</li></ul><button class="pricing-cta" data-plan-contact type="button" onclick="openAuth('register')">Cadastre-se</button></article>
     </div>
-    <p class="pricing-contact-note">Escolha seu plano e acesse sua conta. A contratação automática está em preparação; o pagamento online será disponibilizado após sua ativação.</p>
+    <p class="pricing-contact-note">Crie sua conta e cadastre sua fazenda. Depois, escolha o plano para continuar.</p>
     <div class="pricing-help"><div><h3>Ficou com alguma dúvida?</h3><p>Entre em contato para saber mais sobre os planos do Meu Gado.</p></div><a class="pricing-whatsapp" href="https://wa.me/5535999655305?text=Ol%C3%A1%21%20Gostaria%20de%20ajuda%20para%20escolher%20um%20plano%20do%20Meu%20Gado." target="_blank" rel="noopener noreferrer">Falar pelo WhatsApp <span aria-hidden="true">↗</span></a></div>
     <div class="pricing-footnotes"><p>A assinatura anual corresponde a 12 meses de acesso pelo valor total indicado. O planejamento alimentar organiza as quantidades e os custos informados; não inclui formulação ou consultoria nutricional. Atendimento veterinário e preenchimento de dados pela equipe não estão incluídos.</p><p>Testes gratuitos são disponibilizados mediante liberação da equipe Meu Gado.</p></div>
   </section>
@@ -1033,6 +1033,6 @@ function openPrivacy(){document.getElementById('privacyModal').classList.add('op
 function closePrivacy(){document.getElementById('privacyModal').classList.remove('open')}
 </script>
 
-<script src="/landing-plans.js?v=2"></script>
+<script src="/landing-plans.js?v=3"></script>
 </body>
 </html>
