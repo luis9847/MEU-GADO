@@ -203,7 +203,7 @@ html{scroll-behavior:smooth}
 .login-wrap{position:fixed;inset:0;z-index:1000;display:none;place-items:center;padding:18px;background:rgba(3,27,23,.76);backdrop-filter:blur(7px);overflow:auto}.login-wrap.open{display:grid}.login-card{position:relative;max-height:94vh;overflow:auto}.modal-close{position:absolute;right:18px;top:16px;width:32px;height:32px;border:1px solid #dce5e0;background:#fff;border-radius:9px;color:#587068;font-size:18px;z-index:2}.auth-brand{display:flex;justify-content:center;align-items:center;gap:9px;margin-bottom:16px}.auth-brand img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #dcb84c}.auth-brand b{display:block;color:#073b31;font-size:16px}.auth-brand small{display:block;color:#718079;font-size:9px;margin-top:2px}
 body.modal-open{overflow:hidden}
 @media(max-width:1050px){.site-nav{display:none}.hero{grid-template-columns:1fr;padding-top:48px}.hero-copy{text-align:center;margin:auto}.hero-copy .lead{margin:auto}.hero-actions,.hero-trust{justify-content:center}.product-stage{min-height:410px}.benefit-grid{grid-template-columns:repeat(2,1fr)}.benefit:last-child{grid-column:1/-1}}
-@media(max-width:650px){.site-header{height:66px}.site-brand img{width:44px;height:44px}.site-brand{font-size:19px}.header-actions .primary{display:none}.header-btn{padding:9px 14px}.hero{display:block;min-height:auto;padding:45px 18px 35px}.hero-copy h1{font-size:39px}.hero-copy .lead{font-size:14px}.hero-actions{flex-direction:column}.hero-cta{width:100%}.hero-trust{display:grid;gap:10px;text-align:left;margin:0 auto;max-width:220px}.product-stage{min-height:330px;margin-top:25px}.browser-demo{width:100%;border-width:6px;border-top-width:20px}.demo-body{grid-template-columns:78px 1fr;min-height:230px}.demo-side{padding:10px 7px}.demo-stats{grid-template-columns:repeat(2,1fr)}.demo-stat:nth-child(n+3){display:none}.demo-grid{grid-template-columns:1fr}.demo-grid .demo-card:last-child{display:none}.phone-demo{width:120px}.benefit-grid,.step-grid{grid-template-columns:1fr}.steps .step{margin-bottom:25px}.step:not(:last-child):after{display:none}}
+@media(max-width:650px){.site-header{height:66px}.site-brand img{width:44px;height:44px}.site-brand{font-size:19px}.site-header{padding-left:12px;padding-right:12px}.site-brand{font-size:17px;gap:7px}.site-brand img{width:36px;height:36px}.header-actions{gap:6px}.header-actions .primary{display:inline-block}.header-btn{padding:9px 10px;font-size:11px}.hero{display:block;min-height:auto;padding:45px 18px 35px}.hero-copy h1{font-size:39px}.hero-copy .lead{font-size:14px}.hero-actions{flex-direction:column}.hero-cta{width:100%}.hero-trust{display:grid;gap:10px;text-align:left;margin:0 auto;max-width:220px}.product-stage{min-height:330px;margin-top:25px}.browser-demo{width:100%;border-width:6px;border-top-width:20px}.demo-body{grid-template-columns:78px 1fr;min-height:230px}.demo-side{padding:10px 7px}.demo-stats{grid-template-columns:repeat(2,1fr)}.demo-stat:nth-child(n+3){display:none}.demo-grid{grid-template-columns:1fr}.demo-grid .demo-card:last-child{display:none}.phone-demo{width:120px}.benefit-grid,.step-grid{grid-template-columns:1fr}.steps .step{margin-bottom:25px}.step:not(:last-child):after{display:none}}
 
 
 /* V39: fundo rural visível em toda a primeira tela e logotipos padronizados */
@@ -248,7 +248,7 @@ button:disabled, input:disabled, select:disabled, textarea:disabled,
   <header class="site-header">
     <a class="site-brand" href="#inicio"><img src="/meu-gado-logo.png" alt="Logotipo Meu Gado"><span>Meu Gado</span></a>
     <nav class="site-nav"><a href="#recursos">Recursos</a><a href="#como-funciona">Como funciona</a><a href="#para-quem">Para quem é</a><a href="#planos">Planos</a><a href="mailto:contatomeugado@outlook.com">Contato</a></nav>
-    <div class="header-actions"><button class="header-btn" onclick="openAuth('login')">Entrar</button><a class="pricing-mobile-link" href="#planos">Planos</a><button class="header-btn primary" onclick="document.getElementById('planos').scrollIntoView()">Ver planos</button></div>
+    <div class="header-actions"><button class="header-btn" onclick="openAuth('login')">Entrar</button><button class="header-btn primary" onclick="openAuth('register')">Cadastre-se</button></div>
   </header>
   <div class="shell">
     <section class="hero" id="inicio">
@@ -319,7 +319,7 @@ button:disabled, input:disabled, select:disabled, textarea:disabled,
           <div class="stepper" aria-label="Etapas do cadastro">
             <div class="step-dot">✓</div><div class="step-line"></div><div class="step-dot active">2</div>
           </div>
-          <div class="onboarding-note"><b>Etapa 2 de 2 — Configure sua propriedade.</b><br>Essas informações organizam o painel e podem ser atualizadas depois.</div>
+          <div class="onboarding-note"><b>Etapa 2 de 2 — Configure sua propriedade.</b><br>Depois de cadastrar a fazenda, você poderá escolher seu plano e pagar pelo Mercado Pago. Se tiver um teste gratuito válido liberado pela equipe, seguirá direto para o sistema.</div>
 
           <div class="field"><label>Nome da propriedade</label><input id="onFarmName" placeholder="Ex.: Fazenda Boa Vista"></div>
           <div class="row"><div class="field"><label>Cidade</label><input id="onCity" placeholder="Cidade"></div><div class="field"><label>UF</label><input id="onState" maxlength="2" placeholder="MG"></div></div>
@@ -549,7 +549,7 @@ function showOnboarding(user){
   document.getElementById('resetPasswordForm').classList.remove('active');
   document.getElementById('onboardingForm').classList.add('active');
   document.getElementById('title').textContent='Configure sua propriedade';
-  document.getElementById('subtitle').textContent='Falta só uma etapa para preparar seu painel do Meu Gado.';
+  document.getElementById('subtitle').textContent='Cadastre sua fazenda para continuar e escolher seu plano.';
 
   const meta=user?.user_metadata||{};
   if(!document.getElementById('onFarmName').value && meta.farm_name) document.getElementById('onFarmName').value=meta.farm_name;
@@ -596,7 +596,7 @@ async function completeOnboarding(){
     const r=await mgSb.rpc('complete_first_onboarding',payload);
     if(r.error) throw new Error(r.error.message);
 
-    setMessage('Propriedade configurada com sucesso. Abrindo seu painel...',true);
+    setMessage('Propriedade cadastrada. Consultando seu acesso para continuar...',true);
     setTimeout(()=>{location.href='/app';},700);
   }catch(e){setMessage(e.message)}
 }

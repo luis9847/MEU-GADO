@@ -36,6 +36,42 @@ const root=path.resolve(__dirname,'..');
  await page.locator('#billingProductionCheck').click();await page.waitForFunction(()=>document.getElementById('billingProductionState').textContent.includes('MP_ACCESS_TOKEN_PROD'));assert.equal(await page.locator('#billingProductionEnable').isDisabled(),true);await page.locator('#billingProductionList').click();await page.getByRole('button',{name:'Concluir conferência'}).click();await page.waitForFunction(()=>document.getElementById('billingProductionState').textContent.includes('Conferência concluída'));assert.ok(requests.some(x=>x.action==='admin-resolve'));
  await page.goto('http://127.0.0.1:8770/index.html',{waitUntil:'load'});await page.locator('[data-pricing-period=annual]').click();assert.match(await page.locator('[data-pricing-plan=complete] [data-plan-contact]').getAttribute('href'),/billing_plan=complete&billing_period=annual/);assert.equal(await page.locator('[data-pricing-plan=complete] [data-plan-contact]').getAttribute('target'),null);
  await page.goto('http://127.0.0.1:8770/index.html?legal=terms',{waitUntil:'load'});await page.waitForTimeout(500);assert.ok(await page.getByRole('heading',{name:'Termos de Uso — Meu Gado'}).isVisible());
- assert.deepEqual(errors,[]);console.log('PASS: actual customer/admin/landing/legal UI, consent, annual price, authenticated checkout, pending/approved access, cancellation preserving validity, disabled production gate, desktop/mobile, no page errors. Fixture provider transport only.');
+ // The public CTA opens signup on both screen sizes.
+ await page.goto('http://127.0.0.1:8770/index.html',{waitUntil:'load'});
+ for(const width of [1365,390]){
+  await page.setViewportSize({width,height:900});await page.locator('.header-actions .primary').click();
+  assert.equal(await page.locator('#registerForm').evaluate(el=>el.classList.contains('active')),true);
+  assert.equal(await page.locator('.header-actions .primary').innerText(),'Cadastre-se');
+  await page.evaluate(()=>closeAuth());
+ }
+ // The actual server-snapshot event opens the chooser after farm registration.
+ enabled=true;contract=null;paid=false;
+ async function entry(status,{intent=false,member=false,offline=false,delay=false}={}){
+  Object.assign(farm,{status,plan:'essential',expires_at:status==='trial'?'2099-01-01T00:00:00Z':null});
+  await page.goto('http://127.0.0.1:8770/app.html'+(intent?'?billing_plan=complete&billing_period=annual':''),{waitUntil:'load'});
+  if(delay){await page.clock.install();await page.clock.fastForward(75000);}
+  await page.evaluate(async({farm,member,offline})=>{
+   document.getElementById('mgTestLoginGate')?.remove();document.documentElement.classList.remove('mg-route-boot');
+   mgUser={id:'fixture-owner',email:'owner@example.com'};
+   mgFarm={id:999,name:farm.farm_name,owner_id:member?'other-owner':mgUser.id};mgFarmRole=member?'member':'owner';
+   mgSb.auth.getSession=async()=>({data:{session:{access_token:'fixture',user:mgUser}}});
+   mgSb.rpc=async()=>({data:{...farm,farm_id:999,features:{},server_now:new Date().toISOString()},error:null});
+   if(offline){Object.defineProperty(navigator,'onLine',{value:false,configurable:true});return;}
+   await mgRefreshPlan(mgFarm,true);
+  },{farm,member,offline});
+  if(delay)await page.clock.resume();
+  await page.waitForTimeout(150);
+ }
+ await entry('pending',{delay:true});await page.locator('#mgBillingDialog').waitFor({state:'visible'});
+ assert.equal(await page.locator('#mgBillingTitle').innerText(),'Escolha seu plano');
+ assert.match(await page.locator('#mgBillingIntro').innerText(),/fazenda já está cadastrada/);
+ await page.locator('#mgBillingClose').click();await page.evaluate(()=>mgRefreshPlan(mgFarm,true));await page.waitForTimeout(100);
+ assert.equal(await page.locator('#mgBillingDialog').isVisible(),false,'refresh must not reopen dismissed onboarding');
+ await entry('pending',{intent:true});await page.locator('#mgBillingDialog').waitFor({state:'visible'});
+ assert.equal(await page.locator('#mgBillingPlan').inputValue(),'complete');assert.equal(await page.locator('#mgBillingPeriod').inputValue(),'annual');
+ for(const status of ['trial','active','legacy']){await entry(status,{intent:status==='trial'});assert.equal(await page.locator('#mgBillingDialog').count(),0,status+' enters without automatic sales dialog');}
+ await entry('pending',{member:true});assert.equal(await page.locator('#mgBillingDialog').count(),0,'members do not get owner checkout');
+ await entry('pending',{offline:true});assert.equal(await page.locator('#mgBillingDialog').count(),0,'offline state does not trigger checkout');
+ assert.deepEqual(errors,[]);console.log('PASS: customer/admin/landing/legal UI, consent, prices, checkout, payment status, cancellation, desktop/mobile. Signup CTA and automatic onboarding: pending, delayed registration, trial, active, legacy, member, offline, selected plan. Fixture provider transport only.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -29,7 +29,7 @@ test('admin dates mean end of the chosen local day and invalid calendar dates ar
  assert.equal(C.localEndOfDay(''),null);assert.throws(()=>C.localEndOfDay('2026-02-30'));assert.throws(()=>C.localEndOfDay('17/11/2026'));
 });
 function appContext(online=true){
- const store=new Map(),events={},c=vm.createContext({MGPlansCore:C,console,Date,Number,JSON,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},navigator:{onLine:online},window:{addEventListener:(k,v)=>events[k]=v},document:{body:null,addEventListener(){}},mgUser:{id:'user-a'},mgFarm:{id:7},mgReadCachedResponse:async()=>[],mgGetFarm:async()=>({id:7}),mgSb:{rpc:async()=>({data:{...complete,server_now:new Date().toISOString()},error:null})}});
+ const store=new Map(),events={},c=vm.createContext({MGPlansCore:C,console,Date,Number,JSON,CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail;}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},navigator:{onLine:online},window:{addEventListener:(k,v)=>events[k]=v,dispatchEvent:event=>{events[event.type]?.(event);return true;}},document:{body:null,addEventListener(){}},mgUser:{id:'user-a'},mgFarm:{id:7},mgReadCachedResponse:async()=>[],mgGetFarm:async()=>({id:7}),mgSb:{rpc:async()=>({data:{...complete,server_now:new Date().toISOString()},error:null})}});
  vm.runInContext(fs.readFileSync(path.join(__dirname,'../plans-app.js'),'utf8')+'\nthis.mgHasPlanFeature=mgHasPlanFeature;',c);return {c,store,events};
 }
 test('online snapshot and cache are scoped to the authenticated identity and farm',async()=>{

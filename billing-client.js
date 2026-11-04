@@ -12,7 +12,7 @@
   let data;try{data=await response.json();}catch{throw new Error('Resposta indisponível. Tente novamente.');}if(!response.ok)throw new Error(data.error||'Não foi possível concluir a operação.');return data;
  }
  function ensure(){if(dialog)return;
-  dialog=document.createElement('dialog');dialog.className='mg-billing-dialog';dialog.id='mgBillingDialog';dialog.innerHTML=`<div class="mg-billing-head"><h2>Meu plano</h2><button type="button" id="mgBillingClose" class="btn secondary">Fechar</button></div><p id="mgBillingFarm"></p><div id="mgBillingCurrent"></div><p id="mgBillingAvailability" role="status"></p><div id="mgBillingContracts"></div>
+  dialog=document.createElement('dialog');dialog.className='mg-billing-dialog';dialog.id='mgBillingDialog';dialog.innerHTML=`<div class="mg-billing-head"><h2 id="mgBillingTitle">Meu plano</h2><button type="button" id="mgBillingClose" class="btn secondary">Fechar</button></div><p id="mgBillingIntro"></p><p id="mgBillingFarm"></p><div id="mgBillingCurrent"></div><p id="mgBillingAvailability" role="status"></p><div id="mgBillingContracts"></div>
   <form id="mgBillingForm"><h3>Contratar um plano</h3><div class="mg-billing-grid"><label for="mgBillingPlan">Plano<select id="mgBillingPlan"><option value="essential">Essencial · até 150 animais ativos</option><option value="complete">Completo · todos os recursos</option></select></label><label for="mgBillingPeriod">Período<select id="mgBillingPeriod"><option value="monthly">Mensal</option><option value="annual">Anual · pagamento único a cada 12 meses</option></select></label></div><p id="mgBillingFeatures"></p><p id="mgBillingPrice" class="mg-billing-price"></p><label for="mgBillingEmail">E-mail para o pagamento<input id="mgBillingEmail" type="email" required autocomplete="email"></label>
   <label class="mg-billing-consent"><input id="mgBillingConsent" type="checkbox" required><span id="mgBillingConsentText"></span></label><p>Você será direcionado ao Mercado Pago para escolher a forma de pagamento. O acesso será liberado após a confirmação no servidor, que pode levar alguns minutos.</p><p><a href="/?legal=terms" target="_blank" rel="noopener noreferrer">Termos de Uso</a> · <a href="/?legal=privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade</a></p><p>Você pode cancelar a renovação nesta tela e manter o acesso pelo período já pago. Para trocar o plano ou a periodicidade, cancele a renovação e aguarde o fim do período atual.</p><button id="mgBillingBuy" class="btn primary" type="submit">Continuar para pagamento</button></form><p id="mgBillingMessage" role="status" aria-live="polite"></p>`;
   document.body.append(dialog);$('mgBillingClose').onclick=()=>dialog.close();$('mgBillingPlan').onchange=$('mgBillingPeriod').onchange=()=>{price();$('mgBillingConsent').checked=false;};
@@ -30,7 +30,10 @@
   $('mgBillingConsentText').textContent=`Concordo com a assinatura de ${money(amount)} e a renovação automática ${annual?'a cada 12 meses':'mensal'}. Li os Termos de Uso e a Política de Privacidade disponíveis no site.`;
  }
  function action(text,fn){const b=document.createElement('button');b.type='button';b.className='btn secondary';b.textContent=text;b.onclick=()=>run(fn);return b;}
- function render(){const f=context.farm;$('mgBillingFarm').textContent=f.farm_name+' · '+f.active_heads+' animais ativos';
+ function render(){const f=context.farm;
+  $('mgBillingTitle').textContent=f.status==='pending'?'Escolha seu plano':'Meu plano';
+  $('mgBillingIntro').textContent=f.status==='pending'?'Sua fazenda já está cadastrada. Escolha o plano e o período para continuar. O acesso aos recursos será liberado após a confirmação do pagamento.':'';
+  $('mgBillingClose').textContent=MGPlansCore.writable(f)?'Acessar sistema':'Fechar';$('mgBillingFarm').textContent=f.farm_name+' · '+f.active_heads+' animais ativos';
   $('mgBillingCurrent').textContent=`Plano atual: ${MGPlansCore.plans[f.plan]?.name||'A configurar'} · ${MGPlansCore.label(f)}${f.expires_at?' · Validade: '+date(f.expires_at):''}`;
   $('mgBillingAvailability').textContent=context.enabled?'Contratação online disponível.':'A contratação automática está em preparação. Você pode consultar e cancelar uma assinatura existente. Testes gratuitos continuam disponíveis quando liberados pelo administrador.';
   const area=$('mgBillingContracts');area.replaceChildren();
@@ -62,5 +65,25 @@
  };
  const q=new URLSearchParams(location.search);if(q.has('billing_plan'))try{sessionStorage.setItem('mg-billing-choice',JSON.stringify({plan:q.get('billing_plan'),period:q.get('billing_period')}));}catch{}
  let intent=false;try{intent=!!sessionStorage.getItem('mg-billing-choice');}catch{}
- if(q.has('billing_return')||intent){let attempts=0;const timer=setInterval(async()=>{if(++attempts>60){clearInterval(timer);return;}if(typeof mgUser==='undefined'||!mgUser||typeof mgFarm==='undefined'||!mgFarm)return;clearInterval(timer);await window.mgOpenBilling();if(q.has('billing_return')&&context?.contracts.some(c=>c.id===q.get('billing_return')))await run(async()=>{await api('refresh',{id:q.get('billing_return'),farm_id:context.farm.farm_id});await refresh();if(typeof mgRefreshPlan==='function')await mgRefreshPlan(mgFarm,true);$('mgBillingMessage').textContent='Resultado consultado no servidor. Confira o acesso e a validade acima.';});},1000);}
+ // React to the validated farm snapshot, including a registration completed much later.
+ // This is navigation only: access and payment confirmation remain server controlled.
+ const handled=new Set();
+ async function enterBilling(){
+  if(!navigator.onLine||typeof mgUser==='undefined'||!mgUser||typeof mgFarm==='undefined'||!mgFarm||typeof mgPlanState==='undefined'||mgPlanState?.farm_id!==mgFarm.id)return;
+  if(mgFarm.owner_id!==mgUser.id)return;
+  const key=mgUser.id+':'+mgFarm.id;if(handled.has(key))return;
+  const returning=q.has('billing_return'),trial=mgPlanState.status==='trial'&&MGPlansCore.writable(mgPlanState,mgPlanNow());
+  if(trial&&!returning){handled.add(key);try{sessionStorage.removeItem('mg-billing-choice');}catch{}return;}
+  if(!returning&&!intent&&mgPlanState.status!=='pending')return;
+  handled.add(key);
+  await window.mgOpenBilling();
+  if(returning&&context?.contracts.some(c=>c.id===q.get('billing_return')))await run(async()=>{
+   await api('refresh',{id:q.get('billing_return'),farm_id:context.farm.farm_id});await refresh();
+   if(typeof mgRefreshPlan==='function')await mgRefreshPlan(mgFarm,true);
+   $('mgBillingMessage').textContent='Resultado consultado no servidor. Confira o acesso e a validade acima.';
+  });
+ }
+ const scheduleEntry=()=>setTimeout(()=>enterBilling().catch(()=>{}),0);
+ window.addEventListener('mg:plan-ready',scheduleEntry);
+ scheduleEntry();
 })();

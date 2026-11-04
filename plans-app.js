@@ -18,7 +18,9 @@ async function mgRefreshPlan(farm,force=false){
    mgPlanState=data;mgPlanOffset=Date.parse(data.server_now)-Date.now();
    try{localStorage.setItem(mgPlanCacheKey(farm),JSON.stringify({state:data,offset:mgPlanOffset}));}catch(_e){}
   }
-  mgPlanFetched=Date.now();mgRenderPlan();return mgPlanState;
+  mgPlanFetched=Date.now();mgRenderPlan();
+  window.dispatchEvent(new CustomEvent('mg:plan-ready',{detail:{farmId:farm.id,userId:mgUser.id}}));
+  return mgPlanState;
  })();
  try{return await mgPlanRequest;}finally{mgPlanRequest=null;}
 }
