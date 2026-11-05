@@ -1,0 +1,103 @@
+name: Gerar AAB Android para Google Play
+
+on:
+  push:
+    branches:
+      - codex/android-play-bundle
+    paths:
+      - android-app/**
+      - meu-gado-logo.png
+      - .github/workflows/android-bundle.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compilar pacote Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Preparar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        working-directory: android-app
+        run: npm install --no-audit --no-fund
+
+      - name: Criar projeto Android
+        working-directory: android-app
+        run: npx cap add android
+
+      - name: Definir versões Android exigidas pelo Google Play
+        working-directory: android-app
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path("android/variables.gradle")
+          content = path.read_text()
+          for field, value in (("minSdkVersion", 24), ("compileSdkVersion", 36), ("targetSdkVersion", 36)):
+              content, count = re.subn(
+                  rf"(?m)^(\s*{field}\s*=\s*)\d+",
+                  lambda match: match.group(1) + str(value),
+                  content,
+              )
+              if count != 1:
+                  raise SystemExit(f"{field} não encontrado exatamente uma vez")
+          path.write_text(content)
+          PY
+          grep -E '(minSdkVersion|compileSdkVersion|targetSdkVersion) =' android/variables.gradle
+
+      - name: Sincronizar projeto Android
+        working-directory: android-app
+        run: npx cap sync android
+
+      - name: Atualizar código da versão para novo envio
+        working-directory: android-app
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path("android/app/build.gradle")
+          content = path.read_text()
+          content, count = re.subn(r"(?m)^(\s*versionCode\s+)\d+", r"\g<1>2", content)
+          if count != 1:
+              raise SystemExit("versionCode não encontrado exatamente uma vez")
+          path.write_text(content)
+          PY
+          grep 'versionCode 2' android/app/build.gradle
+
+      - name: Instalar gerador de ícones
+        run: python -m pip install Pillow
+
+      - name: Aplicar ícone oficial do Meu Gado
+        run: python android-app/scripts/prepare_icons.py
+
+      - name: Compilar AAB sem assinatura
+        working-directory: android-app/android
+        run: ./gradlew bundleRelease
+
+      - name: Guardar AAB para assinatura com chave de upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meu-Gado-AAB-sem-assinatura
+          path: android-app/android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 7
