@@ -63,6 +63,14 @@ const root=path.resolve(__dirname,'..');
   await page.locator('#afatherSource').selectOption('');await page.locator('#aregBirth').fill('');await page.locator('#animalSaveBtn').click();assert.equal(await page.evaluate(()=>fixtureAnimals[0].father_external_name),null);assert.equal(await page.evaluate(()=>fixtureAnimals[0].registry_birth),null);
   assert.equal(await page.evaluate(()=>JSON.parse(fixtureQueued[0].body).registry_birth),'OFF001');
   await page.evaluate(()=>apiOnline(fixtureQueued[0].path,{method:fixtureQueued[0].method,body:fixtureQueued[0].body}));assert.equal(await page.evaluate(()=>fixtureAnimals[0].registry_birth),'OFF001');assert.equal(await page.evaluate(()=>fixtureAnimals[0].father_external_name),'Central Offline');assert.equal(await page.evaluate(()=>fixtureAnimals[0].mother_id),3);
-  assert.deepEqual(errors,[]);console.log('PASS: real animal form, CRUD route, optional name, edit, legacy payload preservation, list/global search, selectors, profile, escaped markup, desktop/mobile and offline queue. Fixture DB only.');
+  // Old breeds and empty values must survive edits to unrelated fields.
+  for(const breed of ['Girolando','']){
+   await page.evaluate(async breed=>{fixtureAnimals[0].breed=breed;await openEditAnimal(1);},breed);
+   assert.equal(await page.locator('#abreed').inputValue(),breed);
+   await page.locator('#animalSaveBtn').click();await page.locator('#animalModal').waitFor({state:'hidden'});
+   assert.equal(await page.evaluate(()=>fixtureAnimals[0].breed),breed);
+  }
+  await page.evaluate(()=>openNewAnimal());assert.equal(await page.locator('#abreed [data-saved-breed]').count(),0);assert.equal(await page.locator('#abreed').inputValue(),'Nelore');
+  assert.deepEqual(errors,[]);console.log('PASS: real animal form, CRUD route, optional name and breed, historical breed preservation, edit, legacy payload preservation, list/global search, selectors, profile, escaped markup, desktop/mobile and offline queue. Fixture DB only.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

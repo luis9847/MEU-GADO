@@ -17,7 +17,9 @@ const root=path.resolve(__dirname,'..');
     {id:1,number:'001',name:'Touro Central',status:'inactive',category:'Touro',breed:'Nelore',production_purpose:'genetica',lot:'Matrizes'},
     {id:2,number:'002',name:'Matriz Alfa',status:'active',category:'Vaca',breed:'Nelore',production_purpose:'cria',lot:'Matrizes'},
     {id:3,number:'003',name:'Filha FIV',status:'active',category:'Bezerra',breed:'Nelore',production_purpose:'genetica',lot:'Elite',father_id:1,mother_id:2,birth_date:'2026-10-01',entry_weight:35,target_weight:100,registry_association:'ABCZ',registry_series:'MG',registry_birth:'03',registry_definitive:'33',registry_category:'PO',reproductive_role:'doadora'},
-    {id:4,number:'004',name:'=2+2',status:'active',category:'Novilho',breed:'Angus',lot:'Engorda'}
+    {id:4,number:'004',name:'=2+2',status:'active',category:'Novilho',breed:'Angus',lot:'Engorda'},
+    {id:5,number:'005',name:'Matriz antiga',status:'active',category:'Vaca',breed:'Girolando'},
+    {id:6,number:'006',status:'active',category:'Vaca',breed:'Holandês',deleted_at:'2026-11-04'}
    ];
    window.reportEvents={weighings:[{animal_id:3,weighing_date:'2026-10-20',weight:120},{animal_id:1,weighing_date:'2026-10-10',weight:500}],health:[{animal_id:1,event_date:'2026-10-01',event_type:'Vacina',product:'Teste'}],reproduction:[{animal_id:2,event_date:'2026-10-01',event_type:'Parto'}],nutrition:[],expenses:[]};
    api=async path=>{if(path==='/api/animals/report-context')return structuredClone(reportAnimals);if(path.startsWith('/api/reports/'))return structuredClone(reportEvents[path.split('/').pop()]||[]);throw Error('Unexpected fixture request: '+path);};
@@ -25,12 +27,18 @@ const root=path.resolve(__dirname,'..');
   });
   await page.waitForFunction(()=>document.getElementById('reportFiltersStatus').textContent.includes('atualizadas'));
   assert.equal(await page.locator('.report-card').count(),12);
+  const breeds=await page.evaluate(()=>({catalog:Array.from(abreed.options).filter(o=>o.value).map(o=>o.value).sort(),report:Array.from(reportBreed.querySelectorAll(':scope > option')).map(o=>o.value).filter(v=>v&&v!==MGAnimalReports.missing).sort(),saved:Array.from(reportBreed.querySelectorAll('optgroup option')).map(o=>o.value)}));
+  assert.deepEqual(breeds.report,breeds.catalog,'report includes standard breeds even when not yet used');assert.deepEqual(breeds.saved,['Girolando'],'saved breeds stay selectable; deleted records add no options');
+  const inventoryCard=page.locator('.report-card').filter({has:page.locator('b',{hasText:'Rebanho completo'})});
+  await page.locator('#reportBreed').selectOption('Girolando');
+  const [breedDownload]=await Promise.all([page.waitForEvent('download'),inventoryCard.getByRole('button',{name:'Baixar CSV'}).click()]);
+  const breedCsv=fs.readFileSync(await breedDownload.path(),'utf8');assert.match(breedCsv,/"Matriz antiga";"Vaca";"Girolando"/);assert.doesNotMatch(breedCsv,/"Nelore"/);
+  await page.locator('#reportBreed').selectOption('Guzerá');assert.equal((await page.evaluate(()=>mgBuildReportData('rebanho'))).rows.length,0);
   await page.locator('#reportActivity').selectOption('genetica');await page.locator('#reportBreed').selectOption('Nelore');await page.locator('#reportLot').selectOption('Elite');await page.locator('#reportCategory').selectOption('Bezerra');
   const filtered=await page.evaluate(()=>mgBuildReportData('rebanho'));assert.equal(filtered.rows.length,1);assert.equal(filtered.rows[0][1],'Filha FIV');assert.match(filtered.rows[0].join('|'),/Touro Central/);
   const registryCard=page.locator('.report-card').filter({has:page.locator('b',{hasText:'Registros na associação'})});
   const [download]=await Promise.all([page.waitForEvent('download'),registryCard.getByRole('button',{name:'Baixar CSV'}).click()]);const csv=fs.readFileSync(await download.path(),'utf8');assert.match(csv,/RGN/);assert.match(csv,/Filha FIV/);assert.match(csv,/"03"/);
   await page.getByRole('button',{name:'Limpar filtros de animais'}).click();
-  const inventoryCard=page.locator('.report-card').filter({has:page.locator('b',{hasText:'Rebanho completo'})});
   const [allDownload]=await Promise.all([page.waitForEvent('download'),inventoryCard.getByRole('button',{name:'Baixar CSV'}).click()]);assert.match(fs.readFileSync(await allDownload.path(),'utf8'),/"'=2\+2"/);
   const [popup]=await Promise.all([page.waitForEvent('popup'),inventoryCard.getByRole('button',{name:'Baixar PDF'}).click()]);
   await popup.waitForFunction(()=>document.querySelectorAll('.report-part').length===3);

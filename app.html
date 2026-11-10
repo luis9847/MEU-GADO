@@ -1461,7 +1461,7 @@ html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
 <script src="/animal-breeding.js?v=2"></script>
 <script src="/animal-breeding-ui.js?v=2"></script>
 <script src="/animal-reports.js?v=1"></script>
-<script src="/animal-reports-ui.js?v=1"></script>
+<script src="/animal-reports-ui.js?v=2"></script>
 <link rel="stylesheet" href="/animal-reports.css?v=1">
 </head>
 <style id="mg-v30-redesign">
@@ -2490,7 +2490,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   <label>Lote<select id="reportLot"><option value="">Todos os lotes</option></select></label>
   <label>Categoria<select id="reportCategory"><option value="">Todas as categorias</option></select></label></div>
   <div class="mg-report-filter-actions"><button class="btn secondary" type="button" onclick="mgClearAnimalReportFilters()">Limpar filtros de animais</button><button class="btn secondary" type="button" onclick="mgInitReportFilters()">Atualizar filtros</button><span id="reportFiltersStatus" role="status"></span></div>
-  <details><summary>Como os filtros são aplicados</summary><p>Atividade, raça, lote e categoria consideram o cadastro atual do animal. Em saúde, registros gerais ou por lote não atendem filtros de atividade, raça ou categoria. Alimentação e gastos usam apenas o filtro de lote. Nos descendentes, os filtros selecionam o pai ou a mãe e o período considera o nascimento do descendente. Rebanho, registros na associação, filiação e prontos para venda mostram a posição atual, sem filtro de período.</p></details></div>
+  <details><summary>Como os filtros são aplicados</summary><p>Atividade, raça, lote e categoria consideram o cadastro atual do animal. A lista de raças é a mesma do cadastro, com opções adicionais para raças já salvas na fazenda. Em saúde, registros gerais ou por lote não atendem filtros de atividade, raça ou categoria. Alimentação e gastos usam apenas o filtro de lote. Nos descendentes, os filtros selecionam o pai ou a mãe e o período considera o nascimento do descendente. Rebanho, registros na associação, filiação e prontos para venda mostram a posição atual, sem filtro de período.</p></details></div>
   <div class="report-grid">
     <div class="report-card"><i>📋</i><b>Registros na associação</b><p>Animais ativos com associação, série, RGN, RGD e categoria do registro informados pelo criador.</p><div class="report-actions"><button onclick="downloadReport('registrados')">Baixar CSV</button><button class="pdf" onclick="downloadReportPDF('registrados')">Baixar PDF</button></div></div>
     <div class="report-card"><i>🧬</i><b>Filiação</b><p>Pai e mãe dos animais ativos, com referências da fazenda ou externas.</p><div class="report-actions"><button onclick="downloadReport('filiacao')">Baixar CSV</button><button class="pdf" onclick="downloadReportPDF('filiacao')">Baixar PDF</button></div></div>
@@ -2744,6 +2744,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 
     <label>Raça <small>opcional</small>
       <select id="abreed" onchange="syncAnimalBreedAptitude()">
+        <option value="">Raça não informada</option>
         <optgroup label="Corte">
           <option value="Nelore" data-apt="Corte">Nelore</option>
           <option value="Nelore Mocho" data-apt="Corte">Nelore Mocho</option>
@@ -3970,6 +3971,14 @@ function syncAnimalCategorySex(){
   if(cat&&sex) sex.value=animalSexFromCategory(cat.value);
   if(typeof mgSyncBreedingClassification==='function')mgSyncBreedingClassification();
 }
+function mgSetAnimalBreed(value){
+  const select=document.getElementById('abreed'),breed=String(value??'');
+  select.querySelector('[data-saved-breed]')?.remove();
+  if(breed&&!Array.from(select.options).some(o=>o.value===breed)){
+    const option=new Option(breed,breed);option.setAttribute('data-saved-breed','');select.add(option);
+  }
+  select.value=breed;
+}
 function syncAnimalBreedAptitude(){
   const breed=document.getElementById('abreed');
 
@@ -4022,7 +4031,6 @@ async function openNewAnimal(){
     const preview=document.getElementById('aphotoPreview');
     const number=document.getElementById('anum');
     const birth=document.getElementById('abirth');
-    const breed=document.getElementById('abreed');
     const entryDate=document.getElementById('adate');
     const entryWeight=document.getElementById('aweight');
     const targetWeight=document.getElementById('atarget');
@@ -4033,7 +4041,7 @@ async function openNewAnimal(){
     if(number) number.value='';
     document.getElementById('aname').value='';
     if(birth) birth.value='';
-    if(breed) breed.value='Nelore';
+    mgSetAnimalBreed('Nelore');
     const cat=document.getElementById('acat'); if(cat) cat.value='Boi';
     document.getElementById('aaptitude').value='';
     const dam=document.getElementById('adamBreed'); if(dam) dam.value='';
@@ -4063,7 +4071,7 @@ async function openEditAnimal(id){
     const a=await api(`/api/animals/${id}/profile`);await loadLots();
     editingAnimalId=Number(id);pendingAnimalPhoto='';
     document.getElementById('aname').value=a.name||'';
-    anum.value=a.number||'';acat.value=a.category||'Boi';abreed.value=a.breed||'Nelore';abirth.value=a.birth_date||'';
+    anum.value=a.number||'';acat.value=a.category||'Boi';mgSetAnimalBreed(a.breed);abirth.value=a.birth_date||'';
     aweight.value=a.entry_weight??'';atarget.value=a.target_weight??'';anotes.value=animalNotesWithoutMeta(a.notes);alot.value=a.lot||'';
     const origin=document.querySelector(`input[name="aoriginRadio"][value="${CSS.escape(a.origin||'Nascido na propriedade')}"]`);if(origin)origin.checked=true;
     ainConfinement.checked=!!a.entry_date;adate.value=a.entry_date||'';toggleAnimalConfinement();
