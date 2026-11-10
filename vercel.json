@@ -6,6 +6,18 @@
   ],
   "headers": [
     {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    },
+    {
+      "source": "/sw-meu-gado.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    },
+    {
       "source": "/supabase.js",
       "headers": [
         { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
