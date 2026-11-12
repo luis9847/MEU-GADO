@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {createHandler,planChoice,liveSeller,normalizePayment,validateContract,sha} from '../supabase/functions/billing/core.mjs';
 const id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',provider='production1234567';
 function fixture(opts={}){
- let cfg={enabled:opts.enabled!==false,seller_id:'11111'},row=null,callback=null,claimedTs=0;const calls=[],applied=[];
+ let cfg={enabled:opts.enabled!==false,seller_id:'11111',...(opts.pilotOffer?{pilot_farm_id:999,pilot_owner_id:'owner-id',pilot_expires_at:new Date(Date.now()+3600000).toISOString()}:{} )},row=null,callback=null,claimedTs=0;const calls=[],applied=[];
  const response=(data,status=200)=>new Response(JSON.stringify(data),{status});
  const payment=()=>({id:'44444',status:'approved',live_mode:opts.fakePayment?false:true,collector_id:'11111',payer:{id:'22222'},external_reference:'mg-live:'+id,currency_id:'BRL',transaction_amount:opts.wrongAmount?1:row.amount,date_created:new Date().toISOString(),date_last_updated:new Date().toISOString(),date_approved:new Date().toISOString()});
  const subscription=()=>({id:provider,status:opts.remoteStatus||'authorized',payer_id:'22222',collector_id:'11111',external_reference:'mg-live:'+id,auto_recurring:{frequency:row.billing_period==='annual'?12:1,frequency_type:'months',transaction_amount:row.amount,currency_id:'BRL'}});
@@ -12,8 +12,15 @@ function fixture(opts={}){
   if(p==='rpc/billing_test_is_admin')return response(opt.headers.Authorization==='Bearer admin');
   if(p==='rpc/billing_owner'){if(body.p_farm_id&&body.p_farm_id!==999)return response({code:'42501',message:'Fazenda de outro proprietário.'},403);return response({farm_id:999,farm_name:'Teste',plan:'essential',status:'pending',revision:1,active_heads:0});}
   if(p==='billing_settings'){if(opt.method==='PATCH')cfg={...cfg,...body};return response([cfg]);}
+  if(p==='farms')return response([{id:999,owner_id:'owner-id',blocked:false,archived_at:null}]);
+  if(p==='farm_subscriptions')return response([{status:'trial',expires_at:null}]);
+  if(p==='rpc/billing_reserve_pilot'){
+   if(!opts.pilotOffer)return response({code:'42501',message:'O piloto não está disponível.'},403);
+   if(row)return response({created:false,contract:row});
+   row={id:body.p_id,farm_id:999,created_by:body.p_actor,plan:'complete',billing_period:'monthly',is_pilot:true,amount:5,seller_id:'11111',payer_id:null,status:'creating',provider_id:null,notify_hash:body.p_notify_hash};return response({created:true,contract:row});
+  }
   if(p==='rpc/billing_reserve'){if(row)return response({created:false,contract:row});row={id,farm_id:999,created_by:'owner-id',plan:body.p_plan,billing_period:body.p_period,amount:planChoice(body.p_plan,body.p_period).amount,seller_id:'11111',payer_id:null,status:'creating',provider_id:null,notify_hash:body.p_notify_hash};return response({created:true,contract:row});}
-  if(p==='billing_contracts'){if(opt.method==='PATCH'){row={...row,...body};return response([row]);}if(u.searchParams.get('farm_id')&&u.searchParams.get('farm_id')!=='eq.999')return response([]);return response(row?[row]:[]);}
+  if(p==='billing_contracts'){if(u.searchParams.has('is_pilot'))return response(row?.is_pilot?[row]:[]);if(opt.method==='PATCH'){row={...row,...body};return response([row]);}if(u.searchParams.get('farm_id')&&u.searchParams.get('farm_id')!=='eq.999')return response([]);return response(row?[row]:[]);}
   if(p==='rpc/billing_claim')return response(!opts.busy);
   if(p==='billing_audit')return response([]);
   if(p==='billing_payments')return response([]);
@@ -56,3 +63,22 @@ test('cron requests require a fresh HMAC envelope and cannot be replayed',async(
 test('payment and subscription identity substitution is rejected',()=>{const c={id,provider_id:provider,plan:'essential',billing_period:'monthly',amount:90,seller_id:'11111',payer_id:'22222'};assert.throws(()=>validateContract({},c));const p={id:'44444',live_mode:true,collector_id:'11111',payer:{id:'22222'},external_reference:'mg-live:'+id,currency_id:'BRL',transaction_amount:90,status:'approved',date_approved:new Date().toISOString(),date_created:new Date().toISOString()};assert.equal(normalizePayment(p,c,'22222').amount,90);for(const bad of [{external_reference:'mg-test:'+id},{collector_id:'other'},{payer:{id:'other'}},{live_mode:false},{currency_id:'USD'}])assert.throws(()=>normalizePayment({...p,...bad},c,'22222'));});
 
 test('an admin can finish a cancelled payment review without activating access; owner cannot',async()=>{const f=fixture();await f.create();assert.equal((await f.request('admin-resolve',{id},'owner')).status,403);assert.equal((await f.request('admin-resolve',{id},'admin')).status,409);f.row.status='cancelled';f.row.review_reason='access_changed';assert.equal((await f.request('admin-resolve',{id},'admin')).status,200);assert.equal(f.row.review_reason,null);assert.equal(f.applied.length,0);});
+
+
+test('only the selected owner sees and can contract the R$5 pilot; standard pricing is preserved',async()=>{
+ const blocked=fixture();assert.equal((await blocked.request('context')).data.pilot_offer,null);assert.equal((await blocked.create({pilot:true,plan:'complete'})).status,403);assert.equal(blocked.calls.some(x=>new URL(x.url).pathname==='/preapproval'),false);
+ const f=fixture({pilotOffer:true});assert.deepEqual((await f.request('context')).data.pilot_offer,{amount:5});assert.equal((await f.request('context',{},'admin')).data.pilot_offer,null);
+ assert.equal((await f.create({pilot:true,plan:'complete',billing_period:'annual'})).status,400);
+ const r=await f.create({pilot:true,plan:'complete',amount:1});assert.equal(r.status,201);assert.equal(r.data.contract.amount,5);assert.equal(r.data.contract.is_pilot,true);
+ assert.equal((await f.request('context')).data.pilot_offer,null);assert.equal((await f.create({pilot:true,plan:'complete'})).status,200);
+ assert.equal(f.calls.filter(x=>new URL(x.url).pathname==='/preapproval').length,1);
+ const payload=JSON.parse(f.calls.find(x=>new URL(x.url).pathname==='/preapproval').opt.body);assert.equal(payload.auto_recurring.transaction_amount,5);assert.equal(payload.auto_recurring.frequency,1);
+ const paid=await f.request('refresh',{id});assert.equal(paid.data.contract.activated,true);assert.equal(f.applied[0].p_payments[0].amount,5);
+ const regular=fixture({pilotOffer:true});assert.equal((await regular.create({plan:'complete',amount:5})).data.contract.amount,130);
+});
+test('admin-only pilot grant is temporary and does not create a charge',async()=>{
+ const f=fixture();assert.equal((await f.request('admin-pilot',{farm_id:999})).status,403);
+ const r=await f.request('admin-pilot',{farm_id:999},'admin');assert.equal(r.status,200);assert.equal(r.data.farm_id,999);assert.ok(Date.parse(r.data.expires_at)>Date.now());
+ assert.equal((await f.request('admin-pilot',{farm_id:null},'admin')).data.farm_id,null);
+ assert.equal(f.calls.some(x=>new URL(x.url).pathname==='/preapproval'),false);
+});

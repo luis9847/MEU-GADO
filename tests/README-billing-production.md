@@ -43,3 +43,17 @@ Creation request UUIDs and a per-farm unique open-contract index prevent duplica
 - Three real farms preserved, no production contracts/payments created and no fixture farms left. Security advisor added only expected informational no-policy notices for service-only tables; no new publicly callable definer APIs.
 
 Limitations: external processor outages, contested/partially refunded payments and changed admin decisions may require support review. Review records stop further recurring charges; automatic refunds are not performed. After resolving access or refund externally, the administrator can acknowledge a cancelled contract review without changing customer access. Historical already-activated cancelled sources do not block future checkout merely because an admin replaced them. Production credential acceptance and real payment/renewal delivery cannot be claimed until the owner configures the merchant account and observes those transactions.
+
+## Private real purchase pilot
+
+Admin → Planos → Compra piloto grants one selected farm/owner a 48-hour
+Completo monthly offer at R$5. The public catalogue stays unchanged.
+The service-only reservation checks the offer again atomically and only
+one pilot contract per farm is allowed. Removing the offer does not cancel
+an existing subscription. The pilot uses the normal production payment,
+access, cancellation and financial ledger. After checking the first charge,
+cancel renewal in Meu plano to avoid the next charge. Use a real buyer
+account distinct from the seller, not a Mercado Pago sandbox account.
+
+`tests/billing-pilot-rls.sql` uses temporary fixtures and rolls back;
+no provider is called. The browser and handler suites use simulated provider responses.

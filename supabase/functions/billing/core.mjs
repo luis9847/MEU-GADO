@@ -5,8 +5,14 @@ export function planChoice(plan,period){if(!Object.hasOwn(PRICES,plan)||!Object.
 export function validId(value){if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value||''))throw new SafeError('Identificador inválido.');return value;}
 export function liveSeller(u){return !!u&&u.site_id==='MLB'&&Array.isArray(u.tags)&&!u.tags.includes('test_user')&&/^\d+$/.test(String(u.id))&&!/@testuser\./i.test(u.email||'');}
 export function normalizeStatus(status){if(status==='canceled')return 'cancelled';if(!['pending','authorized','paused','cancelled'].includes(status))throw new SafeError('Situação de assinatura inesperada.',502);return status;}
-export function validateContract(s,c){const p=planChoice(c.plan,c.billing_period),r=s?.auto_recurring;
- if(String(s.id)!==c.provider_id||String(s.collector_id)!==c.seller_id||s.external_reference!=='mg-live:'+c.id||r?.currency_id!=='BRL'||Number(r.transaction_amount)!==p.amount||r.frequency_type!=='months'||Number(r.frequency)!==p.months||(c.payer_id&&String(s.payer_id)!==c.payer_id))throw new SafeError('A assinatura retornada não corresponde à contratação.',502);
+const PILOT_AMOUNT=5;
+function contractChoice(c){
+ const normal=planChoice(c.plan,c.billing_period);
+ if(c.is_pilot===true){if(c.plan!=='complete'||c.billing_period!=='monthly')throw new SafeError('Contratação piloto inválida.',502);return {amount:PILOT_AMOUNT,months:1};}
+ return normal;
+}
+export function validateContract(s,c){const p=contractChoice(c),r=s?.auto_recurring;
+ if(String(s.id)!==c.provider_id||String(s.collector_id)!==c.seller_id||s.external_reference!=='mg-live:'+c.id||r?.currency_id!=='BRL'||Number(r.transaction_amount)!==p.amount||Number(c.amount)!==p.amount||r.frequency_type!=='months'||Number(r.frequency)!==p.months||(c.payer_id&&String(s.payer_id)!==c.payer_id))throw new SafeError('A assinatura retornada não corresponde à contratação.',502);
  normalizeStatus(s.status);return s;
 }
 export function safeCheckout(value,id){let u;try{u=new URL(value);}catch{throw new SafeError('Link de pagamento indisponível.',502);}if(u.protocol!=='https:'||u.hostname!=='www.mercadopago.com.br'||u.pathname!=='/subscriptions/checkout'||u.searchParams.get('preapproval_id')!==String(id))throw new SafeError('Link de pagamento inválido.',502);return u.href;}
@@ -20,7 +26,7 @@ export function normalizePayment(p,c,payer,invoice=null){
 }
 export async function sha(value){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),x=>x.toString(16).padStart(2,'0')).join('');}
 export function equal(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length!==b.length)return false;let d=0;for(let i=0;i<a.length;i++)d|=a.charCodeAt(i)^b.charCodeAt(i);return d===0;}
-export function publicContract(c){if(!c)return null;return {id:c.id,plan:c.plan,billing_period:c.billing_period,amount:c.amount,status:c.status,checkout_url:c.status==='pending'?c.checkout_url:null,paid_until:c.paid_until,activated:!!c.activated_at,needs_review:!!c.review_reason,checked_at:c.checked_at,created_at:c.created_at};}
+export function publicContract(c){if(!c)return null;return {id:c.id,plan:c.plan,billing_period:c.billing_period,amount:c.amount,is_pilot:c.is_pilot===true,status:c.status,checkout_url:c.status==='pending'?c.checkout_url:null,paid_until:c.paid_until,activated:!!c.activated_at,needs_review:!!c.review_reason,checked_at:c.checked_at,created_at:c.created_at};}
 export function createHandler(env,fetcher=fetch){
  const base=env('SUPABASE_URL'),anon=env('SUPABASE_ANON_KEY'),service=env('SUPABASE_SERVICE_ROLE_KEY');let sellerCache;
  async function db(path,opt={},jwt=service){
@@ -114,7 +120,7 @@ export function createHandler(env,fetcher=fetch){
     return reply({processed,failed});
    }
    if(req.method!=='POST')throw new SafeError('Método não permitido.',405);
-   const admin=action==='admin-config'||action==='admin-enable'||action==='admin-list'||action==='admin-cancel'||action==='admin-resolve';const {user,jwt}=await authenticate(req,admin);
+   const admin=action==='admin-config'||action==='admin-enable'||action==='admin-list'||action==='admin-cancel'||action==='admin-resolve'||action==='admin-pilot';const {user,jwt}=await authenticate(req,admin);
    const raw=await req.text();if(raw.length>8192)throw new SafeError('Solicitação muito grande.',413);let body;try{body=JSON.parse(raw||'{}');}catch{throw new SafeError('Solicitação inválida.');}
    if(action==='admin-config'){
     const cfg=await settings();if(!env('MP_ACCESS_TOKEN_PROD'))return reply({enabled:cfg.enabled,credential_present:false,ready:false});
@@ -125,6 +131,23 @@ export function createHandler(env,fetcher=fetch){
     if(body.enabled)values.seller_id=String((await seller()).id);
     const cfg=await settings();if(body.enabled&&cfg.seller_id&&cfg.seller_id!==values.seller_id&&((await db('billing_contracts?status=neq.cancelled&limit=1')).length))throw new SafeError('Existem assinaturas vinculadas à conta anterior.',409);
     await db('billing_settings?id=eq.true',{method:'PATCH',body:JSON.stringify(values)});return reply({enabled:body.enabled});
+   }
+   if(action==='admin-pilot'){
+    const cfg=await settings();
+    if(!Object.hasOwn(body,'farm_id'))return reply({farm_id:cfg.pilot_farm_id,expires_at:cfg.pilot_expires_at});
+    if(body.farm_id===null){await db('billing_settings?id=eq.true',{method:'PATCH',body:JSON.stringify({pilot_farm_id:null,pilot_owner_id:null,pilot_expires_at:null})});return reply({farm_id:null,expires_at:null});}
+    if(!Number.isSafeInteger(body.farm_id)||body.farm_id<1)throw new SafeError('Selecione a fazenda de teste.');
+    if(!cfg.enabled)throw new SafeError('Ative a contratação online antes de liberar o piloto.',409);
+    const account=await seller();if(String(account.id)!==cfg.seller_id)throw new SafeError('Confira a conta recebedora de produção.',409);
+    const farm=(await db('farms?select=id,owner_id,blocked,archived_at&id=eq.'+body.farm_id+'&limit=1'))[0];
+    if(!farm?.owner_id||farm.blocked||farm.archived_at)throw new SafeError('Selecione uma fazenda ativa.',409);
+    const access=(await db('farm_subscriptions?select=status,expires_at&farm_id=eq.'+farm.id+'&limit=1'))[0];
+    if(!access||(access.status==='active'&&(!access.expires_at||Date.parse(access.expires_at)>Date.now())))throw new SafeError('O piloto exige uma fazenda sem período pago vigente.',409);
+    const existing=await db('billing_contracts?select=id&farm_id=eq.'+farm.id+'&or=(is_pilot.eq.true,status.neq.cancelled)&limit=1');
+    if(existing.length)throw new SafeError('A fazenda já tem uma contratação ou já usou o piloto.',409);
+    const expires_at=new Date(Date.now()+48*3600000).toISOString();
+    await db('billing_settings?id=eq.true',{method:'PATCH',body:JSON.stringify({pilot_farm_id:farm.id,pilot_owner_id:farm.owner_id,pilot_expires_at:expires_at})});
+    return reply({farm_id:farm.id,expires_at});
    }
    if(action==='admin-list'){
     const rows=await db('billing_contracts?order=created_at.desc&limit=100');return reply({contracts:rows.map(c=>({...publicContract(c),farm_id:c.farm_id,review_reason:c.review_reason}))});
@@ -140,17 +163,24 @@ export function createHandler(env,fetcher=fetch){
    const context=await rpc('billing_owner',{p_farm_id:body.farm_id??null},jwt);
    if(action==='context'){
     const cfg=await settings(),rows=await db('billing_contracts?farm_id=eq.'+context.farm_id+'&order=created_at.desc&limit=10');
-    return reply({farm:context,enabled:cfg.enabled&&!!env('MP_ACCESS_TOKEN_PROD'),contracts:rows.map(publicContract)});
+    const enabled=cfg.enabled&&!!env('MP_ACCESS_TOKEN_PROD');
+    const eligible=enabled&&String(cfg.pilot_farm_id)===String(context.farm_id)&&cfg.pilot_owner_id===user.id&&Date.parse(cfg.pilot_expires_at)>Date.now()&&!context.blocked&&!context.archived;
+    const used=eligible&&(await db('billing_contracts?select=id&farm_id=eq.'+context.farm_id+'&is_pilot=eq.true&limit=1')).length>0;
+    return reply({farm:context,enabled,contracts:rows.map(publicContract),pilot_offer:eligible&&!used?{amount:PILOT_AMOUNT}:null});
    }
    if(action==='create'){
-    if(body.accepted_terms!==true)throw new SafeError('Confirme o valor e a renovação automática antes de continuar.');const id=validId(body.request_id),choice=planChoice(body.plan,body.billing_period);
+    if(body.accepted_terms!==true)throw new SafeError('Confirme o valor e a renovação automática antes de continuar.');const id=validId(body.request_id),pilot=body.pilot===true;planChoice(body.plan,body.billing_period);
+    if(pilot&&(body.plan!=='complete'||body.billing_period!=='monthly'))throw new SafeError('O piloto é mensal e dá acesso ao plano Completo.');
     const cfg=await settings();if(!cfg.enabled)throw new SafeError('A contratação automática ainda está em preparação.',503);const account=await seller();if(String(account.id)!==cfg.seller_id)throw new SafeError('Conta recebedora alterada. Fale com o suporte.',503);
     const email=String(body.payer_email||user.email||'').trim().toLowerCase();if(email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||/@testuser\./i.test(email))throw new SafeError('Informe seu e-mail para o pagamento. Contas de teste não são aceitas.');
     const notify=crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-','');
-    const reserved=await rpc('billing_reserve',{p_id:id,p_actor:user.id,p_farm_id:context.farm_id,p_plan:body.plan,p_period:body.billing_period,p_seller:String(account.id),p_notify_hash:await sha(notify)});let c=reserved.contract;
+    const reservation={p_id:id,p_actor:user.id,p_farm_id:context.farm_id,p_seller:String(account.id),p_notify_hash:await sha(notify)};
+    const reserved=pilot?await rpc('billing_reserve_pilot',reservation):await rpc('billing_reserve',{...reservation,p_plan:body.plan,p_period:body.billing_period});let c=reserved.contract;
+    if((c.is_pilot===true)!==pilot)throw new SafeError('Tentativa incompatível com a oferta escolhida.',409);
+    const choice=contractChoice(c);if(Number(c.amount)!==choice.amount)throw new SafeError('Valor da contratação inconsistente.',502);
     if(!reserved.created){c=await recover(c);if(!c.provider_id)throw new SafeError('Esta tentativa já foi enviada. Consulte a assinatura antes de tentar novamente.',409);return reply({contract:publicContract(c)});}
     try{
-     const s=await mp('/preapproval',{method:'POST',body:JSON.stringify({reason:'Meu Gado '+(c.plan==='essential'?'Essencial':'Completo')+' '+(c.billing_period==='annual'?'anual':'mensal'),external_reference:'mg-live:'+c.id,payer_email:email,auto_recurring:{frequency:choice.months,frequency_type:'months',transaction_amount:choice.amount,currency_id:'BRL'},back_url:'https://www.sistemameugado.com.br/app?billing_return='+c.id,notification_url:base+'/functions/v1/billing/notify?contract='+c.id+'&token='+notify,status:'pending'})});
+     const s=await mp('/preapproval',{method:'POST',body:JSON.stringify({reason:c.is_pilot?'Meu Gado Completo · Compra piloto':'Meu Gado '+(c.plan==='essential'?'Essencial':'Completo')+' '+(c.billing_period==='annual'?'anual':'mensal'),external_reference:'mg-live:'+c.id,payer_email:email,auto_recurring:{frequency:choice.months,frequency_type:'months',transaction_amount:choice.amount,currency_id:'BRL'},back_url:'https://www.sistemameugado.com.br/app?billing_return='+c.id,notification_url:base+'/functions/v1/billing/notify?contract='+c.id+'&token='+notify,status:'pending'})});
      if(!/^[a-zA-Z0-9_-]{10,80}$/.test(s.id||''))throw new SafeError('Assinatura não confirmada.',502);const row={...c,provider_id:String(s.id)};validateContract(s,row);
      c=await patch(c.id,{provider_id:row.provider_id,payer_id:s.payer_id&&String(s.payer_id)!=='0'?String(s.payer_id):null,checkout_url:safeCheckout(s.init_point,s.id),status:normalizeStatus(s.status)});return reply({contract:publicContract(c)},201);
     }catch(e){await patch(c.id,{status:'creation_unknown'}).catch(()=>{});throw e;}

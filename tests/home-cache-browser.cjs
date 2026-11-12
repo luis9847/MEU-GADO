@@ -5,6 +5,7 @@ const path=require('node:path');
 const {chromium}=require('playwright');
 
 const worker=fs.readFileSync(path.join(__dirname,'../sw-meu-gado.js'),'utf8');
+const currentCache=worker.match(/const MG_CACHE='([^']+)'/)[1];
 const legacy=`
 self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
@@ -50,9 +51,9 @@ self.addEventListener('fetch',e=>{
     navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timer);resolve();},{once:true});
    });
   });
-  await page.waitForFunction(async()=>{
-   const keys=await caches.keys();return keys.some(key=>key.includes('v33-inicio-online'))&&!keys.includes('meu-gado-oficial-modo-campo-legacy-test');
-  });
+  await page.waitForFunction(async expected=>{
+   const keys=await caches.keys();return keys.includes(expected)&&!keys.includes('meu-gado-oficial-modo-campo-legacy-test');
+  },currentCache);
   for(const label of ['Foto corrigida','Foto de uma publicação futura']){
    photo=label;await page.close();page=await ctx.newPage();
    const response=await page.goto(base+'/');

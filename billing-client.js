@@ -29,26 +29,31 @@
   document.body.append(dialog);$('mgBillingClose').onclick=()=>dialog.close();$('mgBillingPlan').onchange=$('mgBillingPeriod').onchange=()=>{price();$('mgBillingConsent').checked=false;};
   $('mgBillingForm').onsubmit=e=>{e.preventDefault();run(async()=>{
    if(!$('mgBillingConsent').checked)throw new Error('Confirme o valor e a renovação automática.');
-   const plan=$('mgBillingPlan').value,period=$('mgBillingPeriod').value,key=[context.farm.farm_id,plan,period].join(':');if(choiceKey!==key||!requestId){requestId=crypto.randomUUID();choiceKey=key;}
-   const data=await api('create',{request_id:requestId,plan,billing_period:period,farm_id:context.farm.farm_id,payer_email:$('mgBillingEmail').value.trim(),accepted_terms:true});
+   const selected=$('mgBillingPlan').value,pilot=selected==='pilot',plan=pilot?'complete':selected,period=pilot?'monthly':$('mgBillingPeriod').value,key=[context.farm.farm_id,selected,period].join(':');if(choiceKey!==key||!requestId){requestId=crypto.randomUUID();choiceKey=key;}
+   const data=await api('create',{request_id:requestId,plan,billing_period:period,pilot,farm_id:context.farm.farm_id,payer_email:$('mgBillingEmail').value.trim(),accepted_terms:true});
    await refresh();$('mgBillingMessage').textContent='Contratação criada. Use o botão Abrir pagamento para continuar no Mercado Pago.';
    const link=$('mgBillingContracts').querySelector('a');link?.focus();
   });};
  }
- function price(){const p=MGPlansCore.plans[$('mgBillingPlan').value],annual=$('mgBillingPeriod').value==='annual',amount=annual?p.annual:p.monthly;
+ function price(){const selected=$('mgBillingPlan').value,pilot=selected==='pilot',p=MGPlansCore.plans[pilot?'complete':selected];if(!p)return;
+  $('mgBillingPeriod').disabled=pilot;if(pilot)$('mgBillingPeriod').value='monthly';
+  const annual=$('mgBillingPeriod').value==='annual',amount=pilot?context?.pilot_offer?.amount:annual?p.annual:p.monthly;
   $('mgBillingPrice').textContent=money(amount)+' por '+(annual?'ano':'mês');
-  $('mgBillingFeatures').textContent=$('mgBillingPlan').value==='essential'?'Animais com nome, atividade, registros na associação e filiação; lotes, pesagens, saúde, reprodução, alimentação, Modo Campo compatível e suporte de uso.':'Todos os recursos do Essencial, mais gastos, planejamento alimentar e custos, desempenho e relatórios em CSV/PDF com filtros, incluindo registros, filiação e descendentes.';
+  $('mgBillingFeatures').textContent=pilot?'Compra real de teste com acesso ao Completo. A assinatura renova mensalmente: cancele a renovação depois de verificar a cobrança e a liberação.':selected==='essential'?'Animais com nome, atividade, registros na associação e filiação; lotes, pesagens, saúde, reprodução, alimentação, Modo Campo compatível e suporte de uso.':'Todos os recursos do Essencial, mais gastos, planejamento alimentar e custos, desempenho e relatórios em CSV/PDF com filtros, incluindo registros, filiação e descendentes.';
   $('mgBillingConsentText').textContent=`Concordo com a assinatura de ${money(amount)} e a renovação automática ${annual?'a cada 12 meses':'mensal'}. Li os Termos de Uso e a Política de Privacidade disponíveis no site.`;
  }
  function action(text,fn){const b=document.createElement('button');b.type='button';b.className='btn secondary';b.textContent=text;b.onclick=()=>run(fn);return b;}
- function render(){const f=context.farm;
+ function render(){const f=context.farm,plans=$('mgBillingPlan'),offer=plans.querySelector('option[value=pilot]');
+  if(context.pilot_offer?.amount===5&&!offer)plans.add(new Option('Completo · Compra piloto (R$ 5,00)','pilot'));
+  if(context.pilot_offer?.amount!==5&&offer){const selected=plans.value==='pilot';offer.remove();if(selected){plans.value='complete';$('mgBillingConsent').checked=false;}}
+  price();
   $('mgBillingTitle').textContent=f.status==='pending'?'Escolha seu plano':'Meu plano';
   $('mgBillingIntro').textContent=f.status==='pending'?'Sua fazenda já está cadastrada. Escolha o plano e o período para continuar. O acesso aos recursos será liberado após a confirmação do pagamento.':'';
   $('mgBillingClose').textContent=MGPlansCore.writable(f)?'Acessar sistema':'Fechar';$('mgBillingFarm').textContent=f.farm_name+' · '+f.active_heads+' animais ativos';
   $('mgBillingCurrent').textContent=`Plano atual: ${MGPlansCore.plans[f.plan]?.name||'A configurar'} · ${MGPlansCore.label(f)}${f.expires_at?' · Validade: '+date(f.expires_at):''}`;
   $('mgBillingAvailability').textContent=context.enabled?'Contratação online disponível.':'A contratação automática está em preparação. Você pode consultar e cancelar uma assinatura existente. Testes gratuitos continuam disponíveis quando liberados pelo administrador.';
   const area=$('mgBillingContracts');area.replaceChildren();
-  for(const c of context.contracts){const box=document.createElement('article');box.className='mg-billing-contract';const title=document.createElement('h3');title.textContent=`${MGPlansCore.plans[c.plan].name} ${c.billing_period==='annual'?'anual':'mensal'} · ${money(c.amount)}`;const state=document.createElement('p');state.textContent=states[c.status]||'Situação em consulta';box.append(title,state);
+  for(const c of context.contracts){const box=document.createElement('article');box.className='mg-billing-contract';const title=document.createElement('h3');title.textContent=`${c.is_pilot?'Completo · Compra piloto':MGPlansCore.plans[c.plan].name} ${c.billing_period==='annual'?'anual':'mensal'} · ${money(c.amount)}`;const state=document.createElement('p');state.textContent=states[c.status]||'Situação em consulta';box.append(title,state);
    const expiry=document.createElement('p');expiry.textContent=c.activated&&c.paid_until?'Período pago até '+date(c.paid_until):'A liberação depende da confirmação do pagamento.';box.append(expiry);
    if(c.needs_review){const p=document.createElement('p');p.textContent='Este pagamento precisa de conferência pela equipe. Seus dados e o acesso liberado anteriormente foram preservados. Entre em contato com o suporte.';box.append(p);}
    const actions=document.createElement('div');actions.className='mg-billing-actions';
@@ -68,9 +73,9 @@
   ensure();if(!dialog.open)dialog.showModal();await run(async()=>{
    await refresh();const q=new URLSearchParams(location.search);let intent;try{intent=JSON.parse(sessionStorage.getItem('mg-billing-choice')||'null');}catch{}
    const plan=q.get('billing_plan')||intent?.plan,period=q.get('billing_period')||intent?.period;
-   if(['essential','complete'].includes(plan))$('mgBillingPlan').value=plan;else $('mgBillingPlan').value=context.farm.plan;
+   if(['essential','complete'].includes(plan))$('mgBillingPlan').value=plan;else $('mgBillingPlan').value=MGPlansCore.plans[context.farm.plan]?context.farm.plan:'essential';
    if(['monthly','annual'].includes(period))$('mgBillingPeriod').value=period;
-   const {data:{session}}=await mgSb.auth.getSession();$('mgBillingEmail').value=session?.user?.email||'';price();$('mgBillingMessage').textContent='';
+   const {data:{session}}=await mgSb.auth.getSession();$('mgBillingEmail').value=session?.user?.email||'';$('mgBillingConsent').checked=false;price();$('mgBillingMessage').textContent='';
    sessionStorage.removeItem('mg-billing-choice');
   });
  };
