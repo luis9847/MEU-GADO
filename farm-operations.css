@@ -33,3 +33,9 @@
 .mg-ops-nav [aria-current=page],.mg-ops-nav [aria-pressed=true]{border-color:#107946;background:#e7f5ec;color:#075c34}
 .mg-ops-nav a:hover,.mg-ops-nav button:hover{border-color:#107946}
 .mg-ops-nav [hidden],[data-mg-area] [hidden]{display:none!important}
+.mg-postpartum-dialog fieldset{padding:8px 12px;border:1px solid #dce7df;border-radius:10px;min-width:0}
+.mg-postpartum-dialog legend{padding:0 5px;font-weight:700}
+.mg-postpartum-dialog p{font-size:.9rem;margin:0 0 4px}
+.mg-postpartum-dialog label{display:flex;align-items:center;gap:9px;min-height:36px}
+.mg-postpartum-dialog input[type=checkbox]{width:18px;height:18px;flex:0 0 18px;accent-color:#087240}
+.mg-postpartum-dialog [hidden]{display:none!important}
