@@ -32,7 +32,14 @@ function daysAfter(sold,number){
  result.setUTCDate(result.getUTCDate()+number);
  return result.toISOString().slice(0,10);
 }
-if(typeof module==='object'&&module.exports){module.exports={summarize,monthlyHistory,daysAfter};return;}
+function parseSaleDue(value){
+ const match=String(value||'').trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/)||String(value||'').trim().match(/^(\d{2})(\d{2})(\d{4})$/);
+ if(!match||Number(match[3])<1)return '';
+ const iso=match[3]+'-'+match[2]+'-'+match[1];
+ const parsed=new Date(iso+'T00:00:00Z');
+ return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===iso?iso:'';
+}
+if(typeof module==='object'&&module.exports){module.exports={summarize,monthlyHistory,daysAfter,parseSaleDue};return;}
 const E=val=>mgEsc(val), manager=()=>['owner','manager','admin'].includes(mgFarmRole);
 const canWrite=()=>navigator.onLine&&MGPlansCore.writable(mgPlanState,mgPlanNow());
 const complete=()=>mgHasPlanFeature('expenses')&&manager();
@@ -222,10 +229,14 @@ function updateSaleTerms(){
  const mode=newSaleForm.receiptMode.value,byDays=mode==='days',byDate=mode==='date';
  $('mgNewSaleDays').hidden=!byDays;newSaleForm.days.required=byDays;newSaleForm.days.disabled=!byDays;
  $('mgNewSaleDue').hidden=!byDate;newSaleForm.due.required=byDate;newSaleForm.due.disabled=!byDate;
- newSaleForm.due.min=newSaleForm.soldDate.value;newSaleForm.soldDate.max=today();
- const due=byDays?daysAfter(newSaleForm.soldDate.value,Number(newSaleForm.days.value)):byDate?newSaleForm.due.value:'';
- msg('mgNewSalePreview',!mode?'Escolha se já recebeu ou se ficou a prazo.':mode==='now'?'O valor entra no caixa na data da venda.':due?'Vencimento: '+date(due)+'. O valor entra no caixa após a confirmação.':'A venda fica pendente até confirmar o recebimento.');
- return due||null;
+ const sold=newSaleForm.soldDate.value,typed=newSaleForm.due.value.trim();
+ newSaleForm.soldDate.max=today();
+ const due=byDays?daysAfter(sold,Number(newSaleForm.days.value)):byDate?parseSaleDue(typed):'';
+ const beforeSale=!!due&&!!sold&&due<sold;
+ const invalid=byDate&&typed&&!due;
+ newSaleForm.due.setCustomValidity(beforeSale&&byDate?'O vencimento não pode ser anterior à venda.':invalid?'Informe uma data válida no formato DD/MM/AAAA.':'');
+ msg('mgNewSalePreview',!mode?'Escolha se já recebeu ou se ficou a prazo.':mode==='now'?'O valor entra no caixa na data da venda.':beforeSale?'O vencimento não pode ser anterior à venda.':due?'Vencimento: '+date(due)+'. O valor entra no caixa após a confirmação.':byDate?'Digite dia, mês e ano completos, por exemplo 19/11/2026.':'A venda fica pendente até confirmar o recebimento.');
+ return beforeSale?null:due||null;
 }
 async function openNewSale(){
  if(newSaleDialog.open||newSaleBusy)return;
@@ -242,6 +253,7 @@ async function openNewSale(){
 $('mgNewSaleOpen').onclick=openNewSale;
 $('mgSaleSearch').oninput=renderSaleAnimals;
 newSaleForm.oninput=updateSaleTerms;
+newSaleForm.due.onblur=()=>{const due=parseSaleDue(newSaleForm.due.value);if(due)newSaleForm.due.value=date(due);updateSaleTerms();};
 $('mgNewSaleClose').onclick=()=>{if(!newSaleBusy&&!newSaleLoading)newSaleDialog.close();};
 newSaleDialog.oncancel=e=>{if(newSaleBusy||newSaleLoading)e.preventDefault();};
 newSaleForm.onsubmit=async e=>{

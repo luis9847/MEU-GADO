@@ -54,3 +54,9 @@ test('sale terms count calendar days across months and years without UTC or DST 
  assert.equal(operations.daysAfter('2026-11-16',0),'');
  assert.equal(operations.daysAfter('2026-11-16',1.5),'');
 });
+
+test('typed Brazilian due dates accept slashes or digits and reject impossible or incomplete dates',()=>{
+ for (const value of ['19/11/2026','19112026']) assert.equal(operations.parseSaleDue(value),'2026-11-19');
+ assert.equal(operations.parseSaleDue('29/02/2028'),'2028-02-29');
+ for (const value of ['31/11/2026','29/02/2026','19/11/2','19/11/0000','19/112026']) assert.equal(operations.parseSaleDue(value),'');
+});

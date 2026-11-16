@@ -2189,7 +2189,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <label>Comprador (opcional) <input name="buyer" maxlength="120"></label>
       <label>Recebimento <select name="receiptMode"><option value="now">Recebi no dia da venda</option><option value="days">A prazo · informar dias</option><option value="date">A prazo · informar data</option><option value="pending">Pendente · sem data definida</option></select></label>
       <label id="mgNewSaleDays" hidden>Prazo em dias corridos <input name="days" type="number" min="1" max="3650" step="1" placeholder="Ex.: 10, 15, 20 ou 30"></label>
-      <label id="mgNewSaleDue" hidden>Data do vencimento <input name="due" type="date"></label>
+      <label id="mgNewSaleDue" hidden>Data do vencimento <input name="due" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="off" aria-describedby="mgNewSalePreview"></label>
       <p id="mgNewSalePreview" class="mg-ops-hint"></p>
       <label>Observações (opcional) <textarea name="notes" rows="2" maxlength="500"></textarea></label>
       <p id="mgNewSaleError" role="alert"></p>
@@ -8244,7 +8244,7 @@ run();document.addEventListener('DOMContentLoaded',run);
 })();
 </script>
 <script src="/billing-client.js?v=6"></script>
-<script src="/farm-operations.js?v=5"></script>
+<script src="/farm-operations.js?v=6"></script>
 <script src="/postpartum.js?v=1"></script>
 </body></html>
 
