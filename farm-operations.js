@@ -70,7 +70,7 @@ function autoList(){
  const living=new Set(herd.map(a=>String(a.id))),terminal=new Map(),result=[],latestPreg=new Map();
  for(const e of repro){const id=String(e.animal_id);if(!living.has(id))continue;if((['Parto','Aborto'].includes(e.event_type)||(e.event_type==='Diagnóstico de gestação'&&e.result==='Negativo'))&&(!terminal.has(id)||e.event_date>terminal.get(id)))terminal.set(id,e.event_date);
   if(e.expected_date&&(['Prenhez confirmada','Inseminação artificial','Monta natural / pasto','Enxertada'].includes(e.event_type)||(e.event_type==='Diagnóstico de gestação'&&e.result==='Positivo'))&&(!latestPreg.has(id)||e.event_date>latestPreg.get(id).event_date))latestPreg.set(id,e);}
- for(const e of health)if(e.next_due_date&&(!e.animal_id||living.has(String(e.animal_id))))result.push({title:[e.event_type,e.product].filter(Boolean).join(' · '),details:(e.animal_id?mgAnimalLabel(animal(e.animal_id)):e.lot)||'Fazenda',due:e.next_due_date,type:'health',id:e.id});
+ for(const e of health)if(e.next_due_date&&(!e.animal_id||living.has(String(e.animal_id))))result.push({title:[e.event_type,e.product].filter(Boolean).join(' · '),details:e.animal_id?mgAnimalLabel(animal(e.animal_id)):'Fazenda',due:e.next_due_date,type:'health',id:e.id});
  for(const [id,e] of latestPreg)if(!terminal.has(id)||terminal.get(id)<e.event_date)result.push({title:'Parto previsto',details:mgAnimalLabel(animal(id)),due:e.expected_date,type:'birth',id:e.animal_id});
  return result.sort((a,b)=>a.due.localeCompare(b.due));
 }
@@ -85,11 +85,11 @@ async function loadAgenda(){
  const run=++agendaLoad;$('mgFarmAgendaContent').hidden=true;msg('mgFarmAgendaStatus','Carregando manejos…');
  try{
   const f=await requireFarm();
-  const data=await Promise.all([mgReportRows('farm_management_tasks','*',true),mgReportRows('animals','id,number,name,category,lot,status'),mgReportRows('lots','id,name,active'),mgReportRows('health_events','id,animal_id,lot,event_type,product,next_due_date'),mgReportRows('reproductive_events','id,animal_id,event_type,event_date,expected_date,result')]);
+  const data=await Promise.all([mgReportRows('farm_management_tasks','*',true),mgReportRows('animals','id,number,name,category,lot,status'),mgReportRows('lots','id,name,active'),mgReportRows('health_events','id,animal_id,event_type,product,next_due_date'),mgReportRows('reproductive_events','id,animal_id,event_type,event_date,expected_date,result')]);
   if(run!==agendaLoad||mgFarm?.id!==f.id)return;
   [tasks,herd,lots,health,repro]=data;herd=herd.filter(a=>a.status==='active');lots=lots.filter(l=>l.active);tasks.sort((a,b)=>a.due_date.localeCompare(b.due_date)||a.id.localeCompare(b.id));
   renderAgenda();$('mgFarmAgendaContent').hidden=false;msg('mgFarmAgendaStatus','');
- }catch(e){if(run===agendaLoad)msg('mgFarmAgendaStatus',e.message);}
+ }catch(e){if(run===agendaLoad)msg('mgFarmAgendaStatus',!navigator.onLine?'Conecte-se à internet para atualizar a agenda.':'Não foi possível carregar a agenda. Use Atualizar para tentar novamente.');console.warn('Agenda de manejo:',e.message);}
 }
 function editTask(id){
  const t=id?tasks.find(t=>t.id===id&&t.status==='pending'):null;if(id&&!t)return;if(!canWrite()||!manager())return;
@@ -140,7 +140,7 @@ function showFinancePanel(panel){
 for(const host of document.querySelectorAll('[data-mg-area]')){
  const root=host.closest('section').id,finance=host.dataset.mgArea==='finance';
  const nav=document.createElement('nav');nav.className='mg-ops-nav';nav.setAttribute('aria-label',finance?'Financeiro da Fazenda':'Manejo');
- const routes=finance?[['financeiroFazenda','Resultado'],['financeiroFazenda','Vendas'],['gastos','Gastos']]:[['agendaManejo','Agenda'],['planejamento','Alimentos e planos'],['nutricao','Fornecimento']];
+ const routes=finance?[['financeiroFazenda','Resultado'],['financeiroFazenda','Vendas'],['gastos','Gastos']]:[['agendaManejo','Agenda'],['planejamento','Planos alimentares'],['nutricao','Fornecimento']];
  for(const [index,[id,label]] of routes.entries()){
   const node=document.createElement(finance&&id==='financeiroFazenda'&&root===id?'button':'a');
   node.textContent=label;

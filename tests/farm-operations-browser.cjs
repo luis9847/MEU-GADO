@@ -36,7 +36,11 @@ const root = path.resolve(__dirname, '..');
       };
       mgSb.rpc=async()=>({data:{farm_id:999,plan:'complete',status:'active',server_now:new Date().toISOString(),features:{core:true,expenses:true,planning:true,performance:true,reports:true}},error:null});
       Object.defineProperty(mgSb,'functions',{value:{invoke:async()=>({data:{days:[{date:now,min:17,max:28,rain:20}]},error:null})}});
-      mgReportRows=async table=>structuredClone(fixtures[table]);
+      mgReportRows=async (table,columns)=>{
+        if(table==='health_events'&&columns.split(',').includes('lot'))throw Error('column health_events.lot does not exist');
+        if(!Object.hasOwn(fixtures,table))throw Error('Unexpected dependency: '+table);
+        return structuredClone(fixtures[table]);
+      };
       mgSb.from=(table)=>{
         let write,insert=false,id;
         const q={update(p){write=p;return q},insert(p){write=p;insert=true;return q},eq(k,v){if(k==='id')id=v;return q},is(){return q},select(){return q},async maybeSingle(){

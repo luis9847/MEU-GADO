@@ -2,21 +2,26 @@
 (function(){
  'use strict';
  const C=window.MGFeedingCore;
- const state={foods:[],plans:[],lots:[],animals:[],entries:[],tab:'plans',loaded:false,loading:false,busy:false,foodId:null,planId:null,revision:null,farmId:null,offline:false};
+ const state={foods:[],plans:[],lots:[],animals:[],entries:[],loading:false,busy:false,foodId:null,planId:null,foodRevision:null,planRevision:null,farmId:null,offline:false};
  const el=id=>document.getElementById(id), esc=v=>mgEsc(v), num=(v,d=2)=>Number(v).toLocaleString('pt-BR',{maximumFractionDigits:d}), cash=v=>v===null?'Preço não informado':money(v);
  const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
  const date=v=>v?String(v).slice(0,10).split('-').reverse().join('/'):'—';
  const writable=()=>['owner','admin','manager'].includes(mgFarmRole);
  const management={pasto:'A pasto',semi:'Semiconfinamento',confinamento:'Confinamento'};
  const kind={volumoso:'Volumoso',concentrado:'Concentrado',suplemento:'Suplemento',outro:'Outro'};
- const root=el('planejamento');
- root.innerHTML=`<div data-mg-area="manage"></div><div class="page-title"><div><h2>🌱 Planejamento alimentar</h2><p>Cadastre seus alimentos e use o catálogo para criar um plano por lote.</p></div><div class="fp-actions"><button class="btn secondary" data-fp="refresh">Atualizar</button><button class="btn primary" data-fp="new-plan" id="fpNewPlan">+ Novo plano</button><button class="btn primary" data-fp="new-food" id="fpNewFood" hidden>+ Cadastrar alimento</button></div></div>
+ const root=el('planejamento'),nutrition=el('nutricao'),catalog=document.createElement('section');
+ catalog.id='fpCatalog';catalog.className='card fp-catalog';catalog.hidden=true;
+ nutrition.querySelector('.page-title').after(catalog);
+ const foodList=document.createElement('datalist');foodList.id='fpNutritionFoods';document.body.append(foodList);
+ el('nutFeed').setAttribute('list',foodList.id);
+ catalog.innerHTML=`<div class="head"><div><h3>Cadastro de alimentos</h3><p class="fp-sub">Salve os alimentos da fazenda para usar nos planos por lote.</p></div><button type="button" class="btn secondary" data-fp="new-food">+ Cadastrar alimento</button></div>
+ <div id="fpCatalogStatus" role="status" aria-live="polite"></div><div id="fpFoodEditor" data-fp-editor></div><details><summary>Ver alimentos cadastrados</summary><div id="fpFoods"></div></details>`;
+ root.innerHTML=`<div data-mg-area="manage"></div><div class="page-title"><div><h2>🌱 Planejamento alimentar</h2><p>Monte planos por lote usando os alimentos cadastrados em Fornecimento.</p></div><div class="fp-actions"><button class="btn secondary" data-fp="refresh">Atualizar</button><button class="btn primary" data-fp="new-plan" id="fpNewPlan">+ Novo plano</button></div></div>
  <div class="fp-note">Defina as quantidades com orientação técnica. O Meu Gado calcula o fornecimento e o custo do plano cadastrado; não formula nem garante a adequação nutricional da dieta. No pasto e no semiconfinamento, o capim consumido no campo não é medido por esta tela.</div>
- <div id="fpStatus" role="status" aria-live="polite"></div><div class="fp-tabs" role="tablist" aria-label="Planejamento alimentar"><button class="btn secondary" role="tab" id="fpTabFoods" aria-selected="false" aria-controls="fpFoods" data-fp="foods">1. Meus alimentos</button><button class="btn secondary" role="tab" id="fpTabPlans" aria-selected="true" aria-controls="fpPlans" data-fp="plans">2. Planos por lote</button></div>
- <div id="fpEditor"></div><div id="fpPlans" role="tabpanel" aria-labelledby="fpTabPlans"></div><div id="fpFoods" role="tabpanel" aria-labelledby="fpTabFoods" hidden></div>`;
- function status(message,error=false){el('fpStatus').className=message?'fp-note'+(error?' fp-error':''):'';el('fpStatus').textContent=message;}
+ <div id="fpStatus" role="status" aria-live="polite"></div><div id="fpEditor" data-fp-editor></div><div id="fpPlans"></div>`;
+ const hasCatalog=()=>mgHasPlanFeature('planning')&&writable();
+ function status(message,error=false){const out=el(nutrition.classList.contains('active')?'fpCatalogStatus':'fpStatus');out.className=message?'fp-note'+(error?' fp-error':''):'';out.textContent=message;}
  function canWrite(){if(!mgHasPlanFeature('planning')||!MGPlansCore.writable(mgPlanState,mgPlanNow()))throw new Error('Seu plano não permite alterar o planejamento. Contate o suporte.');if(!writable())throw new Error('Somente o proprietário e os gerentes podem gerenciar planos e custos.');if(state.offline||!navigator.onLine)throw new Error('Conecte-se à internet para salvar. A consulta dos dados já carregados continua disponível offline.');}
- function tab(name){state.tab=name;el('fpPlans').hidden=name!=='plans';el('fpFoods').hidden=name!=='foods';el('fpNewPlan').hidden=name!=='plans';el('fpNewFood').hidden=name!=='foods';el('fpTabPlans').setAttribute('aria-selected',name==='plans');el('fpTabFoods').setAttribute('aria-selected',name==='foods');el('fpEditor').innerHTML='';}
  async function load(){
   if(!mgHasPlanFeature('planning'))return;
   if(state.loading)return;
@@ -36,9 +41,8 @@
     try{await mgOfflinePut(MG_OFFLINE_CACHE,{data:{foods:state.foods,plans:state.plans,lots,animals,entries,farmId:f.id},updatedAt:new Date().toISOString()},cacheKey)}catch(_e){}
     status('');
    }
-   if(!state.loaded&&!state.foods.some(f=>!f.archived)&&!state.plans.some(p=>!p.archived))tab('foods');
-   state.loaded=true;render();
-  }catch(e){status('Não foi possível carregar o planejamento. '+(e.message||e),true);state.loaded=false;el('fpPlans').innerHTML='';el('fpFoods').innerHTML='';}
+   render();
+  }catch(e){status('Não foi possível carregar o planejamento. '+(e.message||e),true);el('fpPlans').innerHTML='';el('fpFoods').innerHTML='';foodList.replaceChildren();}
   finally{state.loading=false;}
  }
  function lotFor(p){return state.lots.find(l=>String(l.id)===String(p.lot_id));}
@@ -51,16 +55,17 @@
    const l=lotFor(p),s=summary(p),c=calc(p);const inactive=!usable(p);
    return `<article class="fp-plan-card"><h3>${esc(p.name)}</h3><div class="fp-sub">${esc(l?.name||'Lote indisponível')} · ${esc(management[p.management])} · ${s.heads} animais ativos · ${p.meals} trato(s)/dia${inactive?' · Fora da vigência ou lote inativo':''}</div><p>${num(c.kg_day)} kg/dia no lote · ${cash(c.cost_day)}/dia</p><div class="fp-actions"><button class="btn primary" data-fp="detail" data-id="${p.id}">Ver fornecimento</button><button class="btn secondary" data-fp="edit-plan" data-id="${p.id}">Editar</button><button class="btn secondary" data-fp="archive-plan" data-id="${p.id}">Arquivar</button></div></article>`;
   }).join('');
-  el('fpPlans').innerHTML=`<div class="fp-grid"><div class="fp-metric"><small>PLANOS EM VIGÊNCIA</small><strong>${active.length}</strong><span>Lotes ativos hoje</span></div><div class="fp-metric"><small>ANIMAIS NOS PLANOS</small><strong>${estimated.reduce((s,c)=>s+c.heads,0)}</strong><span>Recalculado pelo lote atual</span></div><div class="fp-metric"><small>FORNECIMENTO DIÁRIO</small><strong>${num(estimated.reduce((s,c)=>s+c.kg_day,0))} kg</strong><span>Alimentos cadastrados</span></div><div class="fp-metric"><small>CUSTO DIÁRIO PREVISTO</small><strong>${totalCost===null?'—':cash(totalCost)}</strong><span>${totalCost===null?'Há alimento sem preço':'Preços salvos nos planos'}</span></div></div>${cards||'<div class="fp-empty">Nenhum plano cadastrado. <button class="btn secondary" data-fp="foods">Ir para Meus alimentos</button></div>'}<details><summary>Planos arquivados</summary>${state.plans.filter(p=>p.archived).map(p=>`<p>${esc(p.name)} <button class="btn secondary" data-fp="detail" data-id="${p.id}">Consultar</button></p>`).join('')||'<p>Nenhum plano arquivado.</p>'}</details>`;
+  el('fpPlans').innerHTML=`<div class="fp-grid"><div class="fp-metric"><small>PLANOS EM VIGÊNCIA</small><strong>${active.length}</strong><span>Lotes ativos hoje</span></div><div class="fp-metric"><small>ANIMAIS NOS PLANOS</small><strong>${estimated.reduce((s,c)=>s+c.heads,0)}</strong><span>Recalculado pelo lote atual</span></div><div class="fp-metric"><small>FORNECIMENTO DIÁRIO</small><strong>${num(estimated.reduce((s,c)=>s+c.kg_day,0))} kg</strong><span>Alimentos cadastrados</span></div><div class="fp-metric"><small>CUSTO DIÁRIO PREVISTO</small><strong>${totalCost===null?'—':cash(totalCost)}</strong><span>${totalCost===null?'Há alimento sem preço':'Preços salvos nos planos'}</span></div></div>${cards||'<div class="fp-empty">Nenhum plano cadastrado. Se precisar cadastrar um alimento, abra <a href="#nutricao" data-fp="nutrition">Fornecimento</a>.</div>'}<details><summary>Planos arquivados</summary>${state.plans.filter(p=>p.archived).map(p=>`<p>${esc(p.name)} <button class="btn secondary" data-fp="detail" data-id="${p.id}">Consultar</button></p>`).join('')||'<p>Nenhum plano arquivado.</p>'}</details>`;
   const foods=state.foods.filter(f=>!f.archived);
+  foodList.replaceChildren(...foods.map(f=>{const o=document.createElement('option');o.value=f.name;return o;}));
   el('fpFoods').innerHTML=`<div class="fp-note">Cadastre somente os alimentos da sua fazenda. Quantidades e preços são calculados em kg de alimento natural (como fornecido). Para um saco de 30 kg, divida o preço do saco por 30. Composição é opcional e deve vir de rótulo ou análise.</div>${foods.length?`<div class="fp-scroll"><table><thead><tr><th>Alimento</th><th>Tipo</th><th>Preço/kg</th><th>Matéria seca</th><th>Estoque informado</th><th>Ações</th></tr></thead><tbody>${foods.map(f=>`<tr><td><b>${esc(f.name)}</b></td><td>${esc(kind[f.kind])}</td><td>${cash(f.price_kg)}</td><td>${f.dry_matter_pct===null?'—':num(f.dry_matter_pct)+'%'}</td><td>${f.stock_kg===null?'—':num(f.stock_kg)+' kg em '+date(f.stock_date)}</td><td><div class="fp-actions"><button class="btn secondary" data-fp="edit-food" data-id="${f.id}">Editar</button><button class="btn secondary" data-fp="archive-food" data-id="${f.id}">Arquivar</button></div></td></tr>`).join('')}</tbody></table></div>`:'<div class="fp-empty">Seu catálogo está vazio. Clique em Cadastrar alimento para começar.</div>'}`;
  }
  function input(id,label,value='',attrs=''){return `<label>${label}<input id="${id}" value="${esc(value??'')}" ${attrs}></label>`;}
  function options(obj,value){return Object.entries(obj).map(([k,v])=>`<option value="${esc(k)}" ${k===value?'selected':''}>${esc(v)}</option>`).join('');}
- function editorFocus(){el('fpEditor').scrollIntoView({behavior:'smooth',block:'start'});el('fpEditor').querySelector('input,select')?.focus();}
+ function editorFocus(id='fpEditor'){el(id).scrollIntoView({behavior:'smooth',block:'start'});el(id).querySelector('input,select')?.focus();}
  function foodEditor(id){
-  canWrite();tab('foods');const f=state.foods.find(x=>x.id===id)||{};state.foodId=f.id||null;state.revision=f.revision||null;
-  el('fpEditor').innerHTML=`<form id="fpFoodForm" class="fp-editor"><h3>${f.id?'Editar':'Cadastrar'} alimento</h3><div class="fp-form">${input('fpFoodName','Nome do alimento *',f.name,'required maxlength="120" autocomplete="off"')}<label>Tipo *<select id="fpFoodKind">${options(kind,f.kind||'volumoso')}</select></label>${input('fpFoodPrice','Preço por kg (R$)',f.price_kg,'type="number" min="0" max="1000000" step="0.0001"')}${input('fpFoodStock','Estoque informado (kg)',f.stock_kg,'type="number" min="0" max="1000000000" step="0.001"')}${input('fpFoodStockDate','Data do estoque',f.stock_date||today(),'type="date"')}${input('fpFoodDm','Matéria seca (%)',f.dry_matter_pct,'type="number" min="0.001" max="100" step="0.001"')}${input('fpFoodPb','Proteína bruta (% da matéria seca)',f.protein_pct,'type="number" min="0" max="100" step="0.001"')}${input('fpFoodNdt','NDT (% da matéria seca)',f.ndt_pct,'type="number" min="0" max="100" step="0.001"')}${input('fpFoodSource','Fonte da composição (rótulo/análise)',f.composition_source,'maxlength="300"')}<label class="fp-full">Observações<textarea id="fpFoodNotes" maxlength="2000">${esc(f.notes||'')}</textarea></label></div><p class="fp-sub">Preço vazio significa desconhecido; zero significa sem custo. Alterações no catálogo não atualizam os preços salvos nos planos: edite e salve o plano para atualizá-los. Estoque é um saldo informado, sem baixa automática.</p><div class="fp-actions"><button class="btn primary" type="submit">Salvar alimento</button><button class="btn secondary" type="button" data-fp="cancel">Cancelar</button></div></form>`;editorFocus();
+  canWrite();const f=state.foods.find(x=>x.id===id)||{};state.foodId=f.id||null;state.foodRevision=f.revision||null;
+  el('fpFoodEditor').innerHTML=`<form id="fpFoodForm" class="fp-editor"><h3>${f.id?'Editar':'Cadastrar'} alimento</h3><div class="fp-form">${input('fpFoodName','Nome do alimento *',f.name,'required maxlength="120" autocomplete="off"')}<label>Tipo *<select id="fpFoodKind">${options(kind,f.kind||'volumoso')}</select></label>${input('fpFoodPrice','Preço por kg (R$)',f.price_kg,'type="number" min="0" max="1000000" step="0.0001"')}${input('fpFoodStock','Estoque informado (kg)',f.stock_kg,'type="number" min="0" max="1000000000" step="0.001"')}${input('fpFoodStockDate','Data do estoque',f.stock_date||today(),'type="date"')}${input('fpFoodDm','Matéria seca (%)',f.dry_matter_pct,'type="number" min="0.001" max="100" step="0.001"')}${input('fpFoodPb','Proteína bruta (% da matéria seca)',f.protein_pct,'type="number" min="0" max="100" step="0.001"')}${input('fpFoodNdt','NDT (% da matéria seca)',f.ndt_pct,'type="number" min="0" max="100" step="0.001"')}${input('fpFoodSource','Fonte da composição (rótulo/análise)',f.composition_source,'maxlength="300"')}<label class="fp-full">Observações<textarea id="fpFoodNotes" maxlength="2000">${esc(f.notes||'')}</textarea></label></div><p class="fp-sub">Preço vazio significa desconhecido; zero significa sem custo. Alterações no catálogo não atualizam os preços salvos nos planos: edite e salve o plano para atualizá-los. Estoque é um saldo informado, sem baixa automática.</p><div class="fp-actions"><button class="btn primary" type="submit">Salvar alimento</button><button class="btn secondary" type="button" data-fp="cancel">Cancelar</button></div></form>`;editorFocus('fpFoodEditor');
  }
  function optional(id){const v=el(id).value.trim();return v===''?null:Number(v);}
  async function persist(table,id,row,revision){
@@ -69,7 +74,7 @@
  }
  async function saveFood(){
   canWrite();const row={name:el('fpFoodName').value.trim(),kind:el('fpFoodKind').value,price_kg:optional('fpFoodPrice'),stock_kg:optional('fpFoodStock'),stock_date:el('fpFoodStockDate').value||null,dry_matter_pct:optional('fpFoodDm'),protein_pct:optional('fpFoodPb'),ndt_pct:optional('fpFoodNdt'),composition_source:el('fpFoodSource').value.trim(),notes:el('fpFoodNotes').value.trim()};
-  if(!row.name)throw new Error('Informe o nome do alimento.');await persist('feed_ingredients',state.foodId,row,state.revision);el('fpEditor').innerHTML='';await load();status('Alimento salvo.');
+  if(!row.name)throw new Error('Informe o nome do alimento.');await persist('feed_ingredients',state.foodId,row,state.foodRevision);el('fpFoodEditor').innerHTML='';await load();catalog.querySelector('details').open=true;status('Alimento salvo.');
  }
  function foodOptions(id){return '<option value="">Selecione um alimento</option>'+state.foods.filter(f=>!f.archived).map(f=>`<option value="${f.id}" ${f.id===id?'selected':''}>${esc(f.name)}</option>`).join('');}
  function addLine(item={}){
@@ -77,9 +82,9 @@
   const row=document.createElement('div');row.className='fp-line';row.innerHTML=`<label>Alimento *<select class="fp-ingredient" required>${foodOptions(item.ingredient_id)}</select></label><label>Kg/animal/dia *<input class="fp-qty" type="number" min="0.001" max="1000" step="0.001" required value="${esc(item.kg_head_day||'')}"></label><button type="button" class="btn secondary" data-fp="remove-line" aria-label="Remover alimento">Remover</button>`;el('fpLines').append(row);preview();
  }
  function planEditor(id){
-  canWrite();if(!state.foods.some(f=>!f.archived)){tab('foods');status('Cadastre pelo menos um alimento antes de criar o plano.');return;}
+  canWrite();if(!state.foods.some(f=>!f.archived)){status('Cadastre pelo menos um alimento em Fornecimento antes de criar o plano.');return;}
   if(!state.lots.some(l=>l.active&&!l.deleted_at))throw new Error('Cadastre um lote ativo e os animais antes de criar o plano.');
-  tab('plans');const p=state.plans.find(x=>x.id===id)||{};state.planId=p.id||null;state.revision=p.revision||null;
+  const p=state.plans.find(x=>x.id===id)||{};state.planId=p.id||null;state.planRevision=p.revision||null;
   el('fpEditor').innerHTML=`<form id="fpPlanForm" class="fp-editor"><h3>${p.id?'Editar':'Novo'} plano por lote</h3><div class="fp-form">${input('fpPlanName','Nome do plano *',p.name,'required maxlength="120"')}<label>Lote *<select id="fpPlanLot" required><option value="">Selecione o lote</option>${state.lots.filter(l=>l.active&&!l.deleted_at).map(l=>`<option value="${l.id}" ${String(l.id)===String(p.lot_id)?'selected':''}>${esc(l.name)}</option>`).join('')}</select></label><label>Manejo *<select id="fpPlanManagement">${options(management,p.management||'pasto')}</select></label>${input('fpPlanMeals','Tratos por dia (divisão igual) *',p.meals||2,'type="number" min="1" max="12" step="1" required')}${input('fpPlanStart','Início do plano *',p.start_date||today(),'type="date" required')}${input('fpPlanEnd','Fim do plano (opcional)',p.end_date,'type="date"')}${input('fpPlanGmd','Meta de ganho (kg/animal/dia, opcional)',p.target_gmd,'type="number" min="0.001" max="5" step="0.001"')}${input('fpPlanReference','Responsável ou referência técnica',p.technical_reference,'maxlength="300"')}<label class="fp-full">Orientações de manejo<textarea id="fpPlanNotes" maxlength="2000">${esc(p.notes||'')}</textarea></label></div><p class="fp-sub">Informe a quantidade de alimento natural, como vai ao cocho. A meta de ganho é informativa; não calcula a dieta nem garante o resultado.</p><div id="fpLines"></div><button type="button" class="btn secondary" data-fp="add-line">+ Adicionar alimento</button><div id="fpPreview" class="fp-note" aria-live="polite"></div><div class="fp-actions"><button type="submit" class="btn primary">Salvar plano</button><button type="button" class="btn secondary" data-fp="cancel">Cancelar</button></div></form>`;
   (p.items||[{}]).forEach(addLine);preview();editorFocus();
  }
@@ -94,7 +99,7 @@
   canWrite();const items=draftItems().map(i=>({ingredient_id:i.ingredient_id,kg_head_day:i.kg_head_day}));if(!items.length||items.some(i=>!i.ingredient_id||!Number.isFinite(i.kg_head_day)||i.kg_head_day<0.001))throw new Error('Preencha pelo menos um alimento e uma quantidade positiva.');if(new Set(items.map(i=>i.ingredient_id)).size!==items.length)throw new Error('Não repita o mesmo alimento. Some as quantidades em uma linha.');
   const row={name:el('fpPlanName').value.trim(),lot_id:Number(el('fpPlanLot').value),management:el('fpPlanManagement').value,meals:Number(el('fpPlanMeals').value),start_date:el('fpPlanStart').value,end_date:el('fpPlanEnd').value||null,target_gmd:optional('fpPlanGmd'),technical_reference:el('fpPlanReference').value.trim(),notes:el('fpPlanNotes').value.trim(),items};
   if(!row.name||!row.lot_id||!row.start_date)throw new Error('Informe o nome, o lote e a data de início.');if(row.end_date&&row.end_date<row.start_date)throw new Error('O fim do plano deve ser igual ou posterior ao início.');
-  await persist('feeding_plans',state.planId,row,state.revision);el('fpEditor').innerHTML='';await load();status('Plano salvo. Quantidades prontas para consulta.');
+  await persist('feeding_plans',state.planId,row,state.planRevision);el('fpEditor').innerHTML='';await load();status('Plano salvo. Quantidades prontas para consulta.');
  }
  async function archive(type,id){
   canWrite();const list=type==='food'?state.foods:state.plans,r=list.find(x=>x.id===id);if(!r)return;
@@ -118,18 +123,29 @@
   // Existing nutrition form accepts hundredths of kg.
   el('nutQty').step='0.001';
  }
- root.addEventListener('click',async e=>{
+ for(const view of [root,catalog])view.addEventListener('click',async e=>{
   const b=e.target.closest('[data-fp]');if(!b||state.busy)return;
-  try{switch(b.dataset.fp){case 'plans':tab('plans');break;case 'foods':tab('foods');break;case 'refresh':if(el('fpEditor').innerHTML&&!confirm('Descartar a edição aberta e atualizar os dados?'))return;el('fpEditor').innerHTML='';await load();break;case 'new-food':foodEditor();break;case 'edit-food':foodEditor(b.dataset.id);break;case 'new-plan':planEditor();break;case 'edit-plan':planEditor(b.dataset.id);break;case 'add-line':addLine();break;case 'remove-line':b.closest('.fp-line').remove();preview();break;case 'cancel':el('fpEditor').innerHTML='';break;case 'detail':detail(b.dataset.id);break;case 'nutrition':show('nutricao');break;case 'entry':prepareEntry(b.dataset.id,Number(b.dataset.index));break;case 'archive-food':case 'archive-plan':state.busy=true;b.disabled=true;await archive(b.dataset.fp==='archive-food'?'food':'plan',b.dataset.id);break;}}
+  try{switch(b.dataset.fp){case 'refresh':if(el('fpEditor').innerHTML&&!confirm('Descartar a edição aberta e atualizar os dados?'))return;el('fpEditor').innerHTML='';await load();break;case 'new-food':foodEditor();break;case 'edit-food':foodEditor(b.dataset.id);break;case 'new-plan':planEditor();break;case 'edit-plan':planEditor(b.dataset.id);break;case 'add-line':addLine();break;case 'remove-line':b.closest('.fp-line').remove();preview();break;case 'cancel':view.querySelector('[data-fp-editor]').replaceChildren();break;case 'detail':detail(b.dataset.id);break;case 'nutrition':mgNavigate(e,'nutricao');break;case 'entry':prepareEntry(b.dataset.id,Number(b.dataset.index));break;case 'archive-food':case 'archive-plan':state.busy=true;b.disabled=true;await archive(b.dataset.fp==='archive-food'?'food':'plan',b.dataset.id);break;}}
   catch(err){status(err.message||String(err),true);}finally{state.busy=false;b.disabled=false;}
  });
  root.addEventListener('input',preview);root.addEventListener('change',preview);
- root.addEventListener('submit',async e=>{
+ for(const view of [root,catalog])view.addEventListener('submit',async e=>{
   if(!['fpFoodForm','fpPlanForm'].includes(e.target.id))return;e.preventDefault();if(state.busy)return;state.busy=true;const form=e.target;form.querySelectorAll('button').forEach(b=>b.disabled=true);
-  try{if(form.id==='fpFoodForm')await saveFood();else await savePlan();}catch(err){status(err.message||String(err),true);el('fpStatus').scrollIntoView({behavior:'smooth'});}finally{state.busy=false;form.querySelectorAll('button').forEach(b=>b.disabled=false);}
+  try{if(form.id==='fpFoodForm')await saveFood();else await savePlan();}catch(err){status(err.message||String(err),true);view.querySelector('[role=status]').scrollIntoView({behavior:'smooth'});}finally{state.busy=false;form.querySelectorAll('button').forEach(b=>b.disabled=false);}
  });
- const previousShow=show;show=function(id,button){if(id==='planejamento'&&!mgPlanCanOpen(id))return false;if(id==='planejamento'&&!writable()){status('Seu perfil não possui acesso ao planejamento alimentar.',true);alert('Esta área está disponível para o proprietário e os gerentes.');return false;}const r=previousShow(id,button);if(id==='planejamento')load();return r;};
- window.addEventListener('online',()=>{if(root.classList.contains('active')&&!el('fpEditor').innerHTML)load();});
- // restoreLastView may have run before this deferred module.
- if(root.classList.contains('active'))load();
+ function refreshActive(){
+  const feeding=nutrition.classList.contains('active');
+  catalog.hidden=!hasCatalog();
+  if((feeding&&hasCatalog())||root.classList.contains('active'))load();
+ }
+ const previousShow=show;show=function(id,button){
+  if(id==='planejamento'&&!mgPlanCanOpen(id))return false;
+  if(id==='planejamento'&&!writable()){alert('Esta área está disponível para o proprietário e os gerentes.');return false;}
+  const r=previousShow(id,button);
+  if(r!==false&&['planejamento','nutricao'].includes(id))refreshActive();
+  return r;
+ };
+ window.addEventListener('online',()=>{if(!el('fpEditor').innerHTML&&!el('fpFoodEditor').innerHTML)refreshActive();});
+ window.addEventListener('mg:plan-ready',refreshActive);
+ if(root.classList.contains('active')||nutrition.classList.contains('active'))refreshActive();
 })();
