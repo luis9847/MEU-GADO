@@ -12,7 +12,7 @@ test('sale and receipt contribute to their respective periods, while canceled sa
   ];
   const expenses = [{expense_date:'2026-11-03',amount:'100.99',lot:'Lote A'},{expense_date:'2026-11-03',amount:'30.10'}];
   const nov = operations.summarize(sales,expenses,'2026-11');
-  assert.deepEqual(nov,{sold:50055,received:100010,spent:13109,pending:51085,balance:86901,lots:[{label:'Lote A',sold:50055,received:100010,spent:10099},{label:'Sem lote',sold:0,received:0,spent:3010}]});
+  assert.deepEqual(nov,{sold:50055,received:100010,spent:13109,pending:51085,result:36946,balance:86901,lots:[{label:'Lote A',sold:50055,received:100010,spent:10099},{label:'Sem lote',sold:0,received:0,spent:3010}]});
   assert.equal(operations.summarize(sales,expenses,'2026-10').received,0);
   assert.equal(operations.summarize(sales,expenses,'2026-10').sold,100010);
 });

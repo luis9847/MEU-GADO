@@ -11,7 +11,7 @@ function summarize(sales,expenses,month){
  let sold=0,received=0,spent=0,pending=0;
  for(const s of sales){if(s.cancelled_at)continue;const v=cents(s.amount);if(monthOf(s.sale_date)===month){sold+=v;add(s.lot,'sold',v);}if(!s.received_on)pending+=v;else if(monthOf(s.received_on)===month){received+=v;add(s.lot,'received',v);}}
  for(const e of expenses){if(monthOf(e.expense_date)!==month)continue;const v=cents(e.amount);spent+=v;add(e.lot,'spent',v);}
- return {sold,received,spent,pending,balance:received-spent,lots:[...lots.values()].sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'))};
+ return {sold,received,spent,pending,result:sold-spent,balance:received-spent,lots:[...lots.values()].sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'))};
 }
 if(typeof module==='object'&&module.exports){module.exports={summarize};return;}
 const E=val=>mgEsc(val), manager=()=>['owner','manager','admin'].includes(mgFarmRole);
@@ -19,7 +19,7 @@ const canWrite=()=>navigator.onLine&&MGPlansCore.writable(mgPlanState,mgPlanNow(
 const complete=()=>mgHasPlanFeature('expenses')&&manager();
 const msg=(id,value)=>{$(id).textContent=value;};
 let sales=[],expenses=[],tasks=[],herd=[],lots=[],health=[],repro=[],financeLoad=0,agendaLoad=0;
-function setNav(){const nav=$('mgFarmFinanceNav');if(nav)nav.hidden=!!mgFarm&&!manager();const weather=$('mgFarmWeather');if(weather)weather.hidden=false;}
+function setNav(){document.querySelectorAll('[data-management-planning]').forEach(node=>node.hidden=mgFarmRole==='employee');const nav=$('mgFarmFinanceNav');if(nav)nav.hidden=!!mgFarm&&!manager();const weather=$('mgFarmWeather');if(weather)weather.hidden=false;}
 function kpi(label,value){return '<div><small>'+E(label)+'</small><strong>'+E(value)+'</strong></div>';}
 function rows(items,empty,size){return items.join('')||'<tr><td colspan="'+size+'">'+E(empty)+'</td></tr>';}
 async function requireFarm(write=false){
@@ -30,8 +30,8 @@ async function requireFarm(write=false){
 }
 function renderFinance(){
  const month=$('mgFarmFinanceMonth').value||today().slice(0,7), totals=summarize(sales,expenses,month), filter=$('mgFarmFinanceFilter').value;
- $('mgFarmFinanceTotals').innerHTML=kpi('Vendas no mês',brl(totals.sold))+kpi('Recebido no mês',brl(totals.received))+kpi('Gastos no mês',brl(totals.spent))+kpi('Saldo do mês',brl(totals.balance))+kpi('A receber · todas as datas',brl(totals.pending));
- $('mgFarmFinanceLots').innerHTML=rows(totals.lots.map(x=>'<tr><td>'+E(x.label)+'</td>'+[x.sold,x.received,x.spent,x.received-x.spent].map(v=>'<td>'+E(brl(v))+'</td>').join('')+'</tr>'),'Sem movimentações por lote no mês.',5);
+ $('mgFarmFinanceTotals').innerHTML=kpi('Vendas no mês',brl(totals.sold))+kpi('Recebido no mês',brl(totals.received))+kpi('Gastos no mês',brl(totals.spent))+kpi('Resultado estimado',brl(totals.result))+kpi('Saldo de caixa',brl(totals.balance))+kpi('A receber · todas as datas',brl(totals.pending));
+ $('mgFarmFinanceLots').innerHTML=rows(totals.lots.map(x=>'<tr><td>'+E(x.label)+'</td>'+[x.sold,x.received,x.spent,x.sold-x.spent,x.received-x.spent].map(v=>'<td>'+E(brl(v))+'</td>').join('')+'</tr>'),'Sem movimentações por lote no mês.',6);
  const filtered=sales.filter(s=>filter==='pending'?!s.received_on&&!s.cancelled_at:monthOf(s.sale_date)===month||monthOf(s.received_on)===month);
  $('mgFarmFinanceRows').innerHTML=rows(filtered.map(s=>{
   const state=s.cancelled_at?'Cancelada':s.received_on?'Recebida':!Number(s.amount)?'Sem valor informado':s.due_date&&s.due_date<today()?'Em atraso':'A receber';
@@ -130,8 +130,39 @@ async function loadWeather(f,force=false){
   msg('mgFarmWeatherStatus','Fonte: Climatempo · previsão para o município.');
  }catch(e){if(run===weatherRun)msg('mgFarmWeatherStatus',e.message);}
 }
+let nextFinancePanel=null;
+function showFinancePanel(panel){
+ $('mgFarmFinanceResult').hidden=panel!=='result';
+ $('mgFarmFinanceSales').hidden=panel!=='sales';
+ $('mgFarmFinanceFilterLabel').hidden=panel!=='sales';
+ document.querySelectorAll('[data-finance-panel]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.financePanel===panel)));
+}
+for(const host of document.querySelectorAll('[data-mg-area]')){
+ const root=host.closest('section').id,finance=host.dataset.mgArea==='finance';
+ const nav=document.createElement('nav');nav.className='mg-ops-nav';nav.setAttribute('aria-label',finance?'Financeiro da Fazenda':'Manejo');
+ const routes=finance?[['financeiroFazenda','Resultado'],['financeiroFazenda','Vendas'],['gastos','Gastos']]:[['agendaManejo','Agenda'],['planejamento','Alimentos e planos'],['nutricao','Fornecimento']];
+ for(const [index,[id,label]] of routes.entries()){
+  const node=document.createElement(finance&&id==='financeiroFazenda'&&root===id?'button':'a');
+  node.textContent=label;
+  if(node.tagName==='BUTTON'){
+   node.type='button';node.dataset.financePanel=index===0?'result':'sales';
+   node.onclick=()=>showFinancePanel(node.dataset.financePanel);
+  }else{
+   node.href='#'+id;
+   if(root===id)node.setAttribute('aria-current','page');
+   if(!finance&&id==='planejamento')node.dataset.managementPlanning='true';
+   node.onclick=e=>{
+    if(finance&&id==='financeiroFazenda'&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey)nextFinancePanel=index===0?'result':'sales';
+    return mgNavigate(e,id,node);
+   };
+  }
+  nav.append(node);
+ }
+ host.replaceChildren(nav);
+}
+showFinancePanel('result');
 window.mgRefreshManagementAgenda=()=>{if($('agendaManejo').classList.contains('active'))loadAgenda();};
-window.mgFarmOpsView=function(id){if(id==='financeiroFazenda')loadFinance();if(id==='agendaManejo')loadAgenda();if(id==='inicio'&&mgFarm)loadWeather(mgFarm);setNav();};
+window.mgFarmOpsView=function(id){if(id==='financeiroFazenda'){showFinancePanel(nextFinancePanel||'result');nextFinancePanel=null;loadFinance();}if(id==='gastos'){msg('mgFarmExpenseStatus','');loadExpenses().catch(e=>msg('mgFarmExpenseStatus',e.message));}if(id==='agendaManejo')loadAgenda();if(id==='inicio'&&mgFarm)loadWeather(mgFarm);setNav();};
 window.addEventListener('mg:plan-ready',()=>{setNav();if(mgFarm)loadWeather(mgFarm);});
 window.addEventListener('online',()=>{if(mgFarm)loadWeather(mgFarm,true);});
 $('mgFarmFinanceMonth').value=today().slice(0,7);

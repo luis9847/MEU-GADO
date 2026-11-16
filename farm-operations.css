@@ -28,3 +28,8 @@
 .mg-ops-weather-days {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100px,100%),1fr));gap:8px}
 .mg-ops-weather a {display:inline-block;margin-top:8px;color:#087240;font-weight:700;font-size:.85rem}
 @media(max-width:520px){.mg-ops-bar label{flex:1 0 100%}.mg-ops-dialog{padding:14px}}
+.mg-ops-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.mg-ops-nav a,.mg-ops-nav button{display:inline-flex;align-items:center;min-height:42px;padding:8px 14px;border:1px solid #cbded3;border-radius:10px;background:#fff;color:#12362a;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.mg-ops-nav [aria-current=page],.mg-ops-nav [aria-pressed=true]{border-color:#107946;background:#e7f5ec;color:#075c34}
+.mg-ops-nav a:hover,.mg-ops-nav button:hover{border-color:#107946}
+.mg-ops-nav [hidden],[data-mg-area] [hidden]{display:none!important}
