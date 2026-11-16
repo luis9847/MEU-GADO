@@ -1454,7 +1454,7 @@ html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
 }
 </style>
 <link rel="stylesheet" href="/plans.css?v=1">
-<link rel="stylesheet" href="/farm-operations.css?v=3">
+<link rel="stylesheet" href="/farm-operations.css?v=4">
 <script src="/plans-core.js?v=2"></script>
 <script src="/plans-app.js?v=3"></script>
 <link rel="stylesheet" href="/billing.css?v=2">
@@ -1683,13 +1683,6 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <div class="market-compare"><span>Boi gordo</span><div class="market-compare-track"><i id="dashBoiBar"></i></div><strong id="dashBoiBarValue">—</strong></div>
       <div class="market-compare"><span>Vaca gorda</span><div class="market-compare-track"><i id="dashVacaBar"></i></div><strong id="dashVacaBarValue">—</strong></div>
     </div>
-  </div>
-
-  <div class="card mg-ops-weather" id="mgFarmWeather">
-    <div class="dash-section-head"><div><b>Previsão da fazenda</b><small id="mgFarmWeatherCity">Município da propriedade</small></div><button type="button" id="mgFarmWeatherRefresh">Atualizar</button></div>
-    <p id="mgFarmWeatherStatus" role="status"></p>
-    <div class="mg-ops-weather-days" id="mgFarmWeatherDays"></div>
-    <a id="mgFarmWeatherLink" href="https://www.climatempo.com.br/previsao-do-tempo" target="_blank" rel="noopener noreferrer" hidden>Consultar no Climatempo ↗</a>
   </div>
 
   <div class="dashboard-kpis">
@@ -2165,6 +2158,12 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <div id="mgFarmFinanceResult">
       <div id="mgFarmFinanceTotals" class="mg-ops-kpis"></div>
       <p class="mg-ops-hint">Resultado estimado = vendas do mês menos gastos registrados no mês. Saldo de caixa = recebimentos do mês menos gastos registrados. O resultado pode mudar se faltarem valores de venda ou despesas.</p>
+      <div class="mg-ops-history">
+        <div class="mg-ops-history-head"><div><h2>Histórico mensal</h2><p class="mg-ops-hint">Compare os meses com movimentação registrada e veja o total do período.</p></div><label>Ano <select id="mgFinanceHistoryYear"><option value="">Todos os anos</option></select></label></div>
+        <div class="mg-ops-scroll" tabindex="0" aria-label="Histórico financeiro por mês">
+          <table><thead><tr><th scope="col">Mês</th><th scope="col">Vendas</th><th scope="col">Recebido</th><th scope="col">Gastos</th><th scope="col">Resultado estimado</th><th scope="col">Saldo de caixa</th></tr></thead><tbody id="mgFinanceHistoryRows"></tbody><tfoot id="mgFinanceHistoryTotal"></tfoot></table>
+        </div>
+      </div>
       <div class="mg-ops-scroll" tabindex="0" aria-label="Resumo financeiro por lote">
         <table><caption>Resumo por lote no mês</caption><thead><tr><th scope="col">Lote</th><th scope="col">Vendas</th><th scope="col">Recebido</th><th scope="col">Gastos</th><th scope="col">Resultado estimado</th><th scope="col">Saldo de caixa</th></tr></thead><tbody id="mgFarmFinanceLots"></tbody></table>
       </div>
@@ -8218,7 +8217,7 @@ run();document.addEventListener('DOMContentLoaded',run);
 })();
 </script>
 <script src="/billing-client.js?v=5"></script>
-<script src="/farm-operations.js?v=3"></script>
+<script src="/farm-operations.js?v=4"></script>
 <script src="/postpartum.js?v=1"></script>
 </body></html>
 

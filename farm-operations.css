@@ -1,4 +1,4 @@
-#mgFarmFinanceNav[hidden], .mg-ops [hidden], #mgFarmWeather [hidden] {display:none !important}
+#mgFarmFinanceNav[hidden], .mg-ops [hidden] {display:none !important}
 .mg-ops-card {padding:16px;min-width:0}
 .mg-ops-bar,.mg-ops-actions {display:flex;flex-wrap:wrap;align-items:end;gap:8px}
 .mg-ops label {display:grid;gap:4px;font-weight:600;font-size:.9rem}
@@ -6,7 +6,7 @@
 .mg-ops td.mg-ops-actions {display:table-cell;min-width:140px}
 .mg-ops td button {margin:2px 0}
 .mg-ops-kpis {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(155px,100%),1fr));gap:8px}
-.mg-ops-kpis>div,.mg-ops-weather-days>div {background:#f2f7f4;border:1px solid #dce7df;border-radius:10px;padding:10px;display:grid;gap:4px}
+.mg-ops-kpis>div {background:#f2f7f4;border:1px solid #dce7df;border-radius:10px;padding:10px;display:grid;gap:4px}
 .mg-ops-kpis strong {font-size:1.15rem}
 .mg-ops-hint,.mg-ops td small {color:#4c6259}
 .mg-ops-hint {margin:12px 0;font-size:.85rem}
@@ -22,11 +22,6 @@
 .mg-ops-dialog form {display:grid;gap:8px}
 .mg-ops-dialog h2 {margin:0 0 6px;font-size:1.2rem}
 .mg-ops-dialog input,.mg-ops-dialog select,.mg-ops-dialog textarea {min-width:0;width:100%}
-.mg-ops-weather {margin:0 0 14px;padding:14px}
-.mg-ops-weather .dash-section-head {flex-wrap:wrap}
-.mg-ops-weather p {margin:8px 0;color:#405a50;font-size:.85rem}
-.mg-ops-weather-days {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100px,100%),1fr));gap:8px}
-.mg-ops-weather a {display:inline-block;margin-top:8px;color:#087240;font-weight:700;font-size:.85rem}
 @media(max-width:520px){.mg-ops-bar label{flex:1 0 100%}.mg-ops-dialog{padding:14px}}
 .mg-ops-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .mg-ops-nav a,.mg-ops-nav button{display:inline-flex;align-items:center;min-height:42px;padding:8px 14px;border:1px solid #cbded3;border-radius:10px;background:#fff;color:#12362a;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
@@ -39,3 +34,11 @@
 .mg-postpartum-dialog label{display:flex;align-items:center;gap:9px;min-height:36px}
 .mg-postpartum-dialog input[type=checkbox]{width:18px;height:18px;flex:0 0 18px;accent-color:#087240}
 .mg-postpartum-dialog [hidden]{display:none!important}
+
+.mg-ops-history{margin-top:18px}
+.mg-ops-history-head{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.mg-ops-history-head h2{margin:0;font-size:1.1rem}
+.mg-ops-history-head .mg-ops-hint{margin:4px 0}
+.mg-ops-history table{min-width:640px}
+.mg-ops-history td{white-space:nowrap}
+.mg-ops-history tfoot{background:#eaf4ee;font-weight:700}

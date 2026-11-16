@@ -13,13 +13,25 @@ function summarize(sales,expenses,month){
  for(const e of expenses){if(monthOf(e.expense_date)!==month)continue;const v=cents(e.amount);spent+=v;add(e.lot,'spent',v);}
  return {sold,received,spent,pending,result:sold-spent,balance:received-spent,lots:[...lots.values()].sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'))};
 }
-if(typeof module==='object'&&module.exports){module.exports={summarize};return;}
+function monthlyHistory(sales,expenses){
+ const months=new Map();
+ function add(date,key,amount){
+  const month=monthOf(date);
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))return;
+  if(!months.has(month))months.set(month,{month,sold:0,received:0,spent:0});
+  months.get(month)[key]+=cents(amount);
+ }
+ for(const s of sales)if(!s.cancelled_at){add(s.sale_date,'sold',s.amount);add(s.received_on,'received',s.amount);}
+ for(const e of expenses)add(e.expense_date,'spent',e.amount);
+ return [...months.values()].sort((a,b)=>b.month.localeCompare(a.month)).map(m=>({...m,result:m.sold-m.spent,balance:m.received-m.spent}));
+}
+if(typeof module==='object'&&module.exports){module.exports={summarize,monthlyHistory};return;}
 const E=val=>mgEsc(val), manager=()=>['owner','manager','admin'].includes(mgFarmRole);
 const canWrite=()=>navigator.onLine&&MGPlansCore.writable(mgPlanState,mgPlanNow());
 const complete=()=>mgHasPlanFeature('expenses')&&manager();
 const msg=(id,value)=>{$(id).textContent=value;};
 let sales=[],expenses=[],tasks=[],herd=[],lots=[],health=[],repro=[],financeLoad=0,agendaLoad=0;
-function setNav(){document.querySelectorAll('[data-management-planning]').forEach(node=>node.hidden=mgFarmRole==='employee');const nav=$('mgFarmFinanceNav');if(nav)nav.hidden=!!mgFarm&&!manager();const weather=$('mgFarmWeather');if(weather)weather.hidden=false;}
+function setNav(){document.querySelectorAll('[data-management-planning]').forEach(node=>node.hidden=mgFarmRole==='employee');const nav=$('mgFarmFinanceNav');if(nav)nav.hidden=!!mgFarm&&!manager();}
 function kpi(label,value){return '<div><small>'+E(label)+'</small><strong>'+E(value)+'</strong></div>';}
 function rows(items,empty,size){return items.join('')||'<tr><td colspan="'+size+'">'+E(empty)+'</td></tr>';}
 async function requireFarm(write=false){
@@ -27,6 +39,19 @@ async function requireFarm(write=false){
  const f=await mgGetFarm();await mgRefreshPlan(f);
  if(write&&!canWrite())throw Error('Seu acesso precisa estar liberado para salvar.');
  return f;
+}
+const financeColumns=['sold','received','spent','result','balance'];
+const monthLabel=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric',timeZone:'UTC'});
+function renderMonthlyHistory(){
+ const all=monthlyHistory(sales,expenses), picker=$('mgFinanceHistoryYear'), selected=picker.value;
+ const years=[...new Set(all.map(m=>m.month.slice(0,4)))];
+ picker.replaceChildren(new Option('Todos os anos',''),...years.map(y=>new Option(y,y)));
+ picker.value=years.includes(selected)?selected:'';
+ const list=all.filter(m=>!picker.value||m.month.startsWith(picker.value+'-'));
+ const values=m=>financeColumns.map(k=>'<td>'+E(brl(m[k]))+'</td>').join('');
+ const total=Object.fromEntries(financeColumns.map(k=>[k,list.reduce((sum,m)=>sum+m[k],0)]));
+ $('mgFinanceHistoryRows').innerHTML=rows(list.map(m=>'<tr><th scope="row">'+E(monthLabel.format(new Date(m.month+'-01T00:00:00Z')))+'</th>'+values(m)+'</tr>'),'Nenhum mês com movimentação registrada.',6);
+ $('mgFinanceHistoryTotal').innerHTML=list.length?'<tr><th scope="row">Total</th>'+values(total)+'</tr>':'';
 }
 function renderFinance(){
  const month=$('mgFarmFinanceMonth').value||today().slice(0,7), totals=summarize(sales,expenses,month), filter=$('mgFarmFinanceFilter').value;
@@ -45,7 +70,7 @@ async function loadFinance(){
   const data=await Promise.all([mgReportRows('farm_animal_sales','*',true),mgReportRows('expenses')]);
   if(run!==financeLoad||mgFarm?.id!==f.id)return;
   [sales,expenses]=data;sales.sort((a,b)=>b.sale_date.localeCompare(a.sale_date)||b.id-a.id);
-  renderFinance();$('mgFarmFinanceContent').hidden=false;msg('mgFarmFinanceStatus','');
+  renderFinance();renderMonthlyHistory();$('mgFarmFinanceContent').hidden=false;msg('mgFarmFinanceStatus','');
  }catch(e){if(run===financeLoad)msg('mgFarmFinanceStatus',e.message);}
 }
 function editSale(id){
@@ -112,24 +137,6 @@ async function openTask(t){
  if(t.kind==='move'){if(!a)throw Error('Selecione um animal ativo na tarefa para registrar a mudança de lote.');await loadLots();openMoveAnimal(a.id);if(l)$('moveLot').value=l.name;}
 }
 async function buttonRun(button,errorId,fn){button.disabled=true;msg(errorId,'');try{await fn();}catch(e){msg(errorId,e.message);}finally{button.disabled=false;}}
-let weatherKey='',weatherRun=0,weatherAt=0;
-async function loadWeather(f,force=false){
- if(!f||!$('mgFarmWeather'))return;const city=String(f.city||'').trim(),uf=String(f.state||'').trim();const key=[f.id,city,uf].join(':');const changed=key!==weatherKey;
- if(!force&&!changed&&(Date.now()-weatherAt)<300000)return;
- weatherKey=key;weatherAt=Date.now();const run=++weatherRun;
- msg('mgFarmWeatherCity',[city,uf].filter(Boolean).join(' / ')||'Município não cadastrado');$('mgFarmWeatherDays').replaceChildren();$('mgFarmWeatherLink').hidden=!city;$('mgFarmWeatherLink').href='https://www.climatempo.com.br/previsao-do-tempo';
- if(!city||!uf){msg('mgFarmWeatherStatus','Preencha o município e a UF no cadastro da fazenda.');return;}
- if(!navigator.onLine){weatherAt=0;msg('mgFarmWeatherStatus','Conecte-se para consultar a previsão.');return;}
- msg('mgFarmWeatherStatus','Consultando previsão regional…');
- try{
-  const {data,error}=await mgSb.functions.invoke('farm-weather',{body:{farm_id:Number(f.id)}});
-  if(run!==weatherRun||mgFarm?.id!==f.id)return;
-  if(error)throw Error('Não foi possível atualizar a previsão agora.');
-  if(!data?.days?.length){msg('mgFarmWeatherStatus',data?.message||'Previsão indisponível. Consulte no Climatempo.');return;}
-  $('mgFarmWeatherDays').innerHTML=data.days.map(d=>'<div><b>'+E(date(d.date).slice(0,5))+'</b><span>'+E(d.min+'° a '+d.max+'°C')+'</span><small>'+E(d.rain==null?'Chuva: —':'Chuva: '+d.rain+'%')+'</small></div>').join('');
-  msg('mgFarmWeatherStatus','Fonte: Climatempo · previsão para o município.');
- }catch(e){if(run===weatherRun)msg('mgFarmWeatherStatus',e.message);}
-}
 let nextFinancePanel=null;
 function showFinancePanel(panel){
  $('mgFarmFinanceResult').hidden=panel!=='result';
@@ -162,12 +169,12 @@ for(const host of document.querySelectorAll('[data-mg-area]')){
 }
 showFinancePanel('result');
 window.mgRefreshManagementAgenda=()=>{if($('agendaManejo').classList.contains('active'))loadAgenda();};
-window.mgFarmOpsView=function(id){if(id==='financeiroFazenda'){showFinancePanel(nextFinancePanel||'result');nextFinancePanel=null;loadFinance();}if(id==='gastos'){msg('mgFarmExpenseStatus','');loadExpenses().catch(e=>msg('mgFarmExpenseStatus',e.message));}if(id==='agendaManejo')loadAgenda();if(id==='inicio'&&mgFarm)loadWeather(mgFarm);setNav();};
-window.addEventListener('mg:plan-ready',()=>{setNav();if(mgFarm)loadWeather(mgFarm);});
-window.addEventListener('online',()=>{if(mgFarm)loadWeather(mgFarm,true);});
+window.mgFarmOpsView=function(id){if(id==='financeiroFazenda'){showFinancePanel(nextFinancePanel||'result');nextFinancePanel=null;loadFinance();}if(id==='gastos'){msg('mgFarmExpenseStatus','');loadExpenses().catch(e=>msg('mgFarmExpenseStatus',e.message));}if(id==='agendaManejo')loadAgenda();setNav();};
+window.addEventListener('mg:plan-ready',setNav);
 $('mgFarmFinanceMonth').value=today().slice(0,7);
 $('mgFarmFinanceMonth').onchange=$('mgFarmFinanceFilter').onchange=renderFinance;
 $('mgFarmFinanceReload').onclick=loadFinance;
+$('mgFinanceHistoryYear').onchange=renderMonthlyHistory;
 $('mgFarmFinanceRows').onclick=e=>{const b=e.target.closest('[data-sale]');if(b)editSale(b.dataset.sale);};
 $('mgFarmSaleToday').onclick=()=>$('mgFarmSaleForm').received.value=today();
 $('mgFarmSaleClose').onclick=()=>$('mgFarmSaleDialog').close();
@@ -190,5 +197,4 @@ $('mgFarmTaskRows').onclick=e=>{const b=e.target.closest('button');if(!b)return;
  buttonRun(b,'mgFarmAgendaStatus',async()=>{await writeTask(id,{status:b.dataset.taskDone?'done':b.dataset.taskCancel?'cancelled':'pending'},b.dataset.taskReopen?'done':'pending');await loadAgenda();});
 };
 $('mgFarmAutoRows').onclick=e=>{const b=e.target.closest('[data-task-auto]');if(!b||!manager()||!canWrite())return;const [kind,id]=b.dataset.taskAuto.split(':');buttonRun(b,'mgFarmAgendaStatus',async()=>{if(kind==='health'){await loadHealth();mgAlertRegisterApplication(Number(id));}else {await loadRepro();openNewRepro();$('ranimal').value=id;const option=[...$('rtype').options].find(o=>o.value==='Parto');if(option)$('rtype').value=option.value;updateReproForm();}});};
-$('mgFarmWeatherRefresh').onclick=()=>{if(mgFarm)loadWeather(mgFarm,true);};
 })();

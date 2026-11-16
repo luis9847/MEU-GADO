@@ -30,12 +30,13 @@ const root = path.resolve(__dirname, '..');
       const now=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
       const fixtures={
         farm_animal_sales:[{id:1,animal_number:'210',sale_date:now,amount:90,lot:'A'}],
-        expenses:[{id:1,expense_date:now,amount:15,lot:'A'}],
+        expenses:[{id:1,expense_date:now,amount:15,lot:'A'},{id:2,expense_date:'2024-06-01',amount:30,lot:'A'}],
         farm_management_tasks:[],animals:[{id:15,number:'321',name:'Estrela',category:'Vaca',lot:'A',status:'active'}],
         lots:[{id:7,name:'A',active:true}],health_events:[{id:9,animal_id:15,event_type:'Vacina',product:'Reforço',next_due_date:now}],reproductive_events:[]
       };
       mgSb.rpc=async()=>({data:{farm_id:999,plan:'complete',status:'active',server_now:new Date().toISOString(),features:{core:true,expenses:true,planning:true,performance:true,reports:true}},error:null});
-      Object.defineProperty(mgSb,'functions',{value:{invoke:async()=>({data:{days:[{date:now,min:17,max:28,rain:20}]},error:null})}});
+      window.__weatherRequests=0;
+      Object.defineProperty(mgSb,'functions',{value:{invoke:async()=>{window.__weatherRequests++;}}});
       mgReportRows=async (table,columns)=>{
         if(table==='health_events'&&columns.split(',').includes('lot'))throw Error('column health_events.lot does not exist');
         if(!Object.hasOwn(fixtures,table))throw Error('Unexpected dependency: '+table);
@@ -55,8 +56,8 @@ const root = path.resolve(__dirname, '..');
       loadLots=async()=>{lotsData=fixtures.lots;};
       await mgRefreshPlan(mgFarm,true);show('inicio');
     });
-    assert.match(await page.locator('#mgFarmWeatherCity').innerText(),/Varginha \/ MG/);
-    await page.locator('#mgFarmWeatherDays').getByText('Chuva: 20%').waitFor();
+    assert.equal(await page.locator('#mgFarmWeather').count(),0);
+    assert.equal(await page.evaluate(()=>window.__weatherRequests),0);
     await page.evaluate(()=>show('financeiroFazenda'));
     await page.locator('#mgFarmFinanceTotals').getByText('Resultado estimado').waitFor();
     assert.match(await page.locator('#mgFarmFinanceTotals').innerText(),/Resultado estimado\s+R\$\s*75,00/);
@@ -72,6 +73,14 @@ const root = path.resolve(__dirname, '..');
     await page.locator('#gastos').getByRole('link',{name:'Resultado',exact:true}).click();
     await page.locator('#mgFarmFinanceTotals').getByText('Saldo de caixa').waitFor();
     assert.match(await page.locator('#mgFarmFinanceTotals').innerText(),/Saldo de caixa\s+R\$\s*75,00/);
+    assert.equal(await page.locator('#mgFinanceHistoryRows tr').count(),2);
+    assert.match(await page.locator('#mgFinanceHistoryRows').innerText(),/junho de 2024/);
+    const cash=(row,i)=>row.locator('td').nth(i).innerText();
+    assert.match(await cash(page.locator('#mgFinanceHistoryTotal'),2),/45,00/);
+    assert.match(await cash(page.locator('#mgFinanceHistoryTotal'),4),/45,00/);
+    await page.locator('#mgFinanceHistoryYear').selectOption('2024');
+    assert.equal(await page.locator('#mgFinanceHistoryRows tr').count(),1);
+    assert.match(await cash(page.locator('#mgFinanceHistoryTotal'),4),/-R\$\s*30,00/);
     assert.ok(await page.evaluate(()=>document.querySelector('.main').getBoundingClientRect().width<=window.innerWidth));
     await page.evaluate(()=>show('agendaManejo'));
     await page.locator('#agendaManejo').getByRole('link',{name:'Fornecimento'}).click();
@@ -92,6 +101,6 @@ const root = path.resolve(__dirname, '..');
     await page.locator('#mgFarmTaskFilter').selectOption('done');
     await page.locator('#mgFarmTaskRows').getByText('Concluída',{exact:true}).waitFor();
     assert.deepEqual(errors,[]);
-    console.log('PASS: mobile finance receipt and totals, reminders, new task with animal, prefilled weight, completed task, weather fixture');
+    console.log('PASS: mobile finance receipt and totals, reminders, new task with animal, prefilled weight, completed task, monthly history and year filter, weather disabled');
   } finally { await browser.close(); server.close(); }
 })().catch(e=>{ console.error(e);process.exit(1); });

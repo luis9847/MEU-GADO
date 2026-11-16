@@ -17,6 +17,17 @@ test('sale and receipt contribute to their respective periods, while canceled sa
   assert.equal(operations.summarize(sales,expenses,'2026-10').sold,100010);
 });
 
+test('combined history sorts years and records sales and cash only in their own months', () => {
+  const sales=[{sale_date:'2025-12-28',received_on:'2026-01-03',amount:'200.52'},
+    {sale_date:'2026-01-02',amount:'50.15'}, {sale_date:'2024-10-21',amount:999,cancelled_at:'2024-10-22'}];
+  const expenses=[{expense_date:'2025-12-30',amount:'30.99'},{expense_date:'2026-02-02',amount:'40.02'}];
+  assert.deepEqual(operations.monthlyHistory(sales,expenses),[
+    {month:'2026-02',sold:0,received:0,spent:4002,result:-4002,balance:-4002},
+    {month:'2026-01',sold:5015,received:20052,spent:0,result:5015,balance:20052},
+    {month:'2025-12',sold:20052,received:0,spent:3099,result:16953,balance:-3099}
+  ]);
+});
+
 test('Climatempo uses the matching municipality and only publishes current sanitized forecast fields', async () => {
   const inputs = [];
   const result = await getForecast({city:'São Paulo',state:' sp ',token:'test-token',today:'2026-11-16',fetcher:async url=>{
