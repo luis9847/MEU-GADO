@@ -30,7 +30,7 @@ const root = path.resolve(__dirname, '..');
       const now=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
       const fixtures={
         farm_animal_sales:[{id:1,animal_number:'210',sale_date:now,amount:90,lot:'A'}],
-        expenses:[{id:1,expense_date:now,amount:15,lot:'A'},{id:2,expense_date:'2024-06-01',amount:30,lot:'A'}],
+        expenses:[{id:1,expense_date:now,category:'RAÇÃO',description:'Ração de novembro',animal_id:15,amount:15,lot:''},{id:2,expense_date:'2024-06-01',amount:30,lot:'A'}],
         farm_management_tasks:[],animals:[{id:15,number:'321',name:'Estrela',category:'Vaca',lot:'A',status:'active'},{id:16,number:'322',name:'Lua',category:'Vaca',lot:'A',status:'active'},{id:17,number:'323',name:'Sol',category:'Vaca',lot:'A',status:'active'}],
         lots:[{id:7,name:'A',active:true}],health_events:[{id:9,animal_id:15,event_type:'Vacina',product:'Reforço',next_due_date:now}],reproductive_events:[]
       };
@@ -62,7 +62,12 @@ const root = path.resolve(__dirname, '..');
         }};
         return q;
       };
-      api=async p=>p==='/api/expenses'?fixtures.expenses:p==='/api/dashboard'?{alerts:await window.mgFarmSaleAlerts()}:[];
+      api=async(p,o)=>{
+        if(p==='/api/expenses')return structuredClone(fixtures.expenses);
+        if(p==='/api/expenses/1'&&o?.method==='PUT'){Object.assign(fixtures.expenses[0],JSON.parse(o.body));return {ok:true};}
+        if(p==='/api/dashboard')return {alerts:await window.mgFarmSaleAlerts()};
+        return [];
+      };
       dashboard=async()=>{};mgDatabaseReadAlertIds=async()=>new Set();
       window.__todaySale=now;
       loadAnimals=async()=>{animalsData=fixtures.animals;};
@@ -165,7 +170,23 @@ const root = path.resolve(__dirname, '..');
     await page.getByRole('button',{name:'Registrar venda e dar baixa'}).click();
     await page.locator('#mgNewSaleDialog').waitFor({state:'hidden'});
     assert.equal(await page.evaluate(()=>window.__salesRequests[2].p_due_date),planned);
+    await page.evaluate(()=>mgNavigate(null,'gastos'));
+    const expense=page.locator('#expenseRows tr').filter({hasText:'Ração de novembro'});
+    await expense.getByText('Sem lote',{exact:true}).waitFor();
+    await page.getByRole('button',{name:'+ Novo gasto',exact:true}).click();
+    assert.equal(await page.locator('#eexpenseLot').inputValue(),'');
+    await page.evaluate(()=>closeModal('expenseModal'));
+    await expense.getByRole('button',{name:'Editar',exact:true}).click();
+    assert.equal(await page.locator('#ecat').inputValue(),'Ração');
+    await page.locator('#expenseModal').getByLabel('Lote opcional').selectOption('A');
+    await page.locator('#expenseSaveBtn').click();
+    await expense.getByText('A',{exact:true}).waitFor();
+    assert.equal(await page.evaluate(()=>window.__salesFixture.expenses[0].animal_id),15);
+    await page.locator('#gastos').getByRole('link',{name:'Resultado',exact:true}).click();
+    const lot=page.locator('#mgFarmFinanceLots tr').filter({has:page.getByRole('cell',{name:'A',exact:true})});
+    await lot.getByText(/15,00/).waitFor();
+    assert.match(await lot.locator('td').nth(3).innerText(),/15,00/);
     assert.deepEqual(errors,[]);
-    console.log('PASS: mobile finance receipt and totals, reminders, new task with animal, prefilled weight, completed task, monthly history, dedicated sale, immediate and deferred receipt via notifications');
+    console.log('PASS: mobile finance receipt and totals, reminders, new task with animal, prefilled weight, completed task, monthly history, dedicated sale, immediate and deferred receipt via notifications, and expense allocation to a lot');
   } finally { await browser.close(); server.close(); }
 })().catch(e=>{ console.error(e);process.exit(1); });

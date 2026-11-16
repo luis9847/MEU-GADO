@@ -2250,7 +2250,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <button class="btn primary" onclick="openNewExpense()">+ Novo gasto</button>
   </div>
   <div class="card mg-ops-card">
-    <p id="mgFarmExpenseStatus" role="status"></p><div class="mg-ops-scroll" tabindex="0" aria-label="Gastos registrados"><table><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead>
+    <p id="mgFarmExpenseStatus" role="status"></p><div class="mg-ops-scroll" tabindex="0" aria-label="Gastos registrados"><table><thead><tr><th scope="col">Data</th><th scope="col">Categoria</th><th scope="col">Descrição</th><th scope="col">Lote</th><th scope="col">Valor</th><th scope="col">Ação</th></tr></thead>
     <tbody id="expenseRows"></tbody></table></div>
   </div>
 </section>
@@ -2939,6 +2939,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <label>Valor (R$) *<input id="eamount" type="number" step=".01" min="0.01" placeholder="Ex: 1250.00"></label>
       <label>Data<input id="edate" type="date"></label>
     </div>
+    <label>Lote <small>opcional</small><select id="eexpenseLot" aria-describedby="eexpenseLotHelp"><option value="">Sem lote</option></select><small id="eexpenseLotHelp">Escolha o lote para incluir o gasto no resultado dele. Para despesas gerais da fazenda, deixe em Sem lote.</small></label>
     <label>Descrição *<input id="edescription" placeholder="Ex: 20 sacas de ração"></label>
     <label>Observação <small>opcional</small><textarea id="enotes"></textarea></label>
     <button id="expenseSaveBtn" class="wide-primary" onclick="saveExpense()">Salvar gasto</button>
@@ -4742,6 +4743,7 @@ async function loadLots(){
   </div>`).join(''):'<div class="card empty">Nenhum lote cadastrado. Clique em “Novo lote” para começar.</div>';
   const lotOptions=lotsData.filter(x=>x.active).map(x=>`<option value="${mgEsc(x.name)}">${mgEsc(x.name)}</option>`).join('');
   if(document.getElementById('batchLot')) batchLot.innerHTML=lotOptions;
+  if(document.getElementById('expenseModal')?.classList.contains('show'))mgExpenseLotOptions();
   if(document.getElementById('alot')){
     const current=alot.value;
     alot.innerHTML='<option value="">Nenhum (sem lote)</option>'+lotOptions;
@@ -5307,13 +5309,14 @@ async function loadExpenses(){
       <td>${mgEsc(e.expense_date)}</td>
       <td>${mgEsc(mgNormalizeLabel(e.category))}${autoNutrition?' <span style="font-size:9px;padding:3px 6px;border-radius:999px;background:#e8f7ee;color:#08783c;font-weight:800">AUTOMÁTICO</span>':''}</td>
       <td>${mgEsc(e.description||'-')}</td>
+      <td>${mgEsc(e.lot||'Sem lote')}</td>
       <td>${money(e.amount)}</td>
       <td>${autoNutrition
         ?'<span style="font-size:10px;color:var(--muted)">Gerenciado pela Alimentação</span>'
         :`<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary" onclick="editExpense(${e.id})">Editar</button><button class="btn secondary delete-outline" onclick="deleteExpense(${e.id})">Excluir</button></div>`
       }</td>
     </tr>`;
-  }).join(''):'<tr><td colspan="5" class="empty">Nenhum gasto operacional lançado.</td></tr>';
+  }).join(''):'<tr><td colspan="6" class="empty">Nenhum gasto operacional lançado.</td></tr>';
 }
 
 async function deleteExpense(id){
@@ -5321,10 +5324,18 @@ async function deleteExpense(id){
   try{await api(`/api/expenses/${id}`,{method:'DELETE'});await Promise.all([loadExpenses(),dashboard()]);await refreshTrashBadge()}catch(e){alert('Não foi possível enviar o gasto para a Lixeira. '+(e?.message||''))}
 }
 
+function mgExpenseLotOptions(current=document.getElementById('eexpenseLot').value){
+  const field=document.getElementById('eexpenseLot');
+  const names=[...new Set(lotsData.filter(l=>l.active&&l.name).map(l=>l.name))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  field.replaceChildren(new Option('Sem lote',''),...names.map(name=>new Option(name,name)));
+  if(current&&!names.includes(current))field.add(new Option(current+' (lote anterior)',current));
+  field.value=current;
+}
 function openNewExpense(){
   editingExpenseId=null;
   expenseModalTitle.textContent='Novo gasto';expenseSaveBtn.textContent='Salvar gasto';
-  ecat.value='Ração';eamount.value='';edescription.value='';enotes.value='';
+  ecat.querySelector('[data-expense-original]')?.remove();
+  ecat.value='Ração';eamount.value='';edescription.value='';enotes.value='';mgExpenseLotOptions('');
   edate.value=new Date().toISOString().slice(0,10);
   openModal('expenseModal');
 }
@@ -5334,7 +5345,11 @@ async function editExpense(id){
   if(!e){alert('Gasto não encontrado.');return}
   editingExpenseId=id;
   expenseModalTitle.textContent='Editar gasto';expenseSaveBtn.textContent='Salvar alterações';
-  ecat.value=e.category||'Outros';edate.value=e.expense_date||'';eamount.value=e.amount||'';
+  ecat.querySelector('[data-expense-original]')?.remove();
+  const category=String(e.category||'Outros'),existing=[...ecat.options].find(o=>mgNormalizeLabel(o.value)===mgNormalizeLabel(category));
+  if(existing)ecat.value=existing.value;
+  else{const option=new Option(category,category);option.dataset.expenseOriginal='true';ecat.add(option);ecat.value=category;}
+  mgExpenseLotOptions(e.lot||'');edate.value=e.expense_date||'';eamount.value=e.amount||'';
   edescription.value=e.description||'';enotes.value=e.notes||'';
   openModal('expenseModal');
 }
@@ -5344,8 +5359,7 @@ async function saveExpense(){
     expense_date:edate.value,
     amount:Number(eamount.value),
     description:edescription.value.trim(),
-    animal_id:null,
-    lot:'',
+    lot:document.getElementById('eexpenseLot').value,
     notes:enotes.value.trim()
   };
   if(!data.category||!data.expense_date||!data.amount||data.amount<=0||!data.description){
