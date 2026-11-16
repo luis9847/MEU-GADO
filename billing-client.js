@@ -18,13 +18,14 @@
 <tr><th scope="row">Cria, recria, engorda e genética</th><td>Incluído</td><td>Incluído</td></tr>
 <tr><th scope="row">Lotes, pesagens e evolução do peso</th><td>Incluído</td><td>Incluído</td></tr>
 <tr><th scope="row">Saúde e reprodução</th><td>Incluído</td><td>Incluído</td></tr>
-<tr><th scope="row">Registro de alimentação</th><td>Incluído</td><td>Incluído</td></tr>
+<tr><th scope="row">Agenda de manejo e checklist pós-parto</th><td>Incluído</td><td>Incluído</td></tr>
+<tr><th scope="row">Registro de fornecimento de alimentos</th><td>Incluído</td><td>Incluído</td></tr>
 <tr><th scope="row">Modo Campo nos registros compatíveis</th><td>Incluído</td><td>Incluído</td></tr>
 <tr><th scope="row">Suporte para dúvidas de uso</th><td>Incluído</td><td>Incluído</td></tr>
-<tr><th scope="row">Controle de gastos</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr>
-<tr><th scope="row">Planejamento alimentar e custos</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr>
+<tr><th scope="row">Financeiro da fazenda: vendas, recebimentos, gastos e histórico mensal</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr>
+<tr><th scope="row">Planejamento alimentar por lote e estimativa de custos</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr>
 <tr><th scope="row">Painel de desempenho</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr>
-<tr><th scope="row">Relatórios em CSV e PDF com filtros</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr></tbody></table></div></details><p id="mgBillingPrice" class="mg-billing-price"></p><label for="mgBillingEmail">E-mail para o pagamento<input id="mgBillingEmail" type="email" required autocomplete="email"></label>
+<tr><th scope="row">Relatórios em CSV e PDF com filtros</th><td><span class="unavailable">Não incluído</span></td><td>Incluído</td></tr></tbody></table></div></details><p id="mgBillingPrice" class="mg-billing-price"></p><p id="mgBillingSavings" hidden></p><label for="mgBillingEmail">E-mail para o pagamento<input id="mgBillingEmail" type="email" required autocomplete="email"></label>
   <label class="mg-billing-consent"><input id="mgBillingConsent" type="checkbox" required><span id="mgBillingConsentText"></span></label><p>Você será direcionado ao Mercado Pago para escolher a forma de pagamento. O acesso será liberado após a confirmação no servidor, que pode levar alguns minutos.</p><p><a href="/?legal=terms" target="_blank" rel="noopener noreferrer">Termos de Uso</a> · <a href="/?legal=privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade</a></p><p>Você pode cancelar a renovação nesta tela e manter o acesso pelo período já pago. Para trocar o plano ou a periodicidade, cancele a renovação e aguarde o fim do período atual.</p><button id="mgBillingBuy" class="btn primary" type="submit">Continuar para pagamento</button></form><p id="mgBillingMessage" role="status" aria-live="polite"></p>`;
   document.body.append(dialog);$('mgBillingClose').onclick=()=>dialog.close();$('mgBillingPlan').onchange=$('mgBillingPeriod').onchange=()=>{price();$('mgBillingConsent').checked=false;};
   $('mgBillingForm').onsubmit=e=>{e.preventDefault();run(async()=>{
@@ -39,7 +40,8 @@
   $('mgBillingPeriod').disabled=pilot;if(pilot)$('mgBillingPeriod').value='monthly';
   const annual=$('mgBillingPeriod').value==='annual',amount=pilot?context?.pilot_offer?.amount:annual?p.annual:p.monthly;
   $('mgBillingPrice').textContent=money(amount)+' por '+(annual?'ano':'mês');
-  $('mgBillingFeatures').textContent=pilot?'Compra real de teste com acesso ao Completo. A assinatura renova mensalmente: cancele a renovação depois de verificar a cobrança e a liberação.':selected==='essential'?'Animais com nome, atividade, registros na associação e filiação; lotes, pesagens, saúde, reprodução, alimentação, Modo Campo compatível e suporte de uso.':'Todos os recursos do Essencial, mais gastos, planejamento alimentar e custos, desempenho e relatórios em CSV/PDF com filtros, incluindo registros, filiação e descendentes.';
+  $('mgBillingFeatures').textContent=pilot?'Compra real de teste com acesso ao Completo. A assinatura renova mensalmente: cancele a renovação depois de verificar a cobrança e a liberação.':selected==='essential'?'Organize até 150 animais ativos: cadastro, lotes, pesagens, saúde, reprodução, agenda de manejo, checklist pós-parto e registro de fornecimento. Inclui Modo Campo nos registros compatíveis.':'Para quem quer controlar custos, acompanhar vendas e planejar a alimentação, mesmo com menos de 150 animais. Inclui tudo do Essencial, financeiro com histórico mensal, planejamento por lote, painel de desempenho e relatórios em CSV e PDF.';
+  const savings=$('mgBillingSavings');savings.hidden=!annual||pilot;savings.textContent=annual&&!pilot?`Economize ${money(12*p.monthly-p.annual)} em relação a 12 mensalidades do mesmo plano.`:'';
   $('mgBillingConsentText').textContent=`Concordo com a assinatura de ${money(amount)} e a renovação automática ${annual?'a cada 12 meses':'mensal'}. Li os Termos de Uso e a Política de Privacidade disponíveis no site.`;
  }
  function action(text,fn){const b=document.createElement('button');b.type='button';b.className='btn secondary';b.textContent=text;b.onclick=()=>run(fn);return b;}

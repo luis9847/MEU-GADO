@@ -1,7 +1,7 @@
 // Altere a versão a cada publicação do painel. Assim, quem instalou o Meu
 // Gado recebe a interface e os scripts novos em vez de permanecer em cache
 // com uma versão anterior.
-const MG_CACHE='meu-gado-oficial-modo-campo-v39-financeiro-mensal';
+const MG_CACHE='meu-gado-oficial-modo-campo-v40-planos-meu-gado';
 const MG_SHELL=[
   '/app.html',
   '/animal-reports.js?v=1',
@@ -16,7 +16,7 @@ const MG_SHELL=[
   '/postpartum.js?v=1',
   '/plans-app.js?v=3',
   '/plans.css?v=1',
-  '/billing-client.js?v=5',
+  '/billing-client.js?v=6',
   '/billing.css?v=2',
   '/feeding-planner.css?v=2',
   '/feeding-planner-core.js?v=1',

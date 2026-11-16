@@ -11,7 +11,8 @@
    const key=card.dataset.pricingPlan,plan=window.MGPlansCore.plans[key],annual=period==='annual',amount=annual?plan.annual:plan.monthly;
    card.querySelector('[data-plan-price]').textContent=currency(amount);
    card.querySelector('[data-plan-period]').textContent=annual?'/ano':'/mês';
-   card.querySelector('[data-plan-alternative]').textContent=annual?`Equivale a ${currency(plan.annual/12)}/mês. Valor total anual: ${currency(plan.annual)}.`:`Ou ${currency(plan.annual)}/ano, equivalente a ${currency(plan.annual/12)}/mês.`;
+   const annualValue=currency(plan.annual),monthlyEquivalent=currency(plan.annual/12),savings=currency(12*plan.monthly-plan.annual);
+   card.querySelector('[data-plan-alternative]').textContent=(annual?`Total anual: ${annualValue} (equivale a ${monthlyEquivalent}/mês).`:`Ou ${annualValue}/ano (equivale a ${monthlyEquivalent}/mês).`)+` Economia de ${savings} em relação a 12 mensalidades.`;
    const button=card.querySelector('[data-plan-contact]');button.textContent='Cadastre-se';
    button.setAttribute('aria-label',`Cadastre-se no Meu Gado — conheça o plano ${plan.name}`);
    button.onclick=()=>window.openAuth('register');
