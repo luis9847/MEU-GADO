@@ -25,13 +25,20 @@ function monthlyHistory(sales,expenses){
  for(const e of expenses)add(e.expense_date,'spent',e.amount);
  return [...months.values()].sort((a,b)=>b.month.localeCompare(a.month)).map(m=>({...m,result:m.sold-m.spent,balance:m.received-m.spent}));
 }
-if(typeof module==='object'&&module.exports){module.exports={summarize,monthlyHistory};return;}
+function daysAfter(sold,number){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(sold)||!Number.isInteger(number)||number<1||number>3650)return '';
+ const result=new Date(sold+'T00:00:00Z');
+ if(!Number.isFinite(result.getTime()))return '';
+ result.setUTCDate(result.getUTCDate()+number);
+ return result.toISOString().slice(0,10);
+}
+if(typeof module==='object'&&module.exports){module.exports={summarize,monthlyHistory,daysAfter};return;}
 const E=val=>mgEsc(val), manager=()=>['owner','manager','admin'].includes(mgFarmRole);
 const canWrite=()=>navigator.onLine&&MGPlansCore.writable(mgPlanState,mgPlanNow());
 const complete=()=>mgHasPlanFeature('expenses')&&manager();
 const msg=(id,value)=>{$(id).textContent=value;};
 let sales=[],expenses=[],tasks=[],herd=[],lots=[],health=[],repro=[],financeLoad=0,agendaLoad=0;
-function setNav(){document.querySelectorAll('[data-management-planning]').forEach(node=>node.hidden=mgFarmRole==='employee');const nav=$('mgFarmFinanceNav');if(nav)nav.hidden=!!mgFarm&&!manager();}
+function setNav(){document.querySelectorAll('[data-management-planning]').forEach(node=>node.hidden=mgFarmRole==='employee');for(const id of ['mgFarmFinanceNav','mgFarmSalesNav']){const nav=$(id);if(nav)nav.hidden=!!mgFarm&&!manager();}}
 function kpi(label,value){return '<div><small>'+E(label)+'</small><strong>'+E(value)+'</strong></div>';}
 function rows(items,empty,size){return items.join('')||'<tr><td colspan="'+size+'">'+E(empty)+'</td></tr>';}
 async function requireFarm(write=false){
@@ -57,9 +64,9 @@ function renderFinance(){
  const month=$('mgFarmFinanceMonth').value||today().slice(0,7), totals=summarize(sales,expenses,month), filter=$('mgFarmFinanceFilter').value;
  $('mgFarmFinanceTotals').innerHTML=kpi('Vendas no mês',brl(totals.sold))+kpi('Recebido no mês',brl(totals.received))+kpi('Gastos no mês',brl(totals.spent))+kpi('Resultado estimado',brl(totals.result))+kpi('Saldo de caixa',brl(totals.balance))+kpi('A receber · todas as datas',brl(totals.pending));
  $('mgFarmFinanceLots').innerHTML=rows(totals.lots.map(x=>'<tr><td>'+E(x.label)+'</td>'+[x.sold,x.received,x.spent,x.sold-x.spent,x.received-x.spent].map(v=>'<td>'+E(brl(v))+'</td>').join('')+'</tr>'),'Sem movimentações por lote no mês.',6);
- const filtered=sales.filter(s=>filter==='pending'?!s.received_on&&!s.cancelled_at:monthOf(s.sale_date)===month||monthOf(s.received_on)===month);
+ const filtered=sales.filter(s=>filter==='all'||(filter==='pending'?!s.received_on&&!s.cancelled_at:monthOf(s.sale_date)===month||monthOf(s.received_on)===month));
  $('mgFarmFinanceRows').innerHTML=rows(filtered.map(s=>{
-  const state=s.cancelled_at?'Cancelada':s.received_on?'Recebida':!Number(s.amount)?'Sem valor informado':s.due_date&&s.due_date<today()?'Em atraso':'A receber';
+  const state=s.cancelled_at?'Cancelada':s.received_on?'Recebida':!Number(s.amount)?'Sem valor informado':s.due_date&&s.due_date<today()?'Pendente · em atraso':'Pendente';
   return '<tr><td>'+E('#'+s.animal_number+(s.animal_name?' · '+s.animal_name:''))+'<small>'+E(s.lot||'Sem lote')+'</small></td><td>'+E(date(s.sale_date))+'</td><td>'+E(s.buyer||'—')+'</td><td>'+E(brl(cents(s.amount)))+'</td><td>'+E(date(s.due_date))+'</td><td>'+E(date(s.received_on))+'</td><td>'+E(state)+'</td><td>'+(!s.cancelled_at&&canWrite()?'<button type="button" class="btn secondary" data-sale="'+Number(s.id)+'">'+(s.received_on?'Editar':'Detalhar / receber')+'</button>':'—')+'</td></tr>';
  }),'Nenhuma venda para este filtro.',8);
 }
@@ -68,10 +75,10 @@ async function loadFinance(){
  try{
   const f=await requireFarm();if(!complete())throw Error('O Financeiro da Fazenda é do plano Completo e está disponível para proprietário e gerente.');
   const data=await Promise.all([mgReportRows('farm_animal_sales','*',true),mgReportRows('expenses')]);
-  if(run!==financeLoad||mgFarm?.id!==f.id)return;
+  if(run!==financeLoad||mgFarm?.id!==f.id)return false;
   [sales,expenses]=data;sales.sort((a,b)=>b.sale_date.localeCompare(a.sale_date)||b.id-a.id);
-  renderFinance();renderMonthlyHistory();$('mgFarmFinanceContent').hidden=false;msg('mgFarmFinanceStatus','');
- }catch(e){if(run===financeLoad)msg('mgFarmFinanceStatus',e.message);}
+  renderFinance();renderMonthlyHistory();$('mgFarmFinanceContent').hidden=false;msg('mgFarmFinanceStatus','');return true;
+ }catch(e){if(run===financeLoad)msg('mgFarmFinanceStatus',e.message);return false;}
 }
 function editSale(id){
  const s=sales.find(x=>String(x.id)===id&&!x.cancelled_at);if(!s||!canWrite()||!complete())return;
@@ -84,9 +91,11 @@ async function saveSale(form){
  const s=sales.find(x=>String(x.id)===form.dataset.id);if(!s)return;
  if(s.received_on&&!form.received.value&&!confirm('Remover a data de recebimento? O valor volta para A receber.'))return;
  const f=await requireFarm(true);if(!complete())throw Error('Sem acesso para editar vendas.');
- const {data,error}=await mgSb.from('farm_animal_sales').update({buyer:form.buyer.value.trim()||null,due_date:form.due.value||null,received_on:form.received.value||null}).eq('farm_id',f.id).eq('id',s.id).is('cancelled_at',null).select('id').maybeSingle();
+ const q=mgSb.from('farm_animal_sales').update({buyer:form.buyer.value.trim()||null,due_date:form.due.value||null,received_on:form.received.value||null}).eq('farm_id',f.id).eq('id',s.id).is('cancelled_at',null);
+ if(s.received_on)q.eq('received_on',s.received_on);else q.is('received_on',null);
+ const {data,error}=await q.select('id').maybeSingle();
  if(error)throw Error(error.message);if(!data)throw Error('A venda mudou ou não está disponível. Atualize a tela.');
- $('mgFarmSaleDialog').close();await loadFinance();
+ $('mgFarmSaleDialog').close();msg('mgFarmSaleFeedback',form.received.value?'Recebimento confirmado na data informada.':'Venda atualizada. O recebimento continua pendente.');await Promise.allSettled([loadFinance(),dashboard()]);
 }
 function selection(select,entries,empty){select.replaceChildren(new Option(empty,''),...entries.map(([id,label])=>new Option(label,String(id))));}
 function animal(id){return herd.find(a=>Number(a.id)===Number(id));}function lot(id){return lots.find(l=>Number(l.id)===Number(id));}
@@ -137,31 +146,29 @@ async function openTask(t){
  if(t.kind==='move'){if(!a)throw Error('Selecione um animal ativo na tarefa para registrar a mudança de lote.');await loadLots();openMoveAnimal(a.id);if(l)$('moveLot').value=l.name;}
 }
 async function buttonRun(button,errorId,fn){button.disabled=true;msg(errorId,'');try{await fn();}catch(e){msg(errorId,e.message);}finally{button.disabled=false;}}
-let nextFinancePanel=null;
+let financeRequest=null;
 function showFinancePanel(panel){
  $('mgFarmFinanceResult').hidden=panel!=='result';
  $('mgFarmFinanceSales').hidden=panel!=='sales';
  $('mgFarmFinanceFilterLabel').hidden=panel!=='sales';
+ $('mgNewSaleOpen').hidden=panel!=='sales'||!canWrite();
  document.querySelectorAll('[data-finance-panel]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.financePanel===panel)));
 }
 for(const host of document.querySelectorAll('[data-mg-area]')){
  const root=host.closest('section').id,finance=host.dataset.mgArea==='finance';
  const nav=document.createElement('nav');nav.className='mg-ops-nav';nav.setAttribute('aria-label',finance?'Financeiro da Fazenda':'Manejo');
- const routes=finance?[['financeiroFazenda','Resultado'],['financeiroFazenda','Vendas'],['gastos','Gastos']]:[['agendaManejo','Agenda'],['planejamento','Planos alimentares'],['nutricao','Fornecimento']];
+ const routes=finance?[['financeiroFazenda','Resultado'],['vendas','Vendas'],['gastos','Gastos']]:[['agendaManejo','Agenda'],['planejamento','Planos alimentares'],['nutricao','Fornecimento']];
  for(const [index,[id,label]] of routes.entries()){
-  const node=document.createElement(finance&&id==='financeiroFazenda'&&root===id?'button':'a');
+  const node=document.createElement(finance&&id!=='gastos'&&root==='financeiroFazenda'?'button':'a');
   node.textContent=label;
   if(node.tagName==='BUTTON'){
    node.type='button';node.dataset.financePanel=index===0?'result':'sales';
-   node.onclick=()=>showFinancePanel(node.dataset.financePanel);
+   node.onclick=e=>mgNavigate(e,id,node);
   }else{
    node.href='#'+id;
    if(root===id)node.setAttribute('aria-current','page');
    if(!finance&&id==='planejamento')node.dataset.managementPlanning='true';
-   node.onclick=e=>{
-    if(finance&&id==='financeiroFazenda'&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey)nextFinancePanel=index===0?'result':'sales';
-    return mgNavigate(e,id,node);
-   };
+   node.onclick=e=>mgNavigate(e,id,node);
   }
   nav.append(node);
  }
@@ -169,12 +176,90 @@ for(const host of document.querySelectorAll('[data-mg-area]')){
 }
 showFinancePanel('result');
 window.mgRefreshManagementAgenda=()=>{if($('agendaManejo').classList.contains('active'))loadAgenda();};
-window.mgFarmOpsView=function(id){if(id==='financeiroFazenda'){showFinancePanel(nextFinancePanel||'result');nextFinancePanel=null;loadFinance();}if(id==='gastos'){msg('mgFarmExpenseStatus','');loadExpenses().catch(e=>msg('mgFarmExpenseStatus',e.message));}if(id==='agendaManejo')loadAgenda();setNav();};
+window.mgFarmOpsView=function(id){if(id==='financeiroFazenda'||id==='vendas'){msg('mgFarmSaleFeedback','');showFinancePanel(id==='vendas'?'sales':'result');financeRequest=loadFinance();}if(id==='gastos'){msg('mgFarmExpenseStatus','');loadExpenses().catch(e=>msg('mgFarmExpenseStatus',e.message));}if(id==='agendaManejo')loadAgenda();setNav();};
+window.mgFarmSaleAlerts=async()=>{
+ if(!navigator.onLine||!complete()||!mgFarm)return [];
+ const current=today();
+ try{
+  const f=mgFarm;
+  const {data,error}=await mgSb.from('farm_animal_sales').select('id,animal_number,amount,due_date')
+   .eq('farm_id',f.id).is('cancelled_at',null).is('received_on',null).gt('amount',0).lte('due_date',current).order('due_date',{ascending:false}).order('id').limit(100);
+  if(error)throw error;
+  if(mgFarm?.id!==f.id)return [];
+  return (data||[]).map(row=>({id:'sale-due-'+row.id+'-'+row.due_date+(row.due_date<current?'-late':''),type:'sale',sale_id:row.id,date:row.due_date,
+   level:row.due_date<current?'danger':'warning',title:row.due_date<current?'Recebimento em atraso':'Recebimento vence hoje',
+   detail:'Animal #'+row.animal_number+' · '+brl(cents(row.amount))+' · Confirme apenas se recebeu.'}));
+ }catch(error){console.warn('Avisos de vendas:',error.message);return [];}
+};
+window.mgOpenSaleReceipt=async id=>{
+ closeModal('notificationsModal');mgNavigate(null,'vendas');$('mgFarmFinanceFilter').value='pending';
+ if(await financeRequest){
+  if(sales.some(s=>Number(s.id)===id&&!s.received_on&&!s.cancelled_at)){
+   if(canWrite())editSale(String(id));else msg('mgFarmSaleFeedback','Seu acesso precisa estar liberado para confirmar o recebimento.');
+  }else msg('mgFarmSaleFeedback','Este recebimento já foi atualizado. Confira a lista de vendas.');
+ }
+};
 window.addEventListener('mg:plan-ready',setNav);
 $('mgFarmFinanceMonth').value=today().slice(0,7);
 $('mgFarmFinanceMonth').onchange=$('mgFarmFinanceFilter').onchange=renderFinance;
 $('mgFarmFinanceReload').onclick=loadFinance;
 $('mgFinanceHistoryYear').onchange=renderMonthlyHistory;
+let newSaleAnimals=[],newSaleFarmId=null,newSaleBusy=false,newSaleLoading=false;
+const newSaleForm=$('mgNewSaleForm'),newSaleSubmit=newSaleForm.querySelector('[type=submit]'),newSaleDialog=$('mgNewSaleDialog');
+newSaleForm.receiptMode.prepend(new Option('Selecione como ficou o recebimento','',true,true));
+newSaleForm.receiptMode.required=true;
+const searchKey=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+function renderSaleAnimals(){
+ const selected=newSaleForm.animal.value,keyword=searchKey($('mgSaleSearch').value);
+ const match=newSaleAnimals.filter(a=>searchKey([a.number,a.name,a.lot].join(' ')).includes(keyword));
+ selection(newSaleForm.animal,match.map(a=>[a.id,mgAnimalLabel(a)+(a.lot?' · '+a.lot:'')]),'Selecione o animal');
+ newSaleForm.animal.value=selected;
+ if(match.length===1)newSaleForm.animal.value=String(match[0].id);
+ msg('mgNewSaleAnimals',newSaleLoading?'Carregando animais ativos…':match.length?'':'Nenhum animal ativo encontrado.');
+ newSaleSubmit.disabled=newSaleLoading||newSaleBusy||!match.length;
+}
+function updateSaleTerms(){
+ const mode=newSaleForm.receiptMode.value,byDays=mode==='days',byDate=mode==='date';
+ $('mgNewSaleDays').hidden=!byDays;newSaleForm.days.required=byDays;newSaleForm.days.disabled=!byDays;
+ $('mgNewSaleDue').hidden=!byDate;newSaleForm.due.required=byDate;newSaleForm.due.disabled=!byDate;
+ newSaleForm.due.min=newSaleForm.soldDate.value;newSaleForm.soldDate.max=today();
+ const due=byDays?daysAfter(newSaleForm.soldDate.value,Number(newSaleForm.days.value)):byDate?newSaleForm.due.value:'';
+ msg('mgNewSalePreview',!mode?'Escolha se já recebeu ou se ficou a prazo.':mode==='now'?'O valor entra no caixa na data da venda.':due?'Vencimento: '+date(due)+'. O valor entra no caixa após a confirmação.':'A venda fica pendente até confirmar o recebimento.');
+ return due||null;
+}
+async function openNewSale(){
+ if(newSaleDialog.open||newSaleBusy)return;
+ newSaleForm.reset();newSaleForm.soldDate.value=today();newSaleAnimals=[];newSaleFarmId=null;newSaleLoading=true;
+ msg('mgNewSaleError','');updateSaleTerms();renderSaleAnimals();newSaleDialog.showModal();
+ try{
+  const f=await requireFarm(true);if(!complete())throw Error('Seu perfil não permite registrar vendas.');
+  const list=await mgReportRows('animals','id,number,name,lot,status');
+  if(mgFarm?.id!==f.id)throw Error('A fazenda mudou. Reabra o registro.');
+  newSaleFarmId=f.id;newSaleAnimals=list.filter(a=>a.status==='active');
+ }catch(e){msg('mgNewSaleError',e.message);}
+ finally{newSaleLoading=false;renderSaleAnimals();}
+}
+$('mgNewSaleOpen').onclick=openNewSale;
+$('mgSaleSearch').oninput=renderSaleAnimals;
+newSaleForm.oninput=updateSaleTerms;
+$('mgNewSaleClose').onclick=()=>{if(!newSaleBusy&&!newSaleLoading)newSaleDialog.close();};
+newSaleDialog.oncancel=e=>{if(newSaleBusy||newSaleLoading)e.preventDefault();};
+newSaleForm.onsubmit=async e=>{
+ e.preventDefault();if(newSaleBusy||newSaleLoading)return;
+ const f=newSaleForm,due=updateSaleTerms(),mode=f.receiptMode.value,amount=Number(f.amount.value),id=Number(f.animal.value),sold=f.soldDate.value;
+ if(!mode||!newSaleAnimals.some(a=>Number(a.id)===id)||!amount||amount<=0||!sold||sold>today()||(['date','days'].includes(mode)&&(!due||due<sold))){msg('mgNewSaleError','Confira o animal, o valor, a data da venda e o prazo.');return;}
+ newSaleBusy=true;newSaleSubmit.disabled=true;msg('mgNewSaleError','');
+ try{
+  const farm=await requireFarm(true);if(farm.id!==newSaleFarmId||!complete())throw Error('Seu perfil não permite registrar vendas nesta fazenda.');
+  const {data,error}=await mgSb.rpc('mg_register_farm_sale',{p_farm_id:farm.id,p_animal_id:id,p_sale_date:sold,p_amount:amount,p_buyer:f.buyer.value.trim()||null,p_due_date:due,p_received_at_sale:mode==='now',p_notes:f.notes.value.trim()||null});
+  if(error)throw Error(error.message);if(!data)throw Error('A venda não foi confirmada. Atualize a lista antes de tentar novamente.');
+  newSaleDialog.close();$('mgFarmFinanceMonth').value=sold.slice(0,7);$('mgFarmFinanceFilter').value=mode==='now'?'month':'pending';
+  msg('mgFarmSaleFeedback',mode==='now'?'Venda registrada e valor recebido lançado no caixa.':'Venda registrada. O valor fica em Pendentes até você confirmar o recebimento.');
+  await Promise.allSettled([loadFinance(),dashboard(),loadAnimals(),loadLots()]);
+ }catch(e){msg('mgNewSaleError',e.message);}
+ finally{newSaleBusy=false;newSaleSubmit.disabled=false;}
+};
+
 $('mgFarmFinanceRows').onclick=e=>{const b=e.target.closest('[data-sale]');if(b)editSale(b.dataset.sale);};
 $('mgFarmSaleToday').onclick=()=>$('mgFarmSaleForm').received.value=today();
 $('mgFarmSaleClose').onclick=()=>$('mgFarmSaleDialog').close();

@@ -47,3 +47,10 @@ test('with no provider key or no exact match, the UI receives a real unavailable
   const missing=await getForecast({city:'Varginha',state:'MG',token:'dummy',fetcher:async()=>Response.json([{id:3,name:'Uberaba',state:'MG'}])});
   assert.match(missing.message,/não localizado/);
 });
+
+test('sale terms count calendar days across months and years without UTC or DST drift',()=>{
+ assert.equal(operations.daysAfter('2026-12-20',15),'2027-01-04');
+ assert.equal(operations.daysAfter('2028-02-20',10),'2028-03-01');
+ assert.equal(operations.daysAfter('2026-11-16',0),'');
+ assert.equal(operations.daysAfter('2026-11-16',1.5),'');
+});

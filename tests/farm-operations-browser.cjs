@@ -31,10 +31,21 @@ const root = path.resolve(__dirname, '..');
       const fixtures={
         farm_animal_sales:[{id:1,animal_number:'210',sale_date:now,amount:90,lot:'A'}],
         expenses:[{id:1,expense_date:now,amount:15,lot:'A'},{id:2,expense_date:'2024-06-01',amount:30,lot:'A'}],
-        farm_management_tasks:[],animals:[{id:15,number:'321',name:'Estrela',category:'Vaca',lot:'A',status:'active'}],
+        farm_management_tasks:[],animals:[{id:15,number:'321',name:'Estrela',category:'Vaca',lot:'A',status:'active'},{id:16,number:'322',name:'Lua',category:'Vaca',lot:'A',status:'active'},{id:17,number:'323',name:'Sol',category:'Vaca',lot:'A',status:'active'}],
         lots:[{id:7,name:'A',active:true}],health_events:[{id:9,animal_id:15,event_type:'Vacina',product:'Reforço',next_due_date:now}],reproductive_events:[]
       };
-      mgSb.rpc=async()=>({data:{farm_id:999,plan:'complete',status:'active',server_now:new Date().toISOString(),features:{core:true,expenses:true,planning:true,performance:true,reports:true}},error:null});
+      window.__salesFixture=fixtures;window.__salesRequests=[];
+      mgSb.rpc=async(name,p)=>{
+       if(name==='mg_register_farm_sale'){
+        window.__salesRequests.push(p);
+        const a=fixtures.animals.find(a=>a.id===p.p_animal_id&&a.status==='active');
+        if(!a)return {error:{message:'Animal não está ativo'}};
+        a.status='inactive';
+        const id=fixtures.farm_animal_sales.length+1;
+        fixtures.farm_animal_sales.push({id,animal_number:a.number,sale_date:p.p_sale_date,amount:p.p_amount,buyer:p.p_buyer,due_date:p.p_due_date,received_on:p.p_received_at_sale?p.p_sale_date:null,lot:a.lot});
+        return {data:id,error:null};
+       }
+       return {data:{farm_id:999,plan:'complete',status:'active',server_now:new Date().toISOString(),features:{core:true,expenses:true,planning:true,performance:true,reports:true}},error:null};};
       window.__weatherRequests=0;
       Object.defineProperty(mgSb,'functions',{value:{invoke:async()=>{window.__weatherRequests++;}}});
       mgReportRows=async (table,columns)=>{
@@ -43,15 +54,17 @@ const root = path.resolve(__dirname, '..');
         return structuredClone(fixtures[table]);
       };
       mgSb.from=(table)=>{
-        let write,insert=false,id;
-        const q={update(p){write=p;return q},insert(p){write=p;insert=true;return q},eq(k,v){if(k==='id')id=v;return q},is(){return q},select(){return q},async maybeSingle(){
+        let write,insert=false,id,until;
+        const q={update(p){write=p;return q},insert(p){write=p;insert=true;return q},eq(k,v){if(k==='id')id=v;return q},is(){return q},select(){return q},gt(){return q},lte(k,v){until=v;return q},order(){return q},async limit(){return {data:fixtures.farm_animal_sales.filter(x=>x.due_date&&x.due_date<=until&&!x.received_on&&!x.cancelled_at),error:null};},async maybeSingle(){
           if(insert)fixtures[table].push({...write,status:'pending'});
           else {const target=fixtures[table].find(x=>x.id===id);if(!target)return {data:null};Object.assign(target,write);}
           return {data:{id:id||write.id},error:null};
         }};
         return q;
       };
-      api=async p=>p==='/api/expenses'?fixtures.expenses:[];
+      api=async p=>p==='/api/expenses'?fixtures.expenses:p==='/api/dashboard'?{alerts:await window.mgFarmSaleAlerts()}:[];
+      dashboard=async()=>{};mgDatabaseReadAlertIds=async()=>new Set();
+      window.__todaySale=now;
       loadAnimals=async()=>{animalsData=fixtures.animals;};
       loadLots=async()=>{lotsData=fixtures.lots;};
       await mgRefreshPlan(mgFarm,true);show('inicio');
@@ -100,7 +113,41 @@ const root = path.resolve(__dirname, '..');
     await page.locator('#mgFarmTaskRows button[data-task-done]').click();
     await page.locator('#mgFarmTaskFilter').selectOption('done');
     await page.locator('#mgFarmTaskRows').getByText('Concluída',{exact:true}).waitFor();
+    await page.evaluate(()=>mgNavigate(null,'vendas'));
+    assert.equal(new URL(page.url()).hash,'#vendas');
+    await page.locator('#mgNewSaleOpen').click();
+    await page.locator('#mgSaleSearch').fill('Lua');
+    await page.locator('#mgNewSaleForm [name=amount]').fill('300');
+    assert.equal(await page.locator('#mgNewSaleForm [name=receiptMode]').inputValue(),'');
+    await page.locator('#mgNewSaleForm [name=receiptMode]').selectOption('now');
+    await page.getByRole('button',{name:'Registrar venda e dar baixa'}).click();
+    await page.locator('#mgFarmSaleFeedback').getByText(/lançado no caixa/).waitFor();
+    await page.locator('#mgFarmFinanceRows').getByText('#322',{exact:false}).waitFor();
+    const immediate=await page.evaluate(()=>window.__salesRequests[0]);
+    assert.equal(immediate.p_received_at_sale,true);
+    assert.equal(immediate.p_due_date,null);
+
+    await page.locator('#mgNewSaleOpen').click();
+    await page.locator('#mgSaleSearch').fill('Sol');
+    await page.locator('#mgNewSaleForm [name=amount]').fill('450');
+    const earlier=await page.evaluate(()=>new Date(Date.parse(window.__todaySale+'T00:00:00Z')-15*86400000).toISOString().slice(0,10));
+    await page.locator('#mgNewSaleForm [name=soldDate]').fill(earlier);
+    await page.locator('#mgNewSaleForm [name=receiptMode]').selectOption('days');
+    await page.locator('#mgNewSaleForm [name=days]').fill('15');
+    await page.getByRole('button',{name:'Registrar venda e dar baixa'}).click();
+    await page.locator('#mgFarmFinanceRows').getByText('#323',{exact:false}).waitFor();
+    assert.equal(await page.locator('#mgFarmFinanceFilter').inputValue(),'pending');
+    const later=await page.evaluate(()=>({p:window.__salesRequests[1],now:window.__todaySale}));
+    assert.equal(later.p.p_received_at_sale,false);
+    assert.equal(later.p.p_due_date,later.now);
+    await page.evaluate(()=>openNotifications());
+    await page.getByRole('button',{name:'Confirmar recebimento',exact:true}).click();
+    await page.getByRole('button',{name:'Recebi hoje'}).click();
+    await page.locator('#mgFarmSaleForm button[type="submit"]').click();
+    await page.locator('#mgFarmSaleFeedback').getByText(/Recebimento confirmado/).waitFor();
+    await page.locator('#mgFarmFinanceRows').getByText('Nenhuma venda para este filtro.').waitFor();
+    assert.equal(await page.evaluate(async()=>(await window.mgFarmSaleAlerts()).length),0);
     assert.deepEqual(errors,[]);
-    console.log('PASS: mobile finance receipt and totals, reminders, new task with animal, prefilled weight, completed task, monthly history and year filter, weather disabled');
+    console.log('PASS: mobile finance receipt and totals, reminders, new task with animal, prefilled weight, completed task, monthly history, dedicated sale, immediate and deferred receipt via notifications');
   } finally { await browser.close(); server.close(); }
 })().catch(e=>{ console.error(e);process.exit(1); });
