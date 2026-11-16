@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const plans={essential:{name:'Essencial',monthly:90,annual:900,limit:150},complete:{name:'Completo',monthly:130,annual:1440,limit:null}};
- const views={gastos:'expenses',planejamento:'planning',desempenho:'performance',relatorios:'reports',saleSimulator:'performance'};
+ const views={financeiroFazenda:'expenses',gastos:'expenses',planejamento:'planning',desempenho:'performance',relatorios:'reports',saleSimulator:'performance'};
  function writable(s,now=Date.now()){
   if(!s||!['active','trial','legacy'].includes(s.status))return false;
   return !s.expires_at||(Number.isFinite(Date.parse(s.expires_at))&&Date.parse(s.expires_at)>now);

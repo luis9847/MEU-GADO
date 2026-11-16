@@ -1454,7 +1454,8 @@ html.mg-mobile-device body:has(#singleWeightModal.show) .mg-mobile-tabs{
 }
 </style>
 <link rel="stylesheet" href="/plans.css?v=1">
-<script src="/plans-core.js?v=1"></script>
+<link rel="stylesheet" href="/farm-operations.css?v=1">
+<script src="/plans-core.js?v=2"></script>
 <script src="/plans-app.js?v=3"></script>
 <link rel="stylesheet" href="/billing.css?v=2">
 <link rel="stylesheet" href="/animal-breeding.css?v=1">
@@ -1614,9 +1615,11 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
     <a href="#nutricao" data-v="nutricao" onclick="return mgNavigate(event,'nutricao',this)">🌾 <span>Alimentação</span></a>
     <a href="#saude" data-v="saude" onclick="return mgNavigate(event,'saude',this)">💉 <span>Saúde</span></a>
     <a href="#repro" data-v="repro" onclick="return mgNavigate(event,'repro',this)">♡ <span>Reprodução</span></a>
+    <a href="#agendaManejo" data-v="agendaManejo" onclick="return mgNavigate(event,'agendaManejo',this)">▣ <span>Agenda de Manejo</span></a>
     <div class="nav-title" data-feature="performance-menu">Gestão</div>
     <a href="#desempenho" id="navDesempenho" data-v="desempenho" onclick="return mgNavigate(event,'desempenho',this)">📈 <span>Desempenho</span></a>
     <div class="nav-title employee-hidden" id="navFinanceTitle">Financeiro</div>
+    <a class="employee-hidden" href="#financeiroFazenda" id="mgFarmFinanceNav" data-v="financeiroFazenda" onclick="return mgNavigate(event,'financeiroFazenda',this)">↗ <span>Financeiro da Fazenda</span></a>
     <a class="employee-hidden" href="#gastos" id="navGastos" data-v="gastos" onclick="return mgNavigate(event,'gastos',this)">💰 <span>Gastos</span></a>
     <a class="employee-hidden" href="#relatorios" id="navRelatorios" data-v="relatorios" onclick="return mgNavigate(event,'relatorios',this)">📋 <span>Relatórios</span></a>
     <div class="nav-title">Mercado</div>
@@ -1683,6 +1686,13 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       <div class="market-compare"><span>Boi gordo</span><div class="market-compare-track"><i id="dashBoiBar"></i></div><strong id="dashBoiBarValue">—</strong></div>
       <div class="market-compare"><span>Vaca gorda</span><div class="market-compare-track"><i id="dashVacaBar"></i></div><strong id="dashVacaBarValue">—</strong></div>
     </div>
+  </div>
+
+  <div class="card mg-ops-weather" id="mgFarmWeather">
+    <div class="dash-section-head"><div><b>Previsão da fazenda</b><small id="mgFarmWeatherCity">Município da propriedade</small></div><button type="button" id="mgFarmWeatherRefresh">Atualizar</button></div>
+    <p id="mgFarmWeatherStatus" role="status"></p>
+    <div class="mg-ops-weather-days" id="mgFarmWeatherDays"></div>
+    <a id="mgFarmWeatherLink" href="https://www.climatempo.com.br/previsao-do-tempo" target="_blank" rel="noopener noreferrer" hidden>Consultar no Climatempo ↗</a>
   </div>
 
   <div class="dashboard-kpis">
@@ -2142,6 +2152,71 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
       </table>
     </div>
   </div>
+</section>
+<section id="financeiroFazenda" class="view mg-ops">
+  <div class="page-title"><h1>Financeiro da Fazenda</h1><p>Acompanhe as vendas de animais, os recebimentos e os gastos registrados na propriedade.</p></div>
+  <div class="card mg-ops-card">
+    <div class="mg-ops-bar">
+      <label>Mês de referência <input type="month" id="mgFarmFinanceMonth"></label>
+      <label>Ver vendas <select id="mgFarmFinanceFilter"><option value="month">Vendidas ou recebidas no mês</option><option value="pending">A receber · todos os meses</option></select></label>
+      <button type="button" class="btn secondary" id="mgFarmFinanceReload">Atualizar</button>
+    </div>
+    <p id="mgFarmFinanceStatus" role="status"></p>
+    <div id="mgFarmFinanceContent" hidden>
+      <div id="mgFarmFinanceTotals" class="mg-ops-kpis"></div>
+      <p class="mg-ops-hint">As vendas vêm das baixas por venda. Informe a data do recebimento para somar o valor ao caixa. O saldo considera os recebimentos e os gastos lançados no mês.</p>
+      <div class="mg-ops-scroll" tabindex="0" aria-label="Vendas de animais">
+        <table><caption>Vendas de animais</caption><thead><tr><th scope="col">Animal</th><th scope="col">Venda</th><th scope="col">Comprador</th><th scope="col">Valor</th><th scope="col">Vencimento</th><th scope="col">Recebimento</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody id="mgFarmFinanceRows"></tbody></table>
+      </div>
+      <div class="mg-ops-scroll" tabindex="0" aria-label="Resumo financeiro por lote">
+        <table><caption>Resumo por lote no mês</caption><thead><tr><th scope="col">Lote</th><th scope="col">Vendas</th><th scope="col">Recebido</th><th scope="col">Gastos</th><th scope="col">Saldo</th></tr></thead><tbody id="mgFarmFinanceLots"></tbody></table>
+      </div>
+    </div>
+  </div>
+  <dialog id="mgFarmSaleDialog" class="mg-ops-dialog" aria-labelledby="mgFarmSaleTitle">
+    <form id="mgFarmSaleForm">
+      <h2 id="mgFarmSaleTitle">Detalhes da venda</h2>
+      <label>Comprador <input name="buyer" maxlength="120"></label>
+      <label>Vencimento <input name="due" type="date"></label>
+      <label>Data do recebimento integral <input name="received" type="date"></label>
+      <button type="button" class="btn secondary" id="mgFarmSaleToday">Recebi hoje</button>
+      <p class="mg-ops-hint">Deixe o recebimento vazio se o valor ainda estiver pendente.</p>
+      <p id="mgFarmSaleError" role="alert"></p>
+      <div class="mg-ops-actions"><button type="button" class="btn secondary" id="mgFarmSaleClose">Voltar</button> <button type="submit" class="btn">Salvar</button></div>
+    </form>
+  </dialog>
+</section>
+<section id="agendaManejo" class="view mg-ops">
+  <div class="page-title"><h1>Agenda de Manejo</h1><p>Programe tarefas e acompanhe os lembretes de saúde e reprodução em um só lugar.</p></div>
+  <div class="card mg-ops-card">
+    <div class="mg-ops-bar">
+      <label>Situação das tarefas <select id="mgFarmTaskFilter"><option value="pending">Pendentes</option><option value="done">Concluídas</option><option value="cancelled">Canceladas</option><option value="all">Todas</option></select></label>
+      <button type="button" class="btn" id="mgFarmTaskNew" hidden>Nova tarefa</button>
+      <button type="button" class="btn secondary" id="mgFarmAgendaReload">Atualizar</button>
+    </div>
+    <p id="mgFarmAgendaStatus" role="status"></p>
+    <div id="mgFarmAgendaContent" hidden>
+      <div class="mg-ops-scroll" tabindex="0" aria-label="Tarefas programadas">
+        <table><caption>Tarefas programadas</caption><thead><tr><th scope="col">Data</th><th scope="col">Manejo</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody id="mgFarmTaskRows"></tbody></table>
+      </div>
+      <div class="mg-ops-scroll" tabindex="0" aria-label="Lembretes automáticos">
+        <table><caption>Lembretes automáticos · atrasados e próximos 30 dias</caption><thead><tr><th scope="col">Data</th><th scope="col">Manejo</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody id="mgFarmAutoRows"></tbody></table>
+      </div>
+    </div>
+  </div>
+  <dialog id="mgFarmTaskDialog" class="mg-ops-dialog" aria-labelledby="mgFarmTaskTitle">
+    <form id="mgFarmTaskForm">
+      <h2 id="mgFarmTaskTitle">Tarefa de manejo</h2>
+      <label>Nome <input name="taskTitle" required maxlength="100" placeholder="Ex.: Pesar novilhas"></label>
+      <label>Tipo de manejo <select name="kind"><option value="health">Vacinação / saúde</option><option value="weight">Pesagem</option><option value="reproduction">Reprodução</option><option value="move">Mudança de lote</option><option value="other">Outro manejo</option></select></label>
+      <label>Data programada <input name="due" type="date" required></label>
+      <label>Animal <select name="animal"></select></label>
+      <label>Lote <select name="lot"></select></label>
+      <label>Observações <textarea name="notes" rows="2" maxlength="500"></textarea></label>
+      <p id="mgFarmTaskError" role="alert"></p>
+      <div class="mg-ops-actions"><button type="button" class="btn secondary" id="mgFarmTaskClose">Voltar</button> <button type="submit" class="btn">Salvar tarefa</button></div>
+    </form>
+  </dialog>
 </section>
 <section id="gastos" class="view">
   <div class="page-title action-title">
@@ -2987,7 +3062,7 @@ html body .modalbox{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   <div class="form">
     <label>Tipo de baixa<select id="exitType"><option>Vendido</option><option>Morto</option></select></label>
     <label>Data<input id="exitDate" type="date"></label>
-    <label id="exitValueLabel">Valor de venda (R$) <small>opcional</small><input id="exitValue" type="number" step=".01"></label>
+    <label id="exitValueLabel">Valor de venda (R$) <small>opcional</small><input id="exitValue" type="number" step=".01" min="0"></label>
     <label class="full">Observação / motivo<textarea id="exitNotes"></textarea></label>
     <button class="btn primary full" onclick="saveAnimalExit()">Confirmar baixa</button>
   </div>
@@ -3644,7 +3719,7 @@ function show(id,btn){
   if(!mgPlanCanOpen(id))return false;
   if(id==='leite') id='inicio';
   if(id==='relatorios'&&typeof mgInitReportFilters==='function')mgInitReportFilters();
- if(!mgRoleCanOpen(id,btn))return;
+ if(!mgRoleCanOpen(id,btn))return false;
   if(!document.getElementById(id)) id='inicio';
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
   document.querySelectorAll('.nav [data-v],.side-link[data-v]').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
@@ -3652,6 +3727,7 @@ function show(id,btn){
   try{localStorage.setItem('mg_last_view',id)}catch(e){}
   document.documentElement.classList.remove('mg-route-boot');
   window.scrollTo(0,0);
+  window.mgFarmOpsView?.(id);
   setTimeout(()=>{if(typeof mgPrepareGlobalSearchForView==='function')mgPrepareGlobalSearchForView(id)},0);
 }
 function mgNavigate(event,id,link){
@@ -5528,6 +5604,7 @@ async function saveHealthApplication(){
     const f=await mgGetFarm();
     const completed=await mgSb.from('health_events').update({next_due_date:null}).eq('farm_id',f.id).eq('id',sourceId).is('deleted_at',null);
     if(completed.error)throw completed.error;
+    window.mgRefreshManagementAgenda?.();
     closeModal('healthApplicationModal');
     closeModal('notificationsModal');
     await Promise.all([loadHealth(),dashboard()]);
@@ -5844,6 +5921,7 @@ async function saveRepro(){
     closeModal('reproModal');
     editingReproId=null;
     await Promise.all([loadRepro(),loadAnimals(),dashboard()]);
+    window.mgRefreshManagementAgenda?.();
     alert(rtype.value==='Parto'&&rCreateCalf.checked?'Parto e cria cadastrados com sucesso.':'Evento reprodutivo salvo com sucesso.');
   }catch(e){
     alert('Não foi possível concluir o registro. '+(e?.message||e));
@@ -6082,7 +6160,7 @@ function mgApplyRolePermissions(){
 }
 
 function mgRoleCanOpen(viewId){
-  if(mgFarmRole==='employee' && ['financeiro','perfil','equipeAcessos'].includes(viewId)){
+  if(mgFarmRole==='employee' && ['financeiro','financeiroFazenda','perfil','equipeAcessos'].includes(viewId)){
     alert('Seu perfil de Funcionário não possui acesso a esta área.');
     return false;
   }
@@ -8126,5 +8204,6 @@ run();document.addEventListener('DOMContentLoaded',run);
 })();
 </script>
 <script src="/billing-client.js?v=5"></script>
+<script src="/farm-operations.js?v=1"></script>
 </body></html>
 

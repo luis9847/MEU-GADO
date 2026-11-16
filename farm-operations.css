@@ -1,0 +1,30 @@
+#mgFarmFinanceNav[hidden], .mg-ops [hidden], #mgFarmWeather [hidden] {display:none !important}
+.mg-ops-card {padding:16px;min-width:0}
+.mg-ops-bar,.mg-ops-actions {display:flex;flex-wrap:wrap;align-items:end;gap:8px}
+.mg-ops label {display:grid;gap:4px;font-weight:600;font-size:.9rem}
+.mg-ops-actions {justify-content:flex-end}
+.mg-ops td.mg-ops-actions {display:table-cell;min-width:140px}
+.mg-ops td button {margin:2px 0}
+.mg-ops-kpis {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(155px,100%),1fr));gap:8px}
+.mg-ops-kpis>div,.mg-ops-weather-days>div {background:#f2f7f4;border:1px solid #dce7df;border-radius:10px;padding:10px;display:grid;gap:4px}
+.mg-ops-kpis strong {font-size:1.15rem}
+.mg-ops-hint,.mg-ops td small {color:#4c6259}
+.mg-ops-hint {margin:12px 0;font-size:.85rem}
+.mg-ops td small {display:block;margin-top:4px;white-space:normal}
+.mg-ops-scroll {overflow:auto;margin:8px 0 16px;max-width:100%}
+.mg-ops table {width:100%;min-width:490px}
+#mgFarmFinanceRows td:nth-child(n+4):nth-child(-n+7) {white-space:nowrap}
+.mg-ops caption {text-align:left;font-weight:700;padding:10px 0}
+.mg-ops [role=status]:empty,.mg-ops [role=alert]:empty {display:none}
+.mg-ops [role=alert] {color:#a12522}
+.mg-ops-dialog {margin:auto;width:min(460px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:auto;border:1px solid #dce7df;border-radius:14px;padding:18px;color:#12362a;background:#fff}
+.mg-ops-dialog::backdrop {background:#10282099}
+.mg-ops-dialog form {display:grid;gap:8px}
+.mg-ops-dialog h2 {margin:0 0 6px;font-size:1.2rem}
+.mg-ops-dialog input,.mg-ops-dialog select,.mg-ops-dialog textarea {min-width:0;width:100%}
+.mg-ops-weather {margin:0 0 14px;padding:14px}
+.mg-ops-weather .dash-section-head {flex-wrap:wrap}
+.mg-ops-weather p {margin:8px 0;color:#405a50;font-size:.85rem}
+.mg-ops-weather-days {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100px,100%),1fr));gap:8px}
+.mg-ops-weather a {display:inline-block;margin-top:8px;color:#087240;font-weight:700;font-size:.85rem}
+@media(max-width:520px){.mg-ops-bar label{flex:1 0 100%}.mg-ops-dialog{padding:14px}}
