@@ -634,9 +634,13 @@ async function api(path,opt={}){
     });
     if(r.error){
       const code=r.error.code||'';
+      if(code==='user_already_exists'||code==='email_exists'||/already registered/i.test(r.error.message||'')) throw new Error('Este e-mail já está cadastrado. Entre na sua conta ou clique em Esqueci minha senha.');
       if(code==='captcha_failed') throw new Error('Conclua novamente a verificação de segurança.');
       if(code==='over_request_rate_limit'||code==='over_email_send_rate_limit') throw new Error('Aguarde alguns minutos antes de tentar novamente.');
       throw new Error('Não foi possível concluir o cadastro. Confira os dados ou, se já possui uma conta, entre ou recupere sua senha.');
+    }
+    if(!r.data.session && Array.isArray(r.data.user?.identities) && r.data.user.identities.length===0){
+      throw new Error('Este e-mail já está cadastrado. Entre na sua conta ou clique em Esqueci minha senha.');
     }
     if(r.data.session){
       return {ok:true,role:'client',needs_confirmation:false,needs_onboarding:true,user:r.data.user};
@@ -750,8 +754,9 @@ async function doRegister(){
     const r=await api('/api/register',{method:'POST',body:JSON.stringify(data)});
     mgResetCaptcha('register');
     if(r.needs_confirmation){
-      setMessage('Confira sua caixa de entrada para continuar. Se você já possui uma conta, entre ou use a recuperação de senha.',true);
       switchTab('login');
+      document.getElementById('loginEmail').value=data.email;
+      setMessage('Cadastro recebido. Confira sua caixa de entrada e a pasta de spam para confirmar seu e-mail antes de entrar.',true);
       return;
     }
     if(r.needs_onboarding){showOnboarding(r.user);return;}
