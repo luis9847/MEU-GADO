@@ -49,7 +49,7 @@ Limitations: external processor outages, contested/partially refunded payments a
 Admin → Planos → Compra piloto grants one selected farm/owner a 48-hour
 Completo monthly offer at R$5. The public catalogue stays unchanged.
 The service-only reservation checks the offer again atomically and only
-one pilot contract per farm is allowed. Removing the offer does not cancel
+one paid pilot per farm is allowed. A previously verified cancelled, unpaid attempt with no payment ledger or review may be retried; its history is retained. Removing the offer does not cancel
 an existing subscription. The pilot uses the normal production payment,
 access, cancellation and financial ledger. After checking the first charge,
 cancel renewal in Meu plano to avoid the next charge. Use a real buyer

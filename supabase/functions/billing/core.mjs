@@ -186,8 +186,8 @@ export function createHandler(env,fetcher=fetch){
     if(!farm?.owner_id||farm.blocked||farm.archived_at)throw new SafeError('Selecione uma fazenda ativa.',409);
     const access=(await db('farm_subscriptions?select=status,expires_at&farm_id=eq.'+farm.id+'&limit=1'))[0];
     if(!access||(access.status==='active'&&(!access.expires_at||Date.parse(access.expires_at)>Date.now())))throw new SafeError('O piloto exige uma fazenda sem período pago vigente.',409);
-    const existing=await db('billing_contracts?select=id&farm_id=eq.'+farm.id+'&or=(is_pilot.eq.true,status.neq.cancelled)&limit=1');
-    if(existing.length)throw new SafeError('A fazenda já tem uma contratação ou já usou o piloto.',409);
+    const existing=await db('billing_contracts?select=id&farm_id=eq.'+farm.id+'&status=neq.cancelled&limit=1');
+    if(existing.length||await rpc('billing_pilot_used',{p_farm_id:farm.id}))throw new SafeError('A fazenda já tem uma contratação ou já usou o piloto.',409);
     const expires_at=new Date(Date.now()+48*3600000).toISOString();
     await db('billing_settings?id=eq.true',{method:'PATCH',body:JSON.stringify({pilot_farm_id:farm.id,pilot_owner_id:farm.owner_id,pilot_expires_at:expires_at})});
     return reply({farm_id:farm.id,expires_at});
@@ -208,7 +208,7 @@ export function createHandler(env,fetcher=fetch){
     const cfg=await settings(),rows=await db('billing_contracts?farm_id=eq.'+context.farm_id+'&order=created_at.desc&limit=10');
     const enabled=cfg.enabled&&!!env('MP_ACCESS_TOKEN_PROD');
     const eligible=enabled&&String(cfg.pilot_farm_id)===String(context.farm_id)&&cfg.pilot_owner_id===user.id&&Date.parse(cfg.pilot_expires_at)>Date.now()&&!context.blocked&&!context.archived;
-    const used=eligible&&(await db('billing_contracts?select=id&farm_id=eq.'+context.farm_id+'&is_pilot=eq.true&limit=1')).length>0;
+    const used=eligible&&await rpc('billing_pilot_used',{p_farm_id:context.farm_id});
     return reply({farm:context,enabled,contracts:rows.map(publicContract),pilot_offer:eligible&&!used?{amount:PILOT_AMOUNT}:null});
    }
    if(action==='create'){

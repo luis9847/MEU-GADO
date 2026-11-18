@@ -10,6 +10,7 @@ function fixture(opts={}){
   if(path==='/auth/v1/user'){const token=opt.headers.Authorization;if(!['Bearer owner','Bearer admin'].includes(token))return response({},401);return response({id:token==='Bearer admin'?'admin-id':'owner-id',email:'owner@example.com'});}
   const p=path.replace('/rest/v1/','');
   if(p==='rpc/billing_test_is_admin')return response(opt.headers.Authorization==='Bearer admin');
+  if(p==='rpc/billing_pilot_used')return response(!!row?.is_pilot&&(row.status!=='cancelled'||!row.provider_id||!!row.activated_at||!!row.paid_until||!!row.review_reason));
   if(p==='rpc/billing_owner'){if(body.p_farm_id&&body.p_farm_id!==999)return response({code:'42501',message:'Fazenda de outro proprietário.'},403);return response({farm_id:999,farm_name:'Teste',plan:'essential',status:'pending',revision:1,active_heads:0});}
   if(p==='billing_settings'){if(opt.method==='PATCH')cfg={...cfg,...body};return response([cfg]);}
   if(p==='farms')return response([{id:999,owner_id:'owner-id',blocked:false,archived_at:null}]);
