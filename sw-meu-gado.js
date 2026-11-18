@@ -1,8 +1,10 @@
 // Altere a versão a cada publicação do painel. Assim, quem instalou o Meu
 // Gado recebe a interface e os scripts novos em vez de permanecer em cache
 // com uma versão anterior.
-const MG_CACHE='meu-gado-oficial-modo-campo-v45-inadimplencia';
+const MG_CACHE='meu-gado-oficial-modo-campo-v46-checklist-nascimento';
 const MG_SHELL=[
+  '/animal-birth-checklist.js?v=1',
+  '/animal-birth-checklist.css?v=1',
   '/app.html',
   '/animal-reports.js?v=1',
   '/animal-reports-ui.js?v=2',
