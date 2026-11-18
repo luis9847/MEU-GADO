@@ -24,9 +24,26 @@ export function normalizePayment(p,c,payer,invoice=null){
  if(!Number.isFinite(Date.parse(modified))||(p.status==='approved'&&!Number.isFinite(Date.parse(approved)))||!Number.isFinite(refunded)||refunded<0||refunded>c.amount)throw new SafeError('Datas ou valores de pagamento inválidos.',502);
  return {id:String(p.id),status:String(p.status),approved_at:approved,modified_at:modified,amount:Number(p.transaction_amount),refunded_amount:refunded};
 }
+// Pix is a single payment, never a recurring preapproval.
+export function validCpf(value){
+ const cpf=String(value||'').replace(/\D/g,'');
+ if(!/^\d{11}$/.test(cpf)||/^(\d)\1{10}$/.test(cpf))throw new SafeError('Informe um CPF válido para o pagamento Pix.');
+ for(let n=9;n<11;n++){let sum=0;for(let i=0;i<n;i++)sum+=Number(cpf[i])*(n+1-i);if(Number(cpf[n])!==((sum*10)%11)%10)throw new SafeError('Informe um CPF válido para o pagamento Pix.');}return cpf;
+}
+export function pixPayment(p,c){
+ if(p?.payment_method_id!=='pix'||(c.provider_id&&String(p.id)!==c.provider_id))throw new SafeError('Pix incompatível com a contratação.',502);
+ const payer=String(p.payer?.id);
+ if(c.payer_id&&c.payer_id!==payer)throw new SafeError('Comprador diferente da contratação.',502);
+ if(p.status==='approved'&&!/^[1-9]\d*$/.test(payer))throw new SafeError('Comprador não confirmado.',502);
+ return normalizePayment(p,c,payer);
+}
+export function pixCheckout(value,id){
+ let u;try{u=new URL(value);}catch{throw new SafeError('Link Pix indisponível.',502);}
+ if(u.protocol!=='https:'||u.hostname!=='www.mercadopago.com.br'||u.pathname!=='/payments/'+id+'/ticket')throw new SafeError('Link Pix inválido.',502);return u.href;
+}
 export async function sha(value){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),x=>x.toString(16).padStart(2,'0')).join('');}
 export function equal(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length!==b.length)return false;let d=0;for(let i=0;i<a.length;i++)d|=a.charCodeAt(i)^b.charCodeAt(i);return d===0;}
-export function publicContract(c){if(!c)return null;return {id:c.id,plan:c.plan,billing_period:c.billing_period,amount:c.amount,is_pilot:c.is_pilot===true,status:c.status,checkout_url:c.status==='pending'?c.checkout_url:null,paid_until:c.paid_until,activated:!!c.activated_at,needs_review:!!c.review_reason,checked_at:c.checked_at,created_at:c.created_at};}
+export function publicContract(c){if(!c)return null;return {id:c.id,plan:c.plan,billing_period:c.billing_period,amount:c.amount,is_pilot:c.is_pilot===true,payment_method:c.payment_method||'card',pix_expires_at:c.pix_expires_at||null,status:c.status,checkout_url:c.status==='pending'?c.checkout_url:null,paid_until:c.paid_until,activated:!!c.activated_at,needs_review:!!c.review_reason,checked_at:c.checked_at,created_at:c.created_at};}
 export function createHandler(env,fetcher=fetch){
  const base=env('SUPABASE_URL'),anon=env('SUPABASE_ANON_KEY'),service=env('SUPABASE_SERVICE_ROLE_KEY');let sellerCache;
  async function db(path,opt={},jwt=service){
@@ -52,6 +69,14 @@ export function createHandler(env,fetcher=fetch){
  const patch=async(id,values)=>(await db('billing_contracts?id=eq.'+id,{method:'PATCH',body:JSON.stringify(values)}))[0];
  async function recover(c){
   if(c.provider_id)return c;
+  if(c.payment_method==='pix'){
+   const data=await mp('/v1/payments/search?external_reference='+encodeURIComponent('mg-live:'+c.id));
+   const found=(data.results||[]).filter(p=>p.external_reference==='mg-live:'+c.id);
+   if(found.length>1)throw new SafeError('Pagamento em conferência. Fale com o suporte.',409);
+   if(!found.length)return c;
+   const p=found[0];pixPayment(p,c);
+   return patch(c.id,{provider_id:String(p.id),checkout_url:p.point_of_interaction?.transaction_data?.ticket_url?pixCheckout(p.point_of_interaction.transaction_data.ticket_url,p.id):null,pix_expires_at:p.date_of_expiration||null,status:c.status==='cancelled'?'cancelled':'pending'});
+  }
   const data=await mp('/preapproval/search?external_reference='+encodeURIComponent('mg-live:'+c.id));
   const found=(data.results||[]).filter(s=>s.external_reference==='mg-live:'+c.id);
   if(found.length>1)throw new SafeError('Contratação em conferência. Fale com o suporte.',409);
@@ -59,8 +84,26 @@ export function createHandler(env,fetcher=fetch){
   const s=found[0],row={...c,provider_id:String(s.id)};validateContract(s,row);
   return patch(c.id,{provider_id:row.provider_id,payer_id:s.payer_id&&String(s.payer_id)!=='0'?String(s.payer_id):null,checkout_url:safeCheckout(s.init_point,s.id),status:normalizeStatus(s.status)});
  }
+ async function reconcilePix(c,cancel){
+  const lease=crypto.randomUUID();if(!await rpc('billing_claim',{p_id:c.id,p_lease:lease}))throw new SafeError('Há uma consulta em andamento. Aguarde alguns instantes.',409);
+  try{
+  c=(await db('billing_contracts?id=eq.'+c.id+'&limit=1'))[0];
+  c=await recover(c);
+  if(!c.provider_id){if(cancel)throw new SafeError('A criação do Pix está em conferência. Consulte novamente antes de cancelar.',409);throw new SafeError('O Pix ainda não foi confirmado. Consulte novamente antes de gerar outra cobrança.',409);}
+  let p=await mp('/v1/payments/'+encodeURIComponent(c.provider_id));pixPayment(p,c);
+  if(cancel&&p.status==='pending'){
+   p=await mp('/v1/payments/'+encodeURIComponent(c.provider_id),{method:'PUT',body:JSON.stringify({status:'cancelled'})});pixPayment(p,c);
+   if(p.status==='pending')throw new SafeError('O cancelamento do Pix ainda não foi confirmado.',502);
+  }
+  const row=pixPayment(p,c),checked_at=new Date().toISOString();
+  if(p.status==='pending')return publicContract(await patch(c.id,{status:'pending',checked_at}));
+  if(!['approved','refunded','charged_back'].includes(p.status)&&!c.activated_at)return publicContract(await patch(c.id,{status:'cancelled',checked_at}));
+  return publicContract(await rpc('billing_apply',{p_id:c.id,p_lease:lease,p_status:p.status==='approved'?'authorized':'cancelled',p_payer:String(p.payer?.id||'0'),p_payments:[row]}));}
+  finally{await db('billing_contracts?id=eq.'+c.id+'&lease_token=eq.'+lease,{method:'PATCH',body:JSON.stringify({lease_token:null,lease_until:null})}).catch(()=>{});}
+ }
  async function reconcile(c,cancel=false){
   const account=await seller();if(String(account.id)!==c.seller_id)throw new SafeError('Conta recebedora diferente da contratação. Fale com o suporte.',409);
+  if(c.payment_method==='pix')return reconcilePix(c,cancel);
   const lease=crypto.randomUUID();if(!await rpc('billing_claim',{p_id:c.id,p_lease:lease}))throw new SafeError('Há uma consulta em andamento. Aguarde alguns instantes.',409);
   try{
    c=await recover(c);
@@ -169,17 +212,24 @@ export function createHandler(env,fetcher=fetch){
     return reply({farm:context,enabled,contracts:rows.map(publicContract),pilot_offer:eligible&&!used?{amount:PILOT_AMOUNT}:null});
    }
    if(action==='create'){
-    if(body.accepted_terms!==true)throw new SafeError('Confirme o valor e a renovação automática antes de continuar.');const id=validId(body.request_id),pilot=body.pilot===true;planChoice(body.plan,body.billing_period);
+    if(body.accepted_terms!==true)throw new SafeError('Confirme o valor e a renovação automática antes de continuar.');const id=validId(body.request_id),pilot=body.pilot===true,method=body.payment_method||'card';if(!['card','pix'].includes(method))throw new SafeError('Escolha Pix ou cartão de crédito.');const cpf=method==='pix'?validCpf(body.payer_cpf):null;planChoice(body.plan,body.billing_period);
     if(pilot&&(body.plan!=='complete'||body.billing_period!=='monthly'))throw new SafeError('O piloto é mensal e dá acesso ao plano Completo.');
     const cfg=await settings();if(!cfg.enabled)throw new SafeError('A contratação automática ainda está em preparação.',503);const account=await seller();if(String(account.id)!==cfg.seller_id)throw new SafeError('Conta recebedora alterada. Fale com o suporte.',503);
     const email=String(body.payer_email||user.email||'').trim().toLowerCase();if(email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||/@testuser\./i.test(email))throw new SafeError('Informe seu e-mail para o pagamento. Contas de teste não são aceitas.');
     const notify=crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-','');
     const reservation={p_id:id,p_actor:user.id,p_farm_id:context.farm_id,p_seller:String(account.id),p_notify_hash:await sha(notify)};
-    const reserved=pilot?await rpc('billing_reserve_pilot',reservation):await rpc('billing_reserve',{...reservation,p_plan:body.plan,p_period:body.billing_period});let c=reserved.contract;
+    const reserved=method==='pix'?await rpc('billing_reserve_pix',{...reservation,p_plan:body.plan,p_period:body.billing_period,p_pilot:pilot}):pilot?await rpc('billing_reserve_pilot',reservation):await rpc('billing_reserve',{...reservation,p_plan:body.plan,p_period:body.billing_period});let c=reserved.contract;
+    if((c.payment_method||'card')!==method)throw new SafeError('Esta tentativa usa outra forma de pagamento. Consulte a contratação existente.',409);
     if((c.is_pilot===true)!==pilot)throw new SafeError('Tentativa incompatível com a oferta escolhida.',409);
     const choice=contractChoice(c);if(Number(c.amount)!==choice.amount)throw new SafeError('Valor da contratação inconsistente.',502);
     if(!reserved.created){c=await recover(c);if(!c.provider_id)throw new SafeError('Esta tentativa já foi enviada. Consulte a assinatura antes de tentar novamente.',409);return reply({contract:publicContract(c)});}
     try{
+     if(method==='pix'){
+      const payment=await mp('/v1/payments',{method:'POST',headers:{'X-Idempotency-Key':c.id},body:JSON.stringify({transaction_amount:choice.amount,description:'Meu Gado '+(c.is_pilot?'Completo · Compra piloto':(c.plan==='essential'?'Essencial':'Completo')+' '+(c.billing_period==='annual'?'anual':'mensal')),payment_method_id:'pix',external_reference:'mg-live:'+c.id,payer:{email,identification:{type:'CPF',number:cpf}},date_of_expiration:new Date(Date.now()+24*3600000).toISOString(),notification_url:base+'/functions/v1/billing/notify?contract='+c.id+'&token='+notify})});
+      pixPayment(payment,c);
+      c=await patch(c.id,{provider_id:String(payment.id),checkout_url:pixCheckout(payment.point_of_interaction?.transaction_data?.ticket_url,payment.id),pix_expires_at:payment.date_of_expiration||null,status:'pending'});
+      return reply({contract:publicContract(c)},201);
+     }
      const s=await mp('/preapproval',{method:'POST',body:JSON.stringify({reason:c.is_pilot?'Meu Gado Completo · Compra piloto':'Meu Gado '+(c.plan==='essential'?'Essencial':'Completo')+' '+(c.billing_period==='annual'?'anual':'mensal'),external_reference:'mg-live:'+c.id,payer_email:email,auto_recurring:{frequency:choice.months,frequency_type:'months',transaction_amount:choice.amount,currency_id:'BRL'},back_url:'https://www.sistemameugado.com.br/app?billing_return='+c.id,notification_url:base+'/functions/v1/billing/notify?contract='+c.id+'&token='+notify,status:'pending'})});
      if(!/^[a-zA-Z0-9_-]{10,80}$/.test(s.id||''))throw new SafeError('Assinatura não confirmada.',502);const row={...c,provider_id:String(s.id)};validateContract(s,row);
      c=await patch(c.id,{provider_id:row.provider_id,payer_id:s.payer_id&&String(s.payer_id)!=='0'?String(s.payer_id):null,checkout_url:safeCheckout(s.init_point,s.id),status:normalizeStatus(s.status)});return reply({contract:publicContract(c)},201);

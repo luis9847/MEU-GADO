@@ -23,4 +23,4 @@
  selectPeriod('monthly');
 })();
 
-fetch(window.MG_SB_URL+'/functions/v1/billing/availability',{cache:'no-store'}).then(r=>r.json()).then(c=>{const note=document.querySelector('.pricing-contact-note');if(note)note.textContent=c.enabled?'Crie sua conta e cadastre sua fazenda. Depois, escolha o plano e finalize no Mercado Pago. A assinatura tem renovação automática; você pode cancelar a renovação na sua conta.':'Crie sua conta e cadastre sua fazenda. A contratação automática está em preparação; o pagamento online será disponibilizado após sua ativação.';}).catch(()=>{});
+fetch(window.MG_SB_URL+'/functions/v1/billing/availability',{cache:'no-store'}).then(r=>r.json()).then(c=>{const note=document.querySelector('.pricing-contact-note');if(note)note.textContent=c.enabled?'Crie sua conta e cadastre sua fazenda. Depois, escolha o plano e finalize no Mercado Pago. Pague com Pix, sem renovação automática, ou cartão de crédito, com renovação automática que pode ser cancelada na sua conta.':'Crie sua conta e cadastre sua fazenda. A contratação automática está em preparação; o pagamento online será disponibilizado após sua ativação.';}).catch(()=>{});
