@@ -38,6 +38,13 @@ begin
  r:=public.billing_reserve_pix(cid,owner_id,f,'complete','monthly','11111',repeat('c',64),true);
  if (r->'contract'->>'amount')::int<>5 or r->'contract'->>'payment_method'<>'pix' then raise exception 'Retry Pix price/method mismatch';end if;
  if not public.billing_pilot_used(f) then raise exception 'New open pilot not blocked';end if;
+ -- A failed Pix remains blocked until the server has verified its absence at the provider.
+ update public.billing_contracts set status='cancelled' where id=cid;
+ if not public.billing_pilot_used(f) then raise exception 'Unverified failed Pix allowed retry';end if;
+ insert into public.billing_audit(contract_id,action,details) values(cid,'provider_creation_absent_verified','{"provider":"mercadopago","matches":0,"total":0}');
+ if public.billing_pilot_used(f) then raise exception 'Verified rejected Pix still blocked';end if;
+ cid:=gen_random_uuid();r:=public.billing_reserve_pix(cid,owner_id,f,'complete','monthly','11111',repeat('d',64),true);
+
  perform public.billing_claim(cid,lease);
  r:=public.billing_apply(cid,lease,'authorized','22222',jsonb_build_array(jsonb_build_object('id','pilot-fixture-'||cid,'status','approved','approved_at',now(),'modified_at',now(),'amount',5,'refunded_amount',0)));
  if r->>'activated_at' is null or not exists(select 1 from public.farm_subscriptions where farm_id=f and status='active' and plan='complete' and billing_contract_id=cid) then raise exception 'Pilot did not activate';end if;
