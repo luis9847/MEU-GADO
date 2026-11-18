@@ -7,8 +7,8 @@ Acesso comercial por fazenda, administrado manualmente em `/admin` → Planos.
 - Teste gratuito: plano selecionado, com validade opcional. Não gera cobrança nem conversão automática.
 - Situações: aguardando liberação, assinatura liberada, teste gratuito, suspenso.
 - Validade: até o fim do dia escolhido no fuso do navegador administrativo; armazenada como instante UTC.
-- Após vencimento/suspensão, novos lançamentos ficam impedidos. Dados existentes não são apagados.
-- Cobranças, confirmação de pagamentos e renovação são manuais; não há checkout ou provedor de pagamentos.
+- Assinaturas pagas (`active`) têm 48 horas de tolerância após o vencimento. Depois, o uso é bloqueado, mantendo renovação e dados preservados. Testes gratuitos continuam encerrando na data configurada.
+- Mercado Pago confirma pagamentos no servidor; Pix é pagamento único e cartão permite renovação automática. A data paga não é alterada pela tolerância.
 
 ## Transição
 
@@ -32,3 +32,9 @@ O registro de alimentação não cria mais uma despesa automaticamente; a compra
 - Fluxo real autenticado no navegador com a conta do proprietário não foi executado; autorização no banco e interface no navegador foram verificados separadamente.
 
 Migração: `supabase/migrations/20261103170000_farm_plans.sql`. Implantar a migração antes dos arquivos de frontend. Para reverter a interface, restaurar o commit anterior; para reverter regras comerciais, remover apenas os triggers `mg_plan_write_guard` e as políticas `mg_complete_guard` adicionados por esta migração, preservando os registros de assinatura e auditoria. Não remover políticas de isolamento anteriores.
+
+## Exclusão de fazendas
+
+Admin → Clientes e fazendas → Detalhes → Excluir fazenda. Exige nome exato e validação administrativa com MFA, quando configurada. Exclui registros operacionais e mantém a conta do usuário e outras fazendas. Fazendas com qualquer histórico de contratação devem ser arquivadas, preservando cobranças e pagamentos. Toda exclusão é auditada com o nome da fazenda.
+
+Verificação adicional: `tests/admin-delete-grace-rls.sql` (rollback) e `tests/plans.test.cjs`.

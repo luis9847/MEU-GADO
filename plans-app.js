@@ -25,6 +25,7 @@ async function mgRefreshPlan(farm,force=false){
  try{return await mgPlanRequest;}finally{mgPlanRequest=null;}
 }
 function mgPlanCanOpen(view){
+ if(MGPlansCore.overdue(mgPlanState,mgPlanNow())){window.mgOpenBilling?.();return false;}
  const feature=MGPlansCore.views[view];
  if(feature&&!mgPlanState)return false;
  if(feature&&!mgHasPlanFeature(feature)){mgPlanExplain('Este recurso está disponível no plano Completo.');return false;}
@@ -40,6 +41,7 @@ async function mgPlanCheckRequest(path,opt={}){
  if(path==='/api/logout')return;
  if(!mgPlanState)await mgGetFarm();
  if(mgFarm)await mgRefreshPlan(mgFarm);
+ if(MGPlansCore.overdue(mgPlanState,mgPlanNow())&&path!=='/api/me')throw new Error('Plano vencido há mais de 2 dias. Abra Meu plano para renovar. Seus dados estão preservados.');
  const method=(opt.method||'GET').toUpperCase();
  if(method!=='GET'&&!MGPlansCore.writable(mgPlanState,mgPlanNow()))throw new Error('Seu acesso precisa ser liberado ou renovado. Seus dados estão preservados. Contate o suporte.');
  if(/^\/api\/expenses(?:\/|$)/.test(path)&&!mgHasPlanFeature('expenses')){
@@ -53,6 +55,7 @@ async function mgPlanCheckRequest(path,opt={}){
 }
 function mgRenderPlan(){
  if(!document.body)return;
+ mgRenderOverdueLock();
  let banner=document.getElementById('mgPlanBanner');
  if(!banner){banner=document.createElement('div');banner.id='mgPlanBanner';banner.className='mg-plan-banner';banner.setAttribute('role','status');const main=document.querySelector('main');(main||document.body).prepend(banner);}
  const s=mgPlanState,core=MGPlansCore,plan=core.plans[s?.plan];
@@ -84,3 +87,22 @@ function mgRenderPlan(){
 // Checks do not remove queued field entries. The server revalidates each replay.
 window.addEventListener('online',()=>{if(mgFarm)mgRefreshPlan(mgFarm,true).catch(()=>{});});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mgFarm&&navigator.onLine)mgRefreshPlan(mgFarm,true).catch(()=>{});});
+
+function mgRenderOverdueLock(){
+ const locked=MGPlansCore.overdue(mgPlanState,mgPlanNow());
+ let gate=document.getElementById('mgOverdueLock');
+ if(!gate&&locked){
+  gate=document.createElement('section');gate.id='mgOverdueLock';gate.className='mg-overdue-lock';gate.setAttribute('role','alert');
+  const card=document.createElement('div'),title=document.createElement('h2'),text=document.createElement('p'),renew=document.createElement('button'),retry=document.createElement('button'),logout=document.createElement('button');
+  title.textContent='Renove seu plano para continuar';text.textContent='O pagamento não foi confirmado nos 2 dias após o vencimento. O uso está bloqueado e os dados da sua fazenda estão preservados.';
+  renew.className='btn primary';renew.textContent='Renovar meu plano';renew.onclick=()=>window.mgOpenBilling?.();
+  retry.className='btn secondary';retry.textContent='Já paguei · atualizar acesso';retry.onclick=async()=>{retry.disabled=true;try{await window.mgOpenBilling?.();if(mgFarm)await mgRefreshPlan(mgFarm,true);}catch(e){text.textContent=e.message;}finally{retry.disabled=false;}};
+  logout.className='btn secondary';logout.textContent='Sair da conta';logout.onclick=async()=>{await mgSb.auth.signOut({scope:'local'});location.href='/';};
+  card.append(title,text,renew,retry,logout);gate.append(card);document.body.append(gate);
+ }
+ if(gate&&!locked&&!gate.hidden){gate.hidden=true;location.reload();return;}
+ if(gate)gate.hidden=!locked;
+ document.querySelector('main')?.toggleAttribute('inert',locked);
+}
+// Re-evaluate the deadline even if the producer leaves the app open or offline.
+if(typeof setInterval==='function')setInterval(()=>{if(mgPlanState)mgRenderPlan();},30000);

@@ -29,7 +29,7 @@ test('admin dates mean end of the chosen local day and invalid calendar dates ar
  assert.equal(C.localEndOfDay(''),null);assert.throws(()=>C.localEndOfDay('2026-02-30'));assert.throws(()=>C.localEndOfDay('17/11/2026'));
 });
 function appContext(online=true){
- const store=new Map(),events={},c=vm.createContext({MGPlansCore:C,console,Date,Number,JSON,CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail;}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},navigator:{onLine:online},window:{addEventListener:(k,v)=>events[k]=v,dispatchEvent:event=>{events[event.type]?.(event);return true;}},document:{body:null,addEventListener(){}},mgUser:{id:'user-a'},mgFarm:{id:7},mgReadCachedResponse:async()=>[],mgGetFarm:async()=>({id:7}),mgSb:{rpc:async()=>({data:{...complete,server_now:new Date().toISOString()},error:null})}});
+ const store=new Map(),events={},c=vm.createContext({MGPlansCore:C,console,Date,Number,JSON,setInterval:()=>0,CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail;}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},navigator:{onLine:online},window:{addEventListener:(k,v)=>events[k]=v,dispatchEvent:event=>{events[event.type]?.(event);return true;}},document:{body:null,addEventListener(){}},mgUser:{id:'user-a'},mgFarm:{id:7},mgReadCachedResponse:async()=>[],mgGetFarm:async()=>({id:7}),mgSb:{rpc:async()=>({data:{...complete,server_now:new Date().toISOString()},error:null})}});
  vm.runInContext(fs.readFileSync(path.join(__dirname,'../plans-app.js'),'utf8')+'\nthis.mgHasPlanFeature=mgHasPlanFeature;',c);return {c,store,events};
 }
 test('online snapshot and cache are scoped to the authenticated identity and farm',async()=>{
@@ -58,3 +58,26 @@ test('offline replay keeps rejected entries and records the plan error for revie
  const c=vm.createContext({mgOfflineSyncing:false,navigator:{onLine:true},mgPendingForUser:async()=>pending,mgUpdateConnectionUi:async()=>{},mgQueuedWeightPayloads:()=>[],apiOnline:async()=>{throw Error('Este recurso faz parte do plano Completo.');},mgOfflineDelete:async(...x)=>deleted.push(x),mgOfflinePut:async(...x)=>stored.push(x),mgSyncLog:async(...x)=>logs.push(x),mgIsNetworkError:()=>false,mgOfflineToast:()=>{},MG_OFFLINE_QUEUE:'queue'});
  vm.runInContext(html.slice(a,b),c);await c.mgSyncOfflineQueue();assert.equal(deleted.length,0);assert.equal(stored.length,1);assert.match(stored[0][1].lastError,/Completo/);assert.equal(logs[0][1],'error');
 });
+
+ test('paid subscriptions get 48 hours but trials expire exactly on their deadline',()=>{
+ const expiry=Date.parse(complete.expires_at),paid={...complete,status:'active'};
+ assert.equal(C.writable(paid,expiry),true);assert.equal(C.inGrace(paid,expiry),true);
+ assert.equal(C.writable(paid,expiry+48*3600000-1),true);
+ assert.equal(C.overdue(paid,expiry+48*3600000),true);assert.equal(C.writable(paid,expiry+48*3600000),false);
+ assert.equal(C.writable(complete,expiry),false);assert.equal(C.inGrace(complete,expiry),false);
+ assert.equal(C.overdue({...paid,status:'suspended'},expiry),false);assert.equal(C.writable({...paid,status:'suspended'},expiry),false);
+ });
+ test('payment renewal restores paid access and clears the overdue state',()=>{
+ const paid={...complete,status:'active'},late=Date.parse(paid.expires_at)+49*3600000;
+ assert.equal(C.overdue(paid,late),true);
+ assert.equal(C.overdue({...paid,expires_at:new Date(late+30*86400000).toISOString()},late),false);
+ assert.equal(C.writable({...paid,expires_at:new Date(late+30*86400000).toISOString()},late),true);
+ });
+
+ test('admin deletion requires exact name and calls only the selected farm RPC',async()=>{
+ const html=fs.readFileSync(path.join(__dirname,'../admin.html'),'utf8'),start=html.indexOf('async function deleteFarm(id)'),source=html.slice(start,html.indexOf('function openView(name)',start)),calls=[];
+ let answer=null;
+ const c=vm.createContext({farms:[{id:7,name:'Minha fazenda'}],prompt:()=>answer,alert:()=>{},detailPermanentDeleteBtn:{disabled:false},sb:{rpc:async(name,args)=>{calls.push({name,args});return {error:null}}},closeDetail:()=>{},loadData:async()=>{},toast:()=>{}});
+ vm.runInContext(source,c);await c.deleteFarm(7);answer='errado';await c.deleteFarm(7);assert.equal(calls.length,0);
+ answer='Minha fazenda';await c.deleteFarm(7);assert.equal(calls.length,1);assert.equal(calls[0].name,'admin_delete_farm');assert.equal(calls[0].args.p_farm_id,7);assert.equal(calls[0].args.p_confirmation,'Minha fazenda');
+ });
