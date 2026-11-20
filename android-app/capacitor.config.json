@@ -1,0 +1,12 @@
+{
+  "appId": "br.com.sistemameugado",
+  "appName": "Meu Gado",
+  "webDir": "www",
+  "server": {
+    "url": "https://www.sistemameugado.com.br/app",
+    "cleartext": false,
+    "allowNavigation": [
+      "www.sistemameugado.com.br"
+    ]
+  }
+}
